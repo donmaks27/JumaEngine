@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="JumaEngine">
+      <UniqueIdentifier>{d948da5d-ec6e-4e71-96d8-8ccdc5e4738e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="JumaEngine\window">
+      <UniqueIdentifier>{3da8fe46-a94b-463e-b3fe-c9f0b70943b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="JumaEngine\utils">
+      <UniqueIdentifier>{21ac3b5a-0748-4d09-b412-ea15d570b926}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="source\Engine.cpp">
+      <Filter>JumaEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="source\window\WindowBase.cpp">
+      <Filter>JumaEngine\window</Filter>
+    </ClCompile>
+    <ClCompile Include="source\window\WindowGLFW.cpp">
+      <Filter>JumaEngine\window</Filter>
+    </ClCompile>
+    <ClCompile Include="source\utils\log.cpp">
+      <Filter>JumaEngine\utils</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="source\common_header.h">
+      <Filter>JumaEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Engine.h">
+      <Filter>JumaEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="source\window\WindowBase.h">
+      <Filter>JumaEngine\window</Filter>
+    </ClInclude>
+    <ClInclude Include="source\window\WindowGLFW.h">
+      <Filter>JumaEngine\window</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\log.h">
+      <Filter>JumaEngine\utils</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
