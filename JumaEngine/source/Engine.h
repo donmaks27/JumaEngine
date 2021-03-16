@@ -3,10 +3,12 @@
 #pragma once
 
 #include "common_header.h"
-#include "window/WindowBase.h"
 
 namespace JumaEngine
 {
+    class WindowBase;
+    class RenderManagerBase;
+
     class Engine
     {
     public:
@@ -15,14 +17,16 @@ namespace JumaEngine
         {
             OK = 0,
             EmptyWindowObject = 1,
-            FailWindowInit = 2
+            FailWindowInit = 2,
+            EmptyRenderManager = 3,
+            FailRenderManagerInit = 4,
         };
 
         Engine();
         virtual ~Engine();
 
-        int32 startEngine(int argc, char** argv, WindowBase* window);
-        int32 startEngine(WindowBase* window) { return startEngine(0, nullptr, window); }
+        int32 startEngine(int argc, char** argv, WindowBase* window, RenderManagerBase* renderManager);
+        int32 startEngine(WindowBase* window, RenderManagerBase* renderManager) { return startEngine(0, nullptr, window, renderManager); }
 
         WindowBase* getWindow() const { return m_Window; }
 
@@ -37,8 +41,14 @@ namespace JumaEngine
     private:
 
         WindowBase* m_Window = nullptr;
+        RenderManagerBase* m_RenderManager = nullptr;
 
 
-        int32 startEngineInternal(int argc, char** argv, WindowBase* window);
+        int32 startEngineInternal(int argc, char** argv, WindowBase* window, RenderManagerBase* renderManager);
+
+        bool initWindow(int32& resultCode, WindowBase* window);
+        bool initRender(int32& resultCode, RenderManagerBase* renderManager);
+
+        void terminateEngine();
     };
 }

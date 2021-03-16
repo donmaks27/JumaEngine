@@ -10,20 +10,29 @@
     <Filter Include="JumaEngine\utils">
       <UniqueIdentifier>{21ac3b5a-0748-4d09-b412-ea15d570b926}</UniqueIdentifier>
     </Filter>
+    <Filter Include="JumaEngine\render">
+      <UniqueIdentifier>{26090738-508b-4c6d-90a2-56bcb77039f4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Engine.cpp">
       <Filter>JumaEngine</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="source\utils\log.cpp">
+      <Filter>JumaEngine\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="source\render\RenderManagerBase.cpp">
+      <Filter>JumaEngine\render</Filter>
+    </ClCompile>
+    <ClCompile Include="source\render\RenderManagerOpenGL.cpp">
+      <Filter>JumaEngine\render</Filter>
+    </ClCompile>
     <ClCompile Include="source\window\WindowBase.cpp">
       <Filter>JumaEngine\window</Filter>
     </ClCompile>
     <ClCompile Include="source\window\WindowGLFW.cpp">
       <Filter>JumaEngine\window</Filter>
-    </ClCompile>
-    <ClCompile Include="source\utils\log.cpp">
-      <Filter>JumaEngine\utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -33,14 +42,20 @@
     <ClInclude Include="source\Engine.h">
       <Filter>JumaEngine</Filter>
     </ClInclude>
+    <ClInclude Include="source\utils\log.h">
+      <Filter>JumaEngine\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\RenderManagerBase.h">
+      <Filter>JumaEngine\render</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\RenderManagerOpenGL.h">
+      <Filter>JumaEngine\render</Filter>
+    </ClInclude>
     <ClInclude Include="source\window\WindowBase.h">
       <Filter>JumaEngine\window</Filter>
     </ClInclude>
     <ClInclude Include="source\window\WindowGLFW.h">
       <Filter>JumaEngine\window</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\log.h">
-      <Filter>JumaEngine\utils</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

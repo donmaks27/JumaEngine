@@ -15,38 +15,21 @@ namespace JumaEngine
     std::mutex Log::s_Mutex;
 #endif
 
-    void Log::WriteLog(const symbol* prefix, const text& method, const text& message)
-    {
-#if LOG_ENABLED
-        std::unique_lock<std::mutex> lock(s_Mutex);
-
-	    std::wcout << prefix;
-	    if (!method.empty())
-	    {
-	        std::wcout << method << TEXT(": ");
-	    }
-	    if (!message.empty())
-	    {
-	        std::wcout << message;
-	    }
-        std::wcout << std::endl;
-#endif
-    }
     void Log::WriteLog(const symbol* prefix, const text& method, const char* message)
     {
 #if LOG_ENABLED
         std::unique_lock<std::mutex> lock(s_Mutex);
 
-	    std::wcout << prefix;
+	    std::cout << prefix;
 	    if (!method.empty())
 	    {
-	        std::wcout << method << TEXT(": ");
+	        std::cout << method << TEXT(": ");
 	    }
-	    if (message != nullptr)
+	    if ((message != nullptr) && (message[0] != '\0'))
 	    {
 	        std::cout << message;
 	    }
-        std::wcout << std::endl;
+        std::cout << std::endl;
 #endif
     }
 }

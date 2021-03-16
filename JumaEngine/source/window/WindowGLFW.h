@@ -15,13 +15,19 @@ namespace JumaEngine
         WindowGLFW();
         virtual ~WindowGLFW() override;
 
+        virtual bool createWindow() override;
+        virtual bool isWindowCreated() const override { return m_WindowObject != nullptr; }
+
+        virtual void setWindowTitle(const char* title) override;
+        
+        virtual void onEngineLoopStart() override;
+
         virtual double getDeltaTime() const override { return m_DeltaTime; }
         virtual bool shouldCloseWindow() const override;
-
-        virtual bool init() override;
-        virtual bool isInitialized() const override { return m_WindowObject != nullptr; }
         
         virtual void onFrameRenderFinish() override;
+        
+        virtual void termiante() override;
 
     private:
 
@@ -34,5 +40,9 @@ namespace JumaEngine
         static void ErrorCallback(int code, const char* errorMessage);
 
         GLFWwindow* CreateWindow() const;
+
+        void updateDeltaTime();
+
+        void terminateInternal();
     };
 }

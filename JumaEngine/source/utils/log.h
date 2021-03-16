@@ -53,13 +53,13 @@ namespace JumaEngine
 
         
         static void WriteLog(const symbol* prefix, const text& method) { WriteLog(prefix, method, nullptr); }
-        static void WriteLog(const symbol* prefix, const text& method, const text& message);
+        static void WriteLog(const symbol* prefix, const text& method, const text& message) { WriteLog(prefix, method, message.c_str()); }
         static void WriteLog(const symbol* prefix, const text& method, const char* message);
     };
 }
 
 #if LOG_ENABLED
-#define JUMA_LOG(type, message) Log::type(text(TEXT(__FUNCTION__)) + TEXT("(") + TO_TEXT(__LINE__) + TEXT(")"), message)
+#define JUMA_LOG(type, message) Log::type(text(__FUNCTION__) + TEXT("(") + TO_TEXT(__LINE__) + TEXT(")"), message)
 #define JUMA_LOG_EMPTY(type) JUMA_LOG(type, nullptr)
 #else
 #define JUMA_LOG(type, message)

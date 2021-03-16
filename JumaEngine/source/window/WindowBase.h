@@ -12,13 +12,18 @@ namespace JumaEngine
         WindowBase();
         virtual ~WindowBase();
 
-        virtual bool init() { return false; }
-        virtual bool isInitialized() const { return false; }
+        virtual bool createWindow() = 0;
+        virtual bool isWindowCreated() const = 0;
 
+        virtual void setWindowTitle(const char* title) = 0;
+
+        virtual void onEngineLoopStart() {}
+
+        virtual double getDeltaTime() const = 0;
         virtual bool shouldCloseWindow() const = 0;
 
-        virtual double getDeltaTime() const { return 0.0; }
-
         virtual void onFrameRenderFinish() = 0;
+
+        virtual void termiante() {}
     };
 }
