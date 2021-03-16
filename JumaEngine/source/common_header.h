@@ -20,8 +20,8 @@ typedef unsigned int uint32;
 typedef long int64;
 typedef unsigned long uint64;
 
-typedef char symbol;
-typedef std::string text;
+typedef char jchar;
+typedef std::string jstring;
 
 #define TEXT(str) u8 ## str
 #define TO_TEXT(value) std::to_string(value)

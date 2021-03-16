@@ -20,46 +20,46 @@ namespace JumaEngine
 
     public:
 
-        static void error(const text& message) { error(text(), message); }
-        static void error(const char* message) { error(text(), message); }
-	    static void error(const text& method, const text& message) { WriteLog(PREFIX_ERROR, method, message); }
-	    static void error(const text& method, const char* message) { WriteLog(PREFIX_ERROR, method, message); }
+        static void error(const jstring& message) { error(jstring(), message); }
+        static void error(const char* message) { error(jstring(), message); }
+	    static void error(const jstring& method, const jstring& message) { WriteLog(PREFIX_ERROR, method, message); }
+	    static void error(const jstring& method, const char* message) { WriteLog(PREFIX_ERROR, method, message); }
 
-        static void warning(const text& message) { warning(text(), message); }
-        static void warning(const char* message) { warning(text(), message); }
-	    static void warning(const text& method, const text& message) { WriteLog(PREFIX_WARNING, method, message); }
-	    static void warning(const text& method, const char* message) { WriteLog(PREFIX_WARNING, method, message); }
+        static void warning(const jstring& message) { warning(jstring(), message); }
+        static void warning(const char* message) { warning(jstring(), message); }
+	    static void warning(const jstring& method, const jstring& message) { WriteLog(PREFIX_WARNING, method, message); }
+	    static void warning(const jstring& method, const char* message) { WriteLog(PREFIX_WARNING, method, message); }
         
-        static void info(const text& message) { info(text(), message); }
-        static void info(const char* message) { info(text(), message); }
-	    static void info(const text& method, const text& message) { WriteLog(PREFIX_INFO, method, message); }
-	    static void info(const text& method, const char* message) { WriteLog(PREFIX_INFO, method, message); }
+        static void info(const jstring& message) { info(jstring(), message); }
+        static void info(const char* message) { info(jstring(), message); }
+	    static void info(const jstring& method, const jstring& message) { WriteLog(PREFIX_INFO, method, message); }
+	    static void info(const jstring& method, const char* message) { WriteLog(PREFIX_INFO, method, message); }
         
-        static void correct(const text& message) { correct(text(), message); }
-        static void correct(const char* message) { correct(text(), message); }
-	    static void correct(const text& method, const text& message) { WriteLog(PREFIX_CORRECT, method, message); }
-	    static void correct(const text& method, const char* message) { WriteLog(PREFIX_CORRECT, method, message); }
+        static void correct(const jstring& message) { correct(jstring(), message); }
+        static void correct(const char* message) { correct(jstring(), message); }
+	    static void correct(const jstring& method, const jstring& message) { WriteLog(PREFIX_CORRECT, method, message); }
+	    static void correct(const jstring& method, const char* message) { WriteLog(PREFIX_CORRECT, method, message); }
 
     private:
 
-        static const symbol* PREFIX_ERROR;
-	    static const symbol* PREFIX_WARNING;
-	    static const symbol* PREFIX_INFO;
-	    static const symbol* PREFIX_CORRECT;
+        static const jchar* PREFIX_ERROR;
+	    static const jchar* PREFIX_WARNING;
+	    static const jchar* PREFIX_INFO;
+	    static const jchar* PREFIX_CORRECT;
 
 #if LOG_ENABLED
         static std::mutex s_Mutex;
 #endif
 
         
-        static void WriteLog(const symbol* prefix, const text& method) { WriteLog(prefix, method, nullptr); }
-        static void WriteLog(const symbol* prefix, const text& method, const text& message) { WriteLog(prefix, method, message.c_str()); }
-        static void WriteLog(const symbol* prefix, const text& method, const char* message);
+        static void WriteLog(const jchar* prefix, const jstring& method) { WriteLog(prefix, method, nullptr); }
+        static void WriteLog(const jchar* prefix, const jstring& method, const jstring& message) { WriteLog(prefix, method, message.c_str()); }
+        static void WriteLog(const jchar* prefix, const jstring& method, const char* message);
     };
 }
 
 #if LOG_ENABLED
-#define JUMA_LOG(type, message) Log::type(text(__FUNCTION__) + TEXT("(") + TO_TEXT(__LINE__) + TEXT(")"), message)
+#define JUMA_LOG(type, message) Log::type(jstring(__FUNCTION__) + TEXT("(") + TO_TEXT(__LINE__) + TEXT(")"), message)
 #define JUMA_LOG_EMPTY(type) JUMA_LOG(type, nullptr)
 #else
 #define JUMA_LOG(type, message)

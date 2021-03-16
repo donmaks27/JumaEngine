@@ -12,6 +12,8 @@ namespace JumaEngine
     class Engine
     {
     public:
+        Engine();
+        virtual ~Engine();
 
         enum ExitCode
         {
@@ -21,9 +23,6 @@ namespace JumaEngine
             EmptyRenderManager = 3,
             FailRenderManagerInit = 4,
         };
-
-        Engine();
-        virtual ~Engine();
 
         int32 startEngine(int argc, char** argv, WindowBase* window, RenderManagerBase* renderManager);
         int32 startEngine(WindowBase* window, RenderManagerBase* renderManager) { return startEngine(0, nullptr, window, renderManager); }

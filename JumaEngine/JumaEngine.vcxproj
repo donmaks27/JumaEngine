@@ -82,6 +82,8 @@
     <ClCompile Include="source\Engine.cpp" />
     <ClCompile Include="source\render\RenderManagerBase.cpp" />
     <ClCompile Include="source\render\RenderManagerOpenGL.cpp" />
+    <ClCompile Include="source\render\shader\ShaderBase.cpp" />
+    <ClCompile Include="source\render\shader\ShaderOpenGL.cpp" />
     <ClCompile Include="source\utils\log.cpp" />
     <ClCompile Include="source\window\WindowBase.cpp" />
     <ClCompile Include="source\window\WindowGLFW.cpp" />
@@ -91,6 +93,8 @@
     <ClInclude Include="source\Engine.h" />
     <ClInclude Include="source\render\RenderManagerBase.h" />
     <ClInclude Include="source\render\RenderManagerOpenGL.h" />
+    <ClInclude Include="source\render\shader\ShaderBase.h" />
+    <ClInclude Include="source\render\shader\ShaderOpenGL.h" />
     <ClInclude Include="source\utils\log.h" />
     <ClInclude Include="source\window\WindowBase.h" />
     <ClInclude Include="source\window\WindowGLFW.h" />
