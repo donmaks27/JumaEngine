@@ -23,5 +23,5 @@ typedef unsigned long uint64;
 typedef char jchar;
 typedef std::string jstring;
 
-#define TEXT(str) u8 ## str
-#define TO_TEXT(value) std::to_string(value)
+#define JTEXT(str) u8 ## str
+#define TO_JTEXT(value) std::to_string(value)

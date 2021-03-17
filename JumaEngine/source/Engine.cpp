@@ -26,7 +26,7 @@ namespace JumaEngine
 
         const int32 exitCode = startEngineInternal(argc, argv, window, renderManager);
         terminateEngine();
-        JUMA_LOG(info, TEXT("Engine stopped"));
+        JUMA_LOG(info, JTEXT("Engine stopped"));
 
 #if _DEBUG
         _CrtMemDumpAllObjectsSince(&memoryState);
@@ -36,7 +36,7 @@ namespace JumaEngine
     }
     int32 Engine::startEngineInternal(int argc, char** argv, WindowBase* window, RenderManagerBase* renderManager)
     {
-        JUMA_LOG(info, TEXT("Start engine..."));
+        JUMA_LOG(info, JTEXT("Start engine..."));
 
         int32 resultCode = ExitCode::OK;
         if (!initWindow(resultCode, window))
@@ -49,9 +49,9 @@ namespace JumaEngine
         }
 
         onInit();
-        JUMA_LOG(correct, TEXT("Initialization complete"));
+        JUMA_LOG(correct, JTEXT("Initialization complete"));
         
-        JUMA_LOG(info, TEXT("Start engine loop..."));
+        JUMA_LOG(info, JTEXT("Start engine loop..."));
         m_Window->onEngineLoopStart();
         while (!shouldStopEngine())
         {
@@ -61,7 +61,7 @@ namespace JumaEngine
             m_Window->onFrameRenderFinish();
         }
 
-        JUMA_LOG(info, TEXT("Stop engine..."));
+        JUMA_LOG(info, JTEXT("Stop engine..."));
         onStop();
         
         return ExitCode::OK;

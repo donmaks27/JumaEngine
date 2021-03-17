@@ -3,20 +3,60 @@
 #pragma once
 
 #include "common_header.h"
+#include "glm/glm.hpp"
+#include <vector>
 
 namespace JumaEngine
 {
-    enum class ShaderType
-    {
-        VERTEX,
-        GEOMETRY,
-        FRAGMENT
-    };
-
     class ShaderBase
     {
     public:
         ShaderBase();
         virtual ~ShaderBase();
+
+        bool loadShader(const std::string& shaderName);
+        virtual bool isShaderLoaded() const = 0;
+        void clearShader();
+
+        void activateShader();
+        bool isShaderActive() const { return getActiveShader() == this; }
+        void deactivateShader();
+
+        static ShaderBase* getActiveShader() { return s_ActiveShader; }
+        static bool hasActiveShader() { return getActiveShader() != nullptr; }
+        static void deactivateActiveShader();
+
+        template<typename T>
+        static void setActiveShaderUniformValue(const char* uniformName, T value)
+        {
+            if (hasActiveShader())
+            {
+                s_ActiveShader->setUniformValue(uniformName, value);
+            }
+        }
+
+    protected:
+
+        bool m_ShouldAlwaysDeactivateOldShader = true;
+
+
+        virtual void loadShaderInternal(const std::string& shaderName) = 0;
+        virtual void clearShaderInternal() = 0;
+
+        virtual void activateShaderInternal() = 0;
+        virtual void deactivateShaderInternal() = 0;
+
+        virtual void setUniformValue(const char* uniformName, bool value) = 0;
+        virtual void setUniformValue(const char* uniformName, int32 value) = 0;
+        virtual void setUniformValue(const char* uniformName, float value) = 0;
+        virtual void setUniformValue(const char* uniformName, const glm::vec2& value) = 0;
+        virtual void setUniformValue(const char* uniformName, const glm::vec3& value) = 0;
+        virtual void setUniformValue(const char* uniformName, const glm::vec4& value) = 0;
+        virtual void setUniformValue(const char* uniformName, const glm::mat4& value) = 0;
+        virtual void setUniformValue(const char* uniformName, const std::vector<float>& value) = 0;
+
+    private:
+
+        static ShaderBase* s_ActiveShader;
     };
 }

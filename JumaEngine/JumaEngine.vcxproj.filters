@@ -40,7 +40,9 @@
     <ClCompile Include="source\render\shader\ShaderBase.cpp">
       <Filter>JumaEngine\render\shader</Filter>
     </ClCompile>
-    <ClCompile Include="source\render\shader\ShaderOpenGL.cpp" />
+    <ClCompile Include="source\render\shader\ShaderOpenGL.cpp">
+      <Filter>JumaEngine\render\shader</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\common_header.h">

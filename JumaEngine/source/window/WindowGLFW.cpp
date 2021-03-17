@@ -19,7 +19,7 @@ namespace JumaEngine
     {
         if (isWindowCreated())
         {
-            JUMA_LOG(warning, TEXT("WindowGLFW already initialized!"));
+            JUMA_LOG(warning, JTEXT("WindowGLFW already initialized!"));
             return false;
         }
 
@@ -58,7 +58,7 @@ namespace JumaEngine
 
     GLFWwindow* WindowGLFW::CreateWindow() const
     {
-        return glfwCreateWindow(800, 600, "JUMAEngine", nullptr, nullptr);
+        return glfwCreateWindow(800, 600, JTEXT("JUMAEngine"), nullptr, nullptr);
     }
 
     void WindowGLFW::setWindowTitle(const char* title)

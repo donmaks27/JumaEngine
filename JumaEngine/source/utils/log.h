@@ -59,7 +59,7 @@ namespace JumaEngine
 }
 
 #if LOG_ENABLED
-#define JUMA_LOG(type, message) Log::type(jstring(__FUNCTION__) + TEXT("(") + TO_TEXT(__LINE__) + TEXT(")"), message)
+#define JUMA_LOG(type, message) Log::type(jstring(__FUNCTION__) + JTEXT("(") + TO_JTEXT(__LINE__) + JTEXT(")"), message)
 #define JUMA_LOG_EMPTY(type) JUMA_LOG(type, nullptr)
 #else
 #define JUMA_LOG(type, message)

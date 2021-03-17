@@ -6,10 +6,10 @@
 
 namespace JumaEngine
 {
-    const jchar* Log::PREFIX_ERROR   = TEXT("[ERR]  ");
-    const jchar* Log::PREFIX_WARNING = TEXT("[WARN] ");
-    const jchar* Log::PREFIX_INFO    = TEXT("[INFO] ");
-    const jchar* Log::PREFIX_CORRECT = TEXT("[OK]   ");
+    const jchar* Log::PREFIX_ERROR   = JTEXT("[ERR]  ");
+    const jchar* Log::PREFIX_WARNING = JTEXT("[WARN] ");
+    const jchar* Log::PREFIX_INFO    = JTEXT("[INFO] ");
+    const jchar* Log::PREFIX_CORRECT = JTEXT("[OK]   ");
 
 #if LOG_ENABLED
     std::mutex Log::s_Mutex;
@@ -23,7 +23,7 @@ namespace JumaEngine
 	    std::cout << prefix;
 	    if (!method.empty())
 	    {
-	        std::cout << method << TEXT(": ");
+	        std::cout << method << JTEXT(": ");
 	    }
 	    if ((message != nullptr) && (message[0] != '\0'))
 	    {
