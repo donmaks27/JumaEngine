@@ -45,7 +45,7 @@ namespace JumaEngine
         uint32 m_ShaderProgramIndex = 0;
 
 
-        std::vector<std::string> loadShaderText(const std::string& shaderFilePath) const;
+        bool loadShaderText(const std::string& shaderFilePath, std::vector<std::string>& shaderText) const;
         uint32 compileShader(const std::vector<std::string>& shaderText, ShaderType shaderType) const;
         uint32 loadAndCompileShader(const std::string& shaderFilePath, ShaderType shaderType) const;
         uint32 compileShaderProgram(uint32 vertexShader, uint32 geometryShader, uint32 fragmentShader) const;

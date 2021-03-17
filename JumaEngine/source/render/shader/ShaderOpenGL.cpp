@@ -44,24 +44,24 @@ namespace JumaEngine
         }
     }
 
-    std::vector<std::string> ShaderOpenGL::loadShaderText(const std::string& shaderFilePath) const
+    bool ShaderOpenGL::loadShaderText(const std::string& shaderFilePath, std::vector<std::string>& shaderText) const
     {
-        std::vector<std::string> result;
-
         std::ifstream file(shaderFilePath);
-        if (file.is_open())
+        if (!file.is_open())
         {
-            while (!file.eof())
-            {
-                std::string line;
-                getline(file, line);
-                line += '\n';
-                result.push_back(line);
-            }
-            file.close();
+            return false;
         }
 
-        return result;
+        while (!file.eof())
+        {
+            std::string line;
+            getline(file, line);
+            line += '\n';
+            shaderText.push_back(line);
+        }
+        file.close();
+
+        return true;
     }
     uint32 ShaderOpenGL::compileShader(const std::vector<std::string>& shaderText, const ShaderType shaderType) const
     {
@@ -113,21 +113,27 @@ namespace JumaEngine
     }
     uint32 ShaderOpenGL::loadAndCompileShader(const std::string& shaderFilePath, ShaderType shaderType) const
     {
-        const uint32 shaderIndex = compileShader(loadShaderText(shaderFilePath), shaderType);
-#if LOG_ENABLED
-        if (shaderIndex == 0)
+        uint32 shaderIndex = 0;
+
+        std::vector<std::string> shaderText;
+        if (loadShaderText(shaderFilePath, shaderText))
         {
-            jstring message = JTEXT("Failed to compile ");
-            switch (shaderType)
+            shaderIndex = compileShader(shaderText, shaderType);
+#if LOG_ENABLED
+            if (shaderIndex == 0)
             {
-            case ShaderType::Vertex:   message += JTEXT("vertex"); break;
-            case ShaderType::Geometry: message += JTEXT("geometry"); break;
-            case ShaderType::Fragment: message += JTEXT("fragment"); break;
+                jstring message = JTEXT("Failed to compile ");
+                switch (shaderType)
+                {
+                case ShaderType::Vertex:   message += JTEXT("vertex"); break;
+                case ShaderType::Geometry: message += JTEXT("geometry"); break;
+                case ShaderType::Fragment: message += JTEXT("fragment"); break;
+                }
+                message += JTEXT(" shader - ") + shaderFilePath;
+                JUMA_LOG(error, message);
             }
-            message += JTEXT(" shader - ") + shaderFilePath;
-            JUMA_LOG(error, message);
-        }
 #endif
+        }
         return shaderIndex;
     }
 
@@ -240,7 +246,7 @@ namespace JumaEngine
             const int32 uniformLocation = getUniformLocation(uniformName);
             if (uniformLocation != -1)
             {
-                glUniform1fv(uniformLocation, value.size(), value.data());
+                glUniform1fv(uniformLocation, static_cast<GLsizei>(value.size()), value.data());
             }
         }
     }
