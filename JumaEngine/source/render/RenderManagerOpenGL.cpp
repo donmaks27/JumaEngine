@@ -1,9 +1,11 @@
 ﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
 
 #include "RenderManagerOpenGL.h"
-#include <GL/glew.h>
+#include "GL/glew.h"
 #include "utils/log.h"
 #include "shader/ShaderOpenGL.h"
+#include "mesh/vertex/VertexPosition.h"
+#include "mesh/vertex/VertextBufferRenderOpenGL.h"
 
 namespace JumaEngine
 {
@@ -26,7 +28,14 @@ namespace JumaEngine
         m_Shader = new ShaderOpenGL();
         m_Shader->loadShader("content/shaders/ui");
 
-        m_Vertex = new float[6]{ -1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 1.0f };
+        VertexBufferDataPosition* bufferData = new VertexBufferDataPosition();
+        bufferData->vertices = { {{-1.0f, -1.0f}}, {{-1.0f, 0.0f}}, {{0.0f, 1.0f}} };
+        m_VertexBufferData = bufferData;
+
+        m_VertextBufferRender = new VertextBufferRenderOpenGL();
+        m_VertextBufferRender->init(bufferData);
+
+        /*m_Vertex = new float[6]{ -1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 1.0f };
 
         glGenBuffers(1, &m_VertexVBO);
         glBindBuffer(GL_ARRAY_BUFFER, m_VertexVBO);
@@ -38,7 +47,7 @@ namespace JumaEngine
         glEnableVertexAttribArray(0);
 
         glBindVertexArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);*/
 
         return true;
     }
@@ -50,13 +59,14 @@ namespace JumaEngine
 
         m_Shader->activateShader();
 
-        glBindBuffer(GL_ARRAY_BUFFER, m_VertexVBO);
+        m_VertextBufferRender->draw();
+        /*glBindBuffer(GL_ARRAY_BUFFER, m_VertexVBO);
         glBindVertexArray(m_VertexVAO);
 
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
         glBindVertexArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);*/
 
         m_Shader->deactivateShader();
     }
@@ -68,10 +78,15 @@ namespace JumaEngine
             delete m_Shader;
             m_Shader = nullptr;
         }
-        if (m_Vertex != nullptr)
+        if (m_VertexBufferData != nullptr)
         {
-            delete[] m_Vertex;
-            m_Vertex = nullptr;
+            delete m_VertexBufferData;
+            m_VertexBufferData = nullptr;
+        }
+        if (m_VertextBufferRender != nullptr)
+        {
+            delete m_VertextBufferRender;
+            m_VertextBufferRender = nullptr;
         }
     }
 }

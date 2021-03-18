@@ -16,6 +16,12 @@
     <Filter Include="JumaEngine\render\shader">
       <UniqueIdentifier>{1b700e18-e8fa-498d-be63-97d404508a96}</UniqueIdentifier>
     </Filter>
+    <Filter Include="JumaEngine\render\mesh">
+      <UniqueIdentifier>{2bdde275-7e30-4376-bfc0-fdf806b21fc2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="JumaEngine\render\mesh\vertex">
+      <UniqueIdentifier>{36bf589f-4b9c-4db5-8aaf-52ee9d303430}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Engine.cpp">
@@ -42,6 +48,15 @@
     </ClCompile>
     <ClCompile Include="source\render\shader\ShaderOpenGL.cpp">
       <Filter>JumaEngine\render\shader</Filter>
+    </ClCompile>
+    <ClCompile Include="source\render\mesh\vertex\VertexPosition.cpp">
+      <Filter>JumaEngine\render\mesh\vertex</Filter>
+    </ClCompile>
+    <ClCompile Include="source\render\mesh\vertex\VertextBufferRenderBase.cpp">
+      <Filter>JumaEngine\render\mesh\vertex</Filter>
+    </ClCompile>
+    <ClCompile Include="source\render\mesh\vertex\VertextBufferRenderOpenGL.cpp">
+      <Filter>JumaEngine\render\mesh\vertex</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -71,6 +86,18 @@
     </ClInclude>
     <ClInclude Include="source\render\shader\ShaderOpenGL.h">
       <Filter>JumaEngine\render\shader</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\mesh\vertex\VertexBufferData.h">
+      <Filter>JumaEngine\render\mesh\vertex</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\mesh\vertex\VertexPosition.h">
+      <Filter>JumaEngine\render\mesh\vertex</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\mesh\vertex\VertextBufferRenderBase.h">
+      <Filter>JumaEngine\render\mesh\vertex</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\mesh\vertex\VertextBufferRenderOpenGL.h">
+      <Filter>JumaEngine\render\mesh\vertex</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

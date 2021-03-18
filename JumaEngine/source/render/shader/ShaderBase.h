@@ -3,7 +3,7 @@
 #pragma once
 
 #include "common_header.h"
-#include "glm/glm.hpp"
+#include "glm/mat4x4.hpp"
 #include <vector>
 
 namespace JumaEngine

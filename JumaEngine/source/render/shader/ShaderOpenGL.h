@@ -50,6 +50,8 @@ namespace JumaEngine
         uint32 loadAndCompileShader(const std::string& shaderFilePath, ShaderType shaderType) const;
         uint32 compileShaderProgram(uint32 vertexShader, uint32 geometryShader, uint32 fragmentShader) const;
 
+        void clearOpenGLShader();
+
         int32 getUniformLocation(const char* uniformName) const;
     };
 }

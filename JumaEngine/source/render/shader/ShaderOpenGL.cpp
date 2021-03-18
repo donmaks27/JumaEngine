@@ -13,6 +13,7 @@ namespace JumaEngine
     }
     ShaderOpenGL::~ShaderOpenGL()
     {
+        clearOpenGLShader();
     }
 
     void ShaderOpenGL::loadShaderInternal(const std::string& shaderName)
@@ -36,6 +37,10 @@ namespace JumaEngine
         }
     }
     void ShaderOpenGL::clearShaderInternal()
+    {
+        clearOpenGLShader();
+    }
+    void ShaderOpenGL::clearOpenGLShader()
     {
         if (m_ShaderProgramIndex != 0)
         {

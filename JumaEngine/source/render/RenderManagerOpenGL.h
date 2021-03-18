@@ -8,6 +8,8 @@
 namespace JumaEngine
 {
     class ShaderBase;
+    class VertexBufferDataBase;
+    class VertextBufferRenderBase;
 
     class RenderManagerOpenGL : public RenderManagerBase
     {
@@ -24,8 +26,7 @@ namespace JumaEngine
     private:
 
         ShaderBase* m_Shader = nullptr;
-        float* m_Vertex = nullptr;
-        unsigned int m_VertexVBO;
-        unsigned int m_VertexVAO;
+        VertexBufferDataBase* m_VertexBufferData = nullptr;
+        VertextBufferRenderBase* m_VertextBufferRender = nullptr;
     };
 }

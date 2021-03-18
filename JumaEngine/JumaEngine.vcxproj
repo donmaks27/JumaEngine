@@ -82,6 +82,9 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="source\Engine.cpp" />
+    <ClCompile Include="source\render\mesh\vertex\VertexPosition.cpp" />
+    <ClCompile Include="source\render\mesh\vertex\VertextBufferRenderBase.cpp" />
+    <ClCompile Include="source\render\mesh\vertex\VertextBufferRenderOpenGL.cpp" />
     <ClCompile Include="source\render\RenderManagerBase.cpp" />
     <ClCompile Include="source\render\RenderManagerOpenGL.cpp" />
     <ClCompile Include="source\render\shader\ShaderBase.cpp" />
@@ -93,6 +96,10 @@
   <ItemGroup>
     <ClInclude Include="source\common_header.h" />
     <ClInclude Include="source\Engine.h" />
+    <ClInclude Include="source\render\mesh\vertex\VertexBufferData.h" />
+    <ClInclude Include="source\render\mesh\vertex\VertexPosition.h" />
+    <ClInclude Include="source\render\mesh\vertex\VertextBufferRenderBase.h" />
+    <ClInclude Include="source\render\mesh\vertex\VertextBufferRenderOpenGL.h" />
     <ClInclude Include="source\render\RenderManagerBase.h" />
     <ClInclude Include="source\render\RenderManagerOpenGL.h" />
     <ClInclude Include="source\render\shader\ShaderBase.h" />
