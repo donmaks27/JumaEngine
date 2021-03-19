@@ -12,7 +12,7 @@ namespace JumaEngine
     class WindowGLFW : public WindowBase
     {
     public:
-        WindowGLFW();
+        WindowGLFW() = default;
         virtual ~WindowGLFW() override;
 
         virtual bool createWindow() override;

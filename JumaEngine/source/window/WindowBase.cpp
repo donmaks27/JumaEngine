@@ -4,10 +4,4 @@
 
 namespace JumaEngine
 {
-    WindowBase::WindowBase()
-    {
-    }
-    WindowBase::~WindowBase()
-    {
-    }
 }

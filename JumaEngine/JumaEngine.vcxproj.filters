@@ -52,10 +52,14 @@
     <ClCompile Include="source\render\mesh\vertex\VertexPosition.cpp">
       <Filter>JumaEngine\render\mesh\vertex</Filter>
     </ClCompile>
-    <ClCompile Include="source\render\mesh\vertex\VertextBufferRenderBase.cpp">
+    <ClCompile Include="source\EngineContextObject.cpp">
+      <Filter>JumaEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="source\utils\SystemFunctions.cpp" />
+    <ClCompile Include="source\render\mesh\vertex\VertexBufferBase.cpp">
       <Filter>JumaEngine\render\mesh\vertex</Filter>
     </ClCompile>
-    <ClCompile Include="source\render\mesh\vertex\VertextBufferRenderOpenGL.cpp">
+    <ClCompile Include="source\render\mesh\vertex\VertexBufferOpenGL.cpp">
       <Filter>JumaEngine\render\mesh\vertex</Filter>
     </ClCompile>
   </ItemGroup>
@@ -93,10 +97,19 @@
     <ClInclude Include="source\render\mesh\vertex\VertexPosition.h">
       <Filter>JumaEngine\render\mesh\vertex</Filter>
     </ClInclude>
-    <ClInclude Include="source\render\mesh\vertex\VertextBufferRenderBase.h">
+    <ClInclude Include="source\EngineContextObject.h">
+      <Filter>JumaEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\type_traits_macros.h">
+      <Filter>JumaEngine\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\SystemFunctions.h">
+      <Filter>JumaEngine\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\mesh\vertex\VertexBufferBase.h">
       <Filter>JumaEngine\render\mesh\vertex</Filter>
     </ClInclude>
-    <ClInclude Include="source\render\mesh\vertex\VertextBufferRenderOpenGL.h">
+    <ClInclude Include="source\render\mesh\vertex\VertexBufferOpenGL.h">
       <Filter>JumaEngine\render\mesh\vertex</Filter>
     </ClInclude>
   </ItemGroup>

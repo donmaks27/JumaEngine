@@ -1,19 +1,13 @@
 // Copyright 2021 Leonov Maksim. All Rights Reserved.
 
 #include "Engine.h"
+#include "EngineContextObject.h"
 #include "utils/log.h"
 #include "window/WindowBase.h"
 #include "render/RenderManagerBase.h"
 
 namespace JumaEngine
 {
-    Engine::Engine()
-    {
-    }
-    Engine::~Engine()
-    {
-    }
-
     int32 Engine::startEngine(int argc, char** argv, WindowBase* window, RenderManagerBase* renderManager)
     {
 #if _DEBUG
@@ -93,6 +87,7 @@ namespace JumaEngine
         }
 
         m_RenderManager = renderManager;
+        registerEngineObject(m_RenderManager);
         if (!m_RenderManager->init())
         {
             resultCode = ExitCode::FailRenderManagerInit;
@@ -139,6 +134,14 @@ namespace JumaEngine
         {
             m_RenderManager->terminate();
             m_RenderManager = nullptr;
+        }
+    }
+
+    void Engine::registerEngineObject(EngineContextObject* object)
+    {
+        if (object != nullptr)
+        {
+            object->m_OwnerEngine = this;
         }
     }
 }

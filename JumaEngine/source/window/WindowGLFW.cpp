@@ -7,9 +7,6 @@
 
 namespace JumaEngine
 {
-    WindowGLFW::WindowGLFW()
-    {
-    }
     WindowGLFW::~WindowGLFW()
     {
         terminateInternal();

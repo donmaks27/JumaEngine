@@ -7,13 +7,6 @@ namespace JumaEngine
 {
     ShaderBase* ShaderBase::s_ActiveShader = nullptr;
 
-    ShaderBase::ShaderBase()
-    {
-    }
-    ShaderBase::~ShaderBase()
-    {
-    }
-
     bool ShaderBase::loadShader(const std::string& shaderName)
     {
         if (isShaderLoaded())

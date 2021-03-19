@@ -8,14 +8,12 @@
 namespace JumaEngine
 {
     class ShaderBase;
-    class VertexBufferDataBase;
-    class VertextBufferRenderBase;
 
     class RenderManagerOpenGL : public RenderManagerBase
     {
     public:
-        RenderManagerOpenGL();
-        virtual ~RenderManagerOpenGL() override;
+        RenderManagerOpenGL() = default;
+        virtual ~RenderManagerOpenGL() override = default;
 
         virtual bool init() override;
 
@@ -23,10 +21,11 @@ namespace JumaEngine
 
         virtual void terminate() override;
 
+        virtual VertexBufferBase* createVertextBufferRender() override;
+
     private:
 
         ShaderBase* m_Shader = nullptr;
-        VertexBufferDataBase* m_VertexBufferData = nullptr;
-        VertextBufferRenderBase* m_VertextBufferRender = nullptr;
+        VertexBufferBase* m_VertexBuffer = nullptr;
     };
 }

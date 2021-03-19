@@ -9,8 +9,8 @@ namespace JumaEngine
     class WindowBase
     {
     public:
-        WindowBase();
-        virtual ~WindowBase();
+        WindowBase() = default;
+        virtual ~WindowBase() = default;
 
         virtual bool createWindow() = 0;
         virtual bool isWindowCreated() const = 0;

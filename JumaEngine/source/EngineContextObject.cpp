@@ -1,7 +1,8 @@
 ﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
 
-#include "RenderManagerBase.h"
+#include "EngineContextObject.h"
 
 namespace JumaEngine
 {
+    
 }

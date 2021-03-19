@@ -11,8 +11,8 @@ namespace JumaEngine
     class ShaderBase
     {
     public:
-        ShaderBase();
-        virtual ~ShaderBase();
+        ShaderBase() = default;
+        virtual ~ShaderBase() = default;
 
         bool loadShader(const std::string& shaderName);
         virtual bool isShaderLoaded() const = 0;
