@@ -47,11 +47,21 @@ namespace JumaEngine
         
         JUMA_LOG(info, JTEXT("Start engine loop..."));
         m_Window->onEngineLoopStart();
+
+        bool firstFrame = true;
         while (!shouldStopEngine())
         {
-            onUpdate(getDeltaTime());
-            onPostUpdate();
+            if (!firstFrame)
+            {
+                onUpdate(getDeltaTime());
+                onPostUpdate();
+            }
+            else
+            {
+                firstFrame = false;
+            }
 
+            m_RenderManager->render();
             m_Window->onFrameRenderFinish();
         }
 
@@ -114,9 +124,6 @@ namespace JumaEngine
     }
     void Engine::onPostUpdate()
     {
-        m_RenderManager->startFrameRender();
-
-
     }
     void Engine::onStop()
     {

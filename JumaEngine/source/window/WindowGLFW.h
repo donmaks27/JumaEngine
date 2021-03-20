@@ -17,8 +17,6 @@ namespace JumaEngine
 
         virtual bool createWindow() override;
         virtual bool isWindowCreated() const override { return m_WindowObject != nullptr; }
-
-        virtual void setWindowTitle(const char* title) override;
         
         virtual void onEngineLoopStart() override;
 
@@ -29,7 +27,15 @@ namespace JumaEngine
         
         virtual void termiante() override;
 
+        virtual void setWindowTitle(const char* title) override;
+
+    protected:
+
+        virtual void onWindowSizeChanged() override;
+
     private:
+
+        typedef WindowBase Super;
 
         GLFWwindow* m_WindowObject = nullptr;
 

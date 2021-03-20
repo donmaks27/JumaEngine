@@ -7,7 +7,8 @@
 #include "shader/ShaderOpenGL.h"
 #include "mesh/vertex/VertexPosition.h"
 #include "mesh/vertex/VertexBufferOpenGL.h"
-#include "utils/SystemFunctions.h"
+#include "utils/system_functions.h"
+#include "glm/gtc/matrix_transform.hpp"
 
 namespace JumaEngine
 {
@@ -21,21 +22,28 @@ namespace JumaEngine
         }
 
         m_Shader = new ShaderOpenGL();
-        m_Shader->loadShader("content/shaders/ui");
+        m_Shader->loadShader("content/shaders/testShader");
 
         VertexBufferDataPosition* bufferData = new VertexBufferDataPosition();
-        bufferData->vertices = { {{-1.0f, -1.0f}}, {{-1.0f, 0.0f}}, {{0.0f, 1.0f}} };
+        bufferData->vertices = { {{-10.0f, -10.0f, 0.0f}}, {{-10.0f, 0.0f, 0.0f}}, {{10.0f, 10.0f, 0.0f}} };
         m_VertexBuffer = SystemFunctions::createVertexBuffer(this, bufferData);
 
         return true;
     }
 
-    void RenderManagerOpenGL::startFrameRender()
+    void RenderManagerOpenGL::render()
     {
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
         m_Shader->activateShader();
+
+        const glm::mat4 projMatrix = glm::perspective(3.14f / 2, 4.0f / 3.0f, 0.1f, 100.0f);
+        const glm::mat4 viewMatrix = glm::lookAt(glm::vec3(0.0f, 0.0f, 50.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+        const glm::mat4 modelMatrix = glm::translate(glm::identity<glm::mat4>(), glm::vec3(0.0f, 30.0f, 0.0f));
+        ShaderBase::setActiveShaderUniformValue("uProjection", projMatrix);
+        ShaderBase::setActiveShaderUniformValue("uView", viewMatrix);
+        ShaderBase::setActiveShaderUniformValue("uModel", modelMatrix);
 
         m_VertexBuffer->draw();
 

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "common_header.h"
+#include "glm/vec2.hpp"
 
 namespace JumaEngine
 {
@@ -15,8 +16,6 @@ namespace JumaEngine
         virtual bool createWindow() = 0;
         virtual bool isWindowCreated() const = 0;
 
-        virtual void setWindowTitle(const char* title) = 0;
-
         virtual void onEngineLoopStart() {}
 
         virtual double getDeltaTime() const = 0;
@@ -25,5 +24,17 @@ namespace JumaEngine
         virtual void onFrameRenderFinish() = 0;
 
         virtual void termiante() {}
+
+        virtual void setWindowTitle(const char* title) = 0;
+
+        void setWindowSize(const glm::uvec2& windowSize);
+        glm::uvec2 getWindowSize() const { return m_WindowSize; }
+
+    protected:
+
+        glm::uvec2 m_WindowSize = glm::uvec2(0, 0);
+
+
+        virtual void onWindowSizeChanged() {}
     };
 }

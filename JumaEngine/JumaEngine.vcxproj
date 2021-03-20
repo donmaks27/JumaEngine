@@ -91,7 +91,8 @@
     <ClCompile Include="source\render\shader\ShaderBase.cpp" />
     <ClCompile Include="source\render\shader\ShaderOpenGL.cpp" />
     <ClCompile Include="source\utils\log.cpp" />
-    <ClCompile Include="source\utils\SystemFunctions.cpp" />
+    <ClCompile Include="source\utils\math_functions.cpp" />
+    <ClCompile Include="source\utils\system_functions.cpp" />
     <ClCompile Include="source\window\WindowBase.cpp" />
     <ClCompile Include="source\window\WindowGLFW.cpp" />
   </ItemGroup>
@@ -108,7 +109,8 @@
     <ClInclude Include="source\render\shader\ShaderBase.h" />
     <ClInclude Include="source\render\shader\ShaderOpenGL.h" />
     <ClInclude Include="source\utils\log.h" />
-    <ClInclude Include="source\utils\SystemFunctions.h" />
+    <ClInclude Include="source\utils\math_functions.h" />
+    <ClInclude Include="source\utils\system_functions.h" />
     <ClInclude Include="source\utils\type_traits_macros.h" />
     <ClInclude Include="source\window\WindowBase.h" />
     <ClInclude Include="source\window\WindowGLFW.h" />

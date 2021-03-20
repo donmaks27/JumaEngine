@@ -2,6 +2,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
+    <GLFW_VERSION>3.3.3</GLFW_VERSION>
     <GLFW_DIR>$(LIBS_DIR)GLFW\</GLFW_DIR>
     <GLFW_LIB_SHARED>$(LIBS_SHARED)</GLFW_LIB_SHARED>
     <GLFW_AUTO_LIB_SUFFIX Condition="'$(GLFW_LIB_SHARED)'=='true'">dll</GLFW_AUTO_LIB_SUFFIX>
@@ -27,6 +28,9 @@ if '$(GLFW_LIB_SHARED)'=='true' (
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <BuildMacro Include="GLFW_VERSION">
+      <Value>$(GLFW_VERSION)</Value>
+    </BuildMacro>
     <BuildMacro Include="GLFW_DIR">
       <Value>$(GLFW_DIR)</Value>
     </BuildMacro>

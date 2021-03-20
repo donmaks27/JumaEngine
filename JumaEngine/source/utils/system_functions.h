@@ -10,11 +10,8 @@ namespace JumaEngine
     class VertexBufferBase;
     class VertexBufferDataBase;
 
-    class SystemFunctions
+    class SystemFunctions final
     {
-    private:
-        SystemFunctions() = default;
-
     public:
 
         static VertexBufferBase* createVertexBuffer(const EngineContextObject* engineContextObject, VertexBufferDataBase* vertexBufferData = nullptr);

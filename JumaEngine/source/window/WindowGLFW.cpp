@@ -58,14 +58,6 @@ namespace JumaEngine
         return glfwCreateWindow(800, 600, JTEXT("JUMAEngine"), nullptr, nullptr);
     }
 
-    void WindowGLFW::setWindowTitle(const char* title)
-    {
-        if (isWindowCreated())
-        {
-            glfwSetWindowTitle(m_WindowObject, title);
-        }
-    }
-
     void WindowGLFW::onEngineLoopStart()
     {
         m_LastTimeStamp = glfwGetTime();
@@ -106,5 +98,24 @@ namespace JumaEngine
 
             m_WindowObject = nullptr;
         }
+    }
+
+    void WindowGLFW::setWindowTitle(const char* title)
+    {
+        if (isWindowCreated())
+        {
+            glfwSetWindowTitle(m_WindowObject, title);
+        }
+    }
+
+    void WindowGLFW::onWindowSizeChanged()
+    {
+        if (isWindowCreated())
+        {
+            const glm::uvec2 windowSize = getWindowSize();
+            glfwSetWindowSize(m_WindowObject, windowSize.x, windowSize.y);
+        }
+
+        Super::onWindowSizeChanged();
     }
 }

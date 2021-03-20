@@ -2,6 +2,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
+    <GLEW_VERSION>2.1.0</GLEW_VERSION>
     <GLEW_DIR>$(LIBS_DIR)GLEW\</GLEW_DIR>
     <GLEW_LIB_SHARED>$(LIBS_SHARED)</GLEW_LIB_SHARED>
     <GLEW_AUTO_LIB_PREFIX Condition="'$(GLEW_LIB_SHARED)'!='true'">lib</GLEW_AUTO_LIB_PREFIX>
@@ -25,6 +26,9 @@ if '$(GLEW_LIB_SHARED)'=='true' (
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <BuildMacro Include="GLEW_VERSION">
+      <Value>$(GLEW_VERSION)</Value>
+    </BuildMacro>
     <BuildMacro Include="GLEW_DIR">
       <Value>$(GLEW_DIR)</Value>
     </BuildMacro>

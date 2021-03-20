@@ -4,13 +4,13 @@
 
 #include "common_header.h"
 #include "VertexBufferData.h"
-#include "glm/vec2.hpp"
+#include "glm/vec3.hpp"
 
 namespace JumaEngine
 {
     struct VertexPosition
     {
-        glm::vec2 position;
+        glm::vec3 position;
     };
 
     class VertexBufferDataPosition final : public VertexBufferData<VertexPosition>

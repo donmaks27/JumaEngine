@@ -17,7 +17,7 @@ namespace JumaEngine
 
         virtual bool init() override;
 
-        virtual void startFrameRender() override;
+        virtual void render() override;
 
         virtual void terminate() override;
 

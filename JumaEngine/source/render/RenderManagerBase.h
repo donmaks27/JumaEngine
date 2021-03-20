@@ -17,7 +17,7 @@ namespace JumaEngine
 
         virtual bool init() = 0;
 
-        virtual void startFrameRender() = 0;
+        virtual void render() = 0;
 
         virtual void terminate() {}
 

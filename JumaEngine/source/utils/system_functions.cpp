@@ -1,6 +1,6 @@
 ﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
 
-#include "SystemFunctions.h"
+#include "system_functions.h"
 #include "Engine.h"
 #include "EngineContextObject.h"
 #include "render/RenderManagerBase.h"
