@@ -4,24 +4,43 @@
 #include "Engine.h"
 #include "EngineContextObject.h"
 #include "render/RenderManagerBase.h"
-#include "render/mesh/vertex/VertexBufferBase.h"
+#include "render/vertexBuffer/VertexBufferBase.h"
+#include "window/WindowBase.h"
 
 namespace JumaEngine
 {
-    VertexBufferBase* SystemFunctions::createVertexBuffer(const EngineContextObject* engineContextObject, VertexBufferDataBase* vertexBufferData)
-    {
-        if (engineContextObject != nullptr)
-        {
-            const Engine* engine = engineContextObject->getOwnerEngine();
-            RenderManagerBase* renderManager = engine != nullptr ? engine->getRenderManager() : nullptr;
+	Engine* SystemFunctions::getEngine(const EngineContextObject* engineContextObject)
+	{
+		return engineContextObject != nullptr ? engineContextObject->getOwnerEngine() : nullptr;
+	}
+	RenderManagerBase* SystemFunctions::getRenderManager(const EngineContextObject* engineContextObject)
+	{
+		const Engine* engine = getEngine(engineContextObject);
+		return engine != nullptr ? engine->getRenderManager() : nullptr;
+	}
+	WindowBase* SystemFunctions::getWindow(const EngineContextObject* engineContextObject)
+	{
+		const Engine* engine = getEngine(engineContextObject);
+		return engine != nullptr ? engine->getWindow() : nullptr;
+	}
+	float SystemFunctions::getWindowAspectRatio(const EngineContextObject* engineContextObject)
+	{
+		const WindowBase* window = getWindow(engineContextObject);
+		return window != nullptr ? window->getWindowAspectRatio() : 0.0f;
+	}
 
-            VertexBufferBase* vertexBuffer = renderManager->createVertextBufferRender();
+	VertexBufferBase* SystemFunctions::createVertexBuffer(const EngineContextObject* engineContextObject, VertexBufferDataBase* vertexBufferData)
+    {
+		RenderManagerBase* renderManager = getRenderManager(engineContextObject);
+		if (renderManager != nullptr)
+		{
+			VertexBufferBase* vertexBuffer = renderManager->createVertextBufferRender();
             if (vertexBufferData != nullptr)
             {
-                vertexBuffer->init(vertexBufferData);
+	            vertexBuffer->init(vertexBufferData);
+            	return vertexBuffer;
             }
-            return vertexBuffer;
-        }
-        return nullptr;
+		}
+		return nullptr;
     }
 }

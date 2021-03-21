@@ -29,6 +29,7 @@ namespace JumaEngine
 
         void setWindowSize(const glm::uvec2& windowSize);
         glm::uvec2 getWindowSize() const { return m_WindowSize; }
+        float getWindowAspectRatio() const;
 
     protected:
 

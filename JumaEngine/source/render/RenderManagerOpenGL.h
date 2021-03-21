@@ -8,6 +8,7 @@
 namespace JumaEngine
 {
     class ShaderBase;
+	class Camera;
 
     class RenderManagerOpenGL : public RenderManagerBase
     {
@@ -27,5 +28,6 @@ namespace JumaEngine
 
         ShaderBase* m_Shader = nullptr;
         VertexBufferBase* m_VertexBuffer = nullptr;
+    	Camera* m_Camera = nullptr;
     };
 }

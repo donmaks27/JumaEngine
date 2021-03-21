@@ -3,23 +3,29 @@
 #pragma once
 
 #include "common_header.h"
-#include "Location.h"
 #include "Rotation.h"
-#include "Scale.h"
 
 namespace JumaEngine
 {
 	struct Transform
 	{
-		Location location;
+		Transform() = default;
+		Transform(const glm::vec3& l, const Rotation& r, const glm::vec3& s = glm::one<glm::vec3>())
+			: location(l)
+			, rotation(r)
+			, scale(s)
+		{}
+		Transform(const Transform& t) = default;
+		
+		glm::vec3 location = { 0.0f, 0.0f, 0.0f };
 		Rotation rotation;
-		Scale scale = { 1.0f, 1.0f, 1.0f };
+		glm::vec3 scale = { 1.0f, 1.0f, 1.0f };
 
 		glm::mat4 toMatrix() const
 		{
 			glm::mat4 result = glm::mat4_cast(rotation.toQuat());
-			result = glm::translate(result, location);
-			return glm::scale(result, scale);
+			result = glm::scale(result, scale);
+			return glm::translate(result, location);
 		}
 	};
 }

@@ -13,4 +13,13 @@ namespace JumaEngine
             onWindowSizeChanged();
         }
     }
+
+    float WindowBase::getWindowAspectRatio() const
+    {
+    	if (m_WindowSize.y > 0)
+    	{
+    		return static_cast<float>(m_WindowSize.x) / static_cast<float>(m_WindowSize.y);
+    	}
+    	return 0.0f;
+    }
 }

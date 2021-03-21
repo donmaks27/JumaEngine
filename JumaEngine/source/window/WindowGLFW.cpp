@@ -37,12 +37,13 @@ namespace JumaEngine
         glfwWindowHint(GLFW_SAMPLES, 0);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-        m_WindowObject = CreateWindow();
+        m_WindowObject = glfwCreateWindow(800, 600, JTEXT("JUMAEngine"), nullptr, nullptr);
         if (m_WindowObject == nullptr)
         {
             return false;
         }
-
+    	m_WindowSize = glm::uvec2(800, 600);
+    	
         glfwMakeContextCurrent(m_WindowObject);
         glfwSwapInterval(0);
 
@@ -51,11 +52,6 @@ namespace JumaEngine
     void WindowGLFW::ErrorCallback(int code, const char* errorMessage)
     {
         JUMA_LOG(error, errorMessage);
-    }
-
-    GLFWwindow* WindowGLFW::CreateWindow() const
-    {
-        return glfwCreateWindow(800, 600, JTEXT("JUMAEngine"), nullptr, nullptr);
     }
 
     void WindowGLFW::onEngineLoopStart()

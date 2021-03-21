@@ -20,6 +20,10 @@ namespace JumaEngine
 
         Engine* getOwnerEngine() const { return m_OwnerEngine; }
 
+    protected:
+
+    	virtual void onRegister() {}
+
     private:
 
         Engine* m_OwnerEngine = nullptr;

@@ -6,7 +6,10 @@
 
 namespace JumaEngine
 {
+	class Engine;
     class EngineContextObject;
+	class RenderManagerBase;
+	class WindowBase;
     class VertexBufferBase;
     class VertexBufferDataBase;
 
@@ -14,6 +17,11 @@ namespace JumaEngine
     {
     public:
 
+		static Engine* getEngine(const EngineContextObject* engineContextObject);
+    	static RenderManagerBase* getRenderManager(const EngineContextObject* engineContextObject);
+    	static WindowBase* getWindow(const EngineContextObject* engineContextObject);
+    	static float getWindowAspectRatio(const EngineContextObject* engineContextObject);
+    	
         static VertexBufferBase* createVertexBuffer(const EngineContextObject* engineContextObject, VertexBufferDataBase* vertexBufferData = nullptr);
     };
 }

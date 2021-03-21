@@ -149,6 +149,7 @@ namespace JumaEngine
         if (object != nullptr)
         {
             object->m_OwnerEngine = this;
+        	object->onRegister();
         }
     }
 }

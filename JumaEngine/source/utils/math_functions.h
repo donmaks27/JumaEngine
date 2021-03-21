@@ -4,8 +4,7 @@
 
 #include "common_header.h"
 #include "math_consts.h"
-#include "glm/gtc/epsilon.hpp"
-#include "glm/trigonometric.hpp"
+#include "framework/transform/Transform.h"
 
 namespace JumaEngine
 {
@@ -14,25 +13,42 @@ namespace JumaEngine
     public:
 
         template<typename T>
-        static T abs(T value) { return value > 0 ? value : -value; }
-        template<typename T>
-        static T max(T a, T b) { return a > b ? a : b; }
-        template<typename T>
-        static T min(T a, T b) { return a < b ? a : b; }
-        template<typename T>
-        static T clamp(T value, T min, T max) { return min(max(value, min), max); }
-        
-        template<typename T>
         static bool isNearlyEquals(T a, T b) { return isNearlyEquals(a, b, Consts::SmallNumber); }
         template<typename T>
-        static bool isNearlyEquals(T a, T b, const float epsilon) { return abs(a - b) <= epsilon; }
+        static bool isNearlyEquals(T a, T b, const float epsilon) { return glm::epsilonEqual(a, b, epsilon); }
         template<glm::length_t L, typename T, glm::qualifier Q>
         static bool isNearlyEquals(const glm::vec<L, T, Q>& a, const glm::vec<L, T, Q>& b, const float epsilon)
         {
             return glm::all(glm::epsilonEqual(a, b, epsilon));
         }
-
-    	static float degreesToRadians(const float degrees) { return glm::radians(degrees); }
-    	static float radiansToDegrees(const float radians) { return glm::degrees(radians); }
+        static bool isNearlyEquals(const Rotation& a, const Rotation& b, const float epsilon)
+        {
+	        return isNearlyEquals(a.pitch, b.pitch, epsilon)
+        		&& isNearlyEquals(a.yaw, b.yaw, epsilon)
+        		&& isNearlyEquals(a.roll, b.roll, epsilon);
+        }
+        static bool isNearlyEquals(const Transform& a, const Transform& b, const float epsilon)
+        {
+	        return isNearlyEquals(a.location, b.location, epsilon)
+        		&& isNearlyEquals(a.rotation, b.rotation, epsilon)
+        		&& isNearlyEquals(a.scale, b.scale, epsilon);
+        }
+		
+        template<typename T>
+    	static bool isNearlyZero(T value) { return isNearlyZero(value, Consts::SmallNumber); }
+        template<typename T>
+    	static bool isNearlyZero(T value, const float epsilon) { return isNearlyEquals(value, 0.0f, epsilon); }
+        template<glm::length_t L, typename T, glm::qualifier Q>
+        static bool isNearlyZero(const glm::vec<L, T, Q>& v, const float epsilon)
+        {
+            for (int32 index = 0; index < L; index++)
+            {
+	            if (!isNearlyZero(v[index]))
+	            {
+		            return false;
+	            }
+            }
+        	return true;
+        }
     };
 }

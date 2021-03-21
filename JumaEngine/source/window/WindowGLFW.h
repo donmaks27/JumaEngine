@@ -45,8 +45,6 @@ namespace JumaEngine
 
         static void ErrorCallback(int code, const char* errorMessage);
 
-        GLFWwindow* CreateWindow() const;
-
         void updateDeltaTime();
 
         void terminateInternal();

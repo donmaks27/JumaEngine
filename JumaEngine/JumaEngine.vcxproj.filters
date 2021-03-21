@@ -16,17 +16,17 @@
     <Filter Include="JumaEngine\render\shader">
       <UniqueIdentifier>{1b700e18-e8fa-498d-be63-97d404508a96}</UniqueIdentifier>
     </Filter>
-    <Filter Include="JumaEngine\render\mesh">
-      <UniqueIdentifier>{2bdde275-7e30-4376-bfc0-fdf806b21fc2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="JumaEngine\render\mesh\vertex">
-      <UniqueIdentifier>{36bf589f-4b9c-4db5-8aaf-52ee9d303430}</UniqueIdentifier>
-    </Filter>
     <Filter Include="JumaEngine\framework">
       <UniqueIdentifier>{425e5aff-4f57-48ea-8045-ef6ec7a0397e}</UniqueIdentifier>
     </Filter>
     <Filter Include="JumaEngine\framework\transform">
       <UniqueIdentifier>{0edfba4a-f301-4182-95f0-fdcaa8b25347}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="JumaEngine\render\vertexBuffer">
+      <UniqueIdentifier>{2bdde275-7e30-4376-bfc0-fdf806b21fc2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="JumaEngine\framework\gameObject">
+      <UniqueIdentifier>{e41551e1-eca8-4703-b319-bc8b07908cf3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -55,23 +55,38 @@
     <ClCompile Include="source\render\shader\ShaderOpenGL.cpp">
       <Filter>JumaEngine\render\shader</Filter>
     </ClCompile>
-    <ClCompile Include="source\render\mesh\vertex\VertexPosition.cpp">
-      <Filter>JumaEngine\render\mesh\vertex</Filter>
-    </ClCompile>
     <ClCompile Include="source\EngineContextObject.cpp">
       <Filter>JumaEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="source\render\mesh\vertex\VertexBufferBase.cpp">
-      <Filter>JumaEngine\render\mesh\vertex</Filter>
-    </ClCompile>
-    <ClCompile Include="source\render\mesh\vertex\VertexBufferOpenGL.cpp">
-      <Filter>JumaEngine\render\mesh\vertex</Filter>
     </ClCompile>
     <ClCompile Include="source\utils\system_functions.cpp">
       <Filter>JumaEngine\utils</Filter>
     </ClCompile>
     <ClCompile Include="source\utils\math_functions.cpp">
       <Filter>JumaEngine\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="source\render\vertexBuffer\VertexBufferBase.cpp">
+      <Filter>JumaEngine\render\vertexBuffer</Filter>
+    </ClCompile>
+    <ClCompile Include="source\render\vertexBuffer\VertexBufferOpenGL.cpp">
+      <Filter>JumaEngine\render\vertexBuffer</Filter>
+    </ClCompile>
+    <ClCompile Include="source\render\vertexBuffer\VertexPosition.cpp">
+      <Filter>JumaEngine\render\vertexBuffer</Filter>
+    </ClCompile>
+    <ClCompile Include="source\framework\gameObject\GameObject.cpp">
+      <Filter>JumaEngine\framework\gameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="source\framework\gameObject\SceneObject.cpp">
+      <Filter>JumaEngine\framework\gameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="source\framework\transform\TransformObject.cpp">
+      <Filter>JumaEngine\framework\transform</Filter>
+    </ClCompile>
+    <ClCompile Include="source\framework\gameObject\Camera.cpp">
+      <Filter>JumaEngine\framework\gameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="source\framework\transform\Rotation.cpp">
+      <Filter>JumaEngine\framework\transform</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -102,35 +117,17 @@
     <ClInclude Include="source\render\shader\ShaderOpenGL.h">
       <Filter>JumaEngine\render\shader</Filter>
     </ClInclude>
-    <ClInclude Include="source\render\mesh\vertex\VertexBufferData.h">
-      <Filter>JumaEngine\render\mesh\vertex</Filter>
-    </ClInclude>
-    <ClInclude Include="source\render\mesh\vertex\VertexPosition.h">
-      <Filter>JumaEngine\render\mesh\vertex</Filter>
-    </ClInclude>
     <ClInclude Include="source\EngineContextObject.h">
       <Filter>JumaEngine</Filter>
     </ClInclude>
     <ClInclude Include="source\utils\type_traits_macros.h">
       <Filter>JumaEngine\utils</Filter>
     </ClInclude>
-    <ClInclude Include="source\render\mesh\vertex\VertexBufferBase.h">
-      <Filter>JumaEngine\render\mesh\vertex</Filter>
-    </ClInclude>
-    <ClInclude Include="source\render\mesh\vertex\VertexBufferOpenGL.h">
-      <Filter>JumaEngine\render\mesh\vertex</Filter>
-    </ClInclude>
     <ClInclude Include="source\utils\system_functions.h">
       <Filter>JumaEngine\utils</Filter>
     </ClInclude>
     <ClInclude Include="source\utils\math_functions.h">
       <Filter>JumaEngine\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="source\framework\transform\Location.h">
-      <Filter>JumaEngine\framework\transform</Filter>
-    </ClInclude>
-    <ClInclude Include="source\framework\transform\Scale.h">
-      <Filter>JumaEngine\framework\transform</Filter>
     </ClInclude>
     <ClInclude Include="source\utils\math_consts.h">
       <Filter>JumaEngine\utils</Filter>
@@ -140,6 +137,30 @@
     </ClInclude>
     <ClInclude Include="source\framework\transform\Transform.h">
       <Filter>JumaEngine\framework\transform</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\vertexBuffer\VertexBufferBase.h">
+      <Filter>JumaEngine\render\vertexBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\vertexBuffer\VertexBufferData.h">
+      <Filter>JumaEngine\render\vertexBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\vertexBuffer\VertexBufferOpenGL.h">
+      <Filter>JumaEngine\render\vertexBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\vertexBuffer\VertexPosition.h">
+      <Filter>JumaEngine\render\vertexBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="source\framework\gameObject\GameObject.h">
+      <Filter>JumaEngine\framework\gameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="source\framework\gameObject\SceneObject.h">
+      <Filter>JumaEngine\framework\gameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="source\framework\transform\TransformObject.h">
+      <Filter>JumaEngine\framework\transform</Filter>
+    </ClInclude>
+    <ClInclude Include="source\framework\gameObject\Camera.h">
+      <Filter>JumaEngine\framework\gameObject</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

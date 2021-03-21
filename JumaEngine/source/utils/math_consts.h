@@ -14,8 +14,8 @@ namespace JumaEngine
 		constexpr float PI = glm::pi<float>();
 		
 		constexpr glm::vec3 VectorForward = { 1.0f, 0.0f, 0.0f };
-		constexpr glm::vec3 VectorRight = { 0.0f, 0.0f, 1.0f };
-		constexpr glm::vec3 VectorUp = { 0.0f, 1.0f, 0.0f };
+		constexpr glm::vec3 VectorRight = { 0.0f, 1.0f, 0.0f };
+		constexpr glm::vec3 VectorUp = { 0.0f, 0.0f, 1.0f };
 	}
 	
 }
