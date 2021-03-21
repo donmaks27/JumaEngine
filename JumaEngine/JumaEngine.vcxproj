@@ -14,7 +14,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{8C42F6C3-82AA-4F8D-BCEF-B555F3AB562D}</ProjectGuid>
     <RootNamespace>JumaEngine</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -100,6 +100,10 @@
     <ClInclude Include="source\common_header.h" />
     <ClInclude Include="source\Engine.h" />
     <ClInclude Include="source\EngineContextObject.h" />
+    <ClInclude Include="source\framework\transform\Location.h" />
+    <ClInclude Include="source\framework\transform\Rotation.h" />
+    <ClInclude Include="source\framework\transform\Scale.h" />
+    <ClInclude Include="source\framework\transform\Transform.h" />
     <ClInclude Include="source\render\mesh\vertex\VertexBufferData.h" />
     <ClInclude Include="source\render\mesh\vertex\VertexPosition.h" />
     <ClInclude Include="source\render\mesh\vertex\VertexBufferBase.h" />
@@ -109,6 +113,7 @@
     <ClInclude Include="source\render\shader\ShaderBase.h" />
     <ClInclude Include="source\render\shader\ShaderOpenGL.h" />
     <ClInclude Include="source\utils\log.h" />
+    <ClInclude Include="source\utils\math_consts.h" />
     <ClInclude Include="source\utils\math_functions.h" />
     <ClInclude Include="source\utils\system_functions.h" />
     <ClInclude Include="source\utils\type_traits_macros.h" />

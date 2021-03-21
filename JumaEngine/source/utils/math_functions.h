@@ -3,7 +3,9 @@
 #pragma once
 
 #include "common_header.h"
+#include "math_consts.h"
 #include "glm/gtc/epsilon.hpp"
+#include "glm/trigonometric.hpp"
 
 namespace JumaEngine
 {
@@ -21,7 +23,7 @@ namespace JumaEngine
         static T clamp(T value, T min, T max) { return min(max(value, min), max); }
         
         template<typename T>
-        static bool isNearlyEquals(T a, T b) { return isNearlyEquals(a, b, JEPSILON); }
+        static bool isNearlyEquals(T a, T b) { return isNearlyEquals(a, b, Consts::SmallNumber); }
         template<typename T>
         static bool isNearlyEquals(T a, T b, const float epsilon) { return abs(a - b) <= epsilon; }
         template<glm::length_t L, typename T, glm::qualifier Q>
@@ -29,5 +31,8 @@ namespace JumaEngine
         {
             return glm::all(glm::epsilonEqual(a, b, epsilon));
         }
+
+    	static float degreesToRadians(const float degrees) { return glm::radians(degrees); }
+    	static float radiansToDegrees(const float radians) { return glm::degrees(radians); }
     };
 }

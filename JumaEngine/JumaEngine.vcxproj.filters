@@ -22,6 +22,12 @@
     <Filter Include="JumaEngine\render\mesh\vertex">
       <UniqueIdentifier>{36bf589f-4b9c-4db5-8aaf-52ee9d303430}</UniqueIdentifier>
     </Filter>
+    <Filter Include="JumaEngine\framework">
+      <UniqueIdentifier>{425e5aff-4f57-48ea-8045-ef6ec7a0397e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="JumaEngine\framework\transform">
+      <UniqueIdentifier>{0edfba4a-f301-4182-95f0-fdcaa8b25347}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Engine.cpp">
@@ -119,6 +125,21 @@
     </ClInclude>
     <ClInclude Include="source\utils\math_functions.h">
       <Filter>JumaEngine\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="source\framework\transform\Location.h">
+      <Filter>JumaEngine\framework\transform</Filter>
+    </ClInclude>
+    <ClInclude Include="source\framework\transform\Scale.h">
+      <Filter>JumaEngine\framework\transform</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\math_consts.h">
+      <Filter>JumaEngine\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="source\framework\transform\Rotation.h">
+      <Filter>JumaEngine\framework\transform</Filter>
+    </ClInclude>
+    <ClInclude Include="source\framework\transform\Transform.h">
+      <Filter>JumaEngine\framework\transform</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

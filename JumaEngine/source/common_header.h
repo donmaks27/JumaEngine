@@ -11,8 +11,6 @@
 
 #include <string>
 
-#define JEPSILON 0.0001f
-
 typedef char int8;
 typedef unsigned char uint8;
 typedef short int16;

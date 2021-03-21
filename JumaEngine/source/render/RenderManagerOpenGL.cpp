@@ -8,7 +8,7 @@
 #include "mesh/vertex/VertexPosition.h"
 #include "mesh/vertex/VertexBufferOpenGL.h"
 #include "utils/system_functions.h"
-#include "glm/gtc/matrix_transform.hpp"
+#include "framework/transform/Transform.h"
 
 namespace JumaEngine
 {
@@ -40,8 +40,8 @@ namespace JumaEngine
 
         const glm::mat4 projMatrix = glm::perspective(3.14f / 2, 4.0f / 3.0f, 0.1f, 100.0f);
         const glm::mat4 viewMatrix = glm::lookAt(glm::vec3(0.0f, 0.0f, 50.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-        const glm::mat4 modelMatrix = glm::translate(glm::identity<glm::mat4>(), glm::vec3(0.0f, 30.0f, 0.0f));
-        ShaderBase::setActiveShaderUniformValue("uProjection", projMatrix);
+        const glm::mat4 modelMatrix = Transform{{0.0f, 30.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 2.0f, 1.0f}}.toMatrix();
+    	ShaderBase::setActiveShaderUniformValue("uProjection", projMatrix);
         ShaderBase::setActiveShaderUniformValue("uView", viewMatrix);
         ShaderBase::setActiveShaderUniformValue("uModel", modelMatrix);
 
