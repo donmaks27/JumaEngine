@@ -28,6 +28,9 @@
     <Filter Include="JumaEngine\framework\gameObject">
       <UniqueIdentifier>{e41551e1-eca8-4703-b319-bc8b07908cf3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="JumaEngine\framework\material">
+      <UniqueIdentifier>{f1fdb6fe-169f-4b97-9c05-266b80609209}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Engine.cpp">
@@ -87,6 +90,12 @@
     </ClCompile>
     <ClCompile Include="source\framework\transform\Rotation.cpp">
       <Filter>JumaEngine\framework\transform</Filter>
+    </ClCompile>
+    <ClCompile Include="source\framework\material\MaterialBase.cpp">
+      <Filter>JumaEngine\framework\material</Filter>
+    </ClCompile>
+    <ClCompile Include="source\framework\material\Material.cpp">
+      <Filter>JumaEngine\framework\material</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -161,6 +170,15 @@
     </ClInclude>
     <ClInclude Include="source\framework\gameObject\Camera.h">
       <Filter>JumaEngine\framework\gameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="source\framework\material\MaterialBase.h">
+      <Filter>JumaEngine\framework\material</Filter>
+    </ClInclude>
+    <ClInclude Include="source\framework\material\MaterialSimple.h">
+      <Filter>JumaEngine\framework\material</Filter>
+    </ClInclude>
+    <ClInclude Include="source\framework\material\Material.h">
+      <Filter>JumaEngine\framework\material</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

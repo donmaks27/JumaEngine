@@ -19,9 +19,19 @@ namespace JumaEngine
             JUMA_LOG(warning, JTEXT("Empty shader name!"));
             return false;
         }
+        if (shaderName == m_ShaderName)
+        {
+            JUMA_LOG(warning, JTEXT("Shader name is the same as old one!"));
+            return false;
+        }
 
         loadShaderInternal(shaderName);
-        return isShaderLoaded();
+        if (isShaderLoaded())
+        {
+            m_ShaderName = shaderName;
+            return true;
+        }
+        return false;
     }
     void ShaderBase::clearShader()
     {
@@ -50,7 +60,7 @@ namespace JumaEngine
         if (isShaderActive())
         {
             deactivateShaderInternal();
-            s_ActiveShader = nullptr;
+            clearActiveShaderRef();
         }
     }
 

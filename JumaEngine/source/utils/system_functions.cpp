@@ -4,8 +4,9 @@
 #include "Engine.h"
 #include "EngineContextObject.h"
 #include "render/RenderManagerBase.h"
-#include "render/vertexBuffer/VertexBufferBase.h"
 #include "window/WindowBase.h"
+#include "render/shader/ShaderBase.h"
+#include "render/vertexBuffer/VertexBufferBase.h"
 
 namespace JumaEngine
 {
@@ -29,7 +30,27 @@ namespace JumaEngine
 		return window != nullptr ? window->getWindowAspectRatio() : 0.0f;
 	}
 
-	VertexBufferBase* SystemFunctions::createVertexBuffer(const EngineContextObject* engineContextObject, VertexBufferDataBase* vertexBufferData)
+    ShaderBase* SystemFunctions::createShader(const EngineContextObject* engineContextObject)
+    {
+        RenderManagerBase* renderManager = getRenderManager(engineContextObject);
+        if (renderManager != nullptr)
+        {
+            return renderManager->createShader();
+        }
+        return nullptr;
+    }
+    ShaderBase* SystemFunctions::createShader(const EngineContextObject* engineContextObject, const std::string& shaderName)
+    {
+        ShaderBase* shader = createShader(engineContextObject);
+        if (shader != nullptr)
+        {
+            shader->loadShader(shaderName);
+            return shader;
+        }
+        return nullptr;
+    }
+
+    VertexBufferBase* SystemFunctions::createVertexBuffer(const EngineContextObject* engineContextObject, VertexBufferDataBase* vertexBufferData)
     {
 		RenderManagerBase* renderManager = getRenderManager(engineContextObject);
 		if (renderManager != nullptr)
@@ -42,5 +63,11 @@ namespace JumaEngine
             }
 		}
 		return nullptr;
+    }
+
+    Camera* SystemFunctions::getActiveCamera(const EngineContextObject* engineContextObject)
+    {
+        const Engine* engine = getEngine(engineContextObject);
+        return engine != nullptr ? engine->getActiveCamera() : nullptr;
     }
 }

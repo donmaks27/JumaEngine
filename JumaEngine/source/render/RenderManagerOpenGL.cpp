@@ -9,7 +9,7 @@
 #include "vertexBuffer/VertexBufferOpenGL.h"
 #include "utils/system_functions.h"
 #include "framework/transform/Transform.h"
-#include "framework/gameObject/Camera.h"
+#include "framework/material/Material.h"
 
 namespace JumaEngine
 {
@@ -22,17 +22,13 @@ namespace JumaEngine
             return false;
         }
 
-        m_Shader = new ShaderOpenGL();
-        m_Shader->loadShader("content/shaders/testShader");
+        m_Material = getOwnerEngine()->createObject<Material>();
+        m_Material->setShaderName("content/shaders/testShader");
 
         VertexBufferDataPosition* bufferData = new VertexBufferDataPosition();
         bufferData->vertices = { {{0.0f, -10.0f, -10.0f}}, {{0.0f, 0.0f, -10.0f}}, {{0.0f, 10.0f, 10.0f}} };
         m_VertexBuffer = SystemFunctions::createVertexBuffer(this, bufferData);
 
-		m_Camera = getOwnerEngine()->createObject<Camera>();
-    	m_Camera->setWorldLocation({ -50.0f, 0.0f, 0.0f });
-    	m_Camera->setWorldRotation({ 0.0f, 0.0f, 0.0f });
-    	
         return true;
     }
 
@@ -41,39 +37,31 @@ namespace JumaEngine
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-        m_Shader->activateShader();
-
-        /*const glm::mat4 projMatrix = glm::perspective(3.14f / 2, 4.0f / 3.0f, 0.1f, 100.0f);
-        const glm::mat4 viewMatrix = glm::lookAt(glm::vec3(0.0f, 0.0f, 50.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));*/
-        const glm::mat4 modelMatrix = Transform({0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}).toMatrix();
-    	ShaderBase::setActiveShaderUniformValue("uProjection", m_Camera->getProjectionMatrix());
-        ShaderBase::setActiveShaderUniformValue("uView", m_Camera->getViewMatrix());
-        ShaderBase::setActiveShaderUniformValue("uModel", modelMatrix);
-
-        m_VertexBuffer->draw();
-
-        m_Shader->deactivateShader();
+        m_Material->activate();
+        if (m_Material->isActive())
+        {
+            m_VertexBuffer->draw();
+        }
     }
 
     void RenderManagerOpenGL::terminate()
     {
-        if (m_Shader != nullptr)
+        if (m_Material != nullptr)
         {
-            delete m_Shader;
-            m_Shader = nullptr;
+            delete m_Material;
+            m_Material = nullptr;
         }
         if (m_VertexBuffer != nullptr)
         {
             delete m_VertexBuffer;
             m_VertexBuffer = nullptr;
         }
-    	if (m_Camera != nullptr)
-    	{
-    		delete m_Camera;
-    		m_Camera = nullptr;
-    	}
     }
 
+    ShaderBase* RenderManagerOpenGL::createShader()
+    {
+        return new ShaderOpenGL();
+    }
     VertexBufferBase* RenderManagerOpenGL::createVertextBufferRender()
     {
         return new VertexBufferOpenGL();

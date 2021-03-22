@@ -14,6 +14,8 @@ namespace JumaEngine
         ShaderBase() = default;
         virtual ~ShaderBase() = default;
 
+        const std::string& getShaderName() const { return m_ShaderName; }
+
         bool loadShader(const std::string& shaderName);
         virtual bool isShaderLoaded() const = 0;
         void clearShader();
@@ -45,6 +47,7 @@ namespace JumaEngine
 
         virtual void activateShaderInternal() = 0;
         virtual void deactivateShaderInternal() = 0;
+        static void clearActiveShaderRef() { s_ActiveShader = nullptr; }
 
         virtual void setUniformValue(const char* uniformName, bool value) = 0;
         virtual void setUniformValue(const char* uniformName, int32 value) = 0;
@@ -58,5 +61,7 @@ namespace JumaEngine
     private:
 
         static ShaderBase* s_ActiveShader;
+
+        std::string m_ShaderName = std::string();
     };
 }

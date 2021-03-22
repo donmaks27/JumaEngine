@@ -7,6 +7,7 @@
 
 namespace JumaEngine
 {
+    class ShaderBase;
     class VertexBufferBase;
 
     class RenderManagerBase : public EngineContextObject
@@ -21,6 +22,7 @@ namespace JumaEngine
 
         virtual void terminate() {}
 
+        virtual ShaderBase* createShader() = 0;
         virtual VertexBufferBase* createVertextBufferRender() = 0;
     };
 }

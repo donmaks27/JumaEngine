@@ -5,6 +5,7 @@
 #include "utils/log.h"
 #include "window/WindowBase.h"
 #include "render/RenderManagerBase.h"
+#include "framework/gameObject/Camera.h"
 
 namespace JumaEngine
 {
@@ -118,6 +119,9 @@ namespace JumaEngine
 
     void Engine::onInit()
     {
+        m_Camera = createObject<Camera>();
+    	m_Camera->setWorldLocation({ -50.0f, 0.0f, 0.0f });
+    	//m_Camera->setWorldRotation({ 0.0f, 0.0f, 0.0f });
     }
     void Engine::onUpdate(double deltaTime)
     {
@@ -131,6 +135,12 @@ namespace JumaEngine
 
     void Engine::terminateEngine()
     {
+        if (m_Camera != nullptr)
+        {
+            delete m_Camera;
+            m_Camera = nullptr;
+        }
+
         if (m_Window != nullptr)
         {
             m_Window->termiante();
@@ -142,6 +152,7 @@ namespace JumaEngine
             m_RenderManager->terminate();
             m_RenderManager = nullptr;
         }
+
     }
 
     void Engine::registerEngineObject(EngineContextObject* object)

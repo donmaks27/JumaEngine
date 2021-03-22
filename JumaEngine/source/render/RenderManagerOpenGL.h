@@ -7,8 +7,7 @@
 
 namespace JumaEngine
 {
-    class ShaderBase;
-	class Camera;
+    class Material;
 
     class RenderManagerOpenGL : public RenderManagerBase
     {
@@ -22,12 +21,12 @@ namespace JumaEngine
 
         virtual void terminate() override;
 
+        virtual ShaderBase* createShader() override;
         virtual VertexBufferBase* createVertextBufferRender() override;
 
     private:
 
-        ShaderBase* m_Shader = nullptr;
+        Material* m_Material = nullptr;
         VertexBufferBase* m_VertexBuffer = nullptr;
-    	Camera* m_Camera = nullptr;
     };
 }

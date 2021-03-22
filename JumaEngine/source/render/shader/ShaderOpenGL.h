@@ -29,7 +29,7 @@ namespace JumaEngine
         virtual void clearShaderInternal() override;
 
         virtual void activateShaderInternal() override;
-        virtual void deactivateShaderInternal() override;
+        virtual void deactivateShaderInternal() override { deactivateShaderOpenGL(); }
 
         virtual void setUniformValue(const char* uniformName, bool value) override { setUniformValue(uniformName, static_cast<int32>(value)); }
         virtual void setUniformValue(const char* uniformName, int32 value) override;
@@ -50,6 +50,7 @@ namespace JumaEngine
         uint32 loadAndCompileShader(const std::string& shaderFilePath, ShaderType shaderType) const;
         uint32 compileShaderProgram(uint32 vertexShader, uint32 geometryShader, uint32 fragmentShader) const;
 
+        static void deactivateShaderOpenGL();
         void clearOpenGLShader();
 
         int32 getUniformLocation(const char* uniformName) const;

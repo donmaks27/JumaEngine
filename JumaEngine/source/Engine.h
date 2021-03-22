@@ -8,9 +8,10 @@
 
 namespace JumaEngine
 {
-    //class EngineContextObject;
     class WindowBase;
     class RenderManagerBase;
+
+    class Camera;
 
     class Engine
     {
@@ -49,10 +50,14 @@ namespace JumaEngine
             return object;
         }
 
+        Camera* getActiveCamera() const { return m_Camera; }
+
     private:
 
         WindowBase* m_Window = nullptr;
         RenderManagerBase* m_RenderManager = nullptr;
+
+        Camera* m_Camera = nullptr;
 
 
         int32 startEngineInternal(int argc, char** argv, WindowBase* window, RenderManagerBase* renderManager);

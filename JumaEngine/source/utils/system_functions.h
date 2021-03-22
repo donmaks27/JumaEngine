@@ -10,8 +10,12 @@ namespace JumaEngine
     class EngineContextObject;
 	class RenderManagerBase;
 	class WindowBase;
+
+    class ShaderBase;
     class VertexBufferBase;
     class VertexBufferDataBase;
+
+    class Camera;
 
     class SystemFunctions final
     {
@@ -22,6 +26,10 @@ namespace JumaEngine
     	static WindowBase* getWindow(const EngineContextObject* engineContextObject);
     	static float getWindowAspectRatio(const EngineContextObject* engineContextObject);
     	
+        static ShaderBase* createShader(const EngineContextObject* engineContextObject);
+        static ShaderBase* createShader(const EngineContextObject* engineContextObject, const std::string& shaderName);
         static VertexBufferBase* createVertexBuffer(const EngineContextObject* engineContextObject, VertexBufferDataBase* vertexBufferData = nullptr);
+
+        static Camera* getActiveCamera(const EngineContextObject* engineContextObject);
     };
 }
