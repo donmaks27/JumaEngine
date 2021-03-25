@@ -81,7 +81,6 @@ namespace JumaEngine
         }
 
         delete vertexBufferData;
-        vertexBufferData = nullptr;
     }
     void VertexBufferOpenGL::terminate()
     {

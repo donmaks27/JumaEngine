@@ -106,6 +106,9 @@
     <ClCompile Include="source\render\vertexBuffer\importer\VertexBufferImporterBase.cpp">
       <Filter>JumaEngine\render\vertexBuffer\importer</Filter>
     </ClCompile>
+    <ClCompile Include="source\framework\mesh\Mesh.cpp">
+      <Filter>JumaEngine\framework\mesh</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\common_header.h">
@@ -194,6 +197,9 @@
     </ClInclude>
     <ClInclude Include="source\render\vertexBuffer\importer\VertexBufferImporterBase.h">
       <Filter>JumaEngine\render\vertexBuffer\importer</Filter>
+    </ClInclude>
+    <ClInclude Include="source\framework\mesh\Mesh.h">
+      <Filter>JumaEngine\framework\mesh</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

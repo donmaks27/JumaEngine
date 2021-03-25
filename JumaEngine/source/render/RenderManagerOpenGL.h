@@ -9,6 +9,7 @@
 namespace JumaEngine
 {
     class Material;
+    class Mesh;
 
     class RenderManagerOpenGL : public RenderManagerBase
     {
@@ -28,6 +29,6 @@ namespace JumaEngine
     private:
 
         Material* m_Material = nullptr;
-        std::vector<VertexBufferBase*> m_VertexBuffer;
+        Mesh* m_Mesh = nullptr;
     };
 }

@@ -89,6 +89,7 @@
     <ClCompile Include="source\framework\gameObject\TransformObject.cpp" />
     <ClCompile Include="source\framework\material\Material.cpp" />
     <ClCompile Include="source\framework\material\MaterialBase.cpp" />
+    <ClCompile Include="source\framework\mesh\Mesh.cpp" />
     <ClCompile Include="source\render\RenderManagerBase.cpp" />
     <ClCompile Include="source\render\RenderManagerOpenGL.cpp" />
     <ClCompile Include="source\render\shader\ShaderBase.cpp" />
@@ -115,6 +116,7 @@
     <ClInclude Include="source\framework\material\Material.h" />
     <ClInclude Include="source\framework\material\MaterialBase.h" />
     <ClInclude Include="source\framework\material\MaterialSimple.h" />
+    <ClInclude Include="source\framework\mesh\Mesh.h" />
     <ClInclude Include="source\render\RenderManagerBase.h" />
     <ClInclude Include="source\render\RenderManagerOpenGL.h" />
     <ClInclude Include="source\render\shader\ShaderBase.h" />
