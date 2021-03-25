@@ -14,6 +14,7 @@ namespace JumaEngine
     class ShaderBase;
     class VertexBufferBase;
     class VertexBufferDataBase;
+    class VertexBufferImporterBase;
 
     class Camera;
 
@@ -29,6 +30,7 @@ namespace JumaEngine
         static ShaderBase* createShader(const EngineContextObject* engineContextObject);
         static ShaderBase* createShader(const EngineContextObject* engineContextObject, const std::string& shaderName);
         static VertexBufferBase* createVertexBuffer(const EngineContextObject* engineContextObject, VertexBufferDataBase* vertexBufferData = nullptr);
+        static VertexBufferImporterBase* getVertexBufferImporter(const EngineContextObject* engineContextObject);
 
         static Camera* getActiveCamera(const EngineContextObject* engineContextObject);
     };

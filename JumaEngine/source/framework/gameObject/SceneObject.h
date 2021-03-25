@@ -4,7 +4,7 @@
 
 #include "common_header.h"
 #include "GameObject.h"
-#include "framework/transform/TransformObject.h"
+#include "TransformObject.h"
 
 namespace JumaEngine
 {

@@ -19,9 +19,6 @@
     <Filter Include="JumaEngine\framework">
       <UniqueIdentifier>{425e5aff-4f57-48ea-8045-ef6ec7a0397e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="JumaEngine\framework\transform">
-      <UniqueIdentifier>{0edfba4a-f301-4182-95f0-fdcaa8b25347}</UniqueIdentifier>
-    </Filter>
     <Filter Include="JumaEngine\render\vertexBuffer">
       <UniqueIdentifier>{2bdde275-7e30-4376-bfc0-fdf806b21fc2}</UniqueIdentifier>
     </Filter>
@@ -30,6 +27,15 @@
     </Filter>
     <Filter Include="JumaEngine\framework\material">
       <UniqueIdentifier>{f1fdb6fe-169f-4b97-9c05-266b80609209}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="JumaEngine\render\vertexBuffer\importer">
+      <UniqueIdentifier>{b7b573db-6bcd-4618-bea6-86cbcab5634a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="JumaEngine\transform">
+      <UniqueIdentifier>{0edfba4a-f301-4182-95f0-fdcaa8b25347}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="JumaEngine\framework\mesh">
+      <UniqueIdentifier>{cbaee27d-7629-431f-a150-ae815c55585e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -51,9 +57,6 @@
     </ClCompile>
     <ClCompile Include="source\window\WindowGLFW.cpp">
       <Filter>JumaEngine\window</Filter>
-    </ClCompile>
-    <ClCompile Include="source\render\shader\ShaderBase.cpp">
-      <Filter>JumaEngine\render\shader</Filter>
     </ClCompile>
     <ClCompile Include="source\render\shader\ShaderOpenGL.cpp">
       <Filter>JumaEngine\render\shader</Filter>
@@ -82,20 +85,26 @@
     <ClCompile Include="source\framework\gameObject\SceneObject.cpp">
       <Filter>JumaEngine\framework\gameObject</Filter>
     </ClCompile>
-    <ClCompile Include="source\framework\transform\TransformObject.cpp">
-      <Filter>JumaEngine\framework\transform</Filter>
-    </ClCompile>
     <ClCompile Include="source\framework\gameObject\Camera.cpp">
       <Filter>JumaEngine\framework\gameObject</Filter>
-    </ClCompile>
-    <ClCompile Include="source\framework\transform\Rotation.cpp">
-      <Filter>JumaEngine\framework\transform</Filter>
     </ClCompile>
     <ClCompile Include="source\framework\material\MaterialBase.cpp">
       <Filter>JumaEngine\framework\material</Filter>
     </ClCompile>
     <ClCompile Include="source\framework\material\Material.cpp">
       <Filter>JumaEngine\framework\material</Filter>
+    </ClCompile>
+    <ClCompile Include="source\transform\Rotation.cpp">
+      <Filter>JumaEngine\transform</Filter>
+    </ClCompile>
+    <ClCompile Include="source\framework\gameObject\TransformObject.cpp">
+      <Filter>JumaEngine\framework\gameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="source\render\shader\ShaderBase.cpp">
+      <Filter>JumaEngine\render\shader</Filter>
+    </ClCompile>
+    <ClCompile Include="source\render\vertexBuffer\importer\VertexBufferImporterBase.cpp">
+      <Filter>JumaEngine\render\vertexBuffer\importer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -120,9 +129,6 @@
     <ClInclude Include="source\window\WindowGLFW.h">
       <Filter>JumaEngine\window</Filter>
     </ClInclude>
-    <ClInclude Include="source\render\shader\ShaderBase.h">
-      <Filter>JumaEngine\render\shader</Filter>
-    </ClInclude>
     <ClInclude Include="source\render\shader\ShaderOpenGL.h">
       <Filter>JumaEngine\render\shader</Filter>
     </ClInclude>
@@ -140,12 +146,6 @@
     </ClInclude>
     <ClInclude Include="source\utils\math_consts.h">
       <Filter>JumaEngine\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="source\framework\transform\Rotation.h">
-      <Filter>JumaEngine\framework\transform</Filter>
-    </ClInclude>
-    <ClInclude Include="source\framework\transform\Transform.h">
-      <Filter>JumaEngine\framework\transform</Filter>
     </ClInclude>
     <ClInclude Include="source\render\vertexBuffer\VertexBufferBase.h">
       <Filter>JumaEngine\render\vertexBuffer</Filter>
@@ -165,9 +165,6 @@
     <ClInclude Include="source\framework\gameObject\SceneObject.h">
       <Filter>JumaEngine\framework\gameObject</Filter>
     </ClInclude>
-    <ClInclude Include="source\framework\transform\TransformObject.h">
-      <Filter>JumaEngine\framework\transform</Filter>
-    </ClInclude>
     <ClInclude Include="source\framework\gameObject\Camera.h">
       <Filter>JumaEngine\framework\gameObject</Filter>
     </ClInclude>
@@ -179,6 +176,24 @@
     </ClInclude>
     <ClInclude Include="source\framework\material\Material.h">
       <Filter>JumaEngine\framework\material</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\vertexBuffer\importer\VertexBufferImporterData.h">
+      <Filter>JumaEngine\render\vertexBuffer\importer</Filter>
+    </ClInclude>
+    <ClInclude Include="source\transform\Rotation.h">
+      <Filter>JumaEngine\transform</Filter>
+    </ClInclude>
+    <ClInclude Include="source\transform\Transform.h">
+      <Filter>JumaEngine\transform</Filter>
+    </ClInclude>
+    <ClInclude Include="source\framework\gameObject\TransformObject.h">
+      <Filter>JumaEngine\framework\gameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\shader\ShaderBase.h">
+      <Filter>JumaEngine\render\shader</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\vertexBuffer\importer\VertexBufferImporterBase.h">
+      <Filter>JumaEngine\render\vertexBuffer\importer</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

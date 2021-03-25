@@ -4,6 +4,7 @@
 
 #include "common_header.h"
 #include "RenderManagerBase.h"
+#include <vector>
 
 namespace JumaEngine
 {
@@ -27,6 +28,6 @@ namespace JumaEngine
     private:
 
         Material* m_Material = nullptr;
-        VertexBufferBase* m_VertexBuffer = nullptr;
+        std::vector<VertexBufferBase*> m_VertexBuffer;
     };
 }

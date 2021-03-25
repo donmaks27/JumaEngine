@@ -64,6 +64,11 @@ namespace JumaEngine
 		}
 		return nullptr;
     }
+    VertexBufferImporterBase* SystemFunctions::getVertexBufferImporter(const EngineContextObject* engineContextObject)
+    {
+        const Engine* engine = getEngine(engineContextObject);
+        return engine != nullptr ? engine->getVertexBufferImporter() : nullptr;
+    }
 
     Camera* SystemFunctions::getActiveCamera(const EngineContextObject* engineContextObject)
     {

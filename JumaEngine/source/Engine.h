@@ -10,6 +10,7 @@ namespace JumaEngine
 {
     class WindowBase;
     class RenderManagerBase;
+    class VertexBufferImporterBase;
 
     class Camera;
 
@@ -28,11 +29,37 @@ namespace JumaEngine
             FailRenderManagerInit = 4,
         };
 
-        int32 startEngine(int argc, char** argv, WindowBase* window, RenderManagerBase* renderManager);
-        int32 startEngine(WindowBase* window, RenderManagerBase* renderManager) { return startEngine(0, nullptr, window, renderManager); }
+        template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<WindowBase, T>)>
+        void setWindow()
+        {
+            if (m_Window == nullptr)
+            {
+                m_Window = new T();
+            }
+        }
+        template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<RenderManagerBase, T>)>
+        void setRenderManager()
+        {
+            if (m_RenderManager == nullptr)
+            {
+                m_RenderManager = new T();
+            }
+        }
+        template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<VertexBufferImporterBase, T>)>
+        void setVertexBufferImporter()
+        {
+            if (m_VertexBufferImporter == nullptr)
+            {
+                m_VertexBufferImporter = new T();
+            }
+        }
 
         WindowBase* getWindow() const { return m_Window; }
         RenderManagerBase* getRenderManager() const { return m_RenderManager; }
+        VertexBufferImporterBase* getVertexBufferImporter() const { return m_VertexBufferImporter; }
+
+        int32 startEngine(int argc, char** argv);
+        int32 startEngine() { return startEngine(0, nullptr); }
 
         bool shouldStopEngine() const;
         double getDeltaTime() const;
@@ -56,14 +83,15 @@ namespace JumaEngine
 
         WindowBase* m_Window = nullptr;
         RenderManagerBase* m_RenderManager = nullptr;
+        VertexBufferImporterBase* m_VertexBufferImporter = nullptr;
 
         Camera* m_Camera = nullptr;
 
 
-        int32 startEngineInternal(int argc, char** argv, WindowBase* window, RenderManagerBase* renderManager);
+        int32 startEngineInternal(int argc, char** argv);
 
-        bool initWindow(int32& resultCode, WindowBase* window);
-        bool initRender(int32& resultCode, RenderManagerBase* renderManager);
+        bool initWindow(int32& resultCode) const;
+        bool initRender(int32& resultCode);
 
         void terminateEngine();
 

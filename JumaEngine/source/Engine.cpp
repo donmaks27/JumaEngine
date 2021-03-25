@@ -6,10 +6,11 @@
 #include "window/WindowBase.h"
 #include "render/RenderManagerBase.h"
 #include "framework/gameObject/Camera.h"
+#include "render/vertexBuffer/importer/VertexBufferImporterBase.h"
 
 namespace JumaEngine
 {
-    int32 Engine::startEngine(int argc, char** argv, WindowBase* window, RenderManagerBase* renderManager)
+    int32 Engine::startEngine(int argc, char** argv)
     {
 #if _DEBUG
         _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
@@ -19,7 +20,7 @@ namespace JumaEngine
         _CrtMemCheckpoint(&memoryState);
 #endif
 
-        const int32 exitCode = startEngineInternal(argc, argv, window, renderManager);
+        const int32 exitCode = startEngineInternal(argc, argv);
         terminateEngine();
         JUMA_LOG(info, JTEXT("Engine stopped"));
 
@@ -29,16 +30,16 @@ namespace JumaEngine
 
         return exitCode;
     }
-    int32 Engine::startEngineInternal(int argc, char** argv, WindowBase* window, RenderManagerBase* renderManager)
+    int32 Engine::startEngineInternal(int argc, char** argv)
     {
         JUMA_LOG(info, JTEXT("Start engine..."));
 
         int32 resultCode = ExitCode::OK;
-        if (!initWindow(resultCode, window))
+        if (!initWindow(resultCode))
         {
             return resultCode;
         }
-        if (!initRender(resultCode, renderManager))
+        if (!initRender(resultCode))
         {
             return resultCode;
         }
@@ -72,32 +73,28 @@ namespace JumaEngine
         return ExitCode::OK;
     }
 
-    bool JumaEngine::Engine::initWindow(int32& resultCode, WindowBase* window)
+    bool JumaEngine::Engine::initWindow(int32& resultCode) const
     {
-        if (window == nullptr)
+        if (m_Window == nullptr)
         {
             resultCode = ExitCode::EmptyWindowObject;
             return false;
         }
-
-        m_Window = window;
         if (!m_Window->createWindow())
         {
             resultCode = ExitCode::FailWindowInit;
             return false;
         }
-
         return true;
     }
-    bool Engine::initRender(int32& resultCode, RenderManagerBase* renderManager)
+    bool Engine::initRender(int32& resultCode)
     {
-        if (renderManager == nullptr)
+        if (m_RenderManager == nullptr)
         {
             resultCode = ExitCode::EmptyRenderManager;
             return false;
         }
 
-        m_RenderManager = renderManager;
         registerEngineObject(m_RenderManager);
         if (!m_RenderManager->init())
         {
@@ -141,18 +138,25 @@ namespace JumaEngine
             m_Camera = nullptr;
         }
 
+        if (m_VertexBufferImporter != nullptr)
+        {
+            delete m_VertexBufferImporter;
+            m_VertexBufferImporter = nullptr;
+        }
+
         if (m_Window != nullptr)
         {
             m_Window->termiante();
+            delete m_Window;
             m_Window = nullptr;
         }
 
         if (m_RenderManager != nullptr)
         {
             m_RenderManager->terminate();
+            delete m_RenderManager;
             m_RenderManager = nullptr;
         }
-
     }
 
     void Engine::registerEngineObject(EngineContextObject* object)

@@ -4,6 +4,14 @@
 
 namespace JumaEngine
 {
+    void VertexBufferDataPosition::copyFromVertexBufferImporterData(const VertexBufferImporterMeshPartData& data)
+    {
+        for (const auto& vertexData : data.verticesData)
+        {
+            vertices.push_back({ vertexData.position });
+        }
+    }
+
     int32 VertexBufferDataPosition::getVertexComponentID(const uint32 vertexComponentIndex) const
     {
         return vertexComponentIndex == 0 ? 0 : Super::getVertexComponentID(vertexComponentIndex);

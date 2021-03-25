@@ -16,6 +16,8 @@ namespace JumaEngine
     class VertexBufferDataPosition final : public VertexBufferData<VertexPosition>
     {
     public:
+        
+        virtual void copyFromVertexBufferImporterData(const VertexBufferImporterMeshPartData& data) override;
 
         virtual uint32 getVertexComponentsCount() const override { return 1; }
         virtual int32 getVertexComponentID(uint32 vertexComponentIndex) const override;

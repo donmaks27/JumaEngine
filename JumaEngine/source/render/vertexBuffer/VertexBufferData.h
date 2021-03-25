@@ -3,7 +3,7 @@
 #pragma once
 
 #include "common_header.h"
-#include <vector>
+#include "importer/VertexBufferImporterData.h"
 
 namespace JumaEngine
 {
@@ -21,6 +21,8 @@ namespace JumaEngine
 
         std::vector<uint32> vertexIndices;
 
+
+        virtual void copyFromVertexBufferImporterData(const VertexBufferImporterMeshPartData& data) = 0;
 
         virtual uint32 getVertexSize() const = 0;
         virtual uint32 getVerticesCount() const { return 0; }

@@ -8,8 +8,9 @@
 #include "vertexBuffer/VertexPosition.h"
 #include "vertexBuffer/VertexBufferOpenGL.h"
 #include "utils/system_functions.h"
-#include "framework/transform/Transform.h"
+#include "transform/Transform.h"
 #include "framework/material/Material.h"
+#include "vertexBuffer/importer/VertexBufferImporterBase.h"
 
 namespace JumaEngine
 {
@@ -25,9 +26,19 @@ namespace JumaEngine
         m_Material = getOwnerEngine()->createObject<Material>();
         m_Material->setShaderName("content/shaders/testShader");
 
-        VertexBufferDataPosition* bufferData = new VertexBufferDataPosition();
+        /*VertexBufferDataPosition* bufferData = new VertexBufferDataPosition();
         bufferData->vertices = { {{0.0f, -10.0f, -10.0f}}, {{0.0f, 0.0f, -10.0f}}, {{0.0f, 10.0f, 10.0f}} };
-        m_VertexBuffer = SystemFunctions::createVertexBuffer(this, bufferData);
+        m_VertexBuffer = SystemFunctions::createVertexBuffer(this, bufferData);*/
+        VertexBufferImporterBase* importer = SystemFunctions::getVertexBufferImporter(this);
+        if (importer != nullptr)
+        {
+            importer->load("");
+            std::vector<VertexBufferDataBase*> buffers = importer->createVertexBufferForMesh<VertexBufferDataPosition>(JTEXT("Triangle"));
+            for (auto& bufferData : buffers)
+            {
+                m_VertexBuffer.push_back(SystemFunctions::createVertexBuffer(this, bufferData));
+            }
+        }
 
         return true;
     }
@@ -40,7 +51,13 @@ namespace JumaEngine
         m_Material->activate();
         if (m_Material->isActive())
         {
-            m_VertexBuffer->draw();
+            for (auto& vertexBuffer : m_VertexBuffer)
+            {
+                if (vertexBuffer != nullptr)
+                {
+                    vertexBuffer->draw();
+                }
+            }
         }
     }
 
@@ -51,11 +68,11 @@ namespace JumaEngine
             delete m_Material;
             m_Material = nullptr;
         }
-        if (m_VertexBuffer != nullptr)
+        for (auto& vertexBuffer : m_VertexBuffer)
         {
-            delete m_VertexBuffer;
-            m_VertexBuffer = nullptr;
+            delete vertexBuffer;
         }
+        m_VertexBuffer.clear();
     }
 
     ShaderBase* RenderManagerOpenGL::createShader()

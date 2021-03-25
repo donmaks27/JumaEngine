@@ -4,7 +4,7 @@
 
 #include "common_header.h"
 #include "math_consts.h"
-#include "framework/transform/Transform.h"
+#include "transform/Transform.h"
 
 namespace JumaEngine
 {
