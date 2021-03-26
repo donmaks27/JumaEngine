@@ -4,9 +4,9 @@
 
 namespace JumaEngine
 {
-    void VertexBufferImporterBase::load(const char* filePath)
+    void VertexBufferImporterBase::importFile(const char* filePath)
     {
-        m_Data = importFromFile(filePath);
+        m_Data = loadDataFromFile(filePath);
     }
 
     std::vector<std::string> VertexBufferImporterBase::getMeshesNames() const
@@ -19,7 +19,7 @@ namespace JumaEngine
         return result;
     }
 
-    VertexBufferImporterData VertexBufferImporterBase::importFromFile(const char* filePath) const
+    VertexBufferImporterData VertexBufferImporterBase::loadDataFromFile(const char* filePath) const
     {
         const std::vector<VertexBufferImporterVertexData> vertices = {
             {{0.0f, -10.0f, -10.0f}},

@@ -15,7 +15,7 @@ namespace JumaEngine
         VertexBufferImporterBase() = default;
         virtual ~VertexBufferImporterBase() = default;
 
-        void load(const char* filePath);
+        void importFile(const char* filePath);
 
         std::vector<std::string> getMeshesNames() const;
         template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<VertexBufferDataBase, T>)>
@@ -40,7 +40,7 @@ namespace JumaEngine
 
     protected:
 
-        virtual VertexBufferImporterData importFromFile(const char* filePath) const;
+        virtual VertexBufferImporterData loadDataFromFile(const char* filePath) const;
 
     private:
 

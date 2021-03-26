@@ -23,6 +23,6 @@ namespace JumaEngine
         virtual void terminate() {}
 
         virtual ShaderBase* createShader() = 0;
-        virtual VertexBufferBase* createVertextBufferRender() = 0;
+        virtual VertexBufferBase* createVertextBuffer() = 0;
     };
 }

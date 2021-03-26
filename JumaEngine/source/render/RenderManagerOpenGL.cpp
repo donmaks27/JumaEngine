@@ -27,12 +27,8 @@ namespace JumaEngine
         m_Material = getOwnerEngine()->createObject<Material>();
         m_Material->setShaderName("content/shaders/testShader");
 
-        VertexBufferImporterBase* importer = SystemFunctions::getVertexBufferImporter(this);
-        importer->load("");
-        const std::vector<VertexBufferDataBase*> buffers = importer->createVertexBufferForMesh<VertexBufferDataPosition>(JTEXT("Triangle"));
-
-        m_Mesh = getOwnerEngine()->createObject<Mesh>();
-        m_Mesh->initMesh(buffers);
+        SystemFunctions::importVertexBufferFile(this, "");
+        m_Mesh = SystemFunctions::importMesh<Mesh, VertexBufferDataPosition>(this, JTEXT("Triangle"));
         m_Mesh->setMaterial(0, m_Material);
 
         return true;
@@ -64,7 +60,7 @@ namespace JumaEngine
     {
         return new ShaderOpenGL();
     }
-    VertexBufferBase* RenderManagerOpenGL::createVertextBufferRender()
+    VertexBufferBase* RenderManagerOpenGL::createVertextBuffer()
     {
         return new VertexBufferOpenGL();
     }

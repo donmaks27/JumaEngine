@@ -7,6 +7,7 @@
 #include "window/WindowBase.h"
 #include "render/shader/ShaderBase.h"
 #include "render/vertexBuffer/VertexBufferBase.h"
+#include "render/vertexBuffer/importer/VertexBufferImporterBase.h"
 
 namespace JumaEngine
 {
@@ -55,7 +56,7 @@ namespace JumaEngine
 		RenderManagerBase* renderManager = getRenderManager(engineContextObject);
 		if (renderManager != nullptr)
 		{
-			VertexBufferBase* vertexBuffer = renderManager->createVertextBufferRender();
+			VertexBufferBase* vertexBuffer = renderManager->createVertextBuffer();
             if (vertexBufferData != nullptr)
             {
 	            vertexBuffer->init(vertexBufferData);
@@ -64,10 +65,19 @@ namespace JumaEngine
 		}
 		return nullptr;
     }
+
     VertexBufferImporterBase* SystemFunctions::getVertexBufferImporter(const EngineContextObject* engineContextObject)
     {
         const Engine* engine = getEngine(engineContextObject);
         return engine != nullptr ? engine->getVertexBufferImporter() : nullptr;
+    }
+    void SystemFunctions::importVertexBufferFile(const EngineContextObject* engineContextObject, const char* filePath)
+    {
+        VertexBufferImporterBase* importer = getVertexBufferImporter(engineContextObject);
+        if (importer != nullptr)
+        {
+            importer->importFile(filePath);
+        }
     }
 
     Camera* SystemFunctions::getActiveCamera(const EngineContextObject* engineContextObject)

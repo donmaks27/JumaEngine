@@ -24,7 +24,7 @@ namespace JumaEngine
         virtual void terminate() override;
 
         virtual ShaderBase* createShader() override;
-        virtual VertexBufferBase* createVertextBufferRender() override;
+        virtual VertexBufferBase* createVertextBuffer() override;
 
     private:
 
