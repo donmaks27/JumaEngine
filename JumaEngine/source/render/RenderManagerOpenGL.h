@@ -4,7 +4,6 @@
 
 #include "common_header.h"
 #include "RenderManagerBase.h"
-#include <vector>
 
 namespace JumaEngine
 {

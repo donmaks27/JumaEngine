@@ -12,7 +12,7 @@ namespace JumaEngine
         terminateMesh();
     }
 
-    bool Mesh::initMesh(const std::vector<VertexBufferDataBase*>& vertexBuffersData)
+    bool Mesh::initMesh(const jarray<VertexBufferDataBase*>& vertexBuffersData)
     {
         if (!isMeshInit())
         {

@@ -4,7 +4,8 @@
 
 #include "common_header.h"
 #include "VertexBufferImporterData.h"
-#include "render/vertexBuffer/VertexPosition.h"
+#include "render/vertexBuffer/VertexBufferData.h"
+#include "utils/jarray.h"
 #include "utils/type_traits_macros.h"
 
 namespace JumaEngine
@@ -17,11 +18,11 @@ namespace JumaEngine
 
         void importFile(const char* filePath);
 
-        std::vector<std::string> getMeshesNames() const;
+        jarray<std::string> getMeshesNames() const;
         template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<VertexBufferDataBase, T>)>
-        std::vector<VertexBufferDataBase*> createVertexBufferForMesh(const std::string& meshName)
+        jarray<VertexBufferDataBase*> createVertexBufferForMesh(const std::string& meshName)
         {
-            std::vector<VertexBufferDataBase*> result;
+            jarray<VertexBufferDataBase*> result;
             for (const auto& meshData : m_Data.meshesData)
             {
                 if (meshData.name == meshName)

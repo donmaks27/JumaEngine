@@ -9,9 +9,9 @@ namespace JumaEngine
         m_Data = loadDataFromFile(filePath);
     }
 
-    std::vector<std::string> VertexBufferImporterBase::getMeshesNames() const
+    jarray<std::string> VertexBufferImporterBase::getMeshesNames() const
     {
-        std::vector<std::string> result;
+        jarray<std::string> result;
         for (const auto& meshData : m_Data.meshesData)
         {
             result.push_back(meshData.name);
@@ -21,7 +21,7 @@ namespace JumaEngine
 
     VertexBufferImporterData VertexBufferImporterBase::loadDataFromFile(const char* filePath) const
     {
-        const std::vector<VertexBufferImporterVertexData> vertices = {
+        const jarray<VertexBufferImporterVertexData> vertices = {
             {{0.0f, -10.0f, -10.0f}},
             {{0.0f, 0.0f, -10.0f}},
             {{0.0f, 10.0f, 10.0f}}

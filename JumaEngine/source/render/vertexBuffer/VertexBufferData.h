@@ -19,7 +19,7 @@ namespace JumaEngine
         VertexBufferDataBase() = default;
         virtual ~VertexBufferDataBase() = default;
 
-        std::vector<uint32> vertexIndices;
+        jarray<uint32> vertexIndices;
 
 
         virtual void copyFromVertexBufferImporterData(const VertexBufferImporterMeshPartData& data) = 0;
@@ -45,7 +45,7 @@ namespace JumaEngine
     {
     public:
 
-        std::vector<T> vertices;
+        jarray<T> vertices;
 
 
         virtual uint32 getVertexSize() const override final { return sizeof(T); }

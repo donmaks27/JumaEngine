@@ -22,9 +22,6 @@
     <Filter Include="JumaEngine\render\vertexBuffer">
       <UniqueIdentifier>{2bdde275-7e30-4376-bfc0-fdf806b21fc2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="JumaEngine\framework\gameObject">
-      <UniqueIdentifier>{e41551e1-eca8-4703-b319-bc8b07908cf3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="JumaEngine\framework\material">
       <UniqueIdentifier>{f1fdb6fe-169f-4b97-9c05-266b80609209}</UniqueIdentifier>
     </Filter>
@@ -36,6 +33,12 @@
     </Filter>
     <Filter Include="JumaEngine\framework\mesh">
       <UniqueIdentifier>{cbaee27d-7629-431f-a150-ae815c55585e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="JumaEngine\framework\gameObject">
+      <UniqueIdentifier>{e41551e1-eca8-4703-b319-bc8b07908cf3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="JumaEngine\framework\gameObject\gameComponent">
+      <UniqueIdentifier>{d1641701-946d-4c35-aa73-39f299a0cf87}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -108,6 +111,18 @@
     </ClCompile>
     <ClCompile Include="source\framework\mesh\Mesh.cpp">
       <Filter>JumaEngine\framework\mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="source\framework\gameObject\SceneContextObject.cpp">
+      <Filter>JumaEngine\framework\gameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="source\framework\gameObject\EngineObject.cpp">
+      <Filter>JumaEngine\framework\gameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="source\framework\gameObject\gameComponent\GameComponent.cpp">
+      <Filter>JumaEngine\framework\gameObject\gameComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="source\framework\gameObject\gameComponent\SceneComponent.cpp">
+      <Filter>JumaEngine\framework\gameObject\gameComponent</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -203,6 +218,21 @@
     </ClInclude>
     <ClInclude Include="source\render\RenderAPI.h">
       <Filter>JumaEngine\render</Filter>
+    </ClInclude>
+    <ClInclude Include="source\framework\gameObject\SceneContextObject.h">
+      <Filter>JumaEngine\framework\gameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="source\framework\gameObject\EngineObject.h">
+      <Filter>JumaEngine\framework\gameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="source\framework\gameObject\gameComponent\GameComponent.h">
+      <Filter>JumaEngine\framework\gameObject\gameComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="source\framework\gameObject\gameComponent\SceneComponent.h">
+      <Filter>JumaEngine\framework\gameObject\gameComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\jarray.h">
+      <Filter>JumaEngine\utils</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

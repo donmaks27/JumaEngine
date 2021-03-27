@@ -3,10 +3,9 @@
 #pragma once
 
 #include "common_header.h"
-#include "utils/type_traits_macros.h"
 #include "Engine.h"
 #include "framework/mesh/Mesh.h"
-#include "render/vertexBuffer/VertexBufferData.h"
+#include "render/vertexBuffer/importer/VertexBufferImporterBase.h"
 
 namespace JumaEngine
 {
@@ -24,7 +23,19 @@ namespace JumaEngine
     public:
 
 		static Engine* getEngine(const EngineContextObject* engineContextObject);
+        template<typename T, TEMPLATE_ENABLE(is_base_and_not_same<EngineContextObject, T>)>
+        static T* createObject(const EngineContextObject* engineContextObject)
+        {
+            Engine* engine = getEngine(engineContextObject);
+            if (engine != nullptr)
+            {
+                return engine->createObject<T>();
+            }
+            return nullptr;
+        }
+
     	static RenderManagerBase* getRenderManager(const EngineContextObject* engineContextObject);
+
     	static WindowBase* getWindow(const EngineContextObject* engineContextObject);
     	static float getWindowAspectRatio(const EngineContextObject* engineContextObject);
     	
@@ -40,8 +51,7 @@ namespace JumaEngine
             VertexBufferImporterBase* importer = getVertexBufferImporter(engineContextObject);
             if (importer != nullptr)
             {
-                Engine* engine = getEngine(engineContextObject);
-                Mesh* mesh = engine != nullptr ? engine->createObject<T>() : nullptr;
+                Mesh* mesh = createObject<T>(engineContextObject);
                 if (mesh != nullptr)
                 {
                     mesh->initMesh(importer->createVertexBufferForMesh<U>(meshName));

@@ -1,6 +1,7 @@
 ﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
 
-#include "SceneObject.h"
+#include "EngineObject.h"
+#include "gameComponent/GameComponent.h"
 
 namespace JumaEngine
 {

@@ -54,7 +54,7 @@ namespace JumaEngine
         }
     }
 
-    bool ShaderOpenGL::loadShaderText(const std::string& shaderFilePath, std::vector<std::string>& shaderText) const
+    bool ShaderOpenGL::loadShaderText(const std::string& shaderFilePath, jarray<std::string>& shaderText) const
     {
         std::ifstream file(shaderFilePath);
         if (!file.is_open())
@@ -73,7 +73,7 @@ namespace JumaEngine
 
         return true;
     }
-    uint32 ShaderOpenGL::compileShader(const std::vector<std::string>& shaderText, const ShaderType shaderType) const
+    uint32 ShaderOpenGL::compileShader(const jarray<std::string>& shaderText, const ShaderType shaderType) const
     {
         uint32 shaderIndex = 0;
         if (!shaderText.empty())
@@ -125,7 +125,7 @@ namespace JumaEngine
     {
         uint32 shaderIndex = 0;
 
-        std::vector<std::string> shaderText;
+        jarray<std::string> shaderText;
         if (loadShaderText(shaderFilePath, shaderText))
         {
             shaderIndex = compileShader(shaderText, shaderType);
@@ -249,7 +249,7 @@ namespace JumaEngine
             glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, &value[0][0]);
         }
     }
-    void ShaderOpenGL::setUniformValue(const char* uniformName, const std::vector<float>& value)
+    void ShaderOpenGL::setUniformValue(const char* uniformName, const jarray<float>& value)
     {
         if (!value.empty())
         {

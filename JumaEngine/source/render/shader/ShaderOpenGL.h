@@ -4,7 +4,6 @@
 
 #include "common_header.h"
 #include "ShaderBase.h"
-#include <vector>
 
 namespace JumaEngine
 {
@@ -38,15 +37,15 @@ namespace JumaEngine
         virtual void setUniformValue(const char* uniformName, const glm::vec3& value) override;
         virtual void setUniformValue(const char* uniformName, const glm::vec4& value) override;
         virtual void setUniformValue(const char* uniformName, const glm::mat4& value) override;
-        virtual void setUniformValue(const char* uniformName, const std::vector<float>& value) override;
+        virtual void setUniformValue(const char* uniformName, const jarray<float>& value) override;
 
     private:
 
         uint32 m_ShaderProgramIndex = 0;
 
 
-        bool loadShaderText(const std::string& shaderFilePath, std::vector<std::string>& shaderText) const;
-        uint32 compileShader(const std::vector<std::string>& shaderText, ShaderType shaderType) const;
+        bool loadShaderText(const std::string& shaderFilePath, jarray<std::string>& shaderText) const;
+        uint32 compileShader(const jarray<std::string>& shaderText, ShaderType shaderType) const;
         uint32 loadAndCompileShader(const std::string& shaderFilePath, ShaderType shaderType) const;
         uint32 compileShaderProgram(uint32 vertexShader, uint32 geometryShader, uint32 fragmentShader) const;
 

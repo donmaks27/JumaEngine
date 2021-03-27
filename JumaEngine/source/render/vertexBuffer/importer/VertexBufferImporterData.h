@@ -4,7 +4,7 @@
 
 #include "common_header.h"
 #include "transform/Transform.h"
-#include <vector>
+#include "utils/jarray.h"
 
 namespace JumaEngine
 {
@@ -15,18 +15,18 @@ namespace JumaEngine
 
     struct VertexBufferImporterMeshPartData
     {
-        std::vector<VertexBufferImporterVertexData> verticesData;
+        jarray<VertexBufferImporterVertexData> verticesData;
     };
 
     struct VertexBufferImporterMeshData
     {
         std::string name;
         Transform transform;
-        std::vector<VertexBufferImporterMeshPartData> meshPartsData;
+        jarray<VertexBufferImporterMeshPartData> meshPartsData;
     };
 
     struct VertexBufferImporterData
     {
-        std::vector<VertexBufferImporterMeshData> meshesData;
+        jarray<VertexBufferImporterMeshData> meshesData;
     };
 }

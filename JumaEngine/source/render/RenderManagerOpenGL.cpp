@@ -1,17 +1,14 @@
 ﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
 
 #include "RenderManagerOpenGL.h"
-#include "Engine.h"
 #include "GL/glew.h"
 #include "utils/log.h"
 #include "shader/ShaderOpenGL.h"
 #include "vertexBuffer/VertexPosition.h"
 #include "vertexBuffer/VertexBufferOpenGL.h"
 #include "utils/system_functions.h"
-#include "transform/Transform.h"
 #include "framework/material/Material.h"
 #include "framework/mesh/Mesh.h"
-#include "vertexBuffer/importer/VertexBufferImporterBase.h"
 
 namespace JumaEngine
 {
@@ -24,7 +21,7 @@ namespace JumaEngine
             return false;
         }
 
-        m_Material = getOwnerEngine()->createObject<Material>();
+        m_Material = SystemFunctions::createObject<Material>(this);
         m_Material->setShaderName("content/shaders/testShader");
 
         SystemFunctions::importVertexBufferFile(this, "");

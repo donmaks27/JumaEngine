@@ -4,7 +4,7 @@
 
 #include "common_header.h"
 #include "glm/mat4x4.hpp"
-#include <vector>
+#include "utils/jarray.h"
 
 namespace JumaEngine
 {
@@ -56,7 +56,7 @@ namespace JumaEngine
         virtual void setUniformValue(const char* uniformName, const glm::vec3& value) = 0;
         virtual void setUniformValue(const char* uniformName, const glm::vec4& value) = 0;
         virtual void setUniformValue(const char* uniformName, const glm::mat4& value) = 0;
-        virtual void setUniformValue(const char* uniformName, const std::vector<float>& value) = 0;
+        virtual void setUniformValue(const char* uniformName, const jarray<float>& value) = 0;
 
     private:
 

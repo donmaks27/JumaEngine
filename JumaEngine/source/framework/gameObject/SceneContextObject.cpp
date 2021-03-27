@@ -1,7 +1,8 @@
 ﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
 
-#include "SceneObject.h"
+#include "SceneContextObject.h"
 
 namespace JumaEngine
 {
+    
 }

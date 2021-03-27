@@ -4,7 +4,7 @@
 
 #include "common_header.h"
 #include "EngineContextObject.h"
-#include <vector>
+#include "utils/jarray.h"
 
 namespace JumaEngine
 {
@@ -18,7 +18,7 @@ namespace JumaEngine
         Mesh() = default;
         virtual ~Mesh() override;
 
-        bool initMesh(const std::vector<VertexBufferDataBase*>& vertexBuffersData);
+        bool initMesh(const jarray<VertexBufferDataBase*>& vertexBuffersData);
         bool isMeshInit() const { return !m_VertexBuffers.empty(); }
         void terminateMesh();
 
@@ -29,7 +29,7 @@ namespace JumaEngine
 
     protected:
 
-        std::vector<VertexBufferBase*> m_VertexBuffers;
-        std::vector<MaterialBase*> m_Materials;
+        jarray<VertexBufferBase*> m_VertexBuffers;
+        jarray<MaterialBase*> m_Materials;
     };
 }
