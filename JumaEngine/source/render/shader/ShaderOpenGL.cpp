@@ -132,7 +132,7 @@ namespace JumaEngine
 #if LOG_ENABLED
             if (shaderIndex == 0)
             {
-                jstring message = JTEXT("Failed to compile ");
+                std::string message = JTEXT("Failed to compile ");
                 switch (shaderType)
                 {
                 case ShaderType::Vertex:   message += JTEXT("vertex"); break;

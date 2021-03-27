@@ -33,15 +33,6 @@ namespace JumaEngine
 
         return true;
     }
-
-    void RenderManagerOpenGL::render()
-    {
-        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-        m_Mesh->draw();
-    }
-
     void RenderManagerOpenGL::terminate()
     {
         if (m_Mesh != nullptr)
@@ -54,6 +45,14 @@ namespace JumaEngine
             delete m_Material;
             m_Material = nullptr;
         }
+    }
+
+    void RenderManagerOpenGL::render()
+    {
+        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+        m_Mesh->draw();
     }
 
     ShaderBase* RenderManagerOpenGL::createShader()

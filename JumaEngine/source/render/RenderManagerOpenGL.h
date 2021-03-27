@@ -17,11 +17,12 @@ namespace JumaEngine
         RenderManagerOpenGL() = default;
         virtual ~RenderManagerOpenGL() override = default;
 
+    	virtual RenderAPI getRenderAPI() const override { return RenderAPI::OpenGL; }
+
         virtual bool init() override;
+        virtual void terminate() override;
 
         virtual void render() override;
-
-        virtual void terminate() override;
 
         virtual ShaderBase* createShader() override;
         virtual VertexBufferBase* createVertextBuffer() override;

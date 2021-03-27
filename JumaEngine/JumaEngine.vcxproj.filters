@@ -201,5 +201,8 @@
     <ClInclude Include="source\framework\mesh\Mesh.h">
       <Filter>JumaEngine\framework\mesh</Filter>
     </ClInclude>
+    <ClInclude Include="source\render\RenderAPI.h">
+      <Filter>JumaEngine\render</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

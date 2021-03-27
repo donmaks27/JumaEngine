@@ -20,21 +20,12 @@ namespace JumaEngine
         Engine() = default;
         virtual ~Engine() = default;
 
-        enum ExitCode
-        {
-            OK = 0,
-            EmptyWindowObject = 1,
-            FailWindowInit = 2,
-            EmptyRenderManager = 3,
-            FailRenderManagerInit = 4,
-        };
-
         template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<WindowBase, T>)>
         void setWindow()
         {
             if (m_Window == nullptr)
             {
-                m_Window = new T();
+                m_Window = createObject<T>();
             }
         }
         template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<RenderManagerBase, T>)>
@@ -42,7 +33,7 @@ namespace JumaEngine
         {
             if (m_RenderManager == nullptr)
             {
-                m_RenderManager = new T();
+                m_RenderManager = createObject<T>();
             }
         }
         template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<VertexBufferImporterBase, T>)>
@@ -58,16 +49,11 @@ namespace JumaEngine
         RenderManagerBase* getRenderManager() const { return m_RenderManager; }
         VertexBufferImporterBase* getVertexBufferImporter() const { return m_VertexBufferImporter; }
 
-        int32 startEngine(int argc, char** argv);
-        int32 startEngine() { return startEngine(0, nullptr); }
-
+        bool startEngine(int argc, char** argv);
+        bool startEngine() { return startEngine(0, nullptr); }
+    	
         bool shouldStopEngine() const;
         double getDeltaTime() const;
-
-        virtual void onInit();
-        virtual void onUpdate(double deltaTime);
-        virtual void onPostUpdate();
-        virtual void onStop();
 
         template<typename T, TEMPLATE_ENABLE(is_base_and_not_same<EngineContextObject, T>)>
         T* createObject()
@@ -88,13 +74,20 @@ namespace JumaEngine
         Camera* m_Camera = nullptr;
 
 
-        int32 startEngineInternal(int argc, char** argv);
+        void registerEngineObject(EngineContextObject* object);
 
-        bool initWindow(int32& resultCode) const;
-        bool initRender(int32& resultCode);
+        bool startEngineInternal(int argc, char** argv);
+
+        bool initEngine();
+        bool initWindow() const;
+        bool initRender() const;
+
+        void startEngineLoop();
 
         void terminateEngine();
 
-        void registerEngineObject(EngineContextObject* object);
+        void onEngineInit();
+        void tick(double deltaTime);
+        void stopEngine();
     };
 }

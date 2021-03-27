@@ -6,16 +6,16 @@
 
 namespace JumaEngine
 {
-    const jchar* Log::PREFIX_ERROR   = JTEXT("[ERR]  ");
-    const jchar* Log::PREFIX_WARNING = JTEXT("[WARN] ");
-    const jchar* Log::PREFIX_INFO    = JTEXT("[INFO] ");
-    const jchar* Log::PREFIX_CORRECT = JTEXT("[OK]   ");
+    const char* Log::PREFIX_ERROR   = JTEXT("[ERR]  ");
+    const char* Log::PREFIX_WARNING = JTEXT("[WARN] ");
+    const char* Log::PREFIX_INFO    = JTEXT("[INFO] ");
+    const char* Log::PREFIX_CORRECT = JTEXT("[OK]   ");
 
 #if LOG_ENABLED
     std::mutex Log::s_Mutex;
 #endif
 
-    void Log::WriteLog(const jchar* prefix, const jstring& method, const char* message)
+    void Log::WriteLog(const char* prefix, const std::string& method, const char* message)
     {
 #if LOG_ENABLED
         std::unique_lock<std::mutex> lock(s_Mutex);

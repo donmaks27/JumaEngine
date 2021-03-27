@@ -3,39 +3,45 @@
 #pragma once
 
 #include "common_header.h"
+#include "EngineContextObject.h"
+#include "render/RenderAPI.h"
 #include "glm/vec2.hpp"
 
 namespace JumaEngine
 {
-    class WindowBase
+    class WindowBase : public EngineContextObject
     {
     public:
         WindowBase() = default;
-        virtual ~WindowBase() = default;
+        virtual ~WindowBase() override = default;
 
-        virtual bool createWindow() = 0;
-        virtual bool isWindowCreated() const = 0;
-
-        virtual void onEngineLoopStart() {}
-
-        virtual double getDeltaTime() const = 0;
-        virtual bool shouldCloseWindow() const = 0;
-
-        virtual void onFrameRenderFinish() = 0;
-
-        virtual void termiante() {}
-
-        virtual void setWindowTitle(const char* title) = 0;
+        void setWindowTitle(const std::string& title);
+    	std::string getWindowTite() const { return m_WindowTitle; }
 
         void setWindowSize(const glm::uvec2& windowSize);
         glm::uvec2 getWindowSize() const { return m_WindowSize; }
         float getWindowAspectRatio() const;
 
+        bool init();
+        virtual bool isInit() const = 0;
+        virtual void termiante() = 0;
+
+        virtual void onEngineLoopStart() = 0;
+        virtual void onFrameRenderFinish() = 0;
+
+        virtual double getDeltaTime() const = 0;
+        virtual bool shouldCloseWindow() const = 0;
+
     protected:
 
-        glm::uvec2 m_WindowSize = glm::uvec2(0, 0);
+    	std::string m_WindowTitle = JTEXT("JUMAEngine");
+        glm::uvec2 m_WindowSize = glm::uvec2(800, 600);
 
 
-        virtual void onWindowSizeChanged() {}
+        virtual bool isSupportedRenderAPI(RenderAPI api) const = 0;
+		virtual void initInternal() = 0;
+
+    	virtual void updateWindowTitle() = 0;
+        virtual void updateWindowSize() = 0;
     };
 }

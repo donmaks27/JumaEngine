@@ -15,27 +15,24 @@ namespace JumaEngine
         WindowGLFW() = default;
         virtual ~WindowGLFW() override;
 
-        virtual bool createWindow() override;
-        virtual bool isWindowCreated() const override { return m_WindowObject != nullptr; }
+        virtual bool isInit() const override { return m_WindowObject != nullptr; }
+        virtual void termiante() override;
         
         virtual void onEngineLoopStart() override;
+        virtual void onFrameRenderFinish() override;
 
         virtual double getDeltaTime() const override { return m_DeltaTime; }
         virtual bool shouldCloseWindow() const override;
-        
-        virtual void onFrameRenderFinish() override;
-        
-        virtual void termiante() override;
-
-        virtual void setWindowTitle(const char* title) override;
 
     protected:
+    	
+        virtual bool isSupportedRenderAPI(const RenderAPI api) const override { return api == RenderAPI::OpenGL; }
+        virtual void initInternal() override;
 
-        virtual void onWindowSizeChanged() override;
+        virtual void updateWindowTitle() override;
+        virtual void updateWindowSize() override;
 
     private:
-
-        typedef WindowBase Super;
 
         GLFWwindow* m_WindowObject = nullptr;
 
@@ -43,7 +40,7 @@ namespace JumaEngine
         double m_DeltaTime = 0.0;
 
 
-        static void ErrorCallback(int code, const char* errorMessage);
+        static void errorCallback(int code, const char* errorMessage);
 
         void updateDeltaTime();
 

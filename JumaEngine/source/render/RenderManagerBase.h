@@ -4,6 +4,7 @@
 
 #include "common_header.h"
 #include "EngineContextObject.h"
+#include "RenderAPI.h"
 
 namespace JumaEngine
 {
@@ -16,11 +17,12 @@ namespace JumaEngine
         RenderManagerBase() = default;
         virtual ~RenderManagerBase() override = default;
 
+		virtual RenderAPI getRenderAPI() const { return RenderAPI::None; }
+    	
         virtual bool init() = 0;
+        virtual void terminate() = 0;
 
         virtual void render() = 0;
-
-        virtual void terminate() {}
 
         virtual ShaderBase* createShader() = 0;
         virtual VertexBufferBase* createVertextBuffer() = 0;

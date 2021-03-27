@@ -117,6 +117,7 @@
     <ClInclude Include="source\framework\material\MaterialBase.h" />
     <ClInclude Include="source\framework\material\MaterialSimple.h" />
     <ClInclude Include="source\framework\mesh\Mesh.h" />
+    <ClInclude Include="source\render\RenderAPI.h" />
     <ClInclude Include="source\render\RenderManagerBase.h" />
     <ClInclude Include="source\render\RenderManagerOpenGL.h" />
     <ClInclude Include="source\render\shader\ShaderBase.h" />

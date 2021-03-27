@@ -12,24 +12,18 @@ namespace JumaEngine
         terminateInternal();
     }
 
-    bool WindowGLFW::createWindow()
+    void WindowGLFW::initInternal()
     {
-        if (isWindowCreated())
-        {
-            JUMA_LOG(warning, JTEXT("WindowGLFW already initialized!"));
-            return false;
-        }
-
         const int initResult = glfwInit();
         if (initResult == GLFW_FALSE)
         {
             const char* errorStr = nullptr;
             glfwGetError(&errorStr);
             JUMA_LOG(error, errorStr);
-            return false;
+            return;
         }
 
-        glfwSetErrorCallback(WindowGLFW::ErrorCallback);
+        glfwSetErrorCallback(WindowGLFW::errorCallback);
 
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
@@ -37,21 +31,32 @@ namespace JumaEngine
         glfwWindowHint(GLFW_SAMPLES, 0);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-        m_WindowObject = glfwCreateWindow(800, 600, JTEXT("JUMAEngine"), nullptr, nullptr);
+    	const glm::uvec2 windowSize = getWindowSize();
+        m_WindowObject = glfwCreateWindow(windowSize.x, windowSize.y, getWindowTite().c_str(), nullptr, nullptr);
         if (m_WindowObject == nullptr)
         {
-            return false;
+            return;
         }
-    	m_WindowSize = glm::uvec2(800, 600);
     	
         glfwMakeContextCurrent(m_WindowObject);
         glfwSwapInterval(0);
-
-        return true;
     }
-    void WindowGLFW::ErrorCallback(int code, const char* errorMessage)
+    void WindowGLFW::errorCallback(int code, const char* errorMessage)
     {
         JUMA_LOG(error, errorMessage);
+    }
+
+    void WindowGLFW::termiante()
+    {
+        terminateInternal();
+    }
+    void WindowGLFW::terminateInternal()
+    {
+        if (isInit())
+        {
+            glfwTerminate();
+            m_WindowObject = nullptr;
+        }
     }
 
     void WindowGLFW::onEngineLoopStart()
@@ -59,15 +64,9 @@ namespace JumaEngine
         m_LastTimeStamp = glfwGetTime();
         m_DeltaTime = 0.0;
     }
-
-    bool WindowGLFW::shouldCloseWindow() const
-    {
-        return !isWindowCreated() || glfwWindowShouldClose(m_WindowObject);
-    }
-    
     void WindowGLFW::onFrameRenderFinish()
     {
-        if (isWindowCreated())
+        if (isInit())
         {
             glfwSwapBuffers(m_WindowObject);
             glfwPollEvents();
@@ -82,36 +81,24 @@ namespace JumaEngine
         m_LastTimeStamp = timeStamp;
     }
 
-    void WindowGLFW::termiante()
+    bool WindowGLFW::shouldCloseWindow() const
     {
-        terminateInternal();
+        return isInit() && glfwWindowShouldClose(m_WindowObject);
     }
-    void WindowGLFW::terminateInternal()
+    
+	void WindowGLFW::updateWindowTitle()
     {
-        if (isWindowCreated())
+    	if (isInit())
         {
-            glfwTerminate();
-
-            m_WindowObject = nullptr;
+            glfwSetWindowTitle(m_WindowObject, getWindowTite().c_str());
         }
     }
-
-    void WindowGLFW::setWindowTitle(const char* title)
+    void WindowGLFW::updateWindowSize()
     {
-        if (isWindowCreated())
-        {
-            glfwSetWindowTitle(m_WindowObject, title);
-        }
-    }
-
-    void WindowGLFW::onWindowSizeChanged()
-    {
-        if (isWindowCreated())
+        if (isInit())
         {
             const glm::uvec2 windowSize = getWindowSize();
             glfwSetWindowSize(m_WindowObject, windowSize.x, windowSize.y);
         }
-
-        Super::onWindowSizeChanged();
     }
 }
