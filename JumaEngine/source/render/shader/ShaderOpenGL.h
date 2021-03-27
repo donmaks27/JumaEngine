@@ -24,7 +24,7 @@ namespace JumaEngine
 
     protected:
 
-        virtual void loadShaderInternal(const std::string& shaderName) override;
+        virtual void loadShaderInternal(const jstring& shaderName) override;
         virtual void clearShaderInternal() override;
 
         virtual void activateShaderInternal() override;
@@ -44,9 +44,9 @@ namespace JumaEngine
         uint32 m_ShaderProgramIndex = 0;
 
 
-        bool loadShaderText(const std::string& shaderFilePath, jarray<std::string>& shaderText) const;
-        uint32 compileShader(const jarray<std::string>& shaderText, ShaderType shaderType) const;
-        uint32 loadAndCompileShader(const std::string& shaderFilePath, ShaderType shaderType) const;
+        bool loadShaderText(const jstring& shaderFilePath, jarray<jstring>& shaderText) const;
+        uint32 compileShader(const jarray<jstring>& shaderText, ShaderType shaderType) const;
+        uint32 loadAndCompileShader(const jstring& shaderFilePath, ShaderType shaderType) const;
         uint32 compileShaderProgram(uint32 vertexShader, uint32 geometryShader, uint32 fragmentShader) const;
 
         static void deactivateShaderOpenGL();

@@ -8,7 +8,7 @@
 
 namespace JumaEngine
 {
-	void WindowBase::setWindowTitle(const std::string& title)
+	void WindowBase::setWindowTitle(const jstring& title)
 	{
 		if (m_WindowTitle != title)
 		{

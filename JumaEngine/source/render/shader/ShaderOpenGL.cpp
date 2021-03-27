@@ -16,7 +16,7 @@ namespace JumaEngine
         clearOpenGLShader();
     }
 
-    void ShaderOpenGL::loadShaderInternal(const std::string& shaderName)
+    void ShaderOpenGL::loadShaderInternal(const jstring& shaderName)
     {
         const uint32 vertexShaderIndex = loadAndCompileShader(shaderName + ".vsh", ShaderType::Vertex);
         const uint32 geometryShaderIndex = loadAndCompileShader(shaderName + ".gsh", ShaderType::Geometry);
@@ -54,7 +54,7 @@ namespace JumaEngine
         }
     }
 
-    bool ShaderOpenGL::loadShaderText(const std::string& shaderFilePath, jarray<std::string>& shaderText) const
+    bool ShaderOpenGL::loadShaderText(const jstring& shaderFilePath, jarray<jstring>& shaderText) const
     {
         std::ifstream file(shaderFilePath);
         if (!file.is_open())
@@ -64,7 +64,7 @@ namespace JumaEngine
 
         while (!file.eof())
         {
-            std::string line;
+            jstring line;
             getline(file, line);
             line += '\n';
             shaderText.push_back(line);
@@ -73,7 +73,7 @@ namespace JumaEngine
 
         return true;
     }
-    uint32 ShaderOpenGL::compileShader(const jarray<std::string>& shaderText, const ShaderType shaderType) const
+    uint32 ShaderOpenGL::compileShader(const jarray<jstring>& shaderText, const ShaderType shaderType) const
     {
         uint32 shaderIndex = 0;
         if (!shaderText.empty())
@@ -83,7 +83,7 @@ namespace JumaEngine
             GLint* shaderLineLength = new GLint[linesCount];
             for (int32 lineIndex = 0; lineIndex < linesCount; lineIndex++)
             {
-                const std::string& line = shaderText[lineIndex];
+                const jstring& line = shaderText[lineIndex];
                 shader[lineIndex] = line.c_str();
                 shaderLineLength[lineIndex] = static_cast<int32>(line.size());
             }
@@ -121,18 +121,18 @@ namespace JumaEngine
         }
         return shaderIndex;
     }
-    uint32 ShaderOpenGL::loadAndCompileShader(const std::string& shaderFilePath, ShaderType shaderType) const
+    uint32 ShaderOpenGL::loadAndCompileShader(const jstring& shaderFilePath, ShaderType shaderType) const
     {
         uint32 shaderIndex = 0;
 
-        jarray<std::string> shaderText;
+        jarray<jstring> shaderText;
         if (loadShaderText(shaderFilePath, shaderText))
         {
             shaderIndex = compileShader(shaderText, shaderType);
 #if LOG_ENABLED
             if (shaderIndex == 0)
             {
-                std::string message = JTEXT("Failed to compile ");
+                jstring message = JTEXT("Failed to compile ");
                 switch (shaderType)
                 {
                 case ShaderType::Vertex:   message += JTEXT("vertex"); break;

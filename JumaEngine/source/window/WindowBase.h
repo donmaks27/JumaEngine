@@ -15,8 +15,8 @@ namespace JumaEngine
         WindowBase() = default;
         virtual ~WindowBase() override = default;
 
-        void setWindowTitle(const std::string& title);
-    	std::string getWindowTite() const { return m_WindowTitle; }
+        void setWindowTitle(const jstring& title);
+    	jstring getWindowTite() const { return m_WindowTitle; }
 
         void setWindowSize(const glm::uvec2& windowSize);
         glm::uvec2 getWindowSize() const { return m_WindowSize; }
@@ -34,7 +34,7 @@ namespace JumaEngine
 
     protected:
 
-    	std::string m_WindowTitle = JTEXT("JUMAEngine");
+    	jstring m_WindowTitle = JTEXT("JUMAEngine");
         glm::uvec2 m_WindowSize = glm::uvec2(800, 600);
 
 

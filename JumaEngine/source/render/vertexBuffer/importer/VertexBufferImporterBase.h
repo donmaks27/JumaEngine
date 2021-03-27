@@ -18,9 +18,9 @@ namespace JumaEngine
 
         void importFile(const char* filePath);
 
-        jarray<std::string> getMeshesNames() const;
+        jarray<jstring> getMeshesNames() const;
         template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<VertexBufferDataBase, T>)>
-        jarray<VertexBufferDataBase*> createVertexBufferForMesh(const std::string& meshName)
+        jarray<VertexBufferDataBase*> createVertexBufferForMesh(const jstring& meshName)
         {
             jarray<VertexBufferDataBase*> result;
             for (const auto& meshData : m_Data.meshesData)

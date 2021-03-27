@@ -139,6 +139,7 @@
     <ClInclude Include="source\transform\Rotation.h" />
     <ClInclude Include="source\transform\Transform.h" />
     <ClInclude Include="source\utils\jarray.h" />
+    <ClInclude Include="source\utils\jstring.h" />
     <ClInclude Include="source\utils\log.h" />
     <ClInclude Include="source\utils\math_consts.h" />
     <ClInclude Include="source\utils\math_functions.h" />

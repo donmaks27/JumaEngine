@@ -40,7 +40,7 @@ namespace JumaEngine
         }
         return nullptr;
     }
-    ShaderBase* SystemFunctions::createShader(const EngineContextObject* engineContextObject, const std::string& shaderName)
+    ShaderBase* SystemFunctions::createShader(const EngineContextObject* engineContextObject, const jstring& shaderName)
     {
         ShaderBase* shader = createShader(engineContextObject);
         if (shader != nullptr)

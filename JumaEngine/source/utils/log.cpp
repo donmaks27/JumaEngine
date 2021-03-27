@@ -15,7 +15,7 @@ namespace JumaEngine
     std::mutex Log::s_Mutex;
 #endif
 
-    void Log::WriteLog(const char* prefix, const std::string& method, const char* message)
+    void Log::WriteLog(const char* prefix, const jstring& method, const char* message)
     {
 #if LOG_ENABLED
         std::unique_lock<std::mutex> lock(s_Mutex);

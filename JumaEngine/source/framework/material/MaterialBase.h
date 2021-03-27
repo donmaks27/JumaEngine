@@ -16,8 +16,8 @@ namespace JumaEngine
         virtual ~MaterialBase() override;
 
         bool isShaderValid() const;
-        std::string getShaderName() const;
-        void setShaderName(const std::string& shaderName);
+        jstring getShaderName() const;
+        void setShaderName(const jstring& shaderName);
         void clearShader();
 
         void activate() const;

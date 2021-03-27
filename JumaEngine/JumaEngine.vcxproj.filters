@@ -234,5 +234,8 @@
     <ClInclude Include="source\utils\jarray.h">
       <Filter>JumaEngine\utils</Filter>
     </ClInclude>
+    <ClInclude Include="source\utils\jstring.h">
+      <Filter>JumaEngine\utils</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

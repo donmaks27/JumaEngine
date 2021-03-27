@@ -9,9 +9,9 @@ namespace JumaEngine
         m_Data = loadDataFromFile(filePath);
     }
 
-    jarray<std::string> VertexBufferImporterBase::getMeshesNames() const
+    jarray<jstring> VertexBufferImporterBase::getMeshesNames() const
     {
-        jarray<std::string> result;
+        jarray<jstring> result;
         for (const auto& meshData : m_Data.meshesData)
         {
             result.push_back(meshData.name);

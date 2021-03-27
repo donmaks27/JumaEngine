@@ -20,7 +20,7 @@ namespace JumaEngine
 
     struct VertexBufferImporterMeshData
     {
-        std::string name;
+        jstring name;
         Transform transform;
         jarray<VertexBufferImporterMeshPartData> meshPartsData;
     };

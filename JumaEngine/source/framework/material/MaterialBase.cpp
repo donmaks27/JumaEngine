@@ -15,11 +15,11 @@ namespace JumaEngine
     {
         return (m_Shader != nullptr) && m_Shader->isShaderLoaded();
     }
-    std::string MaterialBase::getShaderName() const
+    jstring MaterialBase::getShaderName() const
     {
-        return m_Shader != nullptr ? m_Shader->getShaderName() : std::string();
+        return m_Shader != nullptr ? m_Shader->getShaderName() : jstring();
     }
-    void MaterialBase::setShaderName(const std::string& shaderName)
+    void MaterialBase::setShaderName(const jstring& shaderName)
     {
         if (m_Shader == nullptr)
         {
