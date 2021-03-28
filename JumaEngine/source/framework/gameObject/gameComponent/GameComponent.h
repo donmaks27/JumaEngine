@@ -3,22 +3,29 @@
 #pragma once
 
 #include "common_header.h"
-#include "EngineContextObject.h"
+#include "framework/gameObject/WorldContextObject.h"
 
 namespace JumaEngine
 {
-    class EngineObject;
+    class EngineWorld;
+    class GameObject;
 
-    class GameComponent : public EngineContextObject
+    class GameComponent : public WorldContextObject
     {
+        friend EngineWorld;
+
     public:
         GameComponent() = default;
         virtual ~GameComponent() override = default;
 
-        EngineObject* getOwnerObject() const { return m_OwnerObject; }
+        GameObject* getOwnerGameObject() const { return m_OwnerObject; }
+
+    protected:
+
+        virtual void onOwnerGameObjectChange() {}
 
     private:
 
-        EngineObject* m_OwnerObject = nullptr;
+        GameObject* m_OwnerObject = nullptr;
     };
 }

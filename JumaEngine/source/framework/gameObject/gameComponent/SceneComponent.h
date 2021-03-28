@@ -11,6 +11,8 @@ namespace JumaEngine
 {
     class SceneComponent : public GameComponent, public TransformObject
     {
+        friend EngineWorld;
+
     public:
         SceneComponent() = default;
         virtual ~SceneComponent() override = default;
@@ -18,9 +20,11 @@ namespace JumaEngine
         SceneComponent* getParentComponent() const { return m_ParentComponent; }
         const jarray<SceneComponent*>& getChildComponents() const { return m_ChildComponents; }
 
+        bool isRootComponent() const { return (getParentComponent() == nullptr) && (getOwnerGameObject() != nullptr); }
+
     protected:
 
-        virtual TransformObject* getParentTransformObject() const override;
+        virtual void onParentComponentChanged() {}
 
     private:
 

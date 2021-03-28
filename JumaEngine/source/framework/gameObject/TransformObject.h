@@ -27,7 +27,7 @@ namespace JumaEngine
 
 	protected:
 
-		virtual TransformObject* getParentTransformObject() const = 0;
+		virtual TransformObject* getParentTransformObject() const { return nullptr; }
 
 		virtual void onTransformChanged() {}
 	

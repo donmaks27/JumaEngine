@@ -85,9 +85,6 @@
     <ClCompile Include="source\framework\gameObject\GameObject.cpp">
       <Filter>JumaEngine\framework\gameObject</Filter>
     </ClCompile>
-    <ClCompile Include="source\framework\gameObject\SceneObject.cpp">
-      <Filter>JumaEngine\framework\gameObject</Filter>
-    </ClCompile>
     <ClCompile Include="source\framework\gameObject\Camera.cpp">
       <Filter>JumaEngine\framework\gameObject</Filter>
     </ClCompile>
@@ -112,17 +109,17 @@
     <ClCompile Include="source\framework\mesh\Mesh.cpp">
       <Filter>JumaEngine\framework\mesh</Filter>
     </ClCompile>
-    <ClCompile Include="source\framework\gameObject\SceneContextObject.cpp">
-      <Filter>JumaEngine\framework\gameObject</Filter>
-    </ClCompile>
-    <ClCompile Include="source\framework\gameObject\EngineObject.cpp">
-      <Filter>JumaEngine\framework\gameObject</Filter>
-    </ClCompile>
     <ClCompile Include="source\framework\gameObject\gameComponent\GameComponent.cpp">
       <Filter>JumaEngine\framework\gameObject\gameComponent</Filter>
     </ClCompile>
     <ClCompile Include="source\framework\gameObject\gameComponent\SceneComponent.cpp">
       <Filter>JumaEngine\framework\gameObject\gameComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="source\framework\gameObject\WorldContextObject.cpp">
+      <Filter>JumaEngine\framework\gameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="source\framework\gameObject\EngineWorld.cpp">
+      <Filter>JumaEngine\framework\gameObject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -180,9 +177,6 @@
     <ClInclude Include="source\framework\gameObject\GameObject.h">
       <Filter>JumaEngine\framework\gameObject</Filter>
     </ClInclude>
-    <ClInclude Include="source\framework\gameObject\SceneObject.h">
-      <Filter>JumaEngine\framework\gameObject</Filter>
-    </ClInclude>
     <ClInclude Include="source\framework\gameObject\Camera.h">
       <Filter>JumaEngine\framework\gameObject</Filter>
     </ClInclude>
@@ -219,12 +213,6 @@
     <ClInclude Include="source\render\RenderAPI.h">
       <Filter>JumaEngine\render</Filter>
     </ClInclude>
-    <ClInclude Include="source\framework\gameObject\SceneContextObject.h">
-      <Filter>JumaEngine\framework\gameObject</Filter>
-    </ClInclude>
-    <ClInclude Include="source\framework\gameObject\EngineObject.h">
-      <Filter>JumaEngine\framework\gameObject</Filter>
-    </ClInclude>
     <ClInclude Include="source\framework\gameObject\gameComponent\GameComponent.h">
       <Filter>JumaEngine\framework\gameObject\gameComponent</Filter>
     </ClInclude>
@@ -236,6 +224,12 @@
     </ClInclude>
     <ClInclude Include="source\utils\jstring.h">
       <Filter>JumaEngine\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="source\framework\gameObject\WorldContextObject.h">
+      <Filter>JumaEngine\framework\gameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="source\framework\gameObject\EngineWorld.h">
+      <Filter>JumaEngine\framework\gameObject</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

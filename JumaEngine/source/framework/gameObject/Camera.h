@@ -3,11 +3,11 @@
 #pragma once
 
 #include "common_header.h"
-#include "SceneObject.h"
+#include "GameObject.h"
 
 namespace JumaEngine
 {
-	class Camera : public SceneObject
+	class Camera : public GameObject
 	{
 	public:
 		Camera() = default;

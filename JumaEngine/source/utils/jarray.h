@@ -66,7 +66,7 @@ namespace JumaEngine
             uint32 index = 0;
             while (isValidIndex(index))
             {
-                if (this->at[index] == value)
+                if (this->at(index) == value)
                 {
                     count++;
                     this->erase(this->begin() + index);
