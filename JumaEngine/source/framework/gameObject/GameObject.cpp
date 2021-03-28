@@ -9,4 +9,12 @@ namespace JumaEngine
     {
         return getParentComponent() != nullptr ? getParentComponent()->getOwnerGameObject() : nullptr;
     }
+
+    void GameObject::draw()
+    {
+        if (m_RootComponent != nullptr)
+        {
+            m_RootComponent->draw();
+        }
+    }
 }

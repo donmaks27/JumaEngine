@@ -25,6 +25,8 @@ namespace JumaEngine
         SceneComponent* getParentComponent() const { return m_ParentComponent; }
         GameObject* getParentGameObject() const;
 
+        virtual void draw();
+
 	protected:
 
         virtual void onParentComponentChanged() {}

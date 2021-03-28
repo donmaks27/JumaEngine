@@ -83,8 +83,9 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="source\Engine.cpp" />
     <ClCompile Include="source\EngineContextObject.cpp" />
-    <ClCompile Include="source\framework\gameObject\Camera.cpp" />
+    <ClCompile Include="source\framework\gameObject\CameraComponent.cpp" />
     <ClCompile Include="source\framework\gameObject\gameComponent\GameComponent.cpp" />
+    <ClCompile Include="source\framework\gameObject\gameComponent\MeshComponent.cpp" />
     <ClCompile Include="source\framework\gameObject\gameComponent\SceneComponent.cpp" />
     <ClCompile Include="source\framework\gameObject\GameObject.cpp" />
     <ClCompile Include="source\framework\gameObject\WorldContextObject.cpp" />
@@ -112,8 +113,9 @@
     <ClInclude Include="source\common_header.h" />
     <ClInclude Include="source\Engine.h" />
     <ClInclude Include="source\EngineContextObject.h" />
-    <ClInclude Include="source\framework\gameObject\Camera.h" />
+    <ClInclude Include="source\framework\gameObject\CameraComponent.h" />
     <ClInclude Include="source\framework\gameObject\gameComponent\GameComponent.h" />
+    <ClInclude Include="source\framework\gameObject\gameComponent\MeshComponent.h" />
     <ClInclude Include="source\framework\gameObject\gameComponent\SceneComponent.h" />
     <ClInclude Include="source\framework\gameObject\GameObject.h" />
     <ClInclude Include="source\framework\gameObject\WorldContextObject.h" />
@@ -137,6 +139,7 @@
     <ClInclude Include="source\transform\Rotation.h" />
     <ClInclude Include="source\transform\Transform.h" />
     <ClInclude Include="source\utils\jarray.h" />
+    <ClInclude Include="source\utils\jmap.h" />
     <ClInclude Include="source\utils\jstring.h" />
     <ClInclude Include="source\utils\log.h" />
     <ClInclude Include="source\utils\math_consts.h" />

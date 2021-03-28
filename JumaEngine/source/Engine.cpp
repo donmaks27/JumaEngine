@@ -5,8 +5,13 @@
 #include "utils/log.h"
 #include "window/WindowBase.h"
 #include "render/RenderManagerBase.h"
-#include "framework/gameObject/Camera.h"
+#include "framework/gameObject/CameraComponent.h"
+#include "framework/gameObject/EngineWorld.h"
+#include "framework/gameObject/gameComponent/MeshComponent.h"
+#include "framework/material/Material.h"
+#include "render/vertexBuffer/VertexPosition.h"
 #include "render/vertexBuffer/importer/VertexBufferImporterBase.h"
+#include "utils/system_functions.h"
 
 namespace JumaEngine
 {
@@ -130,7 +135,19 @@ namespace JumaEngine
     
     void Engine::onEngineInit()
     {
-        m_Camera = createObject<Camera>();
+        m_World = createObject<EngineWorld>();
+
+        m_Material = createObject<Material>();
+        m_Material->setShaderName("content/shaders/testShader");
+
+        SystemFunctions::importVertexBufferFile(m_World, "");
+        m_Mesh = SystemFunctions::importMesh<Mesh, VertexBufferDataPosition>(m_World, JTEXT("Triangle"));
+        m_Mesh->setMaterial(0, m_Material);
+
+        MeshComponent* component = m_World->createSceneComponent<MeshComponent>();
+        component->setMesh(m_Mesh);
+
+        m_Camera = m_World->createSceneComponent<CameraComponent>();
     	m_Camera->setWorldLocation({ -50.0f, 0.0f, 0.0f });
     	//m_Camera->setWorldRotation({ 0.0f, 0.0f, 0.0f });
     }
@@ -141,10 +158,22 @@ namespace JumaEngine
 
     void Engine::stopEngine()
     {
-        if (m_Camera != nullptr)
+        m_Camera = nullptr;
+        if (m_World != nullptr)
         {
-            delete m_Camera;
-            m_Camera = nullptr;
+            delete m_World;
+            m_World = nullptr;
+        }
+
+        if (m_Mesh != nullptr)
+        {
+            delete m_Mesh;
+            m_Mesh = nullptr;
+        }
+        if (m_Material != nullptr)
+        {
+            delete m_Material;
+            m_Material = nullptr;
         }
     }
 }

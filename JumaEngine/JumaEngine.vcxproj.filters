@@ -85,9 +85,6 @@
     <ClCompile Include="source\framework\gameObject\GameObject.cpp">
       <Filter>JumaEngine\framework\gameObject</Filter>
     </ClCompile>
-    <ClCompile Include="source\framework\gameObject\Camera.cpp">
-      <Filter>JumaEngine\framework\gameObject</Filter>
-    </ClCompile>
     <ClCompile Include="source\framework\material\MaterialBase.cpp">
       <Filter>JumaEngine\framework\material</Filter>
     </ClCompile>
@@ -120,6 +117,12 @@
     </ClCompile>
     <ClCompile Include="source\framework\gameObject\EngineWorld.cpp">
       <Filter>JumaEngine\framework\gameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="source\framework\gameObject\CameraComponent.cpp">
+      <Filter>JumaEngine\framework\gameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="source\framework\gameObject\gameComponent\MeshComponent.cpp">
+      <Filter>JumaEngine\framework\gameObject\gameComponent</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -177,9 +180,6 @@
     <ClInclude Include="source\framework\gameObject\GameObject.h">
       <Filter>JumaEngine\framework\gameObject</Filter>
     </ClInclude>
-    <ClInclude Include="source\framework\gameObject\Camera.h">
-      <Filter>JumaEngine\framework\gameObject</Filter>
-    </ClInclude>
     <ClInclude Include="source\framework\material\MaterialBase.h">
       <Filter>JumaEngine\framework\material</Filter>
     </ClInclude>
@@ -230,6 +230,15 @@
     </ClInclude>
     <ClInclude Include="source\framework\gameObject\EngineWorld.h">
       <Filter>JumaEngine\framework\gameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\jmap.h">
+      <Filter>JumaEngine\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="source\framework\gameObject\CameraComponent.h">
+      <Filter>JumaEngine\framework\gameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="source\framework\gameObject\gameComponent\MeshComponent.h">
+      <Filter>JumaEngine\framework\gameObject\gameComponent</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

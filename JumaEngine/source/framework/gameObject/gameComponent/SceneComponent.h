@@ -22,6 +22,8 @@ namespace JumaEngine
 
         bool isRootComponent() const { return (getParentComponent() == nullptr) && (getOwnerGameObject() != nullptr); }
 
+        virtual void draw();
+
     protected:
 
         virtual void onParentComponentChanged() {}

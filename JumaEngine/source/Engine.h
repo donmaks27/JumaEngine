@@ -12,7 +12,10 @@ namespace JumaEngine
     class RenderManagerBase;
     class VertexBufferImporterBase;
 
-    class Camera;
+    class EngineWorld;
+    class CameraComponent;
+    class Material;
+    class Mesh;
 
     class Engine
     {
@@ -63,7 +66,8 @@ namespace JumaEngine
             return object;
         }
 
-        Camera* getActiveCamera() const { return m_Camera; }
+        EngineWorld* getActiveWorld() const { return m_World; }
+        CameraComponent* getActiveCamera() const { return m_Camera; }
 
     private:
 
@@ -71,7 +75,11 @@ namespace JumaEngine
         RenderManagerBase* m_RenderManager = nullptr;
         VertexBufferImporterBase* m_VertexBufferImporter = nullptr;
 
-        Camera* m_Camera = nullptr;
+        EngineWorld* m_World = nullptr;
+        CameraComponent* m_Camera = nullptr;
+
+        Material* m_Material = nullptr;
+        Mesh* m_Mesh = nullptr;
 
 
         void registerEngineObject(EngineContextObject* object);

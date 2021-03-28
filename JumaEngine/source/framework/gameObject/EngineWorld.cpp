@@ -6,9 +6,21 @@
 
 namespace JumaEngine
 {
+    EngineWorld::~EngineWorld()
+    {
+        for (auto& Object : m_Objects)
+        {
+            delete Object;
+        }
+        m_Objects.clear();
+        m_RootGameObject = nullptr;
+    }
+
     void EngineWorld::onRegister()
     {
         m_RootGameObject = createObject<GameObject>();
+        m_RootGameObject->m_RootComponent = createObject<SceneComponent>();
+        m_RootGameObject->m_RootComponent->m_OwnerObject = m_RootGameObject;
     }
 
     void EngineWorld::registerWorldObject(WorldContextObject* object)
@@ -16,6 +28,14 @@ namespace JumaEngine
         if (object != nullptr)
         {
             object->m_World = this;
+
+            m_Objects.add(object);
+            GameObject* gameObject = cast<GameObject>(object);
+            if (gameObject != nullptr)
+            {
+                m_GameObjects.add(gameObject);
+            }
+
             object->onRegisterInWorld();
         }
     }
@@ -162,11 +182,14 @@ namespace JumaEngine
             return;
         }
 
-        oldParentComponent->m_ChildComponents.remove(sceneComponent);
+        if (oldParentComponent != nullptr)
+        {
+            oldParentComponent->m_ChildComponents.remove(sceneComponent);
+        }
         parentComponent->m_ChildComponents.add(sceneComponent);
         sceneComponent->m_ParentComponent = parentComponent;
 
-        if (oldParentComponent->getOwnerGameObject() != parentComponent->getOwnerGameObject())
+        if ((oldParentComponent != nullptr) && (oldParentComponent->getOwnerGameObject() != parentComponent->getOwnerGameObject()))
         {
             sceneComponent->onOwnerGameObjectChange();
         }
@@ -204,7 +227,10 @@ namespace JumaEngine
             return;
         }
 
-        oldParentObject->m_Components.remove(component);
+        if (oldParentObject != nullptr)
+        {
+            oldParentObject->m_Components.remove(component);
+        }
         parentObject->m_Components.addUnique(component);
         component->m_OwnerObject = parentObject;
 
@@ -216,6 +242,17 @@ namespace JumaEngine
         if (world != nullptr)
         {
             attachGameComponent(component, world->getRootGameObject());
+        }
+    }
+
+    void EngineWorld::draw()
+    {
+        for (auto& gameObject : m_GameObjects)
+        {
+            if (gameObject != nullptr)
+            {
+                gameObject->draw();
+            }
         }
     }
 }

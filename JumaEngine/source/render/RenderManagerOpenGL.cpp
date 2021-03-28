@@ -4,11 +4,9 @@
 #include "GL/glew.h"
 #include "utils/log.h"
 #include "shader/ShaderOpenGL.h"
-#include "vertexBuffer/VertexPosition.h"
 #include "vertexBuffer/VertexBufferOpenGL.h"
-#include "utils/system_functions.h"
-#include "framework/material/Material.h"
-#include "framework/mesh/Mesh.h"
+#include "framework/gameObject/EngineWorld.h"
+#include "framework/gameObject/gameComponent/MeshComponent.h"
 
 namespace JumaEngine
 {
@@ -20,28 +18,10 @@ namespace JumaEngine
             JUMA_LOG(error, reinterpret_cast<const char*>(glewGetErrorString(glewInitResult)));
             return false;
         }
-
-        m_Material = SystemFunctions::createObject<Material>(this);
-        m_Material->setShaderName("content/shaders/testShader");
-
-        SystemFunctions::importVertexBufferFile(this, "");
-        m_Mesh = SystemFunctions::importMesh<Mesh, VertexBufferDataPosition>(this, JTEXT("Triangle"));
-        m_Mesh->setMaterial(0, m_Material);
-
         return true;
     }
     void RenderManagerOpenGL::terminate()
     {
-        if (m_Mesh != nullptr)
-        {
-            delete m_Mesh;
-            m_Mesh = nullptr;
-        }
-        if (m_Material != nullptr)
-        {
-            delete m_Material;
-            m_Material = nullptr;
-        }
     }
 
     void RenderManagerOpenGL::render()
@@ -49,7 +29,7 @@ namespace JumaEngine
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-        m_Mesh->draw();
+        getOwnerEngine()->getActiveWorld()->draw();
     }
 
     ShaderBase* RenderManagerOpenGL::createShader()

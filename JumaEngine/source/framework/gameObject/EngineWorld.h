@@ -5,6 +5,7 @@
 #include "common_header.h"
 #include "Engine.h"
 #include "WorldContextObject.h"
+#include "utils/jarray.h"
 
 namespace JumaEngine
 {
@@ -16,36 +17,41 @@ namespace JumaEngine
     {
     public:
         EngineWorld() = default;
-        virtual ~EngineWorld() override = default;
+        virtual ~EngineWorld() override;
 
         template<typename T, TEMPLATE_ENABLE(std::is_base_of_v<GameObject, T>)>
         T* createGameObject(SceneComponent* parentComponent = nullptr)
         {
             T* object = createObject<T>();
-            if (object != nullptr)
+            if (parentComponent != nullptr)
             {
-                attachGameObject(object, parentComponent != nullptr ? parentComponent : getRootGameObject());
+                attachGameObject(object, parentComponent);
+            }
+            else
+            {
+                attachGameObject(object, getRootGameObject());
             }
             return object;
         }
-        template<typename T, TEMPLATE_ENABLE(std::is_base_of_v<GameComponent, T> && !std::is_base_of_v<SceneComponent, T>)>
-        T* createGameComponent(GameObject* parentObject = nullptr)
+        template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<SceneComponent, T>)>
+        T* createSceneComponent(SceneComponent* parentComponent = nullptr)
         {
             T* component = createObject<T>();
-            if (component != nullptr)
+            if (parentComponent != nullptr)
             {
-                attachGameComponent(component, parentObject != nullptr ? parentObject : getRootGameObject());
+                attachSceneComponent(component, parentComponent);
+            }
+            else
+            {
+                attachSceneComponent(component, getRootGameObject());
             }
             return component;
         }
-        template<typename T, TEMPLATE_ENABLE(std::is_base_of_v<SceneComponent, T>)>
+        template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<GameComponent, T> && !std::is_base_of_v<SceneComponent, T>)>
         T* createGameComponent(GameObject* parentObject = nullptr)
         {
             T* component = createObject<T>();
-            if (component != nullptr)
-            {
-                attachGameComponent(component, parentObject != nullptr ? parentObject : getRootGameObject());
-            }
+            attachGameComponent(component, parentObject != nullptr ? parentObject : getRootGameObject());
             return component;
         }
 
@@ -71,13 +77,18 @@ namespace JumaEngine
         static void attachGameComponent(GameComponent* component, GameObject* parentObject);
         static void detachGameComponent(GameComponent* component);
 
+        void draw();
+
     protected:
 
         virtual void onRegister() override;
 
     private:
 
+        jarray<WorldContextObject*> m_Objects;
+
         GameObject* m_RootGameObject = nullptr;
+        jarray<GameObject*> m_GameObjects;
 
         
         template<typename T, TEMPLATE_ENABLE(is_base_and_not_same<WorldContextObject, T>)>

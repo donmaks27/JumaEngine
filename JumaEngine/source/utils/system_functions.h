@@ -16,7 +16,7 @@ namespace JumaEngine
     class VertexBufferBase;
     class VertexBufferImporterBase;
 
-    class Camera;
+    class CameraComponent;
 
     class SystemFunctions final
     {
@@ -61,6 +61,6 @@ namespace JumaEngine
             return nullptr;
         }
 
-        static Camera* getActiveCamera(const EngineContextObject* engineContextObject);
+        static CameraComponent* getActiveCamera(const EngineContextObject* engineContextObject);
     };
 }

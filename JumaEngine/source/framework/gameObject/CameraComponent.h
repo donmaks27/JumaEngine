@@ -3,15 +3,15 @@
 #pragma once
 
 #include "common_header.h"
-#include "GameObject.h"
+#include "gameComponent/SceneComponent.h"
 
 namespace JumaEngine
 {
-	class Camera : public GameObject
+	class CameraComponent : public SceneComponent
 	{
 	public:
-		Camera() = default;
-		virtual ~Camera() override = default;
+		CameraComponent() = default;
+		virtual ~CameraComponent() override = default;
 
 		const glm::mat4& getProjectionMatrix() const { return m_ProjectionMatrix; }
 		const glm::mat4& getViewMatrix() const { return m_ViewMatrix; }

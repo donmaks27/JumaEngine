@@ -25,10 +25,5 @@ namespace JumaEngine
 
         virtual ShaderBase* createShader() override;
         virtual VertexBufferBase* createVertextBuffer() override;
-
-    private:
-
-        Material* m_Material = nullptr;
-        Mesh* m_Mesh = nullptr;
     };
 }

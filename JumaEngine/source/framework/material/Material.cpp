@@ -2,14 +2,14 @@
 
 #include "Material.h"
 #include "utils/system_functions.h"
-#include "framework/gameObject/Camera.h"
+#include "framework/gameObject/CameraComponent.h"
 #include "render/shader/ShaderBase.h"
 
 namespace JumaEngine
 {
     void Material::loadShaderParams() const
     {
-        const Camera* camera = SystemFunctions::getActiveCamera(this);
+        const CameraComponent* camera = SystemFunctions::getActiveCamera(this);
         if (camera != nullptr)
         {
             ShaderBase::setActiveShaderUniformValue("uProjection", camera->getProjectionMatrix());
