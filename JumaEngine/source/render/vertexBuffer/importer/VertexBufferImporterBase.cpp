@@ -14,7 +14,7 @@ namespace JumaEngine
         jarray<jstring> result;
         for (const auto& meshData : m_Data.meshesData)
         {
-            result.push_back(meshData.name);
+            result.add(meshData.name);
         }
         return result;
     }

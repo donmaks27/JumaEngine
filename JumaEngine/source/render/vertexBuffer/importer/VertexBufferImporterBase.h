@@ -31,7 +31,7 @@ namespace JumaEngine
                     {
                         VertexBufferDataBase* vertexBufferData = new T();
                         vertexBufferData->copyFromVertexBufferImporterData(meshPartData);
-                        result.push_back(vertexBufferData);
+                        result.add(vertexBufferData);
                     }
                     break;
                 }

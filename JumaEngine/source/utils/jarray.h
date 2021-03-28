@@ -41,7 +41,16 @@ namespace JumaEngine
             return -1;
         }
         bool contains(const T& value) const { return indexOf(value) != -1; }
-
+        
+		void add(const T& value) { this->push_back(value); }
+    	void addUnique(const T& value)
+        {
+	        if (indexOf(value) != -1)
+	        {
+		        add(value);
+	        }
+        }
+    	
         bool removeAt(const int32 index)
         {
             if (isValidIndex(index))

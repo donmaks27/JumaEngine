@@ -8,7 +8,7 @@ namespace JumaEngine
     {
         for (const auto& vertexData : data.verticesData)
         {
-            vertices.push_back({ vertexData.position });
+            vertices.add({ vertexData.position });
         }
     }
 

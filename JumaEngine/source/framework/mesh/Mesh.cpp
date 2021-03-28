@@ -18,8 +18,8 @@ namespace JumaEngine
         {
             for (const auto& vertexBufferData : vertexBuffersData)
             {
-                m_VertexBuffers.push_back(SystemFunctions::createVertexBuffer(this, vertexBufferData));
-                m_Materials.push_back(nullptr);
+                m_VertexBuffers.add(SystemFunctions::createVertexBuffer(this, vertexBufferData));
+                m_Materials.add(nullptr);
             }
             return true;
         }

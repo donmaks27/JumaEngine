@@ -67,7 +67,7 @@ namespace JumaEngine
             jstring line;
             getline(file, line);
             line += '\n';
-            shaderText.push_back(line);
+            shaderText.add(line);
         }
         file.close();
 
