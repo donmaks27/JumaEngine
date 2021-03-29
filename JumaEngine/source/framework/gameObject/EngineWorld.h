@@ -22,38 +22,38 @@ namespace JumaEngine
         template<typename T, TEMPLATE_ENABLE(std::is_base_of_v<GameObject, T>)>
         T* createGameObject(SceneComponent* parentComponent = nullptr)
         {
-            T* object = createObject<T>();
-            if (parentComponent != nullptr)
-            {
-                attachGameObject(object, parentComponent);
-            }
-            else
-            {
-                attachGameObject(object, getRootGameObject());
-            }
-            return object;
+        	if ((m_RootGameObject != nullptr) || !isGameStarted())
+        	{
+        		T* object = createObject<T>();
+        		initializeGameObject(object, parentComponent);
+        		return object;
+        	}
+        	return nullptr;
         }
         template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<SceneComponent, T>)>
         T* createSceneComponent(SceneComponent* parentComponent = nullptr)
         {
-            T* component = createObject<T>();
-            if (parentComponent != nullptr)
-            {
-                attachSceneComponent(component, parentComponent);
-            }
-            else
-            {
-                attachSceneComponent(component, getRootGameObject());
-            }
-            return component;
+        	if (m_RootGameObject != nullptr)
+        	{
+        		T* component = createObject<T>();
+        		initializeSceneComponent(component, parentComponent);
+        		return component;
+        	}
+        	return nullptr;
         }
         template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<GameComponent, T> && !std::is_base_of_v<SceneComponent, T>)>
         T* createGameComponent(GameObject* parentObject = nullptr)
         {
-            T* component = createObject<T>();
-            attachGameComponent(component, parentObject != nullptr ? parentObject : getRootGameObject());
-            return component;
+        	if (m_RootGameObject != nullptr)
+        	{
+        		T* component = createObject<T>();
+        		initializeGameComponent(component, parentObject);
+        		return component;
+        	}
+        	return nullptr;
         }
+
+    	void terminate();
 
         GameObject* getRootGameObject() const { return m_RootGameObject; }
 
@@ -77,7 +77,12 @@ namespace JumaEngine
         static void attachGameComponent(GameComponent* component, GameObject* parentObject);
         static void detachGameComponent(GameComponent* component);
 
-        void draw();
+    	void onGameStarted();
+    	bool isGameStarted() const { return m_GameStarted; }
+
+    	void tick(double deltaTime);
+
+    	void render();
 
     protected:
 
@@ -89,6 +94,8 @@ namespace JumaEngine
 
         GameObject* m_RootGameObject = nullptr;
         jarray<GameObject*> m_GameObjects;
+
+    	bool m_GameStarted = false;
 
         
         template<typename T, TEMPLATE_ENABLE(is_base_and_not_same<WorldContextObject, T>)>
@@ -104,5 +111,9 @@ namespace JumaEngine
             return nullptr;
         }
         void registerWorldObject(WorldContextObject* object);
+    	
+        void initializeGameObject(GameObject* object, SceneComponent* parentComponent);
+        void initializeSceneComponent(SceneComponent* component, SceneComponent* parentComponent);
+        void initializeGameComponent(GameComponent* component, GameObject* parentObject);
     };
 }

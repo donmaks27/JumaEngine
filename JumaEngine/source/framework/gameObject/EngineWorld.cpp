@@ -8,19 +8,12 @@ namespace JumaEngine
 {
     EngineWorld::~EngineWorld()
     {
-        for (auto& Object : m_Objects)
-        {
-            delete Object;
-        }
-        m_Objects.clear();
-        m_RootGameObject = nullptr;
+    	terminate();
     }
 
     void EngineWorld::onRegister()
     {
-        m_RootGameObject = createObject<GameObject>();
-        m_RootGameObject->m_RootComponent = createObject<SceneComponent>();
-        m_RootGameObject->m_RootComponent->m_OwnerObject = m_RootGameObject;
+        createGameObject<GameObject>();
     }
 
     void EngineWorld::registerWorldObject(WorldContextObject* object)
@@ -28,16 +21,21 @@ namespace JumaEngine
         if (object != nullptr)
         {
             object->m_World = this;
-
             m_Objects.add(object);
-            GameObject* gameObject = cast<GameObject>(object);
-            if (gameObject != nullptr)
-            {
-                m_GameObjects.add(gameObject);
-            }
-
             object->onRegisterInWorld();
         }
+    }
+
+    void EngineWorld::terminate()
+    {
+        m_RootGameObject = nullptr;
+    	m_GameObjects.clear();
+    	
+        for (auto& Object : m_Objects)
+        {
+            delete Object;
+        }
+        m_Objects.clear();
     }
 
     GameObject* EngineWorld::getRootGameObject(const WorldContextObject* object)
@@ -244,14 +242,115 @@ namespace JumaEngine
             attachGameComponent(component, world->getRootGameObject());
         }
     }
+	
+    void EngineWorld::initializeGameObject(GameObject* object, SceneComponent* parentComponent)
+    {
+        if (object != nullptr)
+        {
+            m_GameObjects.add(object);
 
-    void EngineWorld::draw()
+            object->m_RootComponent = createObject<SceneComponent>();
+            object->m_RootComponent->m_OwnerObject = object;
+
+            if (m_RootGameObject == nullptr)
+            {
+                m_RootGameObject = object;
+            }
+			else if (parentComponent != nullptr)
+			{
+				attachGameObject(object, parentComponent);
+			}
+			else
+			{
+				attachGameObject(object, m_RootGameObject);
+			}
+        	
+        	object->init();
+        	object->m_RootComponent->init();
+        	
+        	if (isGameStarted())
+        	{
+        		object->onGameStarted();
+        		object->m_RootComponent->onGameStarted();
+        	}
+        }
+    }
+    void EngineWorld::initializeSceneComponent(SceneComponent* component, SceneComponent* parentComponent)
+    {
+    	if (component != nullptr)
+    	{
+    		if (parentComponent != nullptr)
+    		{
+    			attachSceneComponent(component, parentComponent);
+    		}
+    		else
+    		{
+    			attachSceneComponent(component, m_RootGameObject);
+    		}
+
+    		component->init();
+    		
+        	if (isGameStarted())
+        	{
+        		component->onGameStarted();
+        	}
+    	}
+    }
+    void EngineWorld::initializeGameComponent(GameComponent* component, GameObject* parentObject)
+    {
+    	if (component != nullptr)
+    	{
+    		if (parentObject != nullptr)
+        	{
+        		attachGameComponent(component, parentObject);
+        	}
+        	else
+        	{
+        		attachGameComponent(component, m_RootGameObject);
+        	}
+
+    		component->init();
+    		
+        	if (isGameStarted())
+        	{
+        		component->onGameStarted();
+        	}
+    	}
+    }
+
+    void EngineWorld::onGameStarted()
+    {
+    	if (!isGameStarted())
+    	{
+    		m_GameStarted = true;
+    		for (auto& object : m_Objects)
+    		{
+    			if (object != nullptr)
+    			{
+    				object->onGameStarted();
+    			}
+    		}
+    	}
+    }
+
+    void EngineWorld::tick(const double deltaTime)
+    {
+    	for (auto& object : m_Objects)
+    	{
+    		if (object != nullptr)
+    		{
+    			object->tick(deltaTime);
+    		}
+    	}
+    }
+
+    void EngineWorld::render()
     {
         for (auto& gameObject : m_GameObjects)
         {
             if (gameObject != nullptr)
             {
-                gameObject->draw();
+                gameObject->render();
             }
         }
     }

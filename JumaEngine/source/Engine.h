@@ -95,7 +95,9 @@ namespace JumaEngine
         void terminateEngine();
 
         void onEngineInit();
+    	void onGameStart();
         void tick(double deltaTime);
+    	void render();
         void stopEngine();
     };
 }

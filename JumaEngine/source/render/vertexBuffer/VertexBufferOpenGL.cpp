@@ -105,7 +105,7 @@ namespace JumaEngine
         }
     }
 
-    void VertexBufferOpenGL::draw()
+    void VertexBufferOpenGL::render()
     {
         if (isInit())
         {

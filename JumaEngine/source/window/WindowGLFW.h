@@ -19,7 +19,7 @@ namespace JumaEngine
         virtual void termiante() override;
         
         virtual void onEngineLoopStart() override;
-        virtual void onFrameRenderFinish() override;
+        virtual void onRenderFinish() override;
 
         virtual double getDeltaTime() const override { return m_DeltaTime; }
         virtual bool shouldCloseWindow() const override;

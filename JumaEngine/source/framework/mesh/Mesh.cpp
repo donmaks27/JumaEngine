@@ -43,7 +43,7 @@ namespace JumaEngine
         }
     }
 
-    void Mesh::draw()
+    void Mesh::render()
     {
         for (uint32 index = 0; index < m_VertexBuffers.size(); index++)
         {
@@ -54,7 +54,7 @@ namespace JumaEngine
                 material->activate();
                 if (material->isActive())
                 {
-                    vertexBuffer->draw();
+                    vertexBuffer->render();
                 }
             }
         }

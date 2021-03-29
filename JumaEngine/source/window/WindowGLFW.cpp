@@ -64,7 +64,7 @@ namespace JumaEngine
         m_LastTimeStamp = glfwGetTime();
         m_DeltaTime = 0.0;
     }
-    void WindowGLFW::onFrameRenderFinish()
+    void WindowGLFW::onRenderFinish()
     {
         if (isInit())
         {

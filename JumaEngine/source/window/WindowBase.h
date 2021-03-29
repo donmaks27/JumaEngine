@@ -27,7 +27,7 @@ namespace JumaEngine
         virtual void termiante() = 0;
 
         virtual void onEngineLoopStart() = 0;
-        virtual void onFrameRenderFinish() = 0;
+        virtual void onRenderFinish() = 0;
 
         virtual double getDeltaTime() const = 0;
         virtual bool shouldCloseWindow() const = 0;

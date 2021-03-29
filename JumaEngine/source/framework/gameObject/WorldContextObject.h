@@ -18,10 +18,14 @@ namespace JumaEngine
         virtual ~WorldContextObject() override = default;
 
         EngineWorld* getOwnerWorld() const { return m_World; }
-
+    
     protected:
 
         virtual void onRegisterInWorld() {}
+
+		virtual void onGameStarted() {}
+
+    	virtual void tick(double deltaTime) {}
 
     private:
 

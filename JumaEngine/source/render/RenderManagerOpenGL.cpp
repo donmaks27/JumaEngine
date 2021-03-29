@@ -24,12 +24,10 @@ namespace JumaEngine
     {
     }
 
-    void RenderManagerOpenGL::render()
+    void RenderManagerOpenGL::onRenderStart()
     {
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-        getOwnerEngine()->getActiveWorld()->draw();
     }
 
     ShaderBase* RenderManagerOpenGL::createShader()

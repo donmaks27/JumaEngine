@@ -24,6 +24,8 @@ namespace JumaEngine
 
         virtual void onOwnerGameObjectChange() {}
 
+		virtual void init() {}
+    
     private:
 
         GameObject* m_OwnerObject = nullptr;

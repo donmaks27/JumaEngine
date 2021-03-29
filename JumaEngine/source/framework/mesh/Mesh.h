@@ -25,7 +25,7 @@ namespace JumaEngine
         MaterialBase* getMaterial(const uint32 slotIndex) const { return m_Materials.size() > slotIndex ? m_Materials[slotIndex] : nullptr; }
         void setMaterial(uint32 slotIndex, MaterialBase* material);
 
-        virtual void draw();
+        virtual void render();
 
     protected:
 

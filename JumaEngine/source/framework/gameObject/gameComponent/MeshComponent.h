@@ -17,7 +17,7 @@ namespace JumaEngine
 
         void setMesh(Mesh* mesh);
 
-        virtual void draw() override;
+        virtual void render() override;
 
     private:
 

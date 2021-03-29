@@ -10,13 +10,13 @@ namespace JumaEngine
         m_Mesh = mesh;
     }
 
-    void MeshComponent::draw()
+    void MeshComponent::render()
     {
         if (m_Mesh != nullptr)
         {
-            m_Mesh->draw();
+            m_Mesh->render();
         }
 
-        Super::draw();
+        Super::render();
     }
 }

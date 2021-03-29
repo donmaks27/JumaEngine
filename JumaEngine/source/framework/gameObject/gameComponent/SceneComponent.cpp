@@ -4,13 +4,13 @@
 
 namespace JumaEngine
 {
-    void SceneComponent::draw()
+    void SceneComponent::render()
     {
         for (auto& component : m_ChildComponents)
         {
             if (component != nullptr)
             {
-                component->draw();
+                component->render();
             }
         }
     }

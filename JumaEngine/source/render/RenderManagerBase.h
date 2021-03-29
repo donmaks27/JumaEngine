@@ -22,7 +22,7 @@ namespace JumaEngine
         virtual bool init() = 0;
         virtual void terminate() = 0;
 
-        virtual void render() = 0;
+        virtual void onRenderStart() = 0;
 
         virtual ShaderBase* createShader() = 0;
         virtual VertexBufferBase* createVertextBuffer() = 0;

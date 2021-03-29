@@ -85,7 +85,7 @@ namespace JumaEngine
 
     void Engine::startEngineLoop()
     {
-        m_Window->onEngineLoopStart();
+        onGameStart();
 
         bool firstFrame = true;
         while (!shouldStopEngine())
@@ -98,9 +98,11 @@ namespace JumaEngine
             {
                 tick(getDeltaTime());
             }
-
-            m_RenderManager->render();
-            m_Window->onFrameRenderFinish();
+			
+			m_RenderManager->onRenderStart();
+        	render();
+        	
+			m_Window->onRenderFinish();
         }
     }
     bool Engine::shouldStopEngine() const
@@ -152,8 +154,30 @@ namespace JumaEngine
     	//m_Camera->setWorldRotation({ 0.0f, 0.0f, 0.0f });
     }
 
-    void Engine::tick(double deltaTime)
+    void Engine::onGameStart()
     {
+    	if (m_World != nullptr)
+    	{
+    		m_World->onGameStarted();
+    	}
+    	
+    	m_Window->onEngineLoopStart();
+    }
+
+    void Engine::tick(const double deltaTime)
+    {
+    	if (m_World != nullptr)
+    	{
+    		m_World->tick(deltaTime);
+    	}
+    }
+
+    void Engine::render()
+    {
+    	if (m_World != nullptr)
+    	{
+    		m_World->render();
+    	}
     }
 
     void Engine::stopEngine()

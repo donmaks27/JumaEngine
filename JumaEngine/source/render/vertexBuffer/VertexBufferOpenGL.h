@@ -17,7 +17,7 @@ namespace JumaEngine
         virtual bool isInit() const override { return m_VerticesVBO; }
         virtual void terminate() override;
 
-        virtual void draw() override;
+        virtual void render() override;
 
     private:
 
