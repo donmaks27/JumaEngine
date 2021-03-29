@@ -118,10 +118,10 @@
     <ClCompile Include="source\framework\gameObject\EngineWorld.cpp">
       <Filter>JumaEngine\framework\gameObject</Filter>
     </ClCompile>
-    <ClCompile Include="source\framework\gameObject\CameraComponent.cpp">
-      <Filter>JumaEngine\framework\gameObject</Filter>
-    </ClCompile>
     <ClCompile Include="source\framework\gameObject\gameComponent\MeshComponent.cpp">
+      <Filter>JumaEngine\framework\gameObject\gameComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="source\framework\gameObject\gameComponent\CameraComponent.cpp">
       <Filter>JumaEngine\framework\gameObject\gameComponent</Filter>
     </ClCompile>
   </ItemGroup>
@@ -234,10 +234,10 @@
     <ClInclude Include="source\utils\jmap.h">
       <Filter>JumaEngine\utils</Filter>
     </ClInclude>
-    <ClInclude Include="source\framework\gameObject\CameraComponent.h">
-      <Filter>JumaEngine\framework\gameObject</Filter>
-    </ClInclude>
     <ClInclude Include="source\framework\gameObject\gameComponent\MeshComponent.h">
+      <Filter>JumaEngine\framework\gameObject\gameComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="source\framework\gameObject\gameComponent\CameraComponent.h">
       <Filter>JumaEngine\framework\gameObject\gameComponent</Filter>
     </ClInclude>
   </ItemGroup>

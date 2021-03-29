@@ -55,6 +55,7 @@ namespace JumaEngine
                 if (material->isActive())
                 {
                     vertexBuffer->render();
+                	material->deactivate();
                 }
             }
         }

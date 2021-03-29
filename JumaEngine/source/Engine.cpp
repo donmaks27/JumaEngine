@@ -5,8 +5,8 @@
 #include "utils/log.h"
 #include "window/WindowBase.h"
 #include "render/RenderManagerBase.h"
-#include "framework/gameObject/CameraComponent.h"
 #include "framework/gameObject/EngineWorld.h"
+#include "framework/gameObject/gameComponent/CameraComponent.h"
 #include "framework/gameObject/gameComponent/MeshComponent.h"
 #include "framework/material/Material.h"
 #include "render/vertexBuffer/VertexPosition.h"
@@ -150,7 +150,7 @@ namespace JumaEngine
         component->setMesh(m_Mesh);
 
         m_Camera = m_World->createSceneComponent<CameraComponent>();
-    	m_Camera->setWorldLocation({ -50.0f, 0.0f, 0.0f });
+    	//m_Camera->setWorldLocation({ -50.0f, 0.0f, 0.0f });
     	//m_Camera->setWorldRotation({ 0.0f, 0.0f, 0.0f });
     }
 

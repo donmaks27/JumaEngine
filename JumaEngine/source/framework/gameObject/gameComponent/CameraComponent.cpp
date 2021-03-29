@@ -1,6 +1,8 @@
 ﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
 
 #include "CameraComponent.h"
+
+#include "utils/log.h"
 #include "utils/math_functions.h"
 #include "utils/system_functions.h"
 
@@ -92,5 +94,34 @@ namespace JumaEngine
 	void CameraComponent::onTransformChanged()
 	{
 		updateViewMatrix();
+	}
+
+	void CameraComponent::onGameStarted()
+	{
+		Super::onGameStarted();
+
+		updateRotation(180.0f);
+	}
+
+	void CameraComponent::tick(double deltaTime)
+	{
+		Super::tick(deltaTime);
+
+		updateRotation(m_Angle + deltaTime * 90.0f);
+	}
+
+	void CameraComponent::updateRotation(const float angle)
+	{
+		m_Angle = angle;
+		while (m_Angle >= 360.0f)
+		{
+			m_Angle -= 360.0f;
+		}
+		
+		Rotation rotation = { 0.0f, angle, 0.0f };
+		const glm::vec3 direction = rotation.toDirection();
+		rotation.fromDirection(-direction);
+		
+		setWorldTransform({ direction * 50.0f, rotation });
 	}
 }

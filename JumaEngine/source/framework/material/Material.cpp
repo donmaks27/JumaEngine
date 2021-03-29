@@ -2,7 +2,7 @@
 
 #include "Material.h"
 #include "utils/system_functions.h"
-#include "framework/gameObject/CameraComponent.h"
+#include "framework/gameObject/gameComponent/CameraComponent.h"
 #include "render/shader/ShaderBase.h"
 
 namespace JumaEngine

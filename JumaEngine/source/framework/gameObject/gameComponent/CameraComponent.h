@@ -3,7 +3,7 @@
 #pragma once
 
 #include "common_header.h"
-#include "gameComponent/SceneComponent.h"
+#include "SceneComponent.h"
 
 namespace JumaEngine
 {
@@ -36,8 +36,14 @@ namespace JumaEngine
 		virtual void onRegister() override;
 		
 		virtual void onTransformChanged() override;
+		
+		virtual void onGameStarted() override;
+		
+		virtual void tick(double deltaTime) override;
 	
 	private:
+
+		typedef SceneComponent Super;
 
 		glm::mat4 m_ProjectionMatrix = glm::identity<glm::mat4>();
 		glm::mat4 m_ViewMatrix = glm::identity<glm::mat4>();
@@ -49,9 +55,13 @@ namespace JumaEngine
 		float m_FOV = 90.0f;
 		// For orthographic only
 		float m_OrthoWidth = 512.0f;
+
+		float m_Angle = 0.0f;
 		
 
 		void updateProjectionMatrix();
 		void updateViewMatrix();
+
+		void updateRotation(float angle);
 	};
 }
