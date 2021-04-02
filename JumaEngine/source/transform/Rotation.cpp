@@ -6,17 +6,6 @@
 
 namespace JumaEngine
 {
-	glm::vec3 Rotation::toEuler() const
-	{
-		return glm::vec3(roll, pitch, yaw);
-	}
-	void Rotation::fromEuler(const glm::vec3& euler)
-	{
-		roll = euler.x;
-		pitch = euler.y;
-		yaw = euler.z;
-	}
-
 	glm::quat Rotation::toQuat() const
 	{
 		return glm::quat(glm::radians(glm::vec3(roll, pitch, -yaw)));
@@ -24,7 +13,7 @@ namespace JumaEngine
 	void Rotation::fromQuat(const glm::quat& quat)
 	{
 		pitch = glm::degrees(glm::yaw(quat));
-		yaw = -glm::degrees(glm::roll(quat));
+		yaw = glm::degrees(glm::roll(quat));
 		roll = glm::degrees(glm::pitch(quat));
 	}
 

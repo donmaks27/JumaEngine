@@ -9,6 +9,19 @@ namespace JumaEngine
 {
 	struct Rotation
 	{
+		Rotation()
+			: Rotation(0.0f, 0.0f)
+		{}
+		Rotation(float p, float y, float r = 0.0f)
+			: pitch(p)
+			, yaw(y)
+			, roll(r)
+		{}
+		Rotation(const Rotation& r) = default;
+
+		Rotation& operator=(const Rotation& r) = default;
+		Rotation& operator=(Rotation&& r) = default;
+		
 		float pitch = 0.0f;
 		float yaw = 0.0f;
 		float roll = 0.0f;
@@ -29,9 +42,6 @@ namespace JumaEngine
 			return *this;
 		}
 		Rotation operator-(const Rotation& otherRotation) const { return Rotation(*this) -= otherRotation; }
-
-		glm::vec3 toEuler() const;
-		void fromEuler(const glm::vec3& euler);
 
 		glm::quat toQuat() const;
 		void fromQuat(const glm::quat& quat);
