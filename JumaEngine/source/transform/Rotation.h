@@ -9,9 +9,7 @@ namespace JumaEngine
 {
 	struct Rotation
 	{
-		Rotation()
-			: Rotation(0.0f, 0.0f)
-		{}
+		Rotation() = default;
 		Rotation(float p, float y, float r = 0.0f)
 			: pitch(p)
 			, yaw(y)
@@ -47,6 +45,6 @@ namespace JumaEngine
 		void fromQuat(const glm::quat& quat);
 
 		glm::vec3 toDirection() const;
-		void fromDirection(const glm::vec3& direction, bool resetRoll = true);
+		void fromDirection(const glm::vec3& direction);
 	};
 }

@@ -10,6 +10,9 @@ namespace JumaEngine
 	struct Transform
 	{
 		Transform() = default;
+		Transform(const glm::vec3& l)
+			: Transform(l, Rotation())
+		{}
 		Transform(const glm::vec3& l, const Rotation& r, const glm::vec3& s = glm::one<glm::vec3>())
 			: location(l)
 			, rotation(r)
@@ -23,9 +26,9 @@ namespace JumaEngine
 
 		glm::mat4 toMatrix() const
 		{
-			glm::mat4 result = glm::mat4_cast(rotation.toQuat());
-			result = glm::scale(result, scale);
-			return glm::translate(result, location);
+			glm::mat4 result = glm::translate(glm::identity<glm::mat4>(), location);
+			result *= glm::mat4_cast(rotation.toQuat());
+			return glm::scale(result, scale);
 		}
 	};
 }

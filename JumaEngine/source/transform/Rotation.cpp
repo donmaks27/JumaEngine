@@ -12,22 +12,17 @@ namespace JumaEngine
 	}
 	void Rotation::fromQuat(const glm::quat& quat)
 	{
+		roll = glm::degrees(glm::pitch(quat));
 		pitch = glm::degrees(glm::yaw(quat));
 		yaw = glm::degrees(glm::roll(quat));
-		roll = glm::degrees(glm::pitch(quat));
 	}
 
 	glm::vec3 Rotation::toDirection() const
 	{
-		return Consts::VectorForward * toQuat();
+		return glm::rotate(toQuat(), Consts::VectorForward);
 	}
-	void Rotation::fromDirection(const glm::vec3& direction, const bool resetRoll)
+	void Rotation::fromDirection(const glm::vec3& direction)
 	{
-		if (resetRoll)
-		{
-			roll = 0.0f;
-		}
-		
 		if (MathFunctions::isNearlyZero(direction))
 		{
 			pitch = 0.0f;
