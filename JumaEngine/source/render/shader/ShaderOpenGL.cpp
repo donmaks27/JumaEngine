@@ -52,6 +52,7 @@ namespace JumaEngine
             glDeleteProgram(m_ShaderProgramIndex);
             m_ShaderProgramIndex = 0;
         }
+    	m_CachedUniformLocations.clear();
     }
 
     bool ShaderOpenGL::loadShaderText(const jstring& shaderFilePath, jarray<jstring>& shaderText) const
@@ -199,7 +200,19 @@ namespace JumaEngine
 
     int32 ShaderOpenGL::getUniformLocation(const char* uniformName) const
     {
-        return m_ShaderProgramIndex != 0 ? glGetUniformLocation(m_ShaderProgramIndex, uniformName) : -1;
+    	if (m_ShaderProgramIndex != 0)
+    	{
+    		const int32* cachedLocation = m_CachedUniformLocations.findByKey(uniformName);
+    		if (cachedLocation != nullptr)
+    		{
+    			return *cachedLocation;
+    		}
+
+    		const int32 location = glGetUniformLocation(m_ShaderProgramIndex, uniformName);
+    		m_CachedUniformLocations.add(uniformName, location);
+    		return location;
+    	}
+        return -1;
     }
     void ShaderOpenGL::setUniformValue(const char* uniformName, const int32 value)
     {

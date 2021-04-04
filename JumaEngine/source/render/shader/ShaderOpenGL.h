@@ -4,6 +4,7 @@
 
 #include "common_header.h"
 #include "ShaderBase.h"
+#include "utils/jmap.h"
 
 namespace JumaEngine
 {
@@ -42,6 +43,7 @@ namespace JumaEngine
     private:
 
         uint32 m_ShaderProgramIndex = 0;
+    	mutable jmap<jstring, int32> m_CachedUniformLocations = {};
 
 
         bool loadShaderText(const jstring& shaderFilePath, jarray<jstring>& shaderText) const;

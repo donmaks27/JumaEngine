@@ -231,14 +231,14 @@
     <ClInclude Include="source\framework\gameObject\EngineWorld.h">
       <Filter>JumaEngine\framework\gameObject</Filter>
     </ClInclude>
-    <ClInclude Include="source\utils\jmap.h">
-      <Filter>JumaEngine\utils</Filter>
-    </ClInclude>
     <ClInclude Include="source\framework\gameObject\gameComponent\MeshComponent.h">
       <Filter>JumaEngine\framework\gameObject\gameComponent</Filter>
     </ClInclude>
     <ClInclude Include="source\framework\gameObject\gameComponent\CameraComponent.h">
       <Filter>JumaEngine\framework\gameObject\gameComponent</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\jmap.h">
+      <Filter>JumaEngine\utils</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
