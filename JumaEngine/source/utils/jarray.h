@@ -11,14 +11,16 @@ namespace JumaEngine
     class jarray : public std::vector<T>
     {
     public:
+		using base_class = std::vector<T>;
+    	
         jarray()
-		    : std::vector<T>()
+		    : base_class()
 		{}
         jarray(std::initializer_list<T> list)
-		    : std::vector<T>(list)
+		    : base_class(list)
 		{}
-        jarray(const std::vector<T>& vector)
-            : std::vector<T>(vector)
+        jarray(const base_class& vector)
+            : base_class(vector)
         {}
 
         bool isValidIndex(const int32 index) const

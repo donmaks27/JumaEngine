@@ -240,5 +240,8 @@
     <ClInclude Include="source\utils\jmap.h">
       <Filter>JumaEngine\utils</Filter>
     </ClInclude>
+    <ClInclude Include="source\utils\jset.h">
+      <Filter>JumaEngine\utils</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

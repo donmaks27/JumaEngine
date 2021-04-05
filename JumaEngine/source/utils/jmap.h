@@ -38,6 +38,7 @@ namespace JumaEngine
 			}
 			return nullptr;
 		}
+		bool contains(const K& key) const { return this->find(key) != this->end(); }
 
 		void add(const K& key, const V& value)
 		{
