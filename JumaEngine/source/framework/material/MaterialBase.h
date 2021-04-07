@@ -63,6 +63,7 @@ namespace JumaEngine
 		{
 			if (hasMaterialParam<T>(name))
 			{
+				m_MaterialParams.add(name, getMaterialParamType<T>());
 				getMaterialParams<T>().add(name, value);
 				return true;
 			}
@@ -70,7 +71,7 @@ namespace JumaEngine
 		}
 
 		virtual bool isInit() const = 0;
-        virtual void activate() const { loadMaterialParams(); }
+        virtual void activate() const = 0;
         virtual bool isActive() const = 0;
         virtual void deactivate() const = 0;
 		

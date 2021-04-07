@@ -124,6 +124,9 @@
     <ClCompile Include="source\framework\material\Material.cpp">
       <Filter>JumaEngine\framework\material</Filter>
     </ClCompile>
+    <ClCompile Include="source\framework\material\MaterialInstance.cpp">
+      <Filter>JumaEngine\framework\material</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\common_header.h">
@@ -238,6 +241,9 @@
       <Filter>JumaEngine\framework\material</Filter>
     </ClInclude>
     <ClInclude Include="source\framework\material\Material.h">
+      <Filter>JumaEngine\framework\material</Filter>
+    </ClInclude>
+    <ClInclude Include="source\framework\material\MaterialInstance.h">
       <Filter>JumaEngine\framework\material</Filter>
     </ClInclude>
   </ItemGroup>

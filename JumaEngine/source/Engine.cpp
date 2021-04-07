@@ -9,6 +9,7 @@
 #include "framework/gameObject/gameComponent/CameraComponent.h"
 #include "framework/gameObject/gameComponent/MeshComponent.h"
 #include "framework/material/Material.h"
+#include "framework/material/MaterialInstance.h"
 #include "render/vertexBuffer/VertexPosition.h"
 #include "render/vertexBuffer/importer/VertexBufferImporterBase.h"
 #include "utils/system_functions.h"
@@ -147,9 +148,12 @@ namespace JumaEngine
     	m_Material->addMaterialParam("uModel", glm::mat4(1));
     	m_Material->finishInitialization();
 
+    	m_MaterialInstance = createObject<MaterialInstance>();
+    	m_MaterialInstance->setBaseMaterial(m_Material);
+
         SystemFunctions::importVertexBufferFile(m_World, "");
         m_Mesh = SystemFunctions::importMesh<Mesh, VertexBufferDataPosition>(m_World, JTEXT("Triangle"));
-        m_Mesh->setMaterial(0, m_Material);
+        m_Mesh->setMaterial(0, m_MaterialInstance);
 
         MeshComponent* component = m_World->createSceneComponent<MeshComponent>();
         component->setMesh(m_Mesh);
@@ -205,6 +209,11 @@ namespace JumaEngine
         {
             delete m_Mesh;
             m_Mesh = nullptr;
+        }
+        if (m_MaterialInstance != nullptr)
+        {
+            delete m_MaterialInstance;
+            m_MaterialInstance = nullptr;
         }
         if (m_Material != nullptr)
         {
