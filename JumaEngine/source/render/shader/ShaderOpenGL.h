@@ -11,7 +11,7 @@ namespace JumaEngine
     class ShaderOpenGL : public ShaderBase
     {
     public:
-        ShaderOpenGL();
+        ShaderOpenGL() = default;
         virtual ~ShaderOpenGL() override;
 
         enum class ShaderType

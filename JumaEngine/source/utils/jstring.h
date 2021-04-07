@@ -21,5 +21,7 @@ namespace JumaEngine
         jstring(const base_class& str)
             : base_class(str)
         {}
+
+    	const char* operator*() const noexcept { return this->c_str(); }
     };
 }

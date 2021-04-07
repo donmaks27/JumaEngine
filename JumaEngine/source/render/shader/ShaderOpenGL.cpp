@@ -7,10 +7,6 @@
 
 namespace JumaEngine
 {
-    ShaderOpenGL::ShaderOpenGL()
-    {
-        m_ShouldAlwaysDeactivateOldShader = false;
-    }
     ShaderOpenGL::~ShaderOpenGL()
     {
         clearOpenGLShader();
@@ -42,7 +38,7 @@ namespace JumaEngine
     }
     void ShaderOpenGL::clearOpenGLShader()
     {
-        if (isShaderActive())
+        if (isActive())
         {
             deactivateShaderOpenGL();
             clearActiveShaderRef();

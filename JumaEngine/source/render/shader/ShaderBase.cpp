@@ -35,29 +35,24 @@ namespace JumaEngine
     }
     void ShaderBase::clearShader()
     {
-        deactivateShader();
+        deactivate();
         if (isShaderLoaded())
         {
             clearShaderInternal();
         }
     }
 
-    void ShaderBase::activateShader()
+    void ShaderBase::activate()
     {
-        if (!isShaderActive() && isShaderLoaded())
+        if (!isActive() && isShaderLoaded())
         {
-            if (m_ShouldAlwaysDeactivateOldShader)
-            {
-                deactivateActiveShader();
-            }
-
             activateShaderInternal();
             s_ActiveShader = this;
         }
     }
-    void ShaderBase::deactivateShader()
+    void ShaderBase::deactivate()
     {
-        if (isShaderActive())
+        if (isActive())
         {
             deactivateShaderInternal();
             clearActiveShaderRef();
@@ -68,7 +63,7 @@ namespace JumaEngine
     {
         if (hasActiveShader())
         {
-            s_ActiveShader->deactivateShader();
+            s_ActiveShader->deactivate();
         }
     }
 }

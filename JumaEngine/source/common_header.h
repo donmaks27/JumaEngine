@@ -13,6 +13,9 @@
 
 #endif
 
+namespace JumaEngine { }
+namespace JE = JumaEngine;
+
 #include "utils/jstring.h"
 
 typedef char int8;

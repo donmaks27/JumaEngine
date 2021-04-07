@@ -7,9 +7,6 @@
 
 namespace JumaEngine
 {
-    class Material;
-    class Mesh;
-
     class RenderManagerOpenGL : public RenderManagerBase
     {
     public:

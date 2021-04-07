@@ -20,9 +20,9 @@ namespace JumaEngine
         virtual bool isShaderLoaded() const = 0;
         void clearShader();
 
-        void activateShader();
-        bool isShaderActive() const { return getActiveShader() == this; }
-        void deactivateShader();
+        void activate();
+        bool isActive() const { return getActiveShader() == this; }
+        void deactivate();
 
         static ShaderBase* getActiveShader() { return s_ActiveShader; }
         static bool hasActiveShader() { return getActiveShader() != nullptr; }
@@ -38,9 +38,6 @@ namespace JumaEngine
         }
 
     protected:
-
-        bool m_ShouldAlwaysDeactivateOldShader = true;
-
 
         virtual void loadShaderInternal(const jstring& shaderName) = 0;
         virtual void clearShaderInternal() = 0;

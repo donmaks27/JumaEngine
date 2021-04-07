@@ -98,7 +98,8 @@ namespace JumaEngine
             {
                 tick(getDeltaTime());
             }
-			
+        	postTick();
+   
 			m_RenderManager->onRenderStart();
         	render();
         	
@@ -141,6 +142,10 @@ namespace JumaEngine
 
         m_Material = createObject<Material>();
         m_Material->setShaderName("content/shaders/testShader");
+    	m_Material->addMaterialParam("uProjection", glm::mat4(1));
+    	m_Material->addMaterialParam("uView", glm::mat4(1));
+    	m_Material->addMaterialParam("uModel", glm::mat4(1));
+    	m_Material->finishInitialization();
 
         SystemFunctions::importVertexBufferFile(m_World, "");
         m_Mesh = SystemFunctions::importMesh<Mesh, VertexBufferDataPosition>(m_World, JTEXT("Triangle"));
@@ -169,6 +174,13 @@ namespace JumaEngine
     	if (m_World != nullptr)
     	{
     		m_World->tick(deltaTime);
+    	}
+    }
+    void Engine::postTick()
+    {
+    	if (m_World != nullptr)
+    	{
+    		m_World->postTick();
     	}
     }
 

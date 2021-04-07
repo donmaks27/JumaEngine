@@ -81,6 +81,7 @@ namespace JumaEngine
     	bool isGameStarted() const { return m_GameStarted; }
 
     	void tick(double deltaTime);
+    	void postTick();
 
     	void render();
 

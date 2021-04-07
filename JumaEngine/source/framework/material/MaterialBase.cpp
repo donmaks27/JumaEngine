@@ -2,67 +2,89 @@
 
 #include "MaterialBase.h"
 #include "render/shader/ShaderBase.h"
-#include "utils/system_functions.h"
 
 namespace JumaEngine
 {
-    MaterialBase::~MaterialBase()
-    {
-        clearShader();
-    }
-
-    bool MaterialBase::isShaderValid() const
-    {
-        return (m_Shader != nullptr) && m_Shader->isShaderLoaded();
-    }
-    jstring MaterialBase::getShaderName() const
-    {
-        return m_Shader != nullptr ? m_Shader->getShaderName() : jstring();
-    }
-    void MaterialBase::setShaderName(const jstring& shaderName)
-    {
-        if (m_Shader == nullptr)
-        {
-            m_Shader = SystemFunctions::createShader(this, shaderName);
-        }
-        else if (m_Shader->getShaderName() != shaderName)
-        {
-            m_Shader->clearShader();
-            if (!shaderName.empty())
-            {
-                m_Shader->loadShader(shaderName);
-            }
-        }
-    }
-    void MaterialBase::clearShader()
-    {
-        if (m_Shader != nullptr)
-        {
-            delete m_Shader;
-            m_Shader = nullptr;
-        }
-    }
-
-    void MaterialBase::activate() const
-    {
-        if (isShaderValid() && !m_Shader->isShaderActive())
-        {
-            m_Shader->activateShader();
-            if (m_Shader->isShaderActive())
-            {
-                loadShaderParams();
-            }
-        }
-    }
-    bool MaterialBase::isActive() const
-    {
-        return isShaderValid() && m_Shader->isShaderActive();
-    }
-    void MaterialBase::deactivate() const
-    {
-        if (isActive())
-        {
-            m_Shader->deactivateShader();
-        }
-    }
+	void MaterialBase::loadMaterialParams() const
+	{
+		const jmap<jstring, MaterialParamType>& paramsList = getMaterialParamsList();
+		for (const auto& paramNameAndType : paramsList)
+		{
+			const jstring& name = paramNameAndType.first;
+			switch (paramNameAndType.second)
+			{
+			case MaterialParamType::Bool:
+				{
+					bool value;
+					if (getMaterialParam(name, value))
+					{
+						ShaderBase::setActiveShaderUniformValue(*name, value);
+					}
+				}
+				break;
+				
+			case MaterialParamType::Int:
+				{
+					int32 value;
+					if (getMaterialParam(name, value))
+					{
+						ShaderBase::setActiveShaderUniformValue(*name, value);
+					}
+				}
+				break;
+				
+			case MaterialParamType::Float:
+				{
+					float value;
+					if (getMaterialParam(name, value))
+					{
+						ShaderBase::setActiveShaderUniformValue(*name, value);
+					}
+				}
+				break;
+				
+			case MaterialParamType::Vec2:
+				{
+					glm::vec2 value;
+					if (getMaterialParam(name, value))
+					{
+						ShaderBase::setActiveShaderUniformValue(*name, value);
+					}
+				}
+				break;
+				
+			case MaterialParamType::Vec3:
+				{
+					glm::vec3 value;
+					if (getMaterialParam(name, value))
+					{
+						ShaderBase::setActiveShaderUniformValue(*name, value);
+					}
+				}
+				break;
+				
+			case MaterialParamType::Vec4:
+				{
+					glm::vec4 value;
+					if (getMaterialParam(name, value))
+					{
+						ShaderBase::setActiveShaderUniformValue(*name, value);
+					}
+				}
+				break;
+				
+			case MaterialParamType::Mat4:
+				{
+					glm::mat4 value;
+					if (getMaterialParam(name, value))
+					{
+						ShaderBase::setActiveShaderUniformValue(*name, value);
+					}
+				}
+				break;
+				
+			default: ;
+			}
+		}
+	}
 }

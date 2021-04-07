@@ -19,6 +19,10 @@ namespace JumaEngine
 
         virtual void render() override;
 
+    protected:
+    	
+        virtual void postTick() override;
+    
     private:
 
         typedef SceneComponent Super;

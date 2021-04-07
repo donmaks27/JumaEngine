@@ -85,12 +85,6 @@
     <ClCompile Include="source\framework\gameObject\GameObject.cpp">
       <Filter>JumaEngine\framework\gameObject</Filter>
     </ClCompile>
-    <ClCompile Include="source\framework\material\MaterialBase.cpp">
-      <Filter>JumaEngine\framework\material</Filter>
-    </ClCompile>
-    <ClCompile Include="source\framework\material\Material.cpp">
-      <Filter>JumaEngine\framework\material</Filter>
-    </ClCompile>
     <ClCompile Include="source\transform\Rotation.cpp">
       <Filter>JumaEngine\transform</Filter>
     </ClCompile>
@@ -123,6 +117,12 @@
     </ClCompile>
     <ClCompile Include="source\framework\gameObject\gameComponent\CameraComponent.cpp">
       <Filter>JumaEngine\framework\gameObject\gameComponent</Filter>
+    </ClCompile>
+    <ClCompile Include="source\framework\material\MaterialBase.cpp">
+      <Filter>JumaEngine\framework\material</Filter>
+    </ClCompile>
+    <ClCompile Include="source\framework\material\Material.cpp">
+      <Filter>JumaEngine\framework\material</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -180,15 +180,6 @@
     <ClInclude Include="source\framework\gameObject\GameObject.h">
       <Filter>JumaEngine\framework\gameObject</Filter>
     </ClInclude>
-    <ClInclude Include="source\framework\material\MaterialBase.h">
-      <Filter>JumaEngine\framework\material</Filter>
-    </ClInclude>
-    <ClInclude Include="source\framework\material\MaterialSimple.h">
-      <Filter>JumaEngine\framework\material</Filter>
-    </ClInclude>
-    <ClInclude Include="source\framework\material\Material.h">
-      <Filter>JumaEngine\framework\material</Filter>
-    </ClInclude>
     <ClInclude Include="source\render\vertexBuffer\importer\VertexBufferImporterData.h">
       <Filter>JumaEngine\render\vertexBuffer\importer</Filter>
     </ClInclude>
@@ -242,6 +233,12 @@
     </ClInclude>
     <ClInclude Include="source\utils\jset.h">
       <Filter>JumaEngine\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="source\framework\material\MaterialBase.h">
+      <Filter>JumaEngine\framework\material</Filter>
+    </ClInclude>
+    <ClInclude Include="source\framework\material\Material.h">
+      <Filter>JumaEngine\framework\material</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
