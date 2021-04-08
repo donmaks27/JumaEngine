@@ -2,7 +2,7 @@
 
 #include "Mesh.h"
 #include "utils/system_functions.h"
-#include "framework/material/MaterialBase.h"
+#include "asset/material/MaterialBase.h"
 #include "render/vertexBuffer/VertexBufferBase.h"
 
 namespace JumaEngine

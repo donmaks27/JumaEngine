@@ -4,16 +4,22 @@
 
 #include "common_header.h"
 #include "MaterialBase.h"
+#include "asset/AssetObject.h"
 
 namespace JumaEngine
 {
+	class AssetsManager;
 	class ShaderBase;
 
-	class Material final : public MaterialBase
+	class Material final : public MaterialBase, public AssetObject
 	{
-	public:
+		friend AssetsManager;
+		
+	protected:
 		Material() = default;
 		virtual ~Material() override;
+
+	public:
 
 		virtual MaterialBase* getBaseMaterial() const override { return nullptr; }
 
@@ -31,8 +37,6 @@ namespace JumaEngine
 
         bool isShaderValid() const;
         jstring getShaderName() const;
-        void setShaderName(const jstring& shaderName);
-        void clearShader();
 
 		void finishInitialization() { m_Initialized = true; }
 
@@ -40,11 +44,17 @@ namespace JumaEngine
 		virtual void activate() const override;
 		virtual bool isActive() const override;
 		virtual void deactivate() const override;
+
+	protected:
+		
+		virtual void terminate() override;
 	
 	private:
 		
         ShaderBase* m_Shader = nullptr;
-
 		bool m_Initialized = false;
+
+		
+        void clearShader();
 	};
 }

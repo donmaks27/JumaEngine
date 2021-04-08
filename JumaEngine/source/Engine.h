@@ -8,7 +8,8 @@
 
 namespace JumaEngine
 {
-    class WindowBase;
+	class AssetsManager;
+	class WindowBase;
     class RenderManagerBase;
     class VertexBufferImporterBase;
 
@@ -75,11 +76,11 @@ namespace JumaEngine
         WindowBase* m_Window = nullptr;
         RenderManagerBase* m_RenderManager = nullptr;
         VertexBufferImporterBase* m_VertexBufferImporter = nullptr;
+    	AssetsManager* m_AssetsManager = nullptr;
 
         EngineWorld* m_World = nullptr;
         CameraComponent* m_Camera = nullptr;
 
-        Material* m_Material = nullptr;
         MaterialInstance* m_MaterialInstance = nullptr;
         Mesh* m_Mesh = nullptr;
 

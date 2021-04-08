@@ -22,23 +22,26 @@
     <Filter Include="JumaEngine\render\vertexBuffer">
       <UniqueIdentifier>{2bdde275-7e30-4376-bfc0-fdf806b21fc2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="JumaEngine\framework\material">
-      <UniqueIdentifier>{f1fdb6fe-169f-4b97-9c05-266b80609209}</UniqueIdentifier>
-    </Filter>
     <Filter Include="JumaEngine\render\vertexBuffer\importer">
       <UniqueIdentifier>{b7b573db-6bcd-4618-bea6-86cbcab5634a}</UniqueIdentifier>
     </Filter>
     <Filter Include="JumaEngine\transform">
       <UniqueIdentifier>{0edfba4a-f301-4182-95f0-fdcaa8b25347}</UniqueIdentifier>
     </Filter>
-    <Filter Include="JumaEngine\framework\mesh">
-      <UniqueIdentifier>{cbaee27d-7629-431f-a150-ae815c55585e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="JumaEngine\framework\gameObject">
       <UniqueIdentifier>{e41551e1-eca8-4703-b319-bc8b07908cf3}</UniqueIdentifier>
     </Filter>
     <Filter Include="JumaEngine\framework\gameObject\gameComponent">
       <UniqueIdentifier>{d1641701-946d-4c35-aa73-39f299a0cf87}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="JumaEngine\asset">
+      <UniqueIdentifier>{66ef0756-8375-42fe-8e92-f988fef09f51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="JumaEngine\asset\material">
+      <UniqueIdentifier>{f1fdb6fe-169f-4b97-9c05-266b80609209}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="JumaEngine\asset\mesh">
+      <UniqueIdentifier>{cbaee27d-7629-431f-a150-ae815c55585e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -97,9 +100,6 @@
     <ClCompile Include="source\render\vertexBuffer\importer\VertexBufferImporterBase.cpp">
       <Filter>JumaEngine\render\vertexBuffer\importer</Filter>
     </ClCompile>
-    <ClCompile Include="source\framework\mesh\Mesh.cpp">
-      <Filter>JumaEngine\framework\mesh</Filter>
-    </ClCompile>
     <ClCompile Include="source\framework\gameObject\gameComponent\GameComponent.cpp">
       <Filter>JumaEngine\framework\gameObject\gameComponent</Filter>
     </ClCompile>
@@ -118,14 +118,23 @@
     <ClCompile Include="source\framework\gameObject\gameComponent\CameraComponent.cpp">
       <Filter>JumaEngine\framework\gameObject\gameComponent</Filter>
     </ClCompile>
-    <ClCompile Include="source\framework\material\MaterialBase.cpp">
-      <Filter>JumaEngine\framework\material</Filter>
+    <ClCompile Include="source\asset\AssetsManager.cpp">
+      <Filter>JumaEngine\asset</Filter>
     </ClCompile>
-    <ClCompile Include="source\framework\material\Material.cpp">
-      <Filter>JumaEngine\framework\material</Filter>
+    <ClCompile Include="source\asset\material\Material.cpp">
+      <Filter>JumaEngine\asset\material</Filter>
     </ClCompile>
-    <ClCompile Include="source\framework\material\MaterialInstance.cpp">
-      <Filter>JumaEngine\framework\material</Filter>
+    <ClCompile Include="source\asset\material\MaterialBase.cpp">
+      <Filter>JumaEngine\asset\material</Filter>
+    </ClCompile>
+    <ClCompile Include="source\asset\material\MaterialInstance.cpp">
+      <Filter>JumaEngine\asset\material</Filter>
+    </ClCompile>
+    <ClCompile Include="source\asset\mesh\Mesh.cpp">
+      <Filter>JumaEngine\asset\mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="source\asset\AssetObject.cpp">
+      <Filter>JumaEngine\asset</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -201,9 +210,6 @@
     <ClInclude Include="source\render\vertexBuffer\importer\VertexBufferImporterBase.h">
       <Filter>JumaEngine\render\vertexBuffer\importer</Filter>
     </ClInclude>
-    <ClInclude Include="source\framework\mesh\Mesh.h">
-      <Filter>JumaEngine\framework\mesh</Filter>
-    </ClInclude>
     <ClInclude Include="source\render\RenderAPI.h">
       <Filter>JumaEngine\render</Filter>
     </ClInclude>
@@ -237,14 +243,23 @@
     <ClInclude Include="source\utils\jset.h">
       <Filter>JumaEngine\utils</Filter>
     </ClInclude>
-    <ClInclude Include="source\framework\material\MaterialBase.h">
-      <Filter>JumaEngine\framework\material</Filter>
+    <ClInclude Include="source\asset\AssetsManager.h">
+      <Filter>JumaEngine\asset</Filter>
     </ClInclude>
-    <ClInclude Include="source\framework\material\Material.h">
-      <Filter>JumaEngine\framework\material</Filter>
+    <ClInclude Include="source\asset\material\Material.h">
+      <Filter>JumaEngine\asset\material</Filter>
     </ClInclude>
-    <ClInclude Include="source\framework\material\MaterialInstance.h">
-      <Filter>JumaEngine\framework\material</Filter>
+    <ClInclude Include="source\asset\material\MaterialBase.h">
+      <Filter>JumaEngine\asset\material</Filter>
+    </ClInclude>
+    <ClInclude Include="source\asset\material\MaterialInstance.h">
+      <Filter>JumaEngine\asset\material</Filter>
+    </ClInclude>
+    <ClInclude Include="source\asset\mesh\Mesh.h">
+      <Filter>JumaEngine\asset\mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="source\asset\AssetObject.h">
+      <Filter>JumaEngine\asset</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

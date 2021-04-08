@@ -107,7 +107,7 @@ namespace JumaEngine
 	{
 		Super::tick(deltaTime);
 
-		updateRotation(m_Angle + deltaTime * 90.0f);
+		updateRotation(m_Angle + static_cast<float>(deltaTime) * 90.0f);
 	}
 
 	void CameraComponent::updateRotation(const float angle)

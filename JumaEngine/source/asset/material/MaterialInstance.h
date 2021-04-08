@@ -34,6 +34,13 @@ namespace JumaEngine
 			}
 		}
 
+		static MaterialInstance* create(MaterialBase* material)
+		{
+			MaterialInstance* instance = new MaterialInstance();
+			instance->setBaseMaterial(material);
+			return instance;
+		}
+
 	private:
 
 		MaterialBase* m_BaseMaterial = nullptr;

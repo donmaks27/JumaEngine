@@ -2,8 +2,8 @@
 
 #include "MeshComponent.h"
 #include "CameraComponent.h"
-#include "framework/material/MaterialBase.h"
-#include "framework/mesh/Mesh.h"
+#include "asset/material/MaterialBase.h"
+#include "asset/mesh/Mesh.h"
 #include "utils/system_functions.h"
 
 namespace JumaEngine

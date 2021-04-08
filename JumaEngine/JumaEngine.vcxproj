@@ -81,6 +81,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="source\asset\AssetObject.cpp" />
+    <ClCompile Include="source\asset\AssetsManager.cpp" />
+    <ClCompile Include="source\asset\material\Material.cpp" />
+    <ClCompile Include="source\asset\material\MaterialBase.cpp" />
+    <ClCompile Include="source\asset\material\MaterialInstance.cpp" />
+    <ClCompile Include="source\asset\mesh\Mesh.cpp" />
     <ClCompile Include="source\Engine.cpp" />
     <ClCompile Include="source\EngineContextObject.cpp" />
     <ClCompile Include="source\framework\gameObject\gameComponent\CameraComponent.cpp" />
@@ -91,10 +97,6 @@
     <ClCompile Include="source\framework\gameObject\WorldContextObject.cpp" />
     <ClCompile Include="source\framework\gameObject\TransformObject.cpp" />
     <ClCompile Include="source\framework\gameObject\EngineWorld.cpp" />
-    <ClCompile Include="source\framework\material\Material.cpp" />
-    <ClCompile Include="source\framework\material\MaterialBase.cpp" />
-    <ClCompile Include="source\framework\material\MaterialInstance.cpp" />
-    <ClCompile Include="source\framework\mesh\Mesh.cpp" />
     <ClCompile Include="source\render\RenderManagerBase.cpp" />
     <ClCompile Include="source\render\RenderManagerOpenGL.cpp" />
     <ClCompile Include="source\render\shader\ShaderBase.cpp" />
@@ -111,6 +113,12 @@
     <ClCompile Include="source\window\WindowGLFW.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\asset\AssetObject.h" />
+    <ClInclude Include="source\asset\AssetsManager.h" />
+    <ClInclude Include="source\asset\material\Material.h" />
+    <ClInclude Include="source\asset\material\MaterialBase.h" />
+    <ClInclude Include="source\asset\material\MaterialInstance.h" />
+    <ClInclude Include="source\asset\mesh\Mesh.h" />
     <ClInclude Include="source\common_header.h" />
     <ClInclude Include="source\Engine.h" />
     <ClInclude Include="source\EngineContextObject.h" />
@@ -122,10 +130,6 @@
     <ClInclude Include="source\framework\gameObject\WorldContextObject.h" />
     <ClInclude Include="source\framework\gameObject\TransformObject.h" />
     <ClInclude Include="source\framework\gameObject\EngineWorld.h" />
-    <ClInclude Include="source\framework\material\Material.h" />
-    <ClInclude Include="source\framework\material\MaterialBase.h" />
-    <ClInclude Include="source\framework\material\MaterialInstance.h" />
-    <ClInclude Include="source\framework\mesh\Mesh.h" />
     <ClInclude Include="source\render\RenderAPI.h" />
     <ClInclude Include="source\render\RenderManagerBase.h" />
     <ClInclude Include="source\render\RenderManagerOpenGL.h" />

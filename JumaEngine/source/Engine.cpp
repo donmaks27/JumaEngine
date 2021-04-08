@@ -2,14 +2,15 @@
 
 #include "Engine.h"
 #include "EngineContextObject.h"
+#include "asset/AssetsManager.h"
 #include "utils/log.h"
 #include "window/WindowBase.h"
 #include "render/RenderManagerBase.h"
 #include "framework/gameObject/EngineWorld.h"
 #include "framework/gameObject/gameComponent/CameraComponent.h"
 #include "framework/gameObject/gameComponent/MeshComponent.h"
-#include "framework/material/Material.h"
-#include "framework/material/MaterialInstance.h"
+#include "asset/material/Material.h"
+#include "asset/material/MaterialInstance.h"
 #include "render/vertexBuffer/VertexPosition.h"
 #include "render/vertexBuffer/importer/VertexBufferImporterBase.h"
 #include "utils/system_functions.h"
@@ -139,17 +140,17 @@ namespace JumaEngine
     
     void Engine::onEngineInit()
     {
+		m_AssetsManager = createObject<AssetsManager>();
+    	
         m_World = createObject<EngineWorld>();
 
-        m_Material = createObject<Material>();
-        m_Material->setShaderName("content/shaders/testShader");
-    	m_Material->addMaterialParam("uProjection", glm::mat4(1));
-    	m_Material->addMaterialParam("uView", glm::mat4(1));
-    	m_Material->addMaterialParam("uModel", glm::mat4(1));
-    	m_Material->finishInitialization();
+        Material* material = m_AssetsManager->createMaterial("content/shaders/testShader");
+    	material->addMaterialParam("uProjection", glm::mat4(1));
+    	material->addMaterialParam("uView", glm::mat4(1));
+    	material->addMaterialParam("uModel", glm::mat4(1));
+    	material->finishInitialization();
 
-    	m_MaterialInstance = createObject<MaterialInstance>();
-    	m_MaterialInstance->setBaseMaterial(m_Material);
+    	m_MaterialInstance = MaterialInstance::create(material);
 
         SystemFunctions::importVertexBufferFile(m_World, "");
         m_Mesh = SystemFunctions::importMesh<Mesh, VertexBufferDataPosition>(m_World, JTEXT("Triangle"));
@@ -210,15 +211,17 @@ namespace JumaEngine
             delete m_Mesh;
             m_Mesh = nullptr;
         }
-        if (m_MaterialInstance != nullptr)
-        {
-            delete m_MaterialInstance;
-            m_MaterialInstance = nullptr;
-        }
-        if (m_Material != nullptr)
-        {
-            delete m_Material;
-            m_Material = nullptr;
-        }
+
+    	if (m_MaterialInstance != nullptr)
+    	{
+    		delete m_MaterialInstance;
+    		m_MaterialInstance = nullptr;
+    	}
+
+    	if (m_AssetsManager != nullptr)
+    	{
+    		delete m_AssetsManager;
+    		m_AssetsManager = nullptr;
+    	}
     }
 }

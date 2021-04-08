@@ -4,7 +4,7 @@
 
 #include "common_header.h"
 #include "Engine.h"
-#include "framework/mesh/Mesh.h"
+#include "asset/mesh/Mesh.h"
 #include "render/vertexBuffer/importer/VertexBufferImporterBase.h"
 
 namespace JumaEngine

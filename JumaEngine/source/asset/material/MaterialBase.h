@@ -3,18 +3,18 @@
 #pragma once
 
 #include "common_header.h"
-#include "EngineContextObject.h"
 #include "utils/jmap.h"
 #include "glm/mat4x4.hpp"
-#include "utils/jset.h"
 
 namespace JumaEngine
 {
-	class MaterialBase : public EngineContextObject
+	class MaterialBase
 	{
-	public:
+	protected:
 		MaterialBase() = default;
-		virtual ~MaterialBase() override = default;
+		virtual ~MaterialBase() = default;
+
+	public:
 
 		virtual MaterialBase* getBaseMaterial() const = 0;
 
