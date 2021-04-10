@@ -3,20 +3,19 @@
 #pragma once
 
 #include "common_header.h"
+#include "asset/AssetObject.h"
 #include "utils/jmap.h"
 #include "glm/mat4x4.hpp"
 
 namespace JumaEngine
 {
-	class MaterialBase
+	class MaterialBase : public AssetObject
 	{
 	protected:
 		MaterialBase() = default;
-		virtual ~MaterialBase() = default;
+		virtual ~MaterialBase() override = default;
 
 	public:
-
-		virtual MaterialBase* getBaseMaterial() const = 0;
 
 		template<typename T>
 		bool hasMaterialParam(const jstring& name) const
@@ -78,6 +77,8 @@ namespace JumaEngine
 		void loadMaterialParams() const;
 
 	protected:
+
+		virtual MaterialBase* getBaseMaterial() const = 0;
 		
 		template<typename T>
 		bool addMaterialParamInternal(const jstring& name, const T& value)

@@ -4,24 +4,18 @@
 
 #include "common_header.h"
 #include "MaterialBase.h"
-#include "asset/AssetObject.h"
 
 namespace JumaEngine
 {
-	class AssetsManager;
 	class ShaderBase;
 
-	class Material final : public MaterialBase, public AssetObject
+	class Material final : public MaterialBase
 	{
 		friend AssetsManager;
 		
-	protected:
+	public:
 		Material() = default;
 		virtual ~Material() override;
-
-	public:
-
-		virtual MaterialBase* getBaseMaterial() const override { return nullptr; }
 
 		template<typename T>
 		bool addMaterialParam(const jstring& name, const T& value)
@@ -46,6 +40,8 @@ namespace JumaEngine
 		virtual void deactivate() const override;
 
 	protected:
+
+		virtual MaterialBase* getBaseMaterial() const override { return nullptr; }
 		
 		virtual void terminate() override;
 	

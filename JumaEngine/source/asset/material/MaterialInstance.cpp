@@ -4,11 +4,4 @@
 
 namespace JumaEngine
 {
-	void MaterialInstance::setBaseMaterial(MaterialBase* material)
-	{
-		if (m_BaseMaterial == nullptr)
-		{
-			m_BaseMaterial = material;
-		}
-	}
 }

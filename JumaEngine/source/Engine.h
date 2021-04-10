@@ -15,8 +15,6 @@ namespace JumaEngine
 
     class EngineWorld;
     class CameraComponent;
-    class Material;
-	class MaterialInstance;
     class Mesh;
 
     class Engine
@@ -81,7 +79,6 @@ namespace JumaEngine
         EngineWorld* m_World = nullptr;
         CameraComponent* m_Camera = nullptr;
 
-        MaterialInstance* m_MaterialInstance = nullptr;
         Mesh* m_Mesh = nullptr;
 
 

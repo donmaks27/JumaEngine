@@ -14,3 +14,6 @@ constexpr bool is_base_and_not_same = std::is_base_of_v<Base, Child> && is_not_s
 
 template<typename Base, typename Child>
 constexpr bool is_base_and_not_abstract = std::is_base_of_v<Base, Child> && !std::is_abstract_v<Child>;
+
+template<typename Base, typename Child>
+constexpr bool is_base_and_not_same_and_not_abstract = is_base_and_not_same<Base, Child> && !std::is_abstract_v<Child>;

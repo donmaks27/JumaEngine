@@ -9,13 +9,11 @@ namespace JumaEngine
 {
 	class MaterialInstance final : public MaterialBase
 	{
+        friend AssetsManager;
+
 	public:
 		MaterialInstance() = default;
 		virtual ~MaterialInstance() override = default;
-
-		void setBaseMaterial(MaterialBase* material);
-
-		virtual MaterialBase* getBaseMaterial() const override { return m_BaseMaterial; }
 		
 		virtual bool isInit() const override { return (m_BaseMaterial != nullptr) && m_BaseMaterial->isInit(); }
 		virtual void activate() const override
@@ -34,15 +32,12 @@ namespace JumaEngine
 			}
 		}
 
-		static MaterialInstance* create(MaterialBase* material)
-		{
-			MaterialInstance* instance = new MaterialInstance();
-			instance->setBaseMaterial(material);
-			return instance;
-		}
+	protected:
+
+		virtual MaterialBase* getBaseMaterial() const override { return m_BaseMaterial.get(); }
 
 	private:
 
-		MaterialBase* m_BaseMaterial = nullptr;
+		asset_ptr<MaterialBase> m_BaseMaterial;
 	};
 }

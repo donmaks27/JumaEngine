@@ -144,17 +144,15 @@ namespace JumaEngine
     	
         m_World = createObject<EngineWorld>();
 
-        Material* material = m_AssetsManager->createMaterial("content/shaders/testShader");
+        asset_ptr<Material> material = m_AssetsManager->createMaterial("content/shaders/testShader");
     	material->addMaterialParam("uProjection", glm::mat4(1));
     	material->addMaterialParam("uView", glm::mat4(1));
     	material->addMaterialParam("uModel", glm::mat4(1));
     	material->finishInitialization();
 
-    	m_MaterialInstance = MaterialInstance::create(material);
-
         SystemFunctions::importVertexBufferFile(m_World, "");
         m_Mesh = SystemFunctions::importMesh<Mesh, VertexBufferDataPosition>(m_World, JTEXT("Triangle"));
-        m_Mesh->setMaterial(0, m_MaterialInstance);
+        m_Mesh->setMaterial(0, m_AssetsManager->createMaterialInstance(material));
 
         MeshComponent* component = m_World->createSceneComponent<MeshComponent>();
         component->setMesh(m_Mesh);
@@ -211,12 +209,6 @@ namespace JumaEngine
             delete m_Mesh;
             m_Mesh = nullptr;
         }
-
-    	if (m_MaterialInstance != nullptr)
-    	{
-    		delete m_MaterialInstance;
-    		m_MaterialInstance = nullptr;
-    	}
 
     	if (m_AssetsManager != nullptr)
     	{

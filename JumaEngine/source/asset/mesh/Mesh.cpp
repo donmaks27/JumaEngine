@@ -19,7 +19,7 @@ namespace JumaEngine
             for (const auto& vertexBufferData : vertexBuffersData)
             {
                 m_VertexBuffers.add(SystemFunctions::createVertexBuffer(this, vertexBufferData));
-                m_Materials.add(nullptr);
+                m_Materials.add({});
             }
             return true;
         }
@@ -35,7 +35,7 @@ namespace JumaEngine
         m_Materials.clear();
     }
 
-    void Mesh::setMaterial(const uint32 slotIndex, MaterialBase* material)
+    void Mesh::setMaterial(const uint32 slotIndex, const asset_ptr<MaterialBase>& material)
     {
         if (m_Materials.size() > slotIndex)
         {
@@ -48,7 +48,7 @@ namespace JumaEngine
         for (uint32 index = 0; index < m_VertexBuffers.size(); index++)
         {
             VertexBufferBase*& vertexBuffer = m_VertexBuffers[index];
-            MaterialBase*& material = m_Materials[index];
+            MaterialBase* material = m_Materials[index].get();
             if ((vertexBuffer != nullptr) && (material != nullptr) && vertexBuffer->isInit())
             {
                 material->activate();

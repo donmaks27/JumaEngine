@@ -4,6 +4,7 @@
 
 #include "common_header.h"
 #include "EngineContextObject.h"
+#include "asset/AssetObject.h"
 #include "utils/jarray.h"
 
 namespace JumaEngine
@@ -22,14 +23,14 @@ namespace JumaEngine
         bool isMeshInit() const { return !m_VertexBuffers.empty(); }
         void terminateMesh();
 
-        MaterialBase* getMaterial(const uint32 slotIndex) const { return m_Materials.size() > slotIndex ? m_Materials[slotIndex] : nullptr; }
-        void setMaterial(uint32 slotIndex, MaterialBase* material);
+        asset_ptr<MaterialBase> getMaterial(const uint32 slotIndex) const { return m_Materials.size() > slotIndex ? m_Materials[slotIndex] : asset_ptr<MaterialBase>(); }
+        void setMaterial(uint32 slotIndex, const asset_ptr<MaterialBase>& material);
 
         virtual void render();
 
     protected:
 
         jarray<VertexBufferBase*> m_VertexBuffers;
-        jarray<MaterialBase*> m_Materials;
+        jarray<asset_ptr<MaterialBase>> m_Materials;
     };
 }
