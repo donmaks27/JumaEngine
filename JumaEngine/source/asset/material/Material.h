@@ -42,8 +42,6 @@ namespace JumaEngine
 	protected:
 
 		virtual MaterialBase* getBaseMaterial() const override { return nullptr; }
-		
-		virtual void terminate() override;
 	
 	private:
 		

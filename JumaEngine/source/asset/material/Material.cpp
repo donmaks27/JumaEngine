@@ -38,10 +38,6 @@ namespace JumaEngine
         }
 	}
 
-	void Material::terminate()
-	{
-		clearShader();
-	}
 	void Material::clearShader()
 	{
 		if (m_Shader != nullptr)

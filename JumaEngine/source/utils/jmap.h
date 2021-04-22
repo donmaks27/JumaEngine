@@ -3,6 +3,7 @@
 #pragma once
 
 #include "common_header.h"
+#include "jarray.h"
 #include <map>
 
 namespace JumaEngine
@@ -38,11 +39,34 @@ namespace JumaEngine
 			}
 			return nullptr;
 		}
+
+		template<typename Pred>
+		jarray<K> findByPredicate(Pred predicate) const
+		{
+			jarray<K> result;
+			for (const auto keyAndValue : *this)
+			{
+				if (predicate(keyAndValue.first, keyAndValue.second))
+				{
+					result.add(keyAndValue.first);
+				}
+			}
+			return result;
+		}
+		
 		bool contains(const K& key) const { return this->find(key) != this->end(); }
 
-		void add(const K& key, const V& value)
+		void add(const K& key, const V& value) { this->insert_or_assign(key, value); }
+
+		void remove(const K& key) { this->erase(key); }
+		template<typename Pred>
+		void removeByPredicate(Pred predicate)
 		{
-			this->insert_or_assign(key, value);
+			jarray<K> keys = findByPredicate(predicate);
+			for (auto& key : keys)
+			{
+				remove(key);
+			}
 		}
 	};
 }

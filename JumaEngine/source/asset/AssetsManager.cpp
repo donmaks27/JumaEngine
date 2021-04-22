@@ -11,89 +11,70 @@ namespace JumaEngine
 	AssetsManager::~AssetsManager()
 	{
         m_MaterialInstances.clear();
-        m_NamedMaterialInstances.clear();
-		m_Materials.clear();
+        m_Materials.clear();
+	}
 
-        for (auto& asset : m_Assets)
-        {
-            if (asset != nullptr)
-            {
-                asset->terminate();
-            }
-        }
-		m_Assets.clear();
+	void AssetsManager::destroyUnusedAssets()
+	{
+		destroyUnusedAssets(m_Materials);
+		destroyUnusedAssets(m_MaterialInstances);
 	}
 
 	void AssetsManager::registerAssetObject(const std::shared_ptr<AssetObject>& asset)
 	{
 		if (asset != nullptr)
 		{
-			m_Assets.add(asset);
 			asset->m_AssetsManager = this;
-		}
-	}
-
-	void AssetsManager::destroyAsset(const asset_ptr<AssetObject>& assetPtr)
-	{
-        AssetObject* asset = assetPtr.get();
-		if (asset != nullptr)
-		{
-			asset->terminate();
-            for (int32 index = 0; index < m_Assets.size(); index++)
-            {
-                if (m_Assets[index].get() == asset)
-                {
-                    m_Assets.removeAt(index);
-                    assetPtr.updatePtr();
-                    return;
-                }
-            }
 		}
 	}
 
 	asset_ptr<Material> AssetsManager::createMaterial(const jstring& materialName)
 	{
-        asset_ptr<Material>* assetPtrPtr = m_Materials.findByKey(materialName);
-		if (assetPtrPtr != nullptr)
+		const jstring actualName = jstring(JTEXT("Material.")) + materialName;
+		
+        asset_ptr<Material>* existingAsset = m_Materials.findByKey(actualName);
+		if (existingAsset != nullptr)
 		{
-			return *assetPtrPtr;
+			return *existingAsset;
 		}
 
-        asset_ptr<Material> assetPtr = createAssetObject<Material>();
-        Material* material = assetPtr.get();
-        if (material != nullptr)
+        asset_ptr<Material> asset = createAssetObject<Material>();
+        if (asset != nullptr)
         {
-            material->m_Shader = SystemFunctions::createShader(this, materialName);
-            m_Materials.add(materialName, assetPtr);
+            asset->m_Shader = SystemFunctions::createShader(this, materialName);
+            m_Materials.add(actualName, asset);
         }
-        return assetPtr;
+        return asset;
 	}
     asset_ptr<MaterialInstance> AssetsManager::createMaterialInstance(const jstring& materialInstanceName, const asset_ptr<MaterialBase>& baseMaterial)
     {
-        asset_ptr<MaterialInstance>* assetPtrPtr = m_NamedMaterialInstances.findByKey(materialInstanceName);
-		if (assetPtrPtr != nullptr)
+		const jstring actuallName = jstring(JTEXT("MaterialInstance.")) + materialInstanceName;
+		
+        asset_ptr<MaterialInstance>* existingAsset = m_MaterialInstances.findByKey(actuallName);
+		if (existingAsset != nullptr)
 		{
-			return *assetPtrPtr;
+			return *existingAsset;
 		}
 
-        asset_ptr<MaterialInstance> assetPtr = createAssetObject<MaterialInstance>();
-        MaterialInstance* materialInstance = assetPtr.get();
-        if (materialInstance != nullptr)
+        asset_ptr<MaterialInstance> asset = createAssetObject<MaterialInstance>();
+        if (asset != nullptr)
         {
-            materialInstance->m_BaseMaterial = baseMaterial;
-            m_NamedMaterialInstances.add(materialInstanceName, assetPtr);
+            asset->m_BaseMaterial = baseMaterial;
+            m_MaterialInstances.add(actuallName, asset);
         }
-        return assetPtr;
+        return asset;
     }
     asset_ptr<MaterialInstance> AssetsManager::createMaterialInstance(const asset_ptr<MaterialBase>& baseMaterial)
     {
-        asset_ptr<MaterialInstance> assetPtr = createAssetObject<MaterialInstance>();
-        MaterialInstance* materialInstance = assetPtr.get();
-        if (materialInstance != nullptr)
-        {
-            materialInstance->m_BaseMaterial = baseMaterial;
-            m_MaterialInstances.add(assetPtr);
-        }
-        return assetPtr;
+		if (baseMaterial != nullptr)
+		{
+			asset_ptr<MaterialInstance> asset = createAssetObject<MaterialInstance>();
+			if (asset != nullptr)
+			{
+				asset->m_BaseMaterial = baseMaterial;
+				return asset;
+			}
+		}
+		return nullptr;
     }
 }

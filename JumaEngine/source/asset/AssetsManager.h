@@ -5,7 +5,6 @@
 #include "common_header.h"
 #include "EngineContextObject.h"
 #include "AssetObject.h"
-#include "utils/jarray.h"
 #include "utils/jmap.h"
 
 namespace JumaEngine
@@ -20,7 +19,7 @@ namespace JumaEngine
 		AssetsManager() = default;
 		virtual ~AssetsManager() override;
 
-		void destroyAsset(const asset_ptr<AssetObject>& assetPtr);
+		void destroyUnusedAssets();
 
 		asset_ptr<Material> createMaterial(const jstring& materialName);
 		asset_ptr<MaterialInstance> createMaterialInstance(const jstring& materialInstanceName, const asset_ptr<MaterialBase>& baseMaterial);
@@ -28,10 +27,8 @@ namespace JumaEngine
 	
 	private:
 
-		jarray<std::shared_ptr<AssetObject>> m_Assets;
-		jmap<jstring, asset_ptr<Material>> m_Materials;
-        jmap<jstring, asset_ptr<MaterialInstance>> m_NamedMaterialInstances;
-        jarray<asset_ptr<MaterialInstance>> m_MaterialInstances;
+    	jmap<jstring, asset_ptr<Material>> m_Materials;
+        jmap<jstring, asset_ptr<MaterialInstance>> m_MaterialInstances;
 
 
 		template<typename T, TEMPLATE_ENABLE(is_base_and_not_same_and_not_abstract<AssetObject, T>)>
@@ -46,5 +43,14 @@ namespace JumaEngine
 			return nullptr;
 		}
 		void registerAssetObject(const std::shared_ptr<AssetObject>& asset);
+
+    	template<typename T>
+    	void destroyUnusedAssets(jmap<jstring, asset_ptr<T>>& assetsMap)
+    	{
+    		assetsMap.removeByPredicate([](const jstring& key, const asset_ptr<T>& value)
+    		{
+    			return (value == nullptr) || (value.use_count() == 1);
+    		});
+    	}
 	};
 }
