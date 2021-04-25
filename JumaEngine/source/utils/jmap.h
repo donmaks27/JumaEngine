@@ -53,8 +53,22 @@ namespace JumaEngine
 			}
 			return result;
 		}
+        template<typename Pred>
+		const K* findFirstByPredicate(Pred predicate) const
+		{
+			for (const auto keyAndValue : *this)
+			{
+				if (predicate(keyAndValue.first, keyAndValue.second))
+				{
+					return &keyAndValue.first;
+				}
+			}
+			return nullptr;
+		}
 		
 		bool contains(const K& key) const { return this->find(key) != this->end(); }
+        template<typename Pred>
+		bool containsByPredicate(Pred predicate) const { return findFirstByPredicate(predicate) != nullptr; }
 
 		void add(const K& key, const V& value) { this->insert_or_assign(key, value); }
 

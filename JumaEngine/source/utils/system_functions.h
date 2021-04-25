@@ -9,8 +9,8 @@
 
 namespace JumaEngine
 {
-	class RenderManagerBase;
-	class WindowBase;
+	class RenderManagerBaseOld;
+	class WindowBaseOld;
 
     class ShaderBase;
     class VertexBufferBase;
@@ -34,10 +34,7 @@ namespace JumaEngine
             return nullptr;
         }
 
-    	static RenderManagerBase* getRenderManager(const EngineContextObject* engineContextObject);
-
-    	static WindowBase* getWindow(const EngineContextObject* engineContextObject);
-    	static float getWindowAspectRatio(const EngineContextObject* engineContextObject);
+    	static RenderManager* getRenderManager(const EngineContextObject* engineContextObject);
     	
         static ShaderBase* createShader(const EngineContextObject* engineContextObject);
         static ShaderBase* createShader(const EngineContextObject* engineContextObject, const jstring& shaderName);

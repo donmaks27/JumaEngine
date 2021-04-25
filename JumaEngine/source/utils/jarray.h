@@ -23,12 +23,12 @@ namespace JumaEngine
             : base_class(vector)
         {}
 
-        bool isValidIndex(const int32 index) const
+        bool isValidIndex(const size_t index) const
         {
             return (index >= 0) && (index < this->size());
         }
 
-        int32 indexOf(const T& value) const
+        size_t indexOf(const T& value) const
         {
             if (!this->empty())
             {
@@ -53,7 +53,7 @@ namespace JumaEngine
 	        }
         }
     	
-        bool removeAt(const int32 index)
+        bool removeAt(const size_t index)
         {
             if (isValidIndex(index))
             {

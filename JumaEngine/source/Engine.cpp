@@ -1,16 +1,16 @@
 // Copyright 2021 Leonov Maksim. All Rights Reserved.
 
 #include "Engine.h"
+#include <chrono>
 #include "EngineContextObject.h"
 #include "asset/AssetsManager.h"
 #include "utils/log.h"
-#include "window/WindowBase.h"
-#include "render/RenderManagerBase.h"
 #include "framework/gameObject/EngineWorld.h"
 #include "framework/gameObject/gameComponent/CameraComponent.h"
 #include "framework/gameObject/gameComponent/MeshComponent.h"
 #include "asset/material/Material.h"
 #include "asset/material/MaterialInstance.h"
+#include "render/RenderManager.h"
 #include "render/vertexBuffer/VertexPosition.h"
 #include "render/vertexBuffer/importer/VertexBufferImporterBase.h"
 #include "utils/system_functions.h"
@@ -68,17 +68,13 @@ namespace JumaEngine
 
     bool Engine::initEngine()
     {
-        if (!initWindow() || !initRender())
+        if (!initRender())
         {
             return false;
         }
 
         onEngineInit();
         return true;
-    }
-    bool Engine::initWindow() const
-    {
-        return (m_Window != nullptr) && m_Window->init();
     }
     bool Engine::initRender() const
     {
@@ -90,6 +86,8 @@ namespace JumaEngine
         onGameStart();
 
         bool firstFrame = true;
+        std::chrono::time_point<std::chrono::steady_clock> time1 = std::chrono::steady_clock::now();
+        std::chrono::time_point<std::chrono::steady_clock> time2 = time1;
         while (!shouldStopEngine())
         {
             if (firstFrame)
@@ -98,23 +96,26 @@ namespace JumaEngine
             }
             else
             {
-                tick(getDeltaTime());
+                time1 = time2;
+                time2 = std::chrono::steady_clock::now();
+                const double time = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(time2 - time1).count()) / 1000000.0;
+                tick(time);
             }
         	postTick();
    
-			m_RenderManager->onRenderStart();
+			m_RenderManager->startRender();
         	render();
-        	
-			m_Window->onRenderFinish();
+        	m_RenderManager->finishRender();
         }
     }
     bool Engine::shouldStopEngine() const
     {
-        return m_Window != nullptr ? m_Window->shouldCloseWindow() : true;
+        return m_RenderManager != nullptr ? m_RenderManager->shouldCloseMainWindow() : true;
     }
     double Engine::getDeltaTime() const
     {
-        return m_Window != nullptr ? m_Window->getDeltaTime() : 0.0;
+        //return m_Window != nullptr ? m_Window->getDeltaTime() : 0.0;
+        return 0.0;
     }
 
     void Engine::terminateEngine()
@@ -123,12 +124,6 @@ namespace JumaEngine
         {
             delete m_VertexBufferImporter;
             m_VertexBufferImporter = nullptr;
-        }
-        if (m_Window != nullptr)
-        {
-            m_Window->termiante();
-            delete m_Window;
-            m_Window = nullptr;
         }
         if (m_RenderManager != nullptr)
         {
@@ -168,8 +163,6 @@ namespace JumaEngine
     	{
     		m_World->onGameStarted();
     	}
-    	
-    	m_Window->onEngineLoopStart();
     }
 
     void Engine::tick(const double deltaTime)

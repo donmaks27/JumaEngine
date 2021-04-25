@@ -1,0 +1,135 @@
+﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
+
+#include "RenderManager_OpenGL_GLFW.h"
+#include "utils/log.h"
+
+namespace JumaEngine
+{
+    RenderManager_OpenGL_GLFW::~RenderManager_OpenGL_GLFW()
+    {
+        terminateGLFW();
+    }
+
+    bool RenderManager_OpenGL_GLFW::initInternal()
+    {
+        const int initResult = glfwInit();
+        if (initResult == GLFW_FALSE)
+        {
+            const char* errorStr = nullptr;
+            glfwGetError(&errorStr);
+            JUMA_LOG(error, errorStr);
+            return false;
+        }
+
+        glfwSetErrorCallback(RenderManager_OpenGL_GLFW::errorCallback);
+
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        glfwWindowHint(GLFW_SAMPLES, 0);
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+
+        WindowDescriptionBase* windowDescription = createWindow(glm::uvec2(800, 600), JTEXT("JumaEngine"));
+        if (windowDescription == nullptr)
+        {
+            JUMA_LOG(error, JTEXT("Fail to create main window."));
+            terminateGLFW();
+            return false;
+        }
+        m_MainWindowID = m_Windows.add(windowDescription);
+        setActiveWindowInCurrentThread(m_MainWindowID);
+
+        if (!Super::initInternal())
+        {
+            terminateGLFW();
+            terminateWindowDescriptions();
+            return false;
+        }
+        return true;
+    }
+    void RenderManager_OpenGL_GLFW::errorCallback(const int code, const char* errorMessage)
+    {
+        JUMA_LOG(error, jstring(JTEXT("Code: ")) + TO_JTEXT(code) + JTEXT(". ") + errorMessage);
+    }
+
+    void RenderManager_OpenGL_GLFW::terminateInternal()
+    {
+        terminateGLFW();
+        Super::terminateInternal();
+    }
+    void RenderManager_OpenGL_GLFW::terminateGLFW()
+    {
+        glfwTerminate();
+    }
+    
+    WindowDescriptionBase* RenderManager_OpenGL_GLFW::createWindow(const glm::uvec2& size, const jstring& title)
+    {
+        GLFWwindow* window = glfwCreateWindow(size.x, size.y, title.c_str(), nullptr, getWindowGLFW(getMainWindowID()));
+        if (window == nullptr)
+        {
+            JUMA_LOG(warning, JTEXT("Fail to create GLFW window."));
+            return nullptr;
+        }
+
+        WindowDescriptionGLFW* windowDescription = new WindowDescriptionGLFW();
+        windowDescription->windowSize = size;
+        windowDescription->windowTitle = title;
+        windowDescription->windowPtr = window;
+        return windowDescription;
+    }
+
+    void RenderManager_OpenGL_GLFW::setActiveWindowInCurrentThread(const window_id_type windowID)
+    {
+        GLFWwindow* window = getWindowGLFW(windowID);
+        if (window != nullptr)
+        {
+            glfwMakeContextCurrent(window);
+            glfwSwapInterval(0);
+        }
+        else
+        {
+            glfwMakeContextCurrent(nullptr);
+        }
+    }
+
+    bool RenderManager_OpenGL_GLFW::updateWindowSize(const window_id_type windowID, const glm::uvec2& size)
+    {
+        GLFWwindow* window = getWindowGLFW(windowID);
+        if (window != nullptr)
+        {
+            glfwSetWindowSize(window, size.x, size.y);
+            return true;
+        }
+        return false;
+    }
+    bool RenderManager_OpenGL_GLFW::updateWindowTitle(const window_id_type windowID, const jstring& title)
+    {
+        GLFWwindow* window = getWindowGLFW(windowID);
+        if (window != nullptr)
+        {
+            glfwSetWindowTitle(window, title.c_str());
+            return true;
+        }
+        return false;
+    }
+
+    void RenderManager_OpenGL_GLFW::finishRender()
+    {
+        for (auto& windowIDAndDescription : m_Windows)
+        {
+            WindowDescriptionGLFW* description = dynamic_cast<WindowDescriptionGLFW*>(windowIDAndDescription.second);
+            GLFWwindow* window = description != nullptr ? description->windowPtr : nullptr;
+            if (window != nullptr)
+            {
+                glfwSwapBuffers(window);
+            }
+        }
+        glfwPollEvents();
+    }
+
+    bool RenderManager_OpenGL_GLFW::shouldCloseMainWindow() const
+    {
+        GLFWwindow* mainWindow = getWindowGLFW(getMainWindowID());
+        return glfwWindowShouldClose(mainWindow);
+    }
+}

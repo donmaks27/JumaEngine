@@ -16,7 +16,8 @@ namespace JumaEngine
 	
 	void CameraComponent::updateProjectionMatrix()
 	{
-		const float windowAspectRatio = SystemFunctions::getWindowAspectRatio(this);
+		//const float windowAspectRatio = SystemFunctions::getWindowAspectRatio(this);
+        const float windowAspectRatio = 800.0f / 600.0f;
 		if (isPerspective())
 		{
 			m_ProjectionMatrix = glm::perspective(

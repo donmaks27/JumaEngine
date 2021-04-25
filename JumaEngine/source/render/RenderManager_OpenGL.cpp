@@ -1,16 +1,14 @@
 ﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
 
-#include "RenderManagerOpenGL.h"
+#include "RenderManager_OpenGL.h"
 #include "GL/glew.h"
 #include "utils/log.h"
 #include "shader/ShaderOpenGL.h"
 #include "vertexBuffer/VertexBufferOpenGL.h"
-#include "framework/gameObject/EngineWorld.h"
-#include "framework/gameObject/gameComponent/MeshComponent.h"
 
 namespace JumaEngine
 {
-    bool RenderManagerOpenGL::init()
+    bool RenderManager_OpenGL::initInternal()
     {
         const GLenum glewInitResult = glewInit();
         if (glewInitResult != GLEW_OK)
@@ -20,22 +18,19 @@ namespace JumaEngine
         }
         return true;
     }
-    void RenderManagerOpenGL::terminate()
-    {
-    }
 
-    void RenderManagerOpenGL::onRenderStart()
-    {
-        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    }
-
-    ShaderBase* RenderManagerOpenGL::createShader()
+    ShaderBase* RenderManager_OpenGL::createShader()
     {
         return new ShaderOpenGL();
     }
-    VertexBufferBase* RenderManagerOpenGL::createVertextBuffer()
+    VertexBufferBase* RenderManager_OpenGL::createVertextBuffer()
     {
         return new VertexBufferOpenGL();
+    }
+
+    void RenderManager_OpenGL::startRender()
+    {
+        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     }
 }

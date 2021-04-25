@@ -73,6 +73,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)source\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -98,8 +99,9 @@
     <ClCompile Include="source\framework\gameObject\WorldContextObject.cpp" />
     <ClCompile Include="source\framework\gameObject\TransformObject.cpp" />
     <ClCompile Include="source\framework\gameObject\EngineWorld.cpp" />
-    <ClCompile Include="source\render\RenderManagerBase.cpp" />
-    <ClCompile Include="source\render\RenderManagerOpenGL.cpp" />
+    <ClCompile Include="source\render\RenderManager.cpp" />
+    <ClCompile Include="source\render\RenderManager_OpenGL.cpp" />
+    <ClCompile Include="source\render\RenderManager_OpenGL_GLFW.cpp" />
     <ClCompile Include="source\render\shader\ShaderBase.cpp" />
     <ClCompile Include="source\render\shader\ShaderOpenGL.cpp" />
     <ClCompile Include="source\render\vertexBuffer\importer\VertexBufferImporterBase.cpp" />
@@ -110,8 +112,6 @@
     <ClCompile Include="source\utils\log.cpp" />
     <ClCompile Include="source\utils\math_functions.cpp" />
     <ClCompile Include="source\utils\system_functions.cpp" />
-    <ClCompile Include="source\window\WindowBase.cpp" />
-    <ClCompile Include="source\window\WindowGLFW.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\asset\AssetObject.h" />
@@ -132,8 +132,9 @@
     <ClInclude Include="source\framework\gameObject\TransformObject.h" />
     <ClInclude Include="source\framework\gameObject\EngineWorld.h" />
     <ClInclude Include="source\render\RenderAPI.h" />
-    <ClInclude Include="source\render\RenderManagerBase.h" />
-    <ClInclude Include="source\render\RenderManagerOpenGL.h" />
+    <ClInclude Include="source\render\RenderManager.h" />
+    <ClInclude Include="source\render\RenderManager_OpenGL.h" />
+    <ClInclude Include="source\render\RenderManager_OpenGL_GLFW.h" />
     <ClInclude Include="source\render\shader\ShaderBase.h" />
     <ClInclude Include="source\render\shader\ShaderOpenGL.h" />
     <ClInclude Include="source\render\vertexBuffer\importer\VertexBufferImporterBase.h" />
@@ -142,19 +143,21 @@
     <ClInclude Include="source\render\vertexBuffer\VertexBufferData.h" />
     <ClInclude Include="source\render\vertexBuffer\VertexBufferOpenGL.h" />
     <ClInclude Include="source\render\vertexBuffer\VertexPosition.h" />
+    <ClInclude Include="source\render\WindowDescriptionBase.h" />
+    <ClInclude Include="source\render\WindowDescriptionGLFW.h" />
     <ClInclude Include="source\transform\Rotation.h" />
     <ClInclude Include="source\transform\Transform.h" />
+    <ClInclude Include="source\utils\id_generator.h" />
     <ClInclude Include="source\utils\jarray.h" />
     <ClInclude Include="source\utils\jmap.h" />
     <ClInclude Include="source\utils\jset.h" />
     <ClInclude Include="source\utils\jstring.h" />
     <ClInclude Include="source\utils\log.h" />
+    <ClInclude Include="source\utils\jmap_auto_id.h" />
     <ClInclude Include="source\utils\math_consts.h" />
     <ClInclude Include="source\utils\math_functions.h" />
     <ClInclude Include="source\utils\system_functions.h" />
     <ClInclude Include="source\utils\type_traits_macros.h" />
-    <ClInclude Include="source\window\WindowBase.h" />
-    <ClInclude Include="source\window\WindowGLFW.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

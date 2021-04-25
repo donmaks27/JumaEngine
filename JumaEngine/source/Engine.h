@@ -8,9 +8,9 @@
 
 namespace JumaEngine
 {
-	class AssetsManager;
-	class WindowBase;
-    class RenderManagerBase;
+    class RenderManager;
+    class AssetsManager;
+	class WindowBaseOld;
     class VertexBufferImporterBase;
 
     class EngineWorld;
@@ -23,15 +23,7 @@ namespace JumaEngine
         Engine() = default;
         virtual ~Engine() = default;
 
-        template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<WindowBase, T>)>
-        void setWindow()
-        {
-            if (m_Window == nullptr)
-            {
-                m_Window = createObject<T>();
-            }
-        }
-        template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<RenderManagerBase, T>)>
+        template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<RenderManager, T>)>
         void setRenderManager()
         {
             if (m_RenderManager == nullptr)
@@ -48,8 +40,7 @@ namespace JumaEngine
             }
         }
 
-        WindowBase* getWindow() const { return m_Window; }
-        RenderManagerBase* getRenderManager() const { return m_RenderManager; }
+        RenderManager* getRenderManager() const { return m_RenderManager; }
         VertexBufferImporterBase* getVertexBufferImporter() const { return m_VertexBufferImporter; }
 
         bool startEngine(int argc, char** argv);
@@ -71,8 +62,7 @@ namespace JumaEngine
 
     private:
 
-        WindowBase* m_Window = nullptr;
-        RenderManagerBase* m_RenderManager = nullptr;
+        RenderManager* m_RenderManager = nullptr;
         VertexBufferImporterBase* m_VertexBufferImporter = nullptr;
     	AssetsManager* m_AssetsManager = nullptr;
 
@@ -87,7 +77,6 @@ namespace JumaEngine
         bool startEngineInternal(int argc, char** argv);
 
         bool initEngine();
-        bool initWindow() const;
         bool initRender() const;
 
         void startEngineLoop();
