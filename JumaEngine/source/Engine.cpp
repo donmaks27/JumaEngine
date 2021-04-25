@@ -10,7 +10,7 @@
 #include "framework/gameObject/gameComponent/MeshComponent.h"
 #include "asset/material/Material.h"
 #include "asset/material/MaterialInstance.h"
-#include "render/RenderManager.h"
+#include "render/RenderManagerImpl.h"
 #include "render/vertexBuffer/VertexPosition.h"
 #include "render/vertexBuffer/importer/VertexBufferImporterBase.h"
 #include "utils/system_functions.h"
@@ -76,9 +76,10 @@ namespace JumaEngine
         onEngineInit();
         return true;
     }
-    bool Engine::initRender() const
+    bool Engine::initRender()
     {
-        return (m_RenderManager != nullptr) && m_RenderManager->init();
+        m_RenderManager = new RenderManagerImpl();
+        return m_RenderManager->init();
     }
 
     void Engine::startEngineLoop()

@@ -3,6 +3,9 @@
 #pragma once
 
 #include "common_header.h"
+
+#if defined(JUMAENGINE_USE_GRAPHIC_API_OPENGL)
+
 #include "RenderManager.h"
 
 namespace JumaEngine
@@ -29,3 +32,5 @@ namespace JumaEngine
         typedef RenderManager Super;
     };
 }
+
+#endif

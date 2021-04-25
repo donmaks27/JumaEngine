@@ -1,6 +1,9 @@
 ﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
 
 #include "RenderManager_OpenGL.h"
+
+#if defined(JUMAENGINE_USE_GRAPHIC_API_OPENGL)
+
 #include "GL/glew.h"
 #include "utils/log.h"
 #include "shader/ShaderOpenGL.h"
@@ -34,3 +37,5 @@ namespace JumaEngine
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     }
 }
+
+#endif

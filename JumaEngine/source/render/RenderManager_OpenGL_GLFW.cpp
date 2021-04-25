@@ -1,6 +1,9 @@
 ﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
 
 #include "RenderManager_OpenGL_GLFW.h"
+
+#if defined(JUMAENGINE_USE_GRAPHIC_API_OPENGL) && defined(JUMAENGINE_USE_WINDOW_LIB_GLFW)
+
 #include "utils/log.h"
 
 namespace JumaEngine
@@ -133,3 +136,5 @@ namespace JumaEngine
         return glfwWindowShouldClose(mainWindow);
     }
 }
+
+#endif

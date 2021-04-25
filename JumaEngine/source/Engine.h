@@ -23,14 +23,6 @@ namespace JumaEngine
         Engine() = default;
         virtual ~Engine() = default;
 
-        template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<RenderManager, T>)>
-        void setRenderManager()
-        {
-            if (m_RenderManager == nullptr)
-            {
-                m_RenderManager = createObject<T>();
-            }
-        }
         template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<VertexBufferImporterBase, T>)>
         void setVertexBufferImporter()
         {
@@ -77,7 +69,7 @@ namespace JumaEngine
         bool startEngineInternal(int argc, char** argv);
 
         bool initEngine();
-        bool initRender() const;
+        bool initRender();
 
         void startEngineLoop();
 

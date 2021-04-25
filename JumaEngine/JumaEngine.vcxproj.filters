@@ -264,5 +264,11 @@
     <ClInclude Include="source\render\WindowDescriptionGLFW.h">
       <Filter>JumaEngine\render</Filter>
     </ClInclude>
+    <ClInclude Include="source\render\RenderManagerImpl.h">
+      <Filter>JumaEngine\render</Filter>
+    </ClInclude>
+    <ClInclude Include="source\libs_using.h">
+      <Filter>JumaEngine</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

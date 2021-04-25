@@ -13,6 +13,8 @@
 
 #endif
 
+#include "libs_using.h"
+
 namespace JumaEngine { }
 namespace JE = JumaEngine;
 
