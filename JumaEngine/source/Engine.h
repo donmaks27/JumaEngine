@@ -4,6 +4,7 @@
 
 #include "common_header.h"
 #include "EngineContextObject.h"
+#include "utils/subclass.h"
 #include "utils/type_traits_macros.h"
 
 namespace JumaEngine
@@ -11,7 +12,7 @@ namespace JumaEngine
     class RenderManagerBase;
     class AssetsManager;
 	class WindowBaseOld;
-    class VertexBufferImporterBase;
+    class MeshImporterBase;
 
     class EngineWorld;
     class CameraComponent;
@@ -23,7 +24,7 @@ namespace JumaEngine
         Engine() = default;
         virtual ~Engine() = default;
 
-        template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<VertexBufferImporterBase, T>)>
+        template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<MeshImporterBase, T>)>
         void setVertexBufferImporter()
         {
             if (m_VertexBufferImporter == nullptr)
@@ -33,7 +34,7 @@ namespace JumaEngine
         }
 
         RenderManagerBase* getRenderManager() const { return m_RenderManager; }
-        VertexBufferImporterBase* getVertexBufferImporter() const { return m_VertexBufferImporter; }
+        MeshImporterBase* getVertexBufferImporter() const { return m_VertexBufferImporter; }
 
         bool startEngine(int argc, char** argv);
         bool startEngine() { return startEngine(0, nullptr); }
@@ -48,6 +49,13 @@ namespace JumaEngine
             registerEngineObject(object);
             return object;
         }
+        template<typename T, TEMPLATE_ENABLE(is_base_and_not_same<EngineContextObject, T>)>
+        T* createObject(const subclass<T>& objectClass)
+        {
+            T* object = objectClass.createObject();
+            registerEngineObject(object);
+            return object;
+        }
 
         EngineWorld* getActiveWorld() const { return m_World; }
         CameraComponent* getActiveCamera() const { return m_Camera; }
@@ -55,7 +63,7 @@ namespace JumaEngine
     private:
 
         RenderManagerBase* m_RenderManager = nullptr;
-        VertexBufferImporterBase* m_VertexBufferImporter = nullptr;
+        MeshImporterBase* m_VertexBufferImporter = nullptr;
     	AssetsManager* m_AssetsManager = nullptr;
 
         EngineWorld* m_World = nullptr;

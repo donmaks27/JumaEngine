@@ -4,7 +4,7 @@
 
 namespace JumaEngine
 {
-    void VertexBufferDataPosition::copyFromVertexBufferImporterData(const VertexBufferImporterMeshPartData& data)
+    void VertexBufferDataPosition::copyFromVertexBufferImporterData(const MeshImporterMeshPartData& data)
     {
         for (const auto& vertexData : data.verticesData)
         {

@@ -17,7 +17,7 @@ namespace JumaEngine
     {
     public:
         
-        virtual void copyFromVertexBufferImporterData(const VertexBufferImporterMeshPartData& data) override;
+        virtual void copyFromVertexBufferImporterData(const MeshImporterMeshPartData& data) override;
 
         virtual uint32 getVertexComponentsCount() const override { return 1; }
         virtual int32 getVertexComponentID(uint32 vertexComponentIndex) const override;

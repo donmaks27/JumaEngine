@@ -82,9 +82,6 @@
     <ClCompile Include="source\render\shader\ShaderBase.cpp">
       <Filter>JumaEngine\render\shader</Filter>
     </ClCompile>
-    <ClCompile Include="source\render\vertexBuffer\importer\VertexBufferImporterBase.cpp">
-      <Filter>JumaEngine\render\vertexBuffer\importer</Filter>
-    </ClCompile>
     <ClCompile Include="source\framework\gameObject\gameComponent\GameComponent.cpp">
       <Filter>JumaEngine\framework\gameObject\gameComponent</Filter>
     </ClCompile>
@@ -130,6 +127,9 @@
     <ClCompile Include="source\render\RenderManagerBase_OpenGL.cpp">
       <Filter>JumaEngine\render</Filter>
     </ClCompile>
+    <ClCompile Include="source\render\vertexBuffer\importer\MeshImporterBase.cpp">
+      <Filter>JumaEngine\render\vertexBuffer\importer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\common_header.h">
@@ -174,9 +174,6 @@
     <ClInclude Include="source\framework\gameObject\GameObject.h">
       <Filter>JumaEngine\framework\gameObject</Filter>
     </ClInclude>
-    <ClInclude Include="source\render\vertexBuffer\importer\VertexBufferImporterData.h">
-      <Filter>JumaEngine\render\vertexBuffer\importer</Filter>
-    </ClInclude>
     <ClInclude Include="source\transform\Rotation.h">
       <Filter>JumaEngine\transform</Filter>
     </ClInclude>
@@ -188,9 +185,6 @@
     </ClInclude>
     <ClInclude Include="source\render\shader\ShaderBase.h">
       <Filter>JumaEngine\render\shader</Filter>
-    </ClInclude>
-    <ClInclude Include="source\render\vertexBuffer\importer\VertexBufferImporterBase.h">
-      <Filter>JumaEngine\render\vertexBuffer\importer</Filter>
     </ClInclude>
     <ClInclude Include="source\render\RenderAPI.h">
       <Filter>JumaEngine\render</Filter>
@@ -269,6 +263,15 @@
     </ClInclude>
     <ClInclude Include="source\render\RenderManagerBase_OpenGL.h">
       <Filter>JumaEngine\render</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\vertexBuffer\importer\MeshImporterData.h">
+      <Filter>JumaEngine\render\vertexBuffer\importer</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\vertexBuffer\importer\MeshImporterBase.h">
+      <Filter>JumaEngine\render\vertexBuffer\importer</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\subclass.h">
+      <Filter>JumaEngine\utils</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -104,7 +104,7 @@
     <ClCompile Include="source\render\RenderManager_OpenGL_GLFW.cpp" />
     <ClCompile Include="source\render\shader\ShaderBase.cpp" />
     <ClCompile Include="source\render\shader\ShaderOpenGL.cpp" />
-    <ClCompile Include="source\render\vertexBuffer\importer\VertexBufferImporterBase.cpp" />
+    <ClCompile Include="source\render\vertexBuffer\importer\MeshImporterBase.cpp" />
     <ClCompile Include="source\render\vertexBuffer\VertexBufferBase.cpp" />
     <ClCompile Include="source\render\vertexBuffer\VertexBufferOpenGL.cpp" />
     <ClCompile Include="source\render\vertexBuffer\VertexPosition.cpp" />
@@ -139,8 +139,8 @@
     <ClInclude Include="source\render\RenderManager_OpenGL_GLFW.h" />
     <ClInclude Include="source\render\shader\ShaderBase.h" />
     <ClInclude Include="source\render\shader\ShaderOpenGL.h" />
-    <ClInclude Include="source\render\vertexBuffer\importer\VertexBufferImporterBase.h" />
-    <ClInclude Include="source\render\vertexBuffer\importer\VertexBufferImporterData.h" />
+    <ClInclude Include="source\render\vertexBuffer\importer\MeshImporterBase.h" />
+    <ClInclude Include="source\render\vertexBuffer\importer\MeshImporterData.h" />
     <ClInclude Include="source\render\vertexBuffer\VertexBufferBase.h" />
     <ClInclude Include="source\render\vertexBuffer\VertexBufferData.h" />
     <ClInclude Include="source\render\vertexBuffer\VertexBufferOpenGL.h" />
@@ -158,6 +158,7 @@
     <ClInclude Include="source\utils\jmap_auto_id.h" />
     <ClInclude Include="source\utils\math_consts.h" />
     <ClInclude Include="source\utils\math_functions.h" />
+    <ClInclude Include="source\utils\subclass.h" />
     <ClInclude Include="source\utils\system_functions.h" />
     <ClInclude Include="source\utils\type_traits_macros.h" />
   </ItemGroup>

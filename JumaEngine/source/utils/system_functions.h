@@ -4,8 +4,6 @@
 
 #include "common_header.h"
 #include "Engine.h"
-#include "asset/mesh/Mesh.h"
-#include "render/vertexBuffer/importer/VertexBufferImporterBase.h"
 
 namespace JumaEngine
 {
@@ -14,7 +12,9 @@ namespace JumaEngine
 
     class ShaderBase;
     class VertexBufferBase;
-    class VertexBufferImporterBase;
+    class MeshImporterBase;
+    class Mesh;
+    class VertexBufferDataBase;
 
     class CameraComponent;
 
@@ -33,6 +33,16 @@ namespace JumaEngine
             }
             return nullptr;
         }
+        template<typename T, TEMPLATE_ENABLE(is_base_and_not_same<EngineContextObject, T>)>
+        static T* createObject(const EngineContextObject* engineContextObject, const subclass<T>& objectClass)
+        {
+            Engine* engine = getEngine(engineContextObject);
+            if (engine != nullptr)
+            {
+                return engine->createObject<T>(objectClass);
+            }
+            return nullptr;
+        }
 
     	static RenderManagerBase* getRenderManager(const EngineContextObject* engineContextObject);
     	
@@ -40,23 +50,10 @@ namespace JumaEngine
         static ShaderBase* createShader(const EngineContextObject* engineContextObject, const jstring& shaderName);
         static VertexBufferBase* createVertexBuffer(const EngineContextObject* engineContextObject, VertexBufferDataBase* vertexBufferData = nullptr);
 
-        static VertexBufferImporterBase* getVertexBufferImporter(const EngineContextObject* engineContextObject);
+        static MeshImporterBase* getVertexBufferImporter(const EngineContextObject* engineContextObject);
         static void importVertexBufferFile(const EngineContextObject* engineContextObject, const char* filePath);
-        template<typename T, typename U, TEMPLATE_ENABLE(is_base_and_not_abstract<Mesh, T> && is_base_and_not_abstract<VertexBufferDataBase, U>)>
-        static Mesh* importMesh(const EngineContextObject* engineContextObject, const jstring& meshName)
-        {
-            VertexBufferImporterBase* importer = getVertexBufferImporter(engineContextObject);
-            if (importer != nullptr)
-            {
-                Mesh* mesh = createObject<T>(engineContextObject);
-                if (mesh != nullptr)
-                {
-                    mesh->initMesh(importer->createVertexBufferForMesh<U>(meshName));
-                    return mesh;
-                }
-            }
-            return nullptr;
-        }
+        static Mesh* importMesh(const EngineContextObject* engineContextObject, const jstring& meshName, const subclass<Mesh>& meshClass, 
+            const subclass<VertexBufferDataBase>& bufferClass);
 
         static CameraComponent* getActiveCamera(const EngineContextObject* engineContextObject);
     };

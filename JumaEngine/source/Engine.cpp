@@ -10,9 +10,10 @@
 #include "framework/gameObject/gameComponent/MeshComponent.h"
 #include "asset/material/Material.h"
 #include "asset/material/MaterialInstance.h"
+#include "asset/mesh/Mesh.h"
 #include "render/RenderManagerImpl.h"
 #include "render/vertexBuffer/VertexPosition.h"
-#include "render/vertexBuffer/importer/VertexBufferImporterBase.h"
+#include "render/vertexBuffer/importer/MeshImporterBase.h"
 #include "utils/system_functions.h"
 
 namespace JumaEngine
@@ -147,7 +148,7 @@ namespace JumaEngine
     	material->finishInitialization();
 
         SystemFunctions::importVertexBufferFile(m_World, "");
-        m_Mesh = SystemFunctions::importMesh<Mesh, VertexBufferDataPosition>(m_World, JTEXT("Triangle"));
+        m_Mesh = SystemFunctions::importMesh(m_World, JTEXT("Triangle"), CLASS_TYPE(Mesh), CLASS_TYPE(VertexBufferDataPosition));
         m_Mesh->setMaterial(0, m_AssetsManager->createMaterialInstance(material));
 
         MeshComponent* component = m_World->createSceneComponent<MeshComponent>();
