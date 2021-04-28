@@ -4,14 +4,14 @@
 
 #include "common_header.h"
 
-#if defined(JUMAENGINE_USE_GRAPHIC_API_OPENGL) && defined(JUMAENGINE_USE_WINDOW_LIB_GLFW)
+#if defined(JUMAENGINE_USE_GRAPHIC_API_OPENGL) && defined(JUMAENGINE_USE_WINDOW_OPENGL_GLFW)
 
 #include "WindowDescriptionGLFW.h"
-#include "RenderManager_OpenGL.h"
+#include "RenderManagerBase_OpenGL.h"
 
 namespace JumaEngine
 {
-    class RenderManager_OpenGL_GLFW : public RenderManager_OpenGL
+    class RenderManager_OpenGL_GLFW : public RenderManagerBase_OpenGL
     {
     public:
         RenderManager_OpenGL_GLFW() = default;
@@ -35,7 +35,7 @@ namespace JumaEngine
 
     private:
 
-        typedef RenderManager_OpenGL Super;
+        typedef RenderManagerBase_OpenGL Super;
 
 
         void terminateGLFW();

@@ -78,7 +78,7 @@ namespace JumaEngine
     }
     bool Engine::initRender()
     {
-        m_RenderManager = new RenderManagerImpl();
+        m_RenderManager = new RenderManager_OpenGL();
         return m_RenderManager->init();
     }
 

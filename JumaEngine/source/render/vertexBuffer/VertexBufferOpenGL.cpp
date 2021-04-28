@@ -2,6 +2,8 @@
 
 #include "VertexBufferOpenGL.h"
 
+#if defined(JUMAENGINE_USE_GRAPHIC_API_OPENGL)
+
 #include "VertexBufferData.h"
 #include "GL/glew.h"
 
@@ -130,3 +132,5 @@ namespace JumaEngine
         }
     }
 }
+
+#endif

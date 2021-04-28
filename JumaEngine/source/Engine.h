@@ -8,7 +8,7 @@
 
 namespace JumaEngine
 {
-    class RenderManager;
+    class RenderManagerBase;
     class AssetsManager;
 	class WindowBaseOld;
     class VertexBufferImporterBase;
@@ -32,7 +32,7 @@ namespace JumaEngine
             }
         }
 
-        RenderManager* getRenderManager() const { return m_RenderManager; }
+        RenderManagerBase* getRenderManager() const { return m_RenderManager; }
         VertexBufferImporterBase* getVertexBufferImporter() const { return m_VertexBufferImporter; }
 
         bool startEngine(int argc, char** argv);
@@ -54,7 +54,7 @@ namespace JumaEngine
 
     private:
 
-        RenderManager* m_RenderManager = nullptr;
+        RenderManagerBase* m_RenderManager = nullptr;
         VertexBufferImporterBase* m_VertexBufferImporter = nullptr;
     	AssetsManager* m_AssetsManager = nullptr;
 

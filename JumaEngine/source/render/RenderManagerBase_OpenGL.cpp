@@ -1,6 +1,6 @@
 ﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
 
-#include "RenderManager_OpenGL.h"
+#include "RenderManagerBase_OpenGL.h"
 
 #if defined(JUMAENGINE_USE_GRAPHIC_API_OPENGL)
 
@@ -11,7 +11,7 @@
 
 namespace JumaEngine
 {
-    bool RenderManager_OpenGL::initInternal()
+    bool RenderManagerBase_OpenGL::initInternal()
     {
         const GLenum glewInitResult = glewInit();
         if (glewInitResult != GLEW_OK)
@@ -22,16 +22,16 @@ namespace JumaEngine
         return true;
     }
 
-    ShaderBase* RenderManager_OpenGL::createShader()
+    ShaderBase* RenderManagerBase_OpenGL::createShader()
     {
         return new ShaderOpenGL();
     }
-    VertexBufferBase* RenderManager_OpenGL::createVertextBuffer()
+    VertexBufferBase* RenderManagerBase_OpenGL::createVertextBuffer()
     {
         return new VertexBufferOpenGL();
     }
 
-    void RenderManager_OpenGL::startRender()
+    void RenderManagerBase_OpenGL::startRender()
     {
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);

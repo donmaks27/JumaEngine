@@ -6,15 +6,15 @@
 
 #if defined(JUMAENGINE_USE_GRAPHIC_API_OPENGL)
 
-#include "RenderManager.h"
+#include "RenderManagerBase.h"
 
 namespace JumaEngine
 {
-    class RenderManager_OpenGL : public RenderManager
+    class RenderManagerBase_OpenGL : public RenderManagerBase
     {
     public:
-        RenderManager_OpenGL() = default;
-        virtual ~RenderManager_OpenGL() override = default;
+        RenderManagerBase_OpenGL() = default;
+        virtual ~RenderManagerBase_OpenGL() override = default;
 
         virtual RenderAPI getRenderAPI() const override { return RenderAPI::OpenGL; }
         
@@ -29,7 +29,7 @@ namespace JumaEngine
 
     private:
 
-        typedef RenderManager Super;
+        typedef RenderManagerBase Super;
     };
 }
 

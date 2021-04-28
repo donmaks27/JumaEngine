@@ -3,6 +3,9 @@
 #pragma once
 
 #include "common_header.h"
+
+#if defined(JUMAENGINE_USE_GRAPHIC_API_OPENGL)
+
 #include "VertexBufferBase.h"
 
 namespace JumaEngine
@@ -32,3 +35,5 @@ namespace JumaEngine
         void clearBuffers();
     };
 }
+
+#endif

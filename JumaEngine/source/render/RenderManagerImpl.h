@@ -5,21 +5,14 @@
 #include "common_header.h"
 
 #if defined(JUMAENGINE_USE_GRAPHIC_API_OPENGL)
-
-#if defined(JUMAENGINE_USE_WINDOW_LIB_GLFW)
+#   if defined(JUMAENGINE_USE_WINDOW_OPENGL_GLFW)
 
 #include "RenderManager_OpenGL_GLFW.h"
 
 namespace JumaEngine
 {
-    typedef RenderManager_OpenGL_GLFW RenderManagerImpl;
+    typedef RenderManager_OpenGL_GLFW RenderManager_OpenGL;
 }
 
+#   endif
 #endif
-
-#endif
-
-/*namespace JumaEngine
-{
-    
-}*/

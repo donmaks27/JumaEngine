@@ -1,15 +1,15 @@
 ﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
 
-#include "RenderManager.h"
+#include "RenderManagerBase.h"
 
 namespace JumaEngine
 {
-    RenderManager::~RenderManager()
+    RenderManagerBase::~RenderManagerBase()
     {
         terminateWindowDescriptions();
     }
 
-    bool RenderManager::init()
+    bool RenderManagerBase::init()
     {
         if (!m_Initialized)
         {
@@ -19,7 +19,7 @@ namespace JumaEngine
         return false;
     }
 
-    void RenderManager::terminate()
+    void RenderManagerBase::terminate()
     {
         if (isInit())
         {
@@ -27,11 +27,11 @@ namespace JumaEngine
             m_Terminated = true;
         }
     }
-    void RenderManager::terminateInternal()
+    void RenderManagerBase::terminateInternal()
     {
         terminateWindowDescriptions();
     }
-    void RenderManager::terminateWindowDescriptions()
+    void RenderManagerBase::terminateWindowDescriptions()
     {
         for (auto& windowIDAndDescription : m_Windows)
         {
@@ -42,7 +42,7 @@ namespace JumaEngine
         m_MainWindowID = INVALID_WINDOW_ID;
     }
 
-    jarray<window_id_type> RenderManager::getWindowsList() const
+    jarray<window_id_type> RenderManagerBase::getWindowsList() const
     {
         jarray<window_id_type> result;
         if (isInit())
@@ -55,7 +55,7 @@ namespace JumaEngine
         return result;
     }
 
-    bool RenderManager::getWindowSize(const window_id_type windowID, glm::uvec2& outWindowSize) const
+    bool RenderManagerBase::getWindowSize(const window_id_type windowID, glm::uvec2& outWindowSize) const
     {
         if (isInit())
         {
@@ -68,7 +68,7 @@ namespace JumaEngine
         }
         return false;
     }
-    bool RenderManager::setWindowSize(const window_id_type windowID, const glm::uvec2& size)
+    bool RenderManagerBase::setWindowSize(const window_id_type windowID, const glm::uvec2& size)
     {
         if (isInit())
         {
@@ -85,7 +85,7 @@ namespace JumaEngine
         return false;
     }
 
-    bool RenderManager::getWindowTitle(window_id_type windowID, jstring& outWindowTitle) const
+    bool RenderManagerBase::getWindowTitle(window_id_type windowID, jstring& outWindowTitle) const
     {
         if (isInit())
         {
@@ -98,7 +98,7 @@ namespace JumaEngine
         }
         return false;
     }
-    bool RenderManager::setWindowTitle(window_id_type windowID, const jstring& title)
+    bool RenderManagerBase::setWindowTitle(window_id_type windowID, const jstring& title)
     {
         if (isInit())
         {

@@ -99,8 +99,8 @@
     <ClCompile Include="source\framework\gameObject\WorldContextObject.cpp" />
     <ClCompile Include="source\framework\gameObject\TransformObject.cpp" />
     <ClCompile Include="source\framework\gameObject\EngineWorld.cpp" />
-    <ClCompile Include="source\render\RenderManager.cpp" />
-    <ClCompile Include="source\render\RenderManager_OpenGL.cpp" />
+    <ClCompile Include="source\render\RenderManagerBase.cpp" />
+    <ClCompile Include="source\render\RenderManagerBase_OpenGL.cpp" />
     <ClCompile Include="source\render\RenderManager_OpenGL_GLFW.cpp" />
     <ClCompile Include="source\render\shader\ShaderBase.cpp" />
     <ClCompile Include="source\render\shader\ShaderOpenGL.cpp" />
@@ -133,9 +133,9 @@
     <ClInclude Include="source\framework\gameObject\EngineWorld.h" />
     <ClInclude Include="source\libs_using.h" />
     <ClInclude Include="source\render\RenderAPI.h" />
-    <ClInclude Include="source\render\RenderManager.h" />
+    <ClInclude Include="source\render\RenderManagerBase.h" />
     <ClInclude Include="source\render\RenderManagerImpl.h" />
-    <ClInclude Include="source\render\RenderManager_OpenGL.h" />
+    <ClInclude Include="source\render\RenderManagerBase_OpenGL.h" />
     <ClInclude Include="source\render\RenderManager_OpenGL_GLFW.h" />
     <ClInclude Include="source\render\shader\ShaderBase.h" />
     <ClInclude Include="source\render\shader\ShaderOpenGL.h" />

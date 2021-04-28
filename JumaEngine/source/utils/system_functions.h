@@ -34,7 +34,7 @@ namespace JumaEngine
             return nullptr;
         }
 
-    	static RenderManager* getRenderManager(const EngineContextObject* engineContextObject);
+    	static RenderManagerBase* getRenderManager(const EngineContextObject* engineContextObject);
     	
         static ShaderBase* createShader(const EngineContextObject* engineContextObject);
         static ShaderBase* createShader(const EngineContextObject* engineContextObject, const jstring& shaderName);

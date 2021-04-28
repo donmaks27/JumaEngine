@@ -1,8 +1,11 @@
 ﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
 
 #include "ShaderOpenGL.h"
+
+#if defined(JUMAENGINE_USE_GRAPHIC_API_OPENGL)
+
 #include <fstream>
-#include <GL/glew.h>
+#include "GL/glew.h"
 #include "utils/log.h"
 
 namespace JumaEngine
@@ -270,3 +273,5 @@ namespace JumaEngine
         }
     }
 }
+
+#endif

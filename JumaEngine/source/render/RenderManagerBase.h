@@ -16,11 +16,11 @@ namespace JumaEngine
     typedef uint8 window_id_type;
     constexpr window_id_type INVALID_WINDOW_ID = 0;
 
-    class RenderManager : public EngineContextObject
+    class RenderManagerBase : public EngineContextObject
     {
     public:
-        RenderManager() = default;
-        virtual ~RenderManager() override;
+        RenderManagerBase() = default;
+        virtual ~RenderManagerBase() override;
 
         virtual RenderAPI getRenderAPI() const = 0;
 

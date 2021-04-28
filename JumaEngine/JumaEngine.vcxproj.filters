@@ -121,13 +121,13 @@
     <ClCompile Include="source\asset\AssetObject.cpp">
       <Filter>JumaEngine\asset</Filter>
     </ClCompile>
-    <ClCompile Include="source\render\RenderManager_OpenGL.cpp">
-      <Filter>JumaEngine\render</Filter>
-    </ClCompile>
-    <ClCompile Include="source\render\RenderManager.cpp">
-      <Filter>JumaEngine\render</Filter>
-    </ClCompile>
     <ClCompile Include="source\render\RenderManager_OpenGL_GLFW.cpp">
+      <Filter>JumaEngine\render</Filter>
+    </ClCompile>
+    <ClCompile Include="source\render\RenderManagerBase.cpp">
+      <Filter>JumaEngine\render</Filter>
+    </ClCompile>
+    <ClCompile Include="source\render\RenderManagerBase_OpenGL.cpp">
       <Filter>JumaEngine\render</Filter>
     </ClCompile>
   </ItemGroup>
@@ -243,12 +243,6 @@
     <ClInclude Include="source\asset\AssetObject.h">
       <Filter>JumaEngine\asset</Filter>
     </ClInclude>
-    <ClInclude Include="source\render\RenderManager_OpenGL.h">
-      <Filter>JumaEngine\render</Filter>
-    </ClInclude>
-    <ClInclude Include="source\render\RenderManager.h">
-      <Filter>JumaEngine\render</Filter>
-    </ClInclude>
     <ClInclude Include="source\render\RenderManager_OpenGL_GLFW.h">
       <Filter>JumaEngine\render</Filter>
     </ClInclude>
@@ -269,6 +263,12 @@
     </ClInclude>
     <ClInclude Include="source\libs_using.h">
       <Filter>JumaEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\RenderManagerBase.h">
+      <Filter>JumaEngine\render</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\RenderManagerBase_OpenGL.h">
+      <Filter>JumaEngine\render</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

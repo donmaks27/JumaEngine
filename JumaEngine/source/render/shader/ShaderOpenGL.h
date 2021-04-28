@@ -3,6 +3,9 @@
 #pragma once
 
 #include "common_header.h"
+
+#if defined(JUMAENGINE_USE_GRAPHIC_API_OPENGL)
+
 #include "ShaderBase.h"
 #include "utils/jmap.h"
 
@@ -57,3 +60,5 @@ namespace JumaEngine
         int32 getUniformLocation(const char* uniformName) const;
     };
 }
+
+#endif

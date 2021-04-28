@@ -2,7 +2,7 @@
 
 #include "RenderManager_OpenGL_GLFW.h"
 
-#if defined(JUMAENGINE_USE_GRAPHIC_API_OPENGL) && defined(JUMAENGINE_USE_WINDOW_LIB_GLFW)
+#if defined(JUMAENGINE_USE_GRAPHIC_API_OPENGL) && defined(JUMAENGINE_USE_WINDOW_OPENGL_GLFW)
 
 #include "utils/log.h"
 

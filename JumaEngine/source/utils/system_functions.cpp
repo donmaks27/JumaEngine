@@ -3,7 +3,7 @@
 #include "system_functions.h"
 #include "Engine.h"
 #include "EngineContextObject.h"
-#include "render/RenderManager.h"
+#include "render/RenderManagerBase.h"
 #include "render/shader/ShaderBase.h"
 #include "render/vertexBuffer/VertexBufferBase.h"
 #include "render/vertexBuffer/importer/VertexBufferImporterBase.h"
@@ -14,7 +14,7 @@ namespace JumaEngine
 	{
 		return engineContextObject != nullptr ? engineContextObject->getOwnerEngine() : nullptr;
 	}
-	RenderManager* SystemFunctions::getRenderManager(const EngineContextObject* engineContextObject)
+	RenderManagerBase* SystemFunctions::getRenderManager(const EngineContextObject* engineContextObject)
 	{
 		const Engine* engine = getEngine(engineContextObject);
 		return engine != nullptr ? engine->getRenderManager() : nullptr;
@@ -22,7 +22,7 @@ namespace JumaEngine
 
     ShaderBase* SystemFunctions::createShader(const EngineContextObject* engineContextObject)
     {
-        RenderManager* renderManager = getRenderManager(engineContextObject);
+        RenderManagerBase* renderManager = getRenderManager(engineContextObject);
         if (renderManager != nullptr)
         {
             return renderManager->createShader();
@@ -42,7 +42,7 @@ namespace JumaEngine
 
     VertexBufferBase* SystemFunctions::createVertexBuffer(const EngineContextObject* engineContextObject, VertexBufferDataBase* vertexBufferData)
     {
-		RenderManager* renderManager = getRenderManager(engineContextObject);
+		RenderManagerBase* renderManager = getRenderManager(engineContextObject);
 		if (renderManager != nullptr)
 		{
 			VertexBufferBase* vertexBuffer = renderManager->createVertextBuffer();
