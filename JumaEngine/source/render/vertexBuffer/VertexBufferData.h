@@ -3,41 +3,30 @@
 #pragma once
 
 #include "common_header.h"
+#include "VertexBufferDescription.h"
 #include "importer/MeshImporterData.h"
 
 namespace JumaEngine
 {
-    enum class VertexComponentType
-    {
-        None,
-        Float
-    };
-
     class VertexBufferDataBase
     {
     public:
         VertexBufferDataBase() = default;
         virtual ~VertexBufferDataBase() = default;
 
-        jarray<uint32> vertexIndices;
+        virtual const void* getVertices() const { return nullptr; }
+        const void* getVertexIndices() const { return !vertexIndices.empty() ? vertexIndices.data() : nullptr; }
 
+        virtual void fillVertexBufferDescription(VertexBufferDescription& description) const
+        {
+            description.indicesCount = static_cast<uint32>(vertexIndices.size());
+        }
 
         virtual void copyFromVertexBufferImporterData(const MeshImporterMeshPartData& data) = 0;
 
-        virtual uint32 getVertexSize() const = 0;
-        virtual uint32 getVerticesCount() const { return 0; }
+    protected:
 
-        virtual uint32 getVertexComponentsCount() const = 0;
-        virtual int32 getVertexComponentID(const uint32 vertexComponentIndex) const { return -1; }
-        virtual VertexComponentType getVertexComponentType(const uint32 vertexComponentIndex) const { return VertexComponentType::None; }
-        virtual uint32 getVertexComponentSize(const uint32 vertexComponentIndex) const { return 0; }
-        virtual size_t getVertexComponentOffset(const uint32 vertexComponentIndex) const { return 0; }
-
-        virtual const void* getVertices() const { return nullptr; }
-
-        bool shouldUseVertexIndices() const { return !vertexIndices.empty(); }
-        uint32 getVertexIndicesCount() const { return static_cast<uint32>(vertexIndices.size()); }
-        const void* getVertexIndices() const { return shouldUseVertexIndices() ? vertexIndices.data() : nullptr; }
+        jarray<uint32> vertexIndices;
     };
 
     template<typename T>
@@ -45,16 +34,20 @@ namespace JumaEngine
     {
     public:
 
-        jarray<T> vertices;
+        virtual const void* getVertices() const override final { return vertices.data(); }
 
+        virtual void fillVertexBufferDescription(VertexBufferDescription& description) const override
+        {
+            VertexBufferDataBase::fillVertexBufferDescription(description);
 
-        virtual uint32 getVertexSize() const override final { return sizeof(T); }
-        virtual uint32 getVerticesCount() const override final { return static_cast<uint32>(vertices.size()); }
-
-        virtual const void* getVertices() const override final { return getVerticesCount() ? vertices.data() : nullptr; }
+            description.verticesCount = static_cast<uint32>(vertices.size());
+            description.vertexSize = sizeof(T);
+        }
 
     protected:
 
         typedef VertexBufferData<T> Super;
+
+        jarray<T> vertices;
     };
 }

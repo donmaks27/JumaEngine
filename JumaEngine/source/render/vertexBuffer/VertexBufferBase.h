@@ -3,6 +3,7 @@
 #pragma once
 
 #include "common_header.h"
+#include "VertexBufferDescription.h"
 
 namespace JumaEngine
 {
@@ -14,10 +15,22 @@ namespace JumaEngine
         VertexBufferBase() = default;
         virtual ~VertexBufferBase() = default;
 
-        virtual void init(VertexBufferDataBase* vertexBufferData) = 0;
-        virtual bool isInit() const = 0;
-        virtual void terminate() = 0;
+        bool init(VertexBufferDataBase* vertexBufferData);
+        bool isInit() const { return m_Initialized; }
+        void terminate();
+
+        const VertexBufferDescription& getVertexBufferDescription() const { return m_VertexBufferDescription; }
 
         virtual void render() = 0;
+
+    protected:
+
+        virtual bool initInternal(VertexBufferDataBase* vertexBufferData) = 0;
+        virtual void terminateInteranl() = 0;
+
+    private:
+
+        bool m_Initialized = false;
+        VertexBufferDescription m_VertexBufferDescription = VertexBufferDescription();
     };
 }

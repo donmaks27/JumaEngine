@@ -7,7 +7,7 @@
 #include "GL/glew.h"
 #include "utils/log.h"
 #include "shader/ShaderOpenGL.h"
-#include "vertexBuffer/VertexBufferOpenGL.h"
+#include "vertexBuffer/VertexBuffer_OpenGL.h"
 
 namespace JumaEngine
 {
@@ -28,7 +28,7 @@ namespace JumaEngine
     }
     VertexBufferBase* RenderManagerBase_OpenGL::createVertextBuffer()
     {
-        return new VertexBufferOpenGL();
+        return new VertexBuffer_OpenGL();
     }
 
     void RenderManagerBase_OpenGL::startRender()

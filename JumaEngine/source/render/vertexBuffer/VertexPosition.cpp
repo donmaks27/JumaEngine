@@ -4,28 +4,20 @@
 
 namespace JumaEngine
 {
+    void VertexBufferDataPosition::fillVertexBufferDescription(VertexBufferDescription& description) const
+    {
+        Super::fillVertexBufferDescription(description);
+
+        description.vertexComponents = {
+            {0, VertexComponentType::Float, 3, offsetof(VertexPosition, position)}
+        };
+    }
+
     void VertexBufferDataPosition::copyFromVertexBufferImporterData(const MeshImporterMeshPartData& data)
     {
         for (const auto& vertexData : data.verticesData)
         {
             vertices.add({ vertexData.position });
         }
-    }
-
-    int32 VertexBufferDataPosition::getVertexComponentID(const uint32 vertexComponentIndex) const
-    {
-        return vertexComponentIndex == 0 ? 0 : Super::getVertexComponentID(vertexComponentIndex);
-    }
-    VertexComponentType VertexBufferDataPosition::getVertexComponentType(const uint32 vertexComponentIndex) const
-    {
-        return vertexComponentIndex == 0 ? VertexComponentType::Float : Super::getVertexComponentType(vertexComponentIndex);
-    }
-    uint32 VertexBufferDataPosition::getVertexComponentSize(const uint32 vertexComponentIndex) const
-    {
-        return vertexComponentIndex == 0 ? 3 : Super::getVertexComponentSize(vertexComponentIndex);
-    }
-    size_t VertexBufferDataPosition::getVertexComponentOffset(const uint32 vertexComponentIndex) const
-    {
-        return vertexComponentIndex == 0 ? offsetof(VertexPosition, position) : Super::getVertexComponentOffset(vertexComponentIndex);
     }
 }

@@ -106,7 +106,7 @@
     <ClCompile Include="source\render\shader\ShaderOpenGL.cpp" />
     <ClCompile Include="source\render\vertexBuffer\importer\MeshImporterBase.cpp" />
     <ClCompile Include="source\render\vertexBuffer\VertexBufferBase.cpp" />
-    <ClCompile Include="source\render\vertexBuffer\VertexBufferOpenGL.cpp" />
+    <ClCompile Include="source\render\vertexBuffer\VertexBuffer_OpenGL.cpp" />
     <ClCompile Include="source\render\vertexBuffer\VertexPosition.cpp" />
     <ClCompile Include="source\transform\Rotation.cpp" />
     <ClCompile Include="source\utils\log.cpp" />
@@ -143,7 +143,8 @@
     <ClInclude Include="source\render\vertexBuffer\importer\MeshImporterData.h" />
     <ClInclude Include="source\render\vertexBuffer\VertexBufferBase.h" />
     <ClInclude Include="source\render\vertexBuffer\VertexBufferData.h" />
-    <ClInclude Include="source\render\vertexBuffer\VertexBufferOpenGL.h" />
+    <ClInclude Include="source\render\vertexBuffer\VertexBufferDescription.h" />
+    <ClInclude Include="source\render\vertexBuffer\VertexBuffer_OpenGL.h" />
     <ClInclude Include="source\render\vertexBuffer\VertexPosition.h" />
     <ClInclude Include="source\render\WindowDescriptionBase.h" />
     <ClInclude Include="source\render\WindowDescriptionGLFW.h" />

@@ -10,26 +10,24 @@
 
 namespace JumaEngine
 {
-    class VertexBufferOpenGL final : public VertexBufferBase
+    class VertexBuffer_OpenGL final : public VertexBufferBase
     {
     public:
-        VertexBufferOpenGL() = default;
-        virtual ~VertexBufferOpenGL() override;
-
-        virtual void init(VertexBufferDataBase* vertexBufferData) override;
-        virtual bool isInit() const override { return m_VerticesVBO; }
-        virtual void terminate() override;
+        VertexBuffer_OpenGL() = default;
+        virtual ~VertexBuffer_OpenGL() override;
 
         virtual void render() override;
+
+    protected:
+
+        virtual bool initInternal(VertexBufferDataBase* vertexBufferData) override;
+        virtual void terminateInteranl() override { clearBuffers(); }
 
     private:
 
         uint32 m_VerticesVBO = 0;
         uint32 m_IndicesVBO = 0;
         uint32 m_VerticesVAO = 0;
-
-        uint32 m_VerticesCount = 0;
-        uint32 m_IndicesCount = 0;
 
 
         void clearBuffers();

@@ -64,9 +64,6 @@
     <ClCompile Include="source\render\vertexBuffer\VertexBufferBase.cpp">
       <Filter>JumaEngine\render\vertexBuffer</Filter>
     </ClCompile>
-    <ClCompile Include="source\render\vertexBuffer\VertexBufferOpenGL.cpp">
-      <Filter>JumaEngine\render\vertexBuffer</Filter>
-    </ClCompile>
     <ClCompile Include="source\render\vertexBuffer\VertexPosition.cpp">
       <Filter>JumaEngine\render\vertexBuffer</Filter>
     </ClCompile>
@@ -130,6 +127,9 @@
     <ClCompile Include="source\render\vertexBuffer\importer\MeshImporterBase.cpp">
       <Filter>JumaEngine\render\vertexBuffer\importer</Filter>
     </ClCompile>
+    <ClCompile Include="source\render\vertexBuffer\VertexBuffer_OpenGL.cpp">
+      <Filter>JumaEngine\render\vertexBuffer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\common_header.h">
@@ -163,9 +163,6 @@
       <Filter>JumaEngine\render\vertexBuffer</Filter>
     </ClInclude>
     <ClInclude Include="source\render\vertexBuffer\VertexBufferData.h">
-      <Filter>JumaEngine\render\vertexBuffer</Filter>
-    </ClInclude>
-    <ClInclude Include="source\render\vertexBuffer\VertexBufferOpenGL.h">
       <Filter>JumaEngine\render\vertexBuffer</Filter>
     </ClInclude>
     <ClInclude Include="source\render\vertexBuffer\VertexPosition.h">
@@ -272,6 +269,12 @@
     </ClInclude>
     <ClInclude Include="source\utils\subclass.h">
       <Filter>JumaEngine\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\vertexBuffer\VertexBuffer_OpenGL.h">
+      <Filter>JumaEngine\render\vertexBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\vertexBuffer\VertexBufferDescription.h">
+      <Filter>JumaEngine\render\vertexBuffer</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
