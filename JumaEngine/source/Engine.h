@@ -15,7 +15,6 @@ namespace JumaEngine
     class MeshImporterBase;
 
     class EngineWorld;
-    class CameraComponent;
     class Mesh;
 
     class Engine
@@ -58,7 +57,6 @@ namespace JumaEngine
         }
 
         EngineWorld* getActiveWorld() const { return m_World; }
-        CameraComponent* getActiveCamera() const { return m_Camera; }
 
     private:
 
@@ -67,7 +65,6 @@ namespace JumaEngine
     	AssetsManager* m_AssetsManager = nullptr;
 
         EngineWorld* m_World = nullptr;
-        CameraComponent* m_Camera = nullptr;
 
         Mesh* m_Mesh = nullptr;
 

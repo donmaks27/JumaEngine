@@ -55,6 +55,6 @@ namespace JumaEngine
         static Mesh* importMesh(const EngineContextObject* engineContextObject, const jstring& meshName, const subclass<Mesh>& meshClass, 
             const subclass<VertexBufferDataBase>& bufferClass);
 
-        static CameraComponent* getActiveCamera(const EngineContextObject* engineContextObject);
+        static CameraComponent* getWindowActiveCamera(const EngineContextObject* engineContextObject);
     };
 }

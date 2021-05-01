@@ -154,7 +154,8 @@ namespace JumaEngine
         MeshComponent* component = m_World->createSceneComponent<MeshComponent>();
         component->setMesh(m_Mesh);
 
-        m_Camera = m_World->createSceneComponent<CameraComponent>();
+        CameraComponent* camera = m_World->createSceneComponent<CameraComponent>();
+        m_RenderManager->setWindowActiveCamera(camera);
     	//m_Camera->setWorldLocation({ -50.0f, 0.0f, 0.0f });
     	//m_Camera->setWorldRotation({ 0.0f, 0.0f, 0.0f });
     }
@@ -192,7 +193,6 @@ namespace JumaEngine
 
     void Engine::stopEngine()
     {
-        m_Camera = nullptr;
         if (m_World != nullptr)
         {
             delete m_World;

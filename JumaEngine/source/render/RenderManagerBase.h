@@ -40,6 +40,9 @@ namespace JumaEngine
 
         virtual bool shouldCloseMainWindow() const = 0;
 
+        CameraComponent* getWindowActiveCamera() const;
+        void setWindowActiveCamera(CameraComponent* camera);
+
     protected:
 
         window_id m_MainWindowID = INVALID_WINDOW_ID;

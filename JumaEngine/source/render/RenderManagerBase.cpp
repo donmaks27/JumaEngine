@@ -114,4 +114,18 @@ namespace JumaEngine
         }
         return false;
     }
+
+    CameraComponent* RenderManagerBase::getWindowActiveCamera() const
+    {
+        const WindowDescriptionBase* description = getWindowDescription(getMainWindowID());
+        return description != nullptr ? description->activeCamera : nullptr;
+    }
+    void RenderManagerBase::setWindowActiveCamera(CameraComponent* camera)
+    {
+        WindowDescriptionBase* description = getWindowDescription(getMainWindowID());
+        if (description != nullptr)
+        {
+            description->activeCamera = camera;
+        }
+    }
 }

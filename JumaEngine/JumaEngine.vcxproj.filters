@@ -52,6 +52,9 @@
     <Filter Include="JumaEngine\render\window">
       <UniqueIdentifier>{2b4b0dda-3b68-4ff8-a662-6869f123214e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="JumaEngine\render\renderTarget">
+      <UniqueIdentifier>{cc4f1669-3881-4eb4-8bce-07a19ad8764f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Engine.cpp">
@@ -141,6 +144,15 @@
     </ClCompile>
     <ClCompile Include="source\render\OpenGL\vertexBuffer\VertexBuffer_OpenGL.cpp">
       <Filter>JumaEngine\render\OpenGL\vertexBuffer</Filter>
+    </ClCompile>
+    <ClCompile Include="source\render\renderTarget\RenderTargerBase.cpp">
+      <Filter>JumaEngine\render\renderTarget</Filter>
+    </ClCompile>
+    <ClCompile Include="source\render\renderTarget\RenderTarget.cpp">
+      <Filter>JumaEngine\render\renderTarget</Filter>
+    </ClCompile>
+    <ClCompile Include="source\render\renderTarget\RenderTargetComposite.cpp">
+      <Filter>JumaEngine\render\renderTarget</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -287,6 +299,18 @@
     </ClInclude>
     <ClInclude Include="source\render\window\window_id.h">
       <Filter>JumaEngine\render\window</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\renderTarget\RenderTargerBase.h">
+      <Filter>JumaEngine\render\renderTarget</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\IRenderObject.h">
+      <Filter>JumaEngine\render</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\renderTarget\RenderTarget.h">
+      <Filter>JumaEngine\render\renderTarget</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\renderTarget\RenderTargetComposite.h">
+      <Filter>JumaEngine\render\renderTarget</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

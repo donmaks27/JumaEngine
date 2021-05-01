@@ -6,6 +6,8 @@
 #include "Engine.h"
 #include "WorldContextObject.h"
 #include "utils/jarray.h"
+#include "EngineContextObject.h"
+#include "render/IRenderObject.h"
 
 namespace JumaEngine
 {
@@ -13,7 +15,7 @@ namespace JumaEngine
     class GameComponent;
     class SceneComponent;
 
-    class EngineWorld : public EngineContextObject
+    class EngineWorld : public EngineContextObject, public IRenderObject
     {
     public:
         EngineWorld() = default;
@@ -83,7 +85,7 @@ namespace JumaEngine
     	void tick(double deltaTime);
     	void postTick();
 
-    	void render();
+    	virtual void render() override;
 
     protected:
 

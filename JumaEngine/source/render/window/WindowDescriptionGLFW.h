@@ -14,6 +14,7 @@ namespace JumaEngine
     class WindowDescriptionGLFW : public WindowDescriptionBase
     {
     public:
+        WindowDescriptionGLFW() = default;
         virtual ~WindowDescriptionGLFW() override = default;
 
         GLFWwindow* windowPtr = nullptr;

@@ -85,9 +85,9 @@ namespace JumaEngine
         return nullptr;
     }
 
-    CameraComponent* SystemFunctions::getActiveCamera(const EngineContextObject* engineContextObject)
+    CameraComponent* SystemFunctions::getWindowActiveCamera(const EngineContextObject* engineContextObject)
     {
-        const Engine* engine = getEngine(engineContextObject);
-        return engine != nullptr ? engine->getActiveCamera() : nullptr;
+        const RenderManagerBase* renderManager = getRenderManager(engineContextObject);
+        return renderManager != nullptr ? renderManager->getWindowActiveCamera() : nullptr;
     }
 }
