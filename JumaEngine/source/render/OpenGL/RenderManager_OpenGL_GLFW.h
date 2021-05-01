@@ -28,10 +28,10 @@ namespace JumaEngine
         
         virtual WindowDescriptionBase* createWindow(const glm::uvec2& size, const jstring& title) override;
 
-        virtual void setActiveWindowInCurrentThread(window_id_type windowID) override;
+        virtual void setActiveWindowInCurrentThread(window_id windowID) override;
         
-        virtual bool updateWindowSize(window_id_type windowID, const glm::uvec2& size) override;
-        virtual bool updateWindowTitle(window_id_type windowID, const jstring& title) override;
+        virtual bool updateWindowSize(window_id windowID, const glm::uvec2& size) override;
+        virtual bool updateWindowTitle(window_id windowID, const jstring& title) override;
 
     private:
 
@@ -42,9 +42,9 @@ namespace JumaEngine
 
         static void errorCallback(int code, const char* errorMessage);
 
-        WindowDescriptionGLFW* getWindowDescriptionGLFW(const window_id_type windowID) { return getWindowDescription<WindowDescriptionGLFW>(windowID); }
-        const WindowDescriptionGLFW* getWindowDescriptionGLFW(const window_id_type windowID) const { return getWindowDescription<WindowDescriptionGLFW>(windowID); }
-        GLFWwindow* getWindowGLFW(const window_id_type windowID) const
+        WindowDescriptionGLFW* getWindowDescriptionGLFW(const window_id windowID) { return getWindowDescription<WindowDescriptionGLFW>(windowID); }
+        const WindowDescriptionGLFW* getWindowDescriptionGLFW(const window_id windowID) const { return getWindowDescription<WindowDescriptionGLFW>(windowID); }
+        GLFWwindow* getWindowGLFW(const window_id windowID) const
         {
             const WindowDescriptionGLFW* description = getWindowDescriptionGLFW(windowID);
             return description != nullptr ? description->windowPtr : nullptr;

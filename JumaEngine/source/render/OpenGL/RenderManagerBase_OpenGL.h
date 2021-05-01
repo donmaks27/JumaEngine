@@ -16,8 +16,6 @@ namespace JumaEngine
         RenderManagerBase_OpenGL() = default;
         virtual ~RenderManagerBase_OpenGL() override = default;
 
-        virtual RenderAPI getRenderAPI() const override { return RenderAPI::OpenGL; }
-        
         ShaderBase* createShader() override;
         VertexBufferBase* createVertextBuffer() override;
 

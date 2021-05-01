@@ -136,7 +136,6 @@
     <ClInclude Include="source\render\OpenGL\RenderManager_OpenGL_GLFW.h" />
     <ClInclude Include="source\render\OpenGL\shader\Shader_OpenGL.h" />
     <ClInclude Include="source\render\OpenGL\vertexBuffer\VertexBuffer_OpenGL.h" />
-    <ClInclude Include="source\render\RenderAPI.h" />
     <ClInclude Include="source\render\RenderManagerBase.h" />
     <ClInclude Include="source\render\RenderManagerImpl.h" />
     <ClInclude Include="source\render\shader\ShaderBase.h" />
@@ -148,6 +147,7 @@
     <ClInclude Include="source\render\vertexBuffer\VertexPosition.h" />
     <ClInclude Include="source\render\window\WindowDescriptionBase.h" />
     <ClInclude Include="source\render\window\WindowDescriptionGLFW.h" />
+    <ClInclude Include="source\render\window\window_id.h" />
     <ClInclude Include="source\transform\Rotation.h" />
     <ClInclude Include="source\transform\Transform.h" />
     <ClInclude Include="source\utils\id_generator.h" />

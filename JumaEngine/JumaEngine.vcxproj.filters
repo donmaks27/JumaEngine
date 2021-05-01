@@ -192,9 +192,6 @@
     <ClInclude Include="source\render\shader\ShaderBase.h">
       <Filter>JumaEngine\render\shader</Filter>
     </ClInclude>
-    <ClInclude Include="source\render\RenderAPI.h">
-      <Filter>JumaEngine\render</Filter>
-    </ClInclude>
     <ClInclude Include="source\framework\gameObject\gameComponent\GameComponent.h">
       <Filter>JumaEngine\framework\gameObject\gameComponent</Filter>
     </ClInclude>
@@ -286,6 +283,9 @@
       <Filter>JumaEngine\render\window</Filter>
     </ClInclude>
     <ClInclude Include="source\render\window\WindowDescriptionGLFW.h">
+      <Filter>JumaEngine\render\window</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\window\window_id.h">
       <Filter>JumaEngine\render\window</Filter>
     </ClInclude>
   </ItemGroup>

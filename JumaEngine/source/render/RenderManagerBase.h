@@ -3,7 +3,7 @@
 #pragma once
 
 #include "common_header.h"
-#include "RenderAPI.h"
+#include "window/window_id.h"
 #include "window/WindowDescriptionBase.h"
 #include "utils/jmap_auto_id.h"
 #include "EngineContextObject.h"
@@ -13,29 +13,24 @@ namespace JumaEngine
     class ShaderBase;
     class VertexBufferBase;
 
-    typedef uint8 window_id_type;
-    constexpr window_id_type INVALID_WINDOW_ID = 0;
-
     class RenderManagerBase : public EngineContextObject
     {
     public:
         RenderManagerBase() = default;
         virtual ~RenderManagerBase() override;
 
-        virtual RenderAPI getRenderAPI() const = 0;
-
         bool init();
         bool isInit() const { return m_Initialized && !m_Terminated; }
         void terminate();
 
-        window_id_type getMainWindowID() const { return m_MainWindowID; }
-        jarray<window_id_type> getWindowsList() const;
+        window_id getMainWindowID() const { return m_MainWindowID; }
+        jarray<window_id> getWindowsList() const;
 
-        bool getWindowSize(window_id_type windowID, glm::uvec2& outWindowSize) const;
-        bool setWindowSize(window_id_type windowID, const glm::uvec2& size);
+        bool getWindowSize(window_id windowID, glm::uvec2& outWindowSize) const;
+        bool setWindowSize(window_id windowID, const glm::uvec2& size);
 
-        bool getWindowTitle(window_id_type windowID, jstring& outWindowTitle) const;
-        bool setWindowTitle(window_id_type windowID, const jstring& title);
+        bool getWindowTitle(window_id windowID, jstring& outWindowTitle) const;
+        bool setWindowTitle(window_id windowID, const jstring& title);
         
         virtual ShaderBase* createShader() = 0;
         virtual VertexBufferBase* createVertextBuffer() = 0;
@@ -47,8 +42,8 @@ namespace JumaEngine
 
     protected:
 
-        window_id_type m_MainWindowID = INVALID_WINDOW_ID;
-        jmap_auto_id<window_id_type, WindowDescriptionBase*> m_Windows;
+        window_id m_MainWindowID = INVALID_WINDOW_ID;
+        jmap_auto_id<window_id, WindowDescriptionBase*> m_Windows;
 
 
         virtual bool initInternal() = 0;
@@ -56,7 +51,7 @@ namespace JumaEngine
         void terminateWindowDescriptions();
 
         template<typename T = WindowDescriptionBase, TEMPLATE_ENABLE(std::is_base_of_v<WindowDescriptionBase, T>)>
-        T* getWindowDescription(const window_id_type windowID)
+        T* getWindowDescription(const window_id windowID)
         {
             if (windowID != INVALID_WINDOW_ID)
             {
@@ -69,7 +64,7 @@ namespace JumaEngine
             return nullptr;
         }
         template<typename T = WindowDescriptionBase, TEMPLATE_ENABLE(std::is_base_of_v<WindowDescriptionBase, T>)>
-        const T* getWindowDescription(const window_id_type windowID) const
+        const T* getWindowDescription(const window_id windowID) const
         {
             if (windowID != INVALID_WINDOW_ID)
             {
@@ -84,10 +79,10 @@ namespace JumaEngine
 
         virtual WindowDescriptionBase* createWindow(const glm::uvec2& size, const jstring& title) = 0;
 
-        virtual void setActiveWindowInCurrentThread(window_id_type windowID) = 0;
+        virtual void setActiveWindowInCurrentThread(window_id windowID) = 0;
 
-        virtual bool updateWindowSize(window_id_type windowID, const glm::uvec2& size) = 0;
-        virtual bool updateWindowTitle(window_id_type windowID, const jstring& title) = 0;
+        virtual bool updateWindowSize(window_id windowID, const glm::uvec2& size) = 0;
+        virtual bool updateWindowTitle(window_id windowID, const jstring& title) = 0;
 
     private:
 

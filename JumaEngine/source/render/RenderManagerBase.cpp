@@ -42,9 +42,9 @@ namespace JumaEngine
         m_MainWindowID = INVALID_WINDOW_ID;
     }
 
-    jarray<window_id_type> RenderManagerBase::getWindowsList() const
+    jarray<window_id> RenderManagerBase::getWindowsList() const
     {
-        jarray<window_id_type> result;
+        jarray<window_id> result;
         if (isInit())
         {
             for (auto& windowIDAndDescription : m_Windows)
@@ -55,7 +55,7 @@ namespace JumaEngine
         return result;
     }
 
-    bool RenderManagerBase::getWindowSize(const window_id_type windowID, glm::uvec2& outWindowSize) const
+    bool RenderManagerBase::getWindowSize(const window_id windowID, glm::uvec2& outWindowSize) const
     {
         if (isInit())
         {
@@ -68,7 +68,7 @@ namespace JumaEngine
         }
         return false;
     }
-    bool RenderManagerBase::setWindowSize(const window_id_type windowID, const glm::uvec2& size)
+    bool RenderManagerBase::setWindowSize(const window_id windowID, const glm::uvec2& size)
     {
         if (isInit())
         {
@@ -85,7 +85,7 @@ namespace JumaEngine
         return false;
     }
 
-    bool RenderManagerBase::getWindowTitle(window_id_type windowID, jstring& outWindowTitle) const
+    bool RenderManagerBase::getWindowTitle(window_id windowID, jstring& outWindowTitle) const
     {
         if (isInit())
         {
@@ -98,7 +98,7 @@ namespace JumaEngine
         }
         return false;
     }
-    bool RenderManagerBase::setWindowTitle(window_id_type windowID, const jstring& title)
+    bool RenderManagerBase::setWindowTitle(window_id windowID, const jstring& title)
     {
         if (isInit())
         {

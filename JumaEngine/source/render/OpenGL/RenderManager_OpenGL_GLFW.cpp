@@ -81,7 +81,7 @@ namespace JumaEngine
         return windowDescription;
     }
 
-    void RenderManager_OpenGL_GLFW::setActiveWindowInCurrentThread(const window_id_type windowID)
+    void RenderManager_OpenGL_GLFW::setActiveWindowInCurrentThread(const window_id windowID)
     {
         GLFWwindow* window = getWindowGLFW(windowID);
         if (window != nullptr)
@@ -95,7 +95,7 @@ namespace JumaEngine
         }
     }
 
-    bool RenderManager_OpenGL_GLFW::updateWindowSize(const window_id_type windowID, const glm::uvec2& size)
+    bool RenderManager_OpenGL_GLFW::updateWindowSize(const window_id windowID, const glm::uvec2& size)
     {
         GLFWwindow* window = getWindowGLFW(windowID);
         if (window != nullptr)
@@ -105,7 +105,7 @@ namespace JumaEngine
         }
         return false;
     }
-    bool RenderManager_OpenGL_GLFW::updateWindowTitle(const window_id_type windowID, const jstring& title)
+    bool RenderManager_OpenGL_GLFW::updateWindowTitle(const window_id windowID, const jstring& title)
     {
         GLFWwindow* window = getWindowGLFW(windowID);
         if (window != nullptr)
