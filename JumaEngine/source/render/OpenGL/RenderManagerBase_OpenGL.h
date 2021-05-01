@@ -6,7 +6,7 @@
 
 #if defined(JUMAENGINE_USE_GRAPHIC_API_OPENGL)
 
-#include "RenderManagerBase.h"
+#include "render/RenderManagerBase.h"
 
 namespace JumaEngine
 {

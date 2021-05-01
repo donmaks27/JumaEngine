@@ -5,9 +5,9 @@
 #include "common_header.h"
 
 #if defined(JUMAENGINE_USE_GRAPHIC_API_OPENGL)
-#   if defined(JUMAENGINE_USE_WINDOW_OPENGL_GLFW)
+#   if defined(JUMAENGINE_USE_WINDOW_LIB_GLFW)
 
-#include "RenderManager_OpenGL_GLFW.h"
+#include "OpenGL/RenderManager_OpenGL_GLFW.h"
 
 namespace JumaEngine
 {

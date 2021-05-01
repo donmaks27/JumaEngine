@@ -1,6 +1,6 @@
 ﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
 
-#include "ShaderOpenGL.h"
+#include "Shader_OpenGL.h"
 
 #if defined(JUMAENGINE_USE_GRAPHIC_API_OPENGL)
 
@@ -10,12 +10,12 @@
 
 namespace JumaEngine
 {
-    ShaderOpenGL::~ShaderOpenGL()
+    Shader_OpenGL::~Shader_OpenGL()
     {
         clearOpenGLShader();
     }
 
-    void ShaderOpenGL::loadShaderInternal(const jstring& shaderName)
+    void Shader_OpenGL::loadShaderInternal(const jstring& shaderName)
     {
         const uint32 vertexShaderIndex = loadAndCompileShader(shaderName + ".vsh", ShaderType::Vertex);
         const uint32 geometryShaderIndex = loadAndCompileShader(shaderName + ".gsh", ShaderType::Geometry);
@@ -35,11 +35,11 @@ namespace JumaEngine
             glDeleteShader(fragmentShaderIndex);
         }
     }
-    void ShaderOpenGL::clearShaderInternal()
+    void Shader_OpenGL::clearShaderInternal()
     {
         clearOpenGLShader();
     }
-    void ShaderOpenGL::clearOpenGLShader()
+    void Shader_OpenGL::clearOpenGLShader()
     {
         if (isActive())
         {
@@ -54,7 +54,7 @@ namespace JumaEngine
     	m_CachedUniformLocations.clear();
     }
 
-    bool ShaderOpenGL::loadShaderText(const jstring& shaderFilePath, jarray<jstring>& shaderText) const
+    bool Shader_OpenGL::loadShaderText(const jstring& shaderFilePath, jarray<jstring>& shaderText) const
     {
         std::ifstream file(shaderFilePath);
         if (!file.is_open())
@@ -73,7 +73,7 @@ namespace JumaEngine
 
         return true;
     }
-    uint32 ShaderOpenGL::compileShader(const jarray<jstring>& shaderText, const ShaderType shaderType) const
+    uint32 Shader_OpenGL::compileShader(const jarray<jstring>& shaderText, const ShaderType shaderType) const
     {
         uint32 shaderIndex = 0;
         if (!shaderText.empty())
@@ -121,7 +121,7 @@ namespace JumaEngine
         }
         return shaderIndex;
     }
-    uint32 ShaderOpenGL::loadAndCompileShader(const jstring& shaderFilePath, ShaderType shaderType) const
+    uint32 Shader_OpenGL::loadAndCompileShader(const jstring& shaderFilePath, ShaderType shaderType) const
     {
         uint32 shaderIndex = 0;
 
@@ -147,7 +147,7 @@ namespace JumaEngine
         return shaderIndex;
     }
 
-    uint32 ShaderOpenGL::compileShaderProgram(const uint32 vertexShader, const uint32 geometryShader, const uint32 fragmentShader) const
+    uint32 Shader_OpenGL::compileShaderProgram(const uint32 vertexShader, const uint32 geometryShader, const uint32 fragmentShader) const
     {
         uint32 shaderProgramIndex = 0;
 
@@ -188,16 +188,16 @@ namespace JumaEngine
         return shaderProgramIndex;
     }
 
-    void ShaderOpenGL::activateShaderInternal()
+    void Shader_OpenGL::activateShaderInternal()
     {
         glUseProgram(m_ShaderProgramIndex);
     }
-    void ShaderOpenGL::deactivateShaderOpenGL()
+    void Shader_OpenGL::deactivateShaderOpenGL()
     {
         glUseProgram(0);
     }
 
-    int32 ShaderOpenGL::getUniformLocation(const char* uniformName) const
+    int32 Shader_OpenGL::getUniformLocation(const char* uniformName) const
     {
     	if (m_ShaderProgramIndex != 0)
     	{
@@ -213,7 +213,7 @@ namespace JumaEngine
     	}
         return -1;
     }
-    void ShaderOpenGL::setUniformValue(const char* uniformName, const int32 value)
+    void Shader_OpenGL::setUniformValue(const char* uniformName, const int32 value)
     {
         const int32 uniformLocation = getUniformLocation(uniformName);
         if (uniformLocation != -1)
@@ -221,7 +221,7 @@ namespace JumaEngine
             glUniform1i(uniformLocation, value);
         }
     }
-    void ShaderOpenGL::setUniformValue(const char* uniformName, const float value)
+    void Shader_OpenGL::setUniformValue(const char* uniformName, const float value)
     {
         const int32 uniformLocation = getUniformLocation(uniformName);
         if (uniformLocation != -1)
@@ -229,7 +229,7 @@ namespace JumaEngine
             glUniform1f(uniformLocation, value);
         }
     }
-    void ShaderOpenGL::setUniformValue(const char* uniformName, const glm::vec2& value)
+    void Shader_OpenGL::setUniformValue(const char* uniformName, const glm::vec2& value)
     {
         const int32 uniformLocation = getUniformLocation(uniformName);
         if (uniformLocation != -1)
@@ -237,7 +237,7 @@ namespace JumaEngine
             glUniform2fv(uniformLocation, 1, &value[0]);
         }
     }
-    void ShaderOpenGL::setUniformValue(const char* uniformName, const glm::vec3& value)
+    void Shader_OpenGL::setUniformValue(const char* uniformName, const glm::vec3& value)
     {
         const int32 uniformLocation = getUniformLocation(uniformName);
         if (uniformLocation != -1)
@@ -245,7 +245,7 @@ namespace JumaEngine
             glUniform3fv(uniformLocation, 1, &value[0]);
         }
     }
-    void ShaderOpenGL::setUniformValue(const char* uniformName, const glm::vec4& value)
+    void Shader_OpenGL::setUniformValue(const char* uniformName, const glm::vec4& value)
     {
         const int32 uniformLocation = getUniformLocation(uniformName);
         if (uniformLocation != -1)
@@ -253,7 +253,7 @@ namespace JumaEngine
             glUniform4fv(uniformLocation, 1, &value[0]);
         }
     }
-    void ShaderOpenGL::setUniformValue(const char* uniformName, const glm::mat4& value)
+    void Shader_OpenGL::setUniformValue(const char* uniformName, const glm::mat4& value)
     {
         const int32 uniformLocation = getUniformLocation(uniformName);
         if (uniformLocation != -1)
@@ -261,7 +261,7 @@ namespace JumaEngine
             glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, &value[0][0]);
         }
     }
-    void ShaderOpenGL::setUniformValue(const char* uniformName, const jarray<float>& value)
+    void Shader_OpenGL::setUniformValue(const char* uniformName, const jarray<float>& value)
     {
         if (!value.empty())
         {

@@ -40,6 +40,18 @@
     <Filter Include="JumaEngine\asset\mesh">
       <UniqueIdentifier>{cbaee27d-7629-431f-a150-ae815c55585e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="JumaEngine\render\OpenGL">
+      <UniqueIdentifier>{985d531a-3687-4d22-aa4c-1cee31eaacec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="JumaEngine\render\OpenGL\shader">
+      <UniqueIdentifier>{1c6ba424-d0a7-4827-b6b7-64b7a080ac91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="JumaEngine\render\OpenGL\vertexBuffer">
+      <UniqueIdentifier>{8e63afd6-f864-457e-a253-e5984c2417dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="JumaEngine\render\window">
+      <UniqueIdentifier>{2b4b0dda-3b68-4ff8-a662-6869f123214e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Engine.cpp">
@@ -48,9 +60,6 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="source\utils\log.cpp">
       <Filter>JumaEngine\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="source\render\shader\ShaderOpenGL.cpp">
-      <Filter>JumaEngine\render\shader</Filter>
     </ClCompile>
     <ClCompile Include="source\EngineContextObject.cpp">
       <Filter>JumaEngine</Filter>
@@ -115,20 +124,23 @@
     <ClCompile Include="source\asset\AssetObject.cpp">
       <Filter>JumaEngine\asset</Filter>
     </ClCompile>
-    <ClCompile Include="source\render\RenderManager_OpenGL_GLFW.cpp">
-      <Filter>JumaEngine\render</Filter>
-    </ClCompile>
     <ClCompile Include="source\render\RenderManagerBase.cpp">
-      <Filter>JumaEngine\render</Filter>
-    </ClCompile>
-    <ClCompile Include="source\render\RenderManagerBase_OpenGL.cpp">
       <Filter>JumaEngine\render</Filter>
     </ClCompile>
     <ClCompile Include="source\render\vertexBuffer\importer\MeshImporterBase.cpp">
       <Filter>JumaEngine\render\vertexBuffer\importer</Filter>
     </ClCompile>
-    <ClCompile Include="source\render\vertexBuffer\VertexBuffer_OpenGL.cpp">
-      <Filter>JumaEngine\render\vertexBuffer</Filter>
+    <ClCompile Include="source\render\OpenGL\RenderManager_OpenGL_GLFW.cpp">
+      <Filter>JumaEngine\render\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="source\render\OpenGL\RenderManagerBase_OpenGL.cpp">
+      <Filter>JumaEngine\render\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="source\render\OpenGL\shader\Shader_OpenGL.cpp">
+      <Filter>JumaEngine\render\OpenGL\shader</Filter>
+    </ClCompile>
+    <ClCompile Include="source\render\OpenGL\vertexBuffer\VertexBuffer_OpenGL.cpp">
+      <Filter>JumaEngine\render\OpenGL\vertexBuffer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -140,9 +152,6 @@
     </ClInclude>
     <ClInclude Include="source\utils\log.h">
       <Filter>JumaEngine\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="source\render\shader\ShaderOpenGL.h">
-      <Filter>JumaEngine\render\shader</Filter>
     </ClInclude>
     <ClInclude Include="source\EngineContextObject.h">
       <Filter>JumaEngine</Filter>
@@ -234,20 +243,11 @@
     <ClInclude Include="source\asset\AssetObject.h">
       <Filter>JumaEngine\asset</Filter>
     </ClInclude>
-    <ClInclude Include="source\render\RenderManager_OpenGL_GLFW.h">
-      <Filter>JumaEngine\render</Filter>
-    </ClInclude>
     <ClInclude Include="source\utils\id_generator.h">
       <Filter>JumaEngine\utils</Filter>
     </ClInclude>
     <ClInclude Include="source\utils\jmap_auto_id.h">
       <Filter>JumaEngine\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="source\render\WindowDescriptionBase.h">
-      <Filter>JumaEngine\render</Filter>
-    </ClInclude>
-    <ClInclude Include="source\render\WindowDescriptionGLFW.h">
-      <Filter>JumaEngine\render</Filter>
     </ClInclude>
     <ClInclude Include="source\render\RenderManagerImpl.h">
       <Filter>JumaEngine\render</Filter>
@@ -256,9 +256,6 @@
       <Filter>JumaEngine</Filter>
     </ClInclude>
     <ClInclude Include="source\render\RenderManagerBase.h">
-      <Filter>JumaEngine\render</Filter>
-    </ClInclude>
-    <ClInclude Include="source\render\RenderManagerBase_OpenGL.h">
       <Filter>JumaEngine\render</Filter>
     </ClInclude>
     <ClInclude Include="source\render\vertexBuffer\importer\MeshImporterData.h">
@@ -270,11 +267,26 @@
     <ClInclude Include="source\utils\subclass.h">
       <Filter>JumaEngine\utils</Filter>
     </ClInclude>
-    <ClInclude Include="source\render\vertexBuffer\VertexBuffer_OpenGL.h">
-      <Filter>JumaEngine\render\vertexBuffer</Filter>
-    </ClInclude>
     <ClInclude Include="source\render\vertexBuffer\VertexBufferDescription.h">
       <Filter>JumaEngine\render\vertexBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\OpenGL\RenderManager_OpenGL_GLFW.h">
+      <Filter>JumaEngine\render\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\OpenGL\RenderManagerBase_OpenGL.h">
+      <Filter>JumaEngine\render\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\OpenGL\shader\Shader_OpenGL.h">
+      <Filter>JumaEngine\render\OpenGL\shader</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\OpenGL\vertexBuffer\VertexBuffer_OpenGL.h">
+      <Filter>JumaEngine\render\OpenGL\vertexBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\window\WindowDescriptionBase.h">
+      <Filter>JumaEngine\render\window</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\window\WindowDescriptionGLFW.h">
+      <Filter>JumaEngine\render\window</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -3,6 +3,9 @@
 #pragma once
 
 #include "common_header.h"
+
+#if defined(JUMAENGINE_USE_WINDOW_LIB_GLFW)
+
 #include "GLFW/glfw3.h"
 #include "WindowDescriptionBase.h"
 
@@ -16,3 +19,5 @@ namespace JumaEngine
         GLFWwindow* windowPtr = nullptr;
     };
 }
+
+#endif

@@ -4,7 +4,7 @@
 
 #if defined(JUMAENGINE_USE_GRAPHIC_API_OPENGL)
 
-#include "VertexBufferData.h"
+#include "render/vertexBuffer/VertexBufferData.h"
 #include "GL/glew.h"
 
 namespace JumaEngine

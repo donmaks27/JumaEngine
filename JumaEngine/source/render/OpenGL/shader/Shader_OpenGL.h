@@ -6,16 +6,16 @@
 
 #if defined(JUMAENGINE_USE_GRAPHIC_API_OPENGL)
 
-#include "ShaderBase.h"
+#include "render/shader/ShaderBase.h"
 #include "utils/jmap.h"
 
 namespace JumaEngine
 {
-    class ShaderOpenGL : public ShaderBase
+    class Shader_OpenGL : public ShaderBase
     {
     public:
-        ShaderOpenGL() = default;
-        virtual ~ShaderOpenGL() override;
+        Shader_OpenGL() = default;
+        virtual ~Shader_OpenGL() override;
 
         enum class ShaderType
         {
