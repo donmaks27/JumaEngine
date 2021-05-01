@@ -343,16 +343,6 @@ namespace JumaEngine
     		}
     	}
     }
-    void EngineWorld::postTick()
-    {
-    	for (auto& object : m_Objects)
-    	{
-    		if (object != nullptr)
-    		{
-    			object->postTick();
-    		}
-    	}
-    }
 
     void EngineWorld::render()
     {

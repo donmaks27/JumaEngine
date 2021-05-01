@@ -29,7 +29,14 @@ namespace JumaEngine
 
     bool Engine::startEngine(int argc, char** argv)
     {
-#if _DEBUG
+		if (m_EngineStarted)
+		{
+			return false;
+		}
+
+		m_EngineStarted = true;
+    	
+#if JDEBUG && _WIN32
         _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
         _CrtSetReportFile(_CRT_WARN, _CRTDBG_FILE_STDOUT);
 
@@ -40,93 +47,73 @@ namespace JumaEngine
         const bool result = startEngineInternal(argc, argv);
         terminateEngine();
 
-#if _DEBUG
+#if JDEBUG && _WIN32
         _CrtMemDumpAllObjectsSince(&memoryState);
 #endif
 
+		m_EngineStarted = false;
         return result;
     }
     bool Engine::startEngineInternal(int argc, char** argv)
     {
-        JUMA_LOG(info, JTEXT("Start engine..."));
-        if (initEngine())
-        {
-            JUMA_LOG(correct, JTEXT("Initialization complete"));
+        JUMA_LOG(info, JTEXT("Initialize engine..."));
+		if (!initEngine())
+		{
+			JUMA_LOG(error, JTEXT("Engnie initialization failed"));
+			return false;
+		}
+		JUMA_LOG(correct, JTEXT("Initialization complete"));
+    	onEngineInit();
 
-            JUMA_LOG(info, JTEXT("Start engine loop..."));
-            startEngineLoop();
+    	JUMA_LOG(info, JTEXT("Start engine loop"));
+    	startEngineLoop();
+    	JUMA_LOG(info, JTEXT("Engine loop finished"));
 
-            JUMA_LOG(info, JTEXT("Stopping engine..."));
-            stopEngine();
-            JUMA_LOG(info, JTEXT("Engine stopped"));
+    	JUMA_LOG(info, JTEXT("Stopping engine..."));
+        stopEngine();
+        JUMA_LOG(info, JTEXT("Engine stopped"));
 
-            return true;
-        }
-
-        JUMA_LOG(error, JTEXT("Engnie initialization failed"));
-        return false;
+    	return true;
     }
 
     bool Engine::initEngine()
     {
-        if (!initRender())
-        {
-            return false;
-        }
-
-        onEngineInit();
-        return true;
-    }
-    bool Engine::initRender()
-    {
-        m_RenderManager = new RenderManager_OpenGL();
-        return m_RenderManager->init();
+		m_RenderManager = new RenderManager_OpenGL();
+    	if (!m_RenderManager->init())
+    	{
+    		return false;
+    	}
+    	
+    	return true;
     }
 
     void Engine::startEngineLoop()
     {
-        onGameStart();
+        onEngineLoopStart();
 
-        bool firstFrame = true;
-        std::chrono::time_point<std::chrono::steady_clock> time1 = std::chrono::steady_clock::now();
-        std::chrono::time_point<std::chrono::steady_clock> time2 = time1;
-        while (!shouldStopEngine())
-        {
-            if (firstFrame)
-            {
-                firstFrame = false;
-            }
-            else
-            {
-                time1 = time2;
-                time2 = std::chrono::steady_clock::now();
-                const double time = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(time2 - time1).count()) / 1000000.0;
-                tick(time);
-            }
-        	postTick();
-   
-			m_RenderManager->startRender();
-        	render();
-        	m_RenderManager->finishRender();
-        }
+    	std::chrono::time_point<std::chrono::steady_clock> lastTimeStamp = std::chrono::steady_clock::now();
+    	
+		render();
+    	while (!shouldStopEngine())
+    	{
+    		const std::chrono::time_point<std::chrono::steady_clock> timeStamp = std::chrono::steady_clock::now();
+    		const double deltaTime = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(timeStamp - lastTimeStamp).count()) / 1000000.0;
+    		lastTimeStamp = timeStamp;
+
+    		tick(deltaTime);
+    		render();
+    	}
     }
     bool Engine::shouldStopEngine() const
     {
         return m_RenderManager != nullptr ? m_RenderManager->shouldCloseMainWindow() : true;
     }
-    double Engine::getDeltaTime() const
-    {
-        //return m_Window != nullptr ? m_Window->getDeltaTime() : 0.0;
-        return 0.0;
-    }
 
     void Engine::terminateEngine()
     {
-        if (m_VertexBufferImporter != nullptr)
-        {
-            delete m_VertexBufferImporter;
-            m_VertexBufferImporter = nullptr;
-        }
+    	delete m_VertexBufferImporter;
+    	m_VertexBufferImporter = nullptr;
+
         if (m_RenderManager != nullptr)
         {
             m_RenderManager->terminate();
@@ -160,7 +147,7 @@ namespace JumaEngine
     	//m_Camera->setWorldRotation({ 0.0f, 0.0f, 0.0f });
     }
 
-    void Engine::onGameStart()
+    void Engine::onEngineLoopStart()
     {
     	if (m_World != nullptr)
     	{
@@ -175,40 +162,26 @@ namespace JumaEngine
     		m_World->tick(deltaTime);
     	}
     }
-    void Engine::postTick()
-    {
-    	if (m_World != nullptr)
-    	{
-    		m_World->postTick();
-    	}
-    }
 
     void Engine::render()
     {
+    	m_RenderManager->startRender();
     	if (m_World != nullptr)
     	{
     		m_World->render();
     	}
+    	m_RenderManager->finishRender();
     }
 
     void Engine::stopEngine()
     {
-        if (m_World != nullptr)
-        {
-            delete m_World;
-            m_World = nullptr;
-        }
+        delete m_World;
+        m_World = nullptr;
 
-        if (m_Mesh != nullptr)
-        {
-            delete m_Mesh;
-            m_Mesh = nullptr;
-        }
+		delete m_Mesh;
+        m_Mesh = nullptr;
 
-    	if (m_AssetsManager != nullptr)
-    	{
-    		delete m_AssetsManager;
-    		m_AssetsManager = nullptr;
-    	}
+		delete m_AssetsManager;
+    	m_AssetsManager = nullptr;
     }
 }

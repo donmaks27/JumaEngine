@@ -17,18 +17,6 @@ namespace JumaEngine
     {
         if (m_Mesh != nullptr)
         {
-            m_Mesh->render();
-        }
-
-        Super::render();
-    }
-
-    void MeshComponent::postTick()
-    {
-    	Super::postTick();
-
-    	if (m_Mesh != nullptr)
-    	{
     		MaterialBase* material = m_Mesh->getMaterial(0).get();
     		if (material != nullptr)
     		{
@@ -39,7 +27,11 @@ namespace JumaEngine
 					material->setMaterialParam("uView", camera->getViewMatrix());
 				}
 				material->setMaterialParam("uModel", getWorldTransform().toMatrix());
-    		}
-    	}
+			}
+        	
+            m_Mesh->render();
+        }
+
+        Super::render();
     }
 }

@@ -26,7 +26,6 @@ namespace JumaEngine
 		virtual void onGameStarted() {}
 
     	virtual void tick(double deltaTime) {}
-    	virtual void postTick() {}
 
     private:
 

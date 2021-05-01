@@ -35,31 +35,32 @@ namespace JumaEngine
         RenderManagerBase* getRenderManager() const { return m_RenderManager; }
         MeshImporterBase* getVertexBufferImporter() const { return m_VertexBufferImporter; }
 
-        bool startEngine(int argc, char** argv);
-        bool startEngine() { return startEngine(0, nullptr); }
-    	
-        bool shouldStopEngine() const;
-        double getDeltaTime() const;
-
         template<typename T, TEMPLATE_ENABLE(is_base_and_not_same<EngineContextObject, T>)>
         T* createObject()
         {
-            T* object = new T();
-            registerEngineObject(object);
-            return object;
+        	T* object = new T();
+	        registerEngineObject(object);
+        	return object;
         }
         template<typename T, TEMPLATE_ENABLE(is_base_and_not_same<EngineContextObject, T>)>
         T* createObject(const subclass<T>& objectClass)
         {
-            T* object = objectClass.createObject();
-            registerEngineObject(object);
-            return object;
+        	T* object = objectClass.createObject();
+	        registerEngineObject(object);
+        	return object;
         }
+
+        bool startEngine(int argc, char** argv);
+        bool startEngine() { return startEngine(0, nullptr); }
+    	
+        bool shouldStopEngine() const;
 
         EngineWorld* getActiveWorld() const { return m_World; }
 
     private:
 
+		bool m_EngineStarted = false;
+    	
         RenderManagerBase* m_RenderManager = nullptr;
         MeshImporterBase* m_VertexBufferImporter = nullptr;
     	AssetsManager* m_AssetsManager = nullptr;
@@ -74,16 +75,14 @@ namespace JumaEngine
         bool startEngineInternal(int argc, char** argv);
 
         bool initEngine();
-        bool initRender();
 
         void startEngineLoop();
 
         void terminateEngine();
 
         void onEngineInit();
-    	void onGameStart();
+    	void onEngineLoopStart();
         void tick(double deltaTime);
-    	void postTick();
     	void render();
         void stopEngine();
     };

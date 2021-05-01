@@ -6,7 +6,9 @@
 #define GLM_FORCE_LEFT_HANDED
 #define GLM_FORCE_XYZW_ONLY
 
-#if _DEBUG
+#define JDEBUG _DEBUG
+
+#if JDEBUG && _WIN32
 
 #include <crtdbg.h>
 #define new new(_NORMAL_BLOCK, __FILE__, __LINE__)
