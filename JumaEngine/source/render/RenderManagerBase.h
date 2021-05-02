@@ -7,13 +7,14 @@
 #include "window/WindowDescriptionBase.h"
 #include "utils/jmap_auto_id.h"
 #include "EngineContextObject.h"
+#include "IRenderInterface.h"
 
 namespace JumaEngine
 {
     class ShaderBase;
     class VertexBufferBase;
 
-    class RenderManagerBase : public EngineContextObject
+    class RenderManagerBase : public EngineContextObject, public IRenderInterface
     {
     public:
         RenderManagerBase() = default;
@@ -24,7 +25,7 @@ namespace JumaEngine
         void terminate();
 
         window_id getMainWindowID() const { return m_MainWindowID; }
-        jarray<window_id> getWindowsList() const;
+        bool isValidWindowID(const window_id windowID) const { return isInit() && m_Windows.contains(windowID); }
 
         bool getWindowSize(window_id windowID, glm::uvec2& outWindowSize) const;
         bool setWindowSize(window_id windowID, const glm::uvec2& size);
@@ -35,13 +36,16 @@ namespace JumaEngine
         virtual ShaderBase* createShader() = 0;
         virtual VertexBufferBase* createVertextBuffer() = 0;
 
-        virtual void startRender() = 0;
+        virtual void startRender();
+        virtual void render(window_id windowID) override;
         virtual void finishRender() = 0;
 
         virtual bool shouldCloseMainWindow() const = 0;
 
-        CameraComponent* getWindowActiveCamera() const;
-        void setWindowActiveCamera(CameraComponent* camera);
+        void setWindowRenderTarget(window_id windowID, RenderTargetBase* renderTarget);
+
+        CameraComponent* getWindowActiveCamera(window_id windowID) const;
+        void setWindowActiveCamera(window_id windowID, CameraComponent* camera);
 
     protected:
 

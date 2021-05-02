@@ -118,7 +118,7 @@ namespace JumaEngine
 
     void RenderManager_OpenGL_GLFW::finishRender()
     {
-        for (auto& windowIDAndDescription : m_Windows)
+        /*for (auto& windowIDAndDescription : m_Windows)
         {
             WindowDescriptionGLFW* description = dynamic_cast<WindowDescriptionGLFW*>(windowIDAndDescription.second);
             GLFWwindow* window = description != nullptr ? description->windowPtr : nullptr;
@@ -126,6 +126,11 @@ namespace JumaEngine
             {
                 glfwSwapBuffers(window);
             }
+        }*/
+        GLFWwindow* window = getWindowGLFW(getMainWindowID());
+        if (window != nullptr)
+        {
+            glfwSwapBuffers(window);
         }
         glfwPollEvents();
     }

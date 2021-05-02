@@ -22,6 +22,8 @@ namespace JumaEngine
         typename jmap<ID_Type, V>::const_iterator end() const { return m_Map.end(); }
         typename jmap<ID_Type, V>::iterator end() { return m_Map.end(); }
 
+        jarray<ID_Type> getIDs() const { return m_Map.getKeys(); }
+
         V* find(const ID_Type id) { return m_Map.findByKey(id); }
         const V* find(const ID_Type id) const { return m_Map.findByKey(id); }
 		template<typename Pred>

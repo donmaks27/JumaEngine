@@ -3,11 +3,11 @@
 #pragma once
 
 #include "common_header.h"
-#include "RenderTargerBase.h"
+#include "RenderTargetBase.h"
 
 namespace JumaEngine
 {
-    class RenderTargetComposite : public RenderTargerBase
+    class RenderTargetComposite : public RenderTargetBase
     {
     public:
         RenderTargetComposite() = default;

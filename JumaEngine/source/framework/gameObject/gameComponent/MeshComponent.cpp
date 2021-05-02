@@ -13,14 +13,14 @@ namespace JumaEngine
         m_Mesh = mesh;
     }
 
-    void MeshComponent::render()
+    void MeshComponent::render(const window_id windowID)
     {
         if (m_Mesh != nullptr)
         {
     		MaterialBase* material = m_Mesh->getMaterial(0).get();
     		if (material != nullptr)
     		{
-    			const CameraComponent* camera = SystemFunctions::getWindowActiveCamera(this);
+    			const CameraComponent* camera = SystemFunctions::getWindowActiveCamera(this, windowID);
 				if (camera != nullptr)
 				{
 					material->setMaterialParam("uProjection", camera->getProjectionMatrix());
@@ -29,9 +29,9 @@ namespace JumaEngine
 				material->setMaterialParam("uModel", getWorldTransform().toMatrix());
 			}
         	
-            m_Mesh->render();
+            m_Mesh->render(windowID);
         }
 
-        Super::render();
+        Super::render(windowID);
     }
 }

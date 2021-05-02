@@ -1,6 +1,7 @@
 ﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
 
 #include "RenderManagerBase.h"
+#include "renderTarget/RenderTargetBase.h"
 
 namespace JumaEngine
 {
@@ -40,19 +41,6 @@ namespace JumaEngine
         }
         m_Windows.clear();
         m_MainWindowID = INVALID_WINDOW_ID;
-    }
-
-    jarray<window_id> RenderManagerBase::getWindowsList() const
-    {
-        jarray<window_id> result;
-        if (isInit())
-        {
-            for (auto& windowIDAndDescription : m_Windows)
-            {
-                result.add(windowIDAndDescription.first);
-            }
-        }
-        return result;
     }
 
     bool RenderManagerBase::getWindowSize(const window_id windowID, glm::uvec2& outWindowSize) const
@@ -115,14 +103,36 @@ namespace JumaEngine
         return false;
     }
 
-    CameraComponent* RenderManagerBase::getWindowActiveCamera() const
+    void RenderManagerBase::startRender()
     {
-        const WindowDescriptionBase* description = getWindowDescription(getMainWindowID());
+        render(getMainWindowID());
+    }
+    void RenderManagerBase::render(const window_id windowID)
+    {
+        WindowDescriptionBase* description = getWindowDescription(windowID);
+        if (description != nullptr)
+        {
+            description->windowRenderTarget->render(windowID);
+        }
+    }
+
+    void RenderManagerBase::setWindowRenderTarget(const window_id windowID, RenderTargetBase* renderTarget)
+    {
+        WindowDescriptionBase* description = getWindowDescription(windowID);
+        if (description != nullptr)
+        {
+            description->windowRenderTarget = renderTarget;
+        }
+    }
+
+    CameraComponent* RenderManagerBase::getWindowActiveCamera(const window_id windowID) const
+    {
+        const WindowDescriptionBase* description = getWindowDescription(windowID);
         return description != nullptr ? description->activeCamera : nullptr;
     }
-    void RenderManagerBase::setWindowActiveCamera(CameraComponent* camera)
+    void RenderManagerBase::setWindowActiveCamera(const window_id windowID, CameraComponent* camera)
     {
-        WindowDescriptionBase* description = getWindowDescription(getMainWindowID());
+        WindowDescriptionBase* description = getWindowDescription(windowID);
         if (description != nullptr)
         {
             description->activeCamera = camera;

@@ -4,12 +4,13 @@
 
 #include "common_header.h"
 #include "VertexBufferDescription.h"
+#include "render/IRenderInterface.h"
 
 namespace JumaEngine
 {
     class VertexBufferDataBase;
 
-    class VertexBufferBase
+    class VertexBufferBase : public IRenderInterface
     {
     public:
         VertexBufferBase() = default;
@@ -20,8 +21,6 @@ namespace JumaEngine
         void terminate();
 
         const VertexBufferDescription& getVertexBufferDescription() const { return m_VertexBufferDescription; }
-
-        virtual void render() = 0;
 
     protected:
 

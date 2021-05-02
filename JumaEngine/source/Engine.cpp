@@ -12,6 +12,7 @@
 #include "asset/material/MaterialInstance.h"
 #include "asset/mesh/Mesh.h"
 #include "render/RenderManagerImpl.h"
+#include "render/renderTarget/RenderTargetDirect.h"
 #include "render/vertexBuffer/VertexPosition.h"
 #include "render/vertexBuffer/importer/MeshImporterBase.h"
 #include "utils/system_functions.h"
@@ -86,42 +87,6 @@ namespace JumaEngine
     	
     	return true;
     }
-
-    void Engine::startEngineLoop()
-    {
-        onEngineLoopStart();
-
-    	std::chrono::time_point<std::chrono::steady_clock> lastTimeStamp = std::chrono::steady_clock::now();
-    	
-		render();
-    	while (!shouldStopEngine())
-    	{
-    		const std::chrono::time_point<std::chrono::steady_clock> timeStamp = std::chrono::steady_clock::now();
-    		const double deltaTime = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(timeStamp - lastTimeStamp).count()) / 1000000.0;
-    		lastTimeStamp = timeStamp;
-
-    		tick(deltaTime);
-    		render();
-    	}
-    }
-    bool Engine::shouldStopEngine() const
-    {
-        return m_RenderManager != nullptr ? m_RenderManager->shouldCloseMainWindow() : true;
-    }
-
-    void Engine::terminateEngine()
-    {
-    	delete m_VertexBufferImporter;
-    	m_VertexBufferImporter = nullptr;
-
-        if (m_RenderManager != nullptr)
-        {
-            m_RenderManager->terminate();
-            delete m_RenderManager;
-            m_RenderManager = nullptr;
-        }
-    }
-    
     void Engine::onEngineInit()
     {
 		m_AssetsManager = createObject<AssetsManager>();
@@ -142,17 +107,45 @@ namespace JumaEngine
         component->setMesh(m_Mesh);
 
         CameraComponent* camera = m_World->createSceneComponent<CameraComponent>();
-        m_RenderManager->setWindowActiveCamera(camera);
+        //m_RenderManager->setWindowActiveCamera(camera);
+
+        m_RenderTarget = createObject<RenderTargetDirect>();
+        m_RenderTarget->setCamera(camera);
+        m_RenderManager->setWindowRenderTarget(m_RenderManager->getMainWindowID(), m_RenderTarget);
+
     	//m_Camera->setWorldLocation({ -50.0f, 0.0f, 0.0f });
     	//m_Camera->setWorldRotation({ 0.0f, 0.0f, 0.0f });
     }
 
+    void Engine::startEngineLoop()
+    {
+        onEngineLoopStart();
+
+    	std::chrono::time_point<std::chrono::steady_clock> lastTimeStamp = std::chrono::steady_clock::now();
+    	
+		render();
+    	while (!shouldStopEngine())
+    	{
+    		const std::chrono::time_point<std::chrono::steady_clock> timeStamp = std::chrono::steady_clock::now();
+    		const double deltaTime = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(timeStamp - lastTimeStamp).count()) / 1000000.0;
+    		lastTimeStamp = timeStamp;
+
+    		tick(deltaTime);
+    		render();
+    	}
+    }
+	
     void Engine::onEngineLoopStart()
     {
     	if (m_World != nullptr)
     	{
     		m_World->onGameStarted();
     	}
+    }
+	
+    bool Engine::shouldStopEngine() const
+    {
+        return m_RenderManager != nullptr ? m_RenderManager->shouldCloseMainWindow() : true;
     }
 
     void Engine::tick(const double deltaTime)
@@ -166,15 +159,20 @@ namespace JumaEngine
     void Engine::render()
     {
     	m_RenderManager->startRender();
-    	if (m_World != nullptr)
+    	
+    	/*if (m_World != nullptr)
     	{
     		m_World->render();
-    	}
+    	}*/
+    	
     	m_RenderManager->finishRender();
     }
 
     void Engine::stopEngine()
     {
+        delete m_RenderTarget;
+        m_RenderTarget = nullptr;
+
         delete m_World;
         m_World = nullptr;
 
@@ -183,5 +181,18 @@ namespace JumaEngine
 
 		delete m_AssetsManager;
     	m_AssetsManager = nullptr;
+    }
+	
+    void Engine::terminateEngine()
+    {
+    	delete m_VertexBufferImporter;
+    	m_VertexBufferImporter = nullptr;
+
+        if (m_RenderManager != nullptr)
+        {
+            m_RenderManager->terminate();
+            delete m_RenderManager;
+            m_RenderManager = nullptr;
+        }
     }
 }

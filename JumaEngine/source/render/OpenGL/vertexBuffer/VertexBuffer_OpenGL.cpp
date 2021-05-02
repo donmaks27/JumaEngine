@@ -99,7 +99,7 @@ namespace JumaEngine
         }
     }
 
-    void VertexBuffer_OpenGL::render()
+    void VertexBuffer_OpenGL::render(const window_id windowID)
     {
         if (isInit())
         {

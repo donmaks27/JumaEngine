@@ -7,7 +7,7 @@
 
 namespace JumaEngine
 {
-    class RenderTargerBase;
+    class RenderTargetBase;
     class CameraComponent;
 
     class WindowDescriptionBase
@@ -19,7 +19,7 @@ namespace JumaEngine
         jstring windowTitle;
         glm::uvec2 windowSize = { 0, 0 };
 
-        RenderTargerBase* windowRenderTarget = nullptr;
+        RenderTargetBase* windowRenderTarget = nullptr;
         CameraComponent* activeCamera = nullptr;
     };
 }

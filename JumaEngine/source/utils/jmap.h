@@ -21,6 +21,16 @@ namespace JumaEngine
 			: base_class(m)
 		{}
 
+        jarray<K> getKeys() const
+		{
+		    jarray<K> result;
+            for (const auto keyAndValue : *this)
+            {
+                result.add(keyAndValue.first);
+            }
+            return result;
+		}
+
 		V* findByKey(const K& key)
 		{
 			typename base_class::iterator iter = this->find(key);

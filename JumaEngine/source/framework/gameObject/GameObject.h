@@ -5,7 +5,7 @@
 #include "common_header.h"
 #include "WorldContextObject.h"
 #include "TransformObject.h"
-#include "render/IRenderObject.h"
+#include "render/IRenderInterface.h"
 #include "utils/jarray.h"
 
 namespace JumaEngine
@@ -13,7 +13,7 @@ namespace JumaEngine
     class GameComponent;
     class SceneComponent;
 
-	class GameObject : public WorldContextObject, public TransformObject, public IRenderObject
+	class GameObject : public WorldContextObject, public TransformObject, public IRenderInterface
 	{
         friend EngineWorld;
 
@@ -26,7 +26,7 @@ namespace JumaEngine
         SceneComponent* getParentComponent() const { return m_ParentComponent; }
         GameObject* getParentGameObject() const;
 		
-        virtual void render() override;
+        virtual void render(window_id windowID) override;
 
 	protected:
 

@@ -145,13 +145,13 @@
     <ClCompile Include="source\render\OpenGL\vertexBuffer\VertexBuffer_OpenGL.cpp">
       <Filter>JumaEngine\render\OpenGL\vertexBuffer</Filter>
     </ClCompile>
-    <ClCompile Include="source\render\renderTarget\RenderTargerBase.cpp">
-      <Filter>JumaEngine\render\renderTarget</Filter>
-    </ClCompile>
-    <ClCompile Include="source\render\renderTarget\RenderTarget.cpp">
-      <Filter>JumaEngine\render\renderTarget</Filter>
-    </ClCompile>
     <ClCompile Include="source\render\renderTarget\RenderTargetComposite.cpp">
+      <Filter>JumaEngine\render\renderTarget</Filter>
+    </ClCompile>
+    <ClCompile Include="source\render\renderTarget\RenderTargetBase.cpp">
+      <Filter>JumaEngine\render\renderTarget</Filter>
+    </ClCompile>
+    <ClCompile Include="source\render\renderTarget\RenderTargetDirect.cpp">
       <Filter>JumaEngine\render\renderTarget</Filter>
     </ClCompile>
   </ItemGroup>
@@ -300,16 +300,16 @@
     <ClInclude Include="source\render\window\window_id.h">
       <Filter>JumaEngine\render\window</Filter>
     </ClInclude>
-    <ClInclude Include="source\render\renderTarget\RenderTargerBase.h">
+    <ClInclude Include="source\render\renderTarget\RenderTargetComposite.h">
       <Filter>JumaEngine\render\renderTarget</Filter>
     </ClInclude>
-    <ClInclude Include="source\render\IRenderObject.h">
+    <ClInclude Include="source\render\renderTarget\RenderTargetBase.h">
+      <Filter>JumaEngine\render\renderTarget</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\IRenderInterface.h">
       <Filter>JumaEngine\render</Filter>
     </ClInclude>
-    <ClInclude Include="source\render\renderTarget\RenderTarget.h">
-      <Filter>JumaEngine\render\renderTarget</Filter>
-    </ClInclude>
-    <ClInclude Include="source\render\renderTarget\RenderTargetComposite.h">
+    <ClInclude Include="source\render\renderTarget\RenderTargetDirect.h">
       <Filter>JumaEngine\render\renderTarget</Filter>
     </ClInclude>
   </ItemGroup>

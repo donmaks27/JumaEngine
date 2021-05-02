@@ -4,6 +4,7 @@
 
 #include "common_header.h"
 #include "Engine.h"
+#include "render/window/window_id.h"
 
 namespace JumaEngine
 {
@@ -55,6 +56,6 @@ namespace JumaEngine
         static Mesh* importMesh(const EngineContextObject* engineContextObject, const jstring& meshName, const subclass<Mesh>& meshClass, 
             const subclass<VertexBufferDataBase>& bufferClass);
 
-        static CameraComponent* getWindowActiveCamera(const EngineContextObject* engineContextObject);
+        static CameraComponent* getWindowActiveCamera(const EngineContextObject* engineContextObject, window_id windowID);
     };
 }

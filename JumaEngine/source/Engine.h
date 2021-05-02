@@ -16,6 +16,7 @@ namespace JumaEngine
 
     class EngineWorld;
     class Mesh;
+    class RenderTargetDirect;
 
     class Engine
     {
@@ -69,21 +70,23 @@ namespace JumaEngine
 
         Mesh* m_Mesh = nullptr;
 
+        RenderTargetDirect* m_RenderTarget = nullptr;
+
 
         void registerEngineObject(EngineContextObject* object);
 
         bool startEngineInternal(int argc, char** argv);
 
         bool initEngine();
+        void onEngineInit();
 
         void startEngineLoop();
-
-        void terminateEngine();
-
-        void onEngineInit();
     	void onEngineLoopStart();
+
         void tick(double deltaTime);
     	void render();
+
         void stopEngine();
+        void terminateEngine();
     };
 }

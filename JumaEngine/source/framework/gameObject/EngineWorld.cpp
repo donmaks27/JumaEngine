@@ -344,13 +344,13 @@ namespace JumaEngine
     	}
     }
 
-    void EngineWorld::render()
+    void EngineWorld::render(const window_id windowID)
     {
         for (auto& gameObject : m_GameObjects)
         {
             if (gameObject != nullptr)
             {
-                gameObject->render();
+                gameObject->render(windowID);
             }
         }
     }

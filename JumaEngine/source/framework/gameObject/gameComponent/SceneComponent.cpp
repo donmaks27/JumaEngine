@@ -4,13 +4,13 @@
 
 namespace JumaEngine
 {
-    void SceneComponent::render()
+    void SceneComponent::render(const window_id windowID)
     {
         for (auto& component : m_ChildComponents)
         {
             if (component != nullptr)
             {
-                component->render();
+                component->render(windowID);
             }
         }
     }
