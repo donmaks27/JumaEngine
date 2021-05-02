@@ -24,11 +24,11 @@ namespace JumaEngine
             Fragment
         };
 
-        virtual bool isShaderLoaded() const override { return m_ShaderProgramIndex != 0; }
+        virtual void cacheShaderUniformName(const char* uniformName) override;
 
     protected:
 
-        virtual void loadShaderInternal(const jstring& shaderName) override;
+        virtual bool loadShaderInternal(const jstring& shaderName) override;
         virtual void clearShaderInternal() override;
 
         virtual void activateShaderInternal() override;
@@ -46,7 +46,7 @@ namespace JumaEngine
     private:
 
         uint32 m_ShaderProgramIndex = 0;
-    	mutable jmap<jstring, int32> m_CachedUniformLocations = {};
+    	jmap<jstring, int32> m_CachedUniformLocations;
 
 
         bool loadShaderText(const jstring& shaderFilePath, jarray<jstring>& shaderText) const;

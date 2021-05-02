@@ -15,7 +15,7 @@ namespace JumaEngine
         clearOpenGLShader();
     }
 
-    void Shader_OpenGL::loadShaderInternal(const jstring& shaderName)
+    bool Shader_OpenGL::loadShaderInternal(const jstring& shaderName)
     {
         const uint32 vertexShaderIndex = loadAndCompileShader(shaderName + ".vsh", ShaderType::Vertex);
         const uint32 geometryShaderIndex = loadAndCompileShader(shaderName + ".gsh", ShaderType::Geometry);
@@ -34,6 +34,8 @@ namespace JumaEngine
         {
             glDeleteShader(fragmentShaderIndex);
         }
+
+        return m_ShaderProgramIndex != 0;
     }
     void Shader_OpenGL::clearShaderInternal()
     {
@@ -101,7 +103,7 @@ namespace JumaEngine
             glGetShaderiv(shaderIndex, GL_COMPILE_STATUS, &compileStatus);
             if (compileStatus == GL_FALSE)
             {
-#if LOG_ENABLED
+#if JLOG_ENABLED
                 GLint logLength;
                 glGetShaderiv(shaderIndex, GL_INFO_LOG_LENGTH, &logLength);
 
@@ -129,7 +131,7 @@ namespace JumaEngine
         if (loadShaderText(shaderFilePath, shaderText))
         {
             shaderIndex = compileShader(shaderText, shaderType);
-#if LOG_ENABLED
+#if JLOG_ENABLED
             if (shaderIndex == 0)
             {
                 jstring message = JTEXT("Failed to compile ");
@@ -170,7 +172,7 @@ namespace JumaEngine
         glGetProgramiv(shaderProgramIndex, GL_LINK_STATUS, &linkStatus);
         if (linkStatus == GL_FALSE)
         {
-#if LOG_ENABLED
+#if JLOG_ENABLED
             int logLength;
             glGetProgramiv(shaderProgramIndex, GL_INFO_LOG_LENGTH, &logLength);
 
@@ -188,6 +190,15 @@ namespace JumaEngine
         return shaderProgramIndex;
     }
 
+    void Shader_OpenGL::cacheShaderUniformName(const char* uniformName)
+    {
+        if (isShaderLoaded() && !m_CachedUniformLocations.contains(uniformName))
+        {
+            const int32 location = glGetUniformLocation(m_ShaderProgramIndex, uniformName);
+    		m_CachedUniformLocations.add(uniformName, location);
+        }
+    }
+
     void Shader_OpenGL::activateShaderInternal()
     {
         glUseProgram(m_ShaderProgramIndex);
@@ -199,7 +210,7 @@ namespace JumaEngine
 
     int32 Shader_OpenGL::getUniformLocation(const char* uniformName) const
     {
-    	if (m_ShaderProgramIndex != 0)
+    	if (isShaderLoaded())
     	{
     		const int32* cachedLocation = m_CachedUniformLocations.findByKey(uniformName);
     		if (cachedLocation != nullptr)
@@ -207,9 +218,7 @@ namespace JumaEngine
     			return *cachedLocation;
     		}
 
-    		const int32 location = glGetUniformLocation(m_ShaderProgramIndex, uniformName);
-    		m_CachedUniformLocations.add(uniformName, location);
-    		return location;
+    		return glGetUniformLocation(m_ShaderProgramIndex, uniformName);
     	}
         return -1;
     }

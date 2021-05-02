@@ -15,13 +15,4 @@ namespace JumaEngine
         }
         return false;
     }
-
-    void VertexBufferBase::terminate()
-    {
-        if (isInit())
-        {
-            terminateInteranl();
-            m_Initialized = false;
-        }
-    }
 }

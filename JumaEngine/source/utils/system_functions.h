@@ -8,15 +8,7 @@
 
 namespace JumaEngine
 {
-	class RenderManagerBaseOld;
-	class WindowBaseOld;
-
-    class ShaderBase;
-    class VertexBufferBase;
     class MeshImporterBase;
-    class Mesh;
-    class VertexBufferDataBase;
-
     class CameraComponent;
 
     class SystemFunctions final
@@ -46,15 +38,7 @@ namespace JumaEngine
         }
 
     	static RenderManagerBase* getRenderManager(const EngineContextObject* engineContextObject);
-    	
-        static ShaderBase* createShader(const EngineContextObject* engineContextObject);
-        static ShaderBase* createShader(const EngineContextObject* engineContextObject, const jstring& shaderName);
-        static VertexBufferBase* createVertexBuffer(const EngineContextObject* engineContextObject, VertexBufferDataBase* vertexBufferData = nullptr);
-
         static MeshImporterBase* getVertexBufferImporter(const EngineContextObject* engineContextObject);
-        static void importVertexBufferFile(const EngineContextObject* engineContextObject, const char* filePath);
-        static Mesh* importMesh(const EngineContextObject* engineContextObject, const jstring& meshName, const subclass<Mesh>& meshClass, 
-            const subclass<VertexBufferDataBase>& bufferClass);
 
         static CameraComponent* getWindowActiveCamera(const EngineContextObject* engineContextObject, window_id windowID);
     };

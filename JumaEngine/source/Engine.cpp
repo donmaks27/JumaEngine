@@ -99,8 +99,9 @@ namespace JumaEngine
     	material->addMaterialParam("uModel", glm::mat4(1));
     	material->finishInitialization();
 
-        SystemFunctions::importVertexBufferFile(m_World, "");
-        m_Mesh = SystemFunctions::importMesh(m_World, JTEXT("Triangle"), CLASS_TYPE(Mesh), CLASS_TYPE(VertexBufferDataPosition));
+        m_MeshImporter->importFile("");
+        m_Mesh = createObject<Mesh>();
+        m_Mesh->initMesh(m_MeshImporter->createVertexBuffersForMesh(JTEXT("Triangle"), CLASS_TYPE(VertexBufferDataPosition)));
         m_Mesh->setMaterial(0, m_AssetsManager->createMaterialInstance(material));
 
         MeshComponent* component = m_World->createSceneComponent<MeshComponent>();
@@ -177,8 +178,8 @@ namespace JumaEngine
 	
     void Engine::terminateEngine()
     {
-    	delete m_VertexBufferImporter;
-    	m_VertexBufferImporter = nullptr;
+    	delete m_MeshImporter;
+    	m_MeshImporter = nullptr;
 
         if (m_RenderManager != nullptr)
         {

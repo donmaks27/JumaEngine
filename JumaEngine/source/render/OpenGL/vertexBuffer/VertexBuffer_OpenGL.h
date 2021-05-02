@@ -6,6 +6,7 @@
 
 #if defined(JUMAENGINE_USE_GRAPHIC_API_OPENGL)
 
+#include "utils/jmap.h"
 #include "render/vertexBuffer/VertexBufferBase.h"
 
 namespace JumaEngine
@@ -21,14 +22,17 @@ namespace JumaEngine
     protected:
 
         virtual bool initInternal(VertexBufferDataBase* vertexBufferData) override;
-        virtual void terminateInteranl() override { clearBuffers(); }
+
+        virtual void clearWindowData(window_id windowID) override;
 
     private:
 
         uint32 m_VerticesVBO = 0;
         uint32 m_IndicesVBO = 0;
-        uint32 m_VerticesVAO = 0;
+        jmap<window_id, uint32> m_VerticesVAOs;
 
+
+        void bindVAO(window_id windowID);
 
         void clearBuffers();
     };

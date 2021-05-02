@@ -4,7 +4,7 @@
 
 #include "common_header.h"
 
-#define LOG_ENABLED _DEBUG
+#define JLOG_ENABLED JDEBUG
 
 namespace std
 {
@@ -47,7 +47,7 @@ namespace JumaEngine
 	    static const char* PREFIX_INFO;
 	    static const char* PREFIX_CORRECT;
 
-#if LOG_ENABLED
+#if JLOG_ENABLED
         static std::mutex s_Mutex;
 #endif
 
@@ -58,7 +58,7 @@ namespace JumaEngine
     };
 }
 
-#if LOG_ENABLED
+#if JLOG_ENABLED
 #define JUMA_LOG(type, message) Log::type(jstring(__FUNCTION__) + JTEXT("(") + TO_JTEXT(__LINE__) + JTEXT(")"), message)
 #define JUMA_LOG_EMPTY(type) JUMA_LOG(type, nullptr)
 #else

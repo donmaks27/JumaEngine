@@ -27,14 +27,14 @@ namespace JumaEngine
         template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<MeshImporterBase, T>)>
         void setVertexBufferImporter()
         {
-            if (m_VertexBufferImporter == nullptr)
+            if (m_MeshImporter == nullptr)
             {
-                m_VertexBufferImporter = new T();
+                m_MeshImporter = new T();
             }
         }
 
         RenderManagerBase* getRenderManager() const { return m_RenderManager; }
-        MeshImporterBase* getVertexBufferImporter() const { return m_VertexBufferImporter; }
+        MeshImporterBase* getVertexBufferImporter() const { return m_MeshImporter; }
 
         template<typename T, TEMPLATE_ENABLE(is_base_and_not_same<EngineContextObject, T>)>
         T* createObject()
@@ -63,7 +63,7 @@ namespace JumaEngine
 		bool m_EngineStarted = false;
     	
         RenderManagerBase* m_RenderManager = nullptr;
-        MeshImporterBase* m_VertexBufferImporter = nullptr;
+        MeshImporterBase* m_MeshImporter = nullptr;
     	AssetsManager* m_AssetsManager = nullptr;
 
         EngineWorld* m_World = nullptr;

@@ -4,6 +4,8 @@
 #include "AssetObject.h"
 #include "material/Material.h"
 #include "material/MaterialInstance.h"
+#include "render/RenderManagerBase.h"
+#include "render/shader/ShaderBase.h"
 #include "utils/system_functions.h"
 
 namespace JumaEngine
@@ -41,7 +43,12 @@ namespace JumaEngine
         asset_ptr<Material> asset = createAssetObject<Material>();
         if (asset != nullptr)
         {
-            asset->m_Shader = SystemFunctions::createShader(this, materialName);
+            RenderManagerBase* renderManager = SystemFunctions::getRenderManager(this);
+            asset->m_Shader = renderManager != nullptr ? renderManager->createShader() : nullptr;
+            if (asset->m_Shader != nullptr)
+            {
+                asset->m_Shader->loadShader(materialName);
+            }
             m_Materials.add(actualName, asset);
         }
         return asset;

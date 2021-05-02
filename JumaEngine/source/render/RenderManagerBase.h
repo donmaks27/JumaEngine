@@ -49,6 +49,8 @@ namespace JumaEngine
         CameraComponent* getWindowActiveCamera(window_id windowID) const;
         void setWindowActiveCamera(window_id windowID, CameraComponent* camera);
 
+        void deleteVertexBuffer(VertexBufferBase* vertexBuffer);
+
     protected:
 
         window_id m_MainWindowID = INVALID_WINDOW_ID;

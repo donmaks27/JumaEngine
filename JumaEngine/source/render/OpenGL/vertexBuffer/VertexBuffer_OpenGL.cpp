@@ -40,8 +40,75 @@ namespace JumaEngine
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
         }
 
-        glGenVertexArrays(1, &m_VerticesVAO);
-        glBindVertexArray(m_VerticesVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        delete vertexBufferData;
+        return true;
+    }
+
+    void VertexBuffer_OpenGL::clearWindowData(const window_id windowID)
+    {
+        if (isInit())
+        {
+            uint32* VAOPtr = m_VerticesVAOs.findByKey(windowID);
+            if (VAOPtr != nullptr)
+            {
+                glDeleteVertexArrays(1, VAOPtr);
+                m_VerticesVAOs.remove(windowID);
+            }
+        }
+    }
+    void VertexBuffer_OpenGL::clearBuffers()
+    {
+        if (m_IndicesVBO != 0)
+        {
+            glDeleteBuffers(1, &m_IndicesVBO);
+            m_IndicesVBO = 0;
+        }
+        if (m_VerticesVBO != 0)
+        {
+            glDeleteBuffers(1, &m_VerticesVBO);
+            m_VerticesVBO = 0;
+        }
+    }
+
+    void VertexBuffer_OpenGL::render(const window_id windowID)
+    {
+        if (isInit())
+        {
+            const VertexBufferDescription& description = getVertexBufferDescription();
+
+            bindVAO(windowID);
+            if (m_IndicesVBO == 0)
+            {
+                glDrawArrays(GL_TRIANGLES, 0, description.verticesCount);
+            }
+            else
+            {
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndicesVBO);
+                glDrawElements(GL_TRIANGLES, description.indicesCount, GL_UNSIGNED_INT, nullptr);
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+            }
+            glBindVertexArray(0);
+        }
+    }
+    void VertexBuffer_OpenGL::bindVAO(const window_id windowID)
+    {
+        uint32* VAOPtr = m_VerticesVAOs.findByKey(windowID);
+        if (VAOPtr != nullptr)
+        {
+            glBindVertexArray(*VAOPtr);
+            return;
+        }
+
+        uint32 VAO = 0;
+        glGenVertexArrays(1, &VAO);
+        m_VerticesVAOs.add(windowID, VAO);
+        
+        glBindBuffer(GL_ARRAY_BUFFER, m_VerticesVBO);
+        glBindVertexArray(VAO);
+
+        const VertexBufferDescription& bufferDescription = getVertexBufferDescription();
         for (uint32 vertexComponentIndex = 0; vertexComponentIndex < bufferDescription.vertexComponents.size(); vertexComponentIndex++)
         {
             const VertexComponentDescription& componentDescriprion = bufferDescription.vertexComponents[vertexComponentIndex];
@@ -72,57 +139,8 @@ namespace JumaEngine
             );
             glEnableVertexAttribArray(componentDescriprion.componentID);
         }
-
-        glBindVertexArray(0);
+        
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-        delete vertexBufferData;
-        return true;
-    }
-
-    void VertexBuffer_OpenGL::clearBuffers()
-    {
-        if (m_VerticesVAO != 0)
-        {
-            glDeleteVertexArrays(1, &m_VerticesVAO);
-            m_VerticesVAO = 0;
-        }
-        if (m_IndicesVBO != 0)
-        {
-            glDeleteBuffers(1, &m_IndicesVBO);
-            m_IndicesVBO = 0;
-        }
-        if (m_VerticesVBO != 0)
-        {
-            glDeleteBuffers(1, &m_VerticesVBO);
-            m_VerticesVBO = 0;
-        }
-    }
-
-    void VertexBuffer_OpenGL::render(const window_id windowID)
-    {
-        if (isInit())
-        {
-            const VertexBufferDescription& description = getVertexBufferDescription();
-            const bool shouldUseVertexIndices = m_IndicesVBO != 0;
-
-            glBindBuffer(GL_ARRAY_BUFFER, m_VerticesVBO);
-            glBindVertexArray(m_VerticesVAO);
-
-            if (!shouldUseVertexIndices)
-            {
-                glDrawArrays(GL_TRIANGLES, 0, description.verticesCount);
-            }
-            else
-            {
-                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndicesVBO);
-                glDrawElements(GL_TRIANGLES, description.indicesCount, GL_UNSIGNED_INT, nullptr);
-                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-            }
-
-            glBindVertexArray(0);
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
-        }
     }
 }
 

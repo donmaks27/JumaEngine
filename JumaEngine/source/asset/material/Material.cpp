@@ -19,6 +19,14 @@ namespace JumaEngine
 		return m_Shader != nullptr ? m_Shader->getShaderName() : jstring();
 	}
 
+    void Material::cacheShaderUniformName(const jstring& name) const
+    {
+        if (isShaderValid())
+        {
+            m_Shader->cacheShaderUniformName(*name);
+        }
+    }
+
 	void Material::activate() const
 	{
 		if (isInit())

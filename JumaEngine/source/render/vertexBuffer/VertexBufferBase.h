@@ -8,24 +8,27 @@
 
 namespace JumaEngine
 {
+    class RenderManagerBase;
     class VertexBufferDataBase;
 
     class VertexBufferBase : public IRenderInterface
     {
+        friend RenderManagerBase;
+
     public:
         VertexBufferBase() = default;
-        virtual ~VertexBufferBase() = default;
+        virtual ~VertexBufferBase() override = default;
 
         bool init(VertexBufferDataBase* vertexBufferData);
         bool isInit() const { return m_Initialized; }
-        void terminate();
 
         const VertexBufferDescription& getVertexBufferDescription() const { return m_VertexBufferDescription; }
 
     protected:
 
         virtual bool initInternal(VertexBufferDataBase* vertexBufferData) = 0;
-        virtual void terminateInteranl() = 0;
+
+        virtual void clearWindowData(window_id windowID) {}
 
     private:
 

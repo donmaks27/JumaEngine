@@ -22,7 +22,11 @@ namespace JumaEngine
 		{
 			if (!m_Initialized)
 			{
-				return addMaterialParamInternal<T>(name, value);
+                if (addMaterialParamInternal<T>(name, value))
+                {
+                    cacheShaderUniformName(name);
+                    return true;
+                }
 			}
 			return false;
 		}
@@ -48,7 +52,9 @@ namespace JumaEngine
         ShaderBase* m_Shader = nullptr;
 		bool m_Initialized = false;
 
-		
+
+        void cacheShaderUniformName(const jstring& name) const;
+
         void clearShader();
 	};
 }

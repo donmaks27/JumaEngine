@@ -3,6 +3,7 @@
 #include "Mesh.h"
 #include "utils/system_functions.h"
 #include "asset/material/MaterialBase.h"
+#include "render/RenderManagerBase.h"
 #include "render/vertexBuffer/VertexBufferBase.h"
 
 namespace JumaEngine
@@ -16,20 +17,33 @@ namespace JumaEngine
     {
         if (!isMeshInit())
         {
-            for (const auto& vertexBufferData : vertexBuffersData)
-            {
-                m_VertexBuffers.add(SystemFunctions::createVertexBuffer(this, vertexBufferData));
-                m_Materials.add({});
-            }
-            return true;
+            RenderManagerBase* renderManager = SystemFunctions::getRenderManager(this);
+		    if (renderManager != nullptr)
+		    {
+		        for (const auto& vertexBufferData : vertexBuffersData)
+		        {
+                    VertexBufferBase* vertexBuffer = renderManager->createVertextBuffer();
+                    if (vertexBuffer != nullptr)
+                    {
+                        vertexBuffer->init(vertexBufferData);
+                    }
+		            m_VertexBuffers.add(vertexBuffer);
+		            m_Materials.add({});
+		        }
+		        return true;
+		    }
         }
         return false;
     }
     void Mesh::terminateMesh()
     {
-        for (auto& vertexBuffer : m_VertexBuffers)
+        RenderManagerBase* renderManager = SystemFunctions::getRenderManager(this);
+        if (renderManager != nullptr)
         {
-            delete vertexBuffer;
+            for (auto& vertexBuffer : m_VertexBuffers)
+            {
+                renderManager->deleteVertexBuffer(vertexBuffer);
+            }
         }
         m_VertexBuffers.clear();
         m_Materials.clear();

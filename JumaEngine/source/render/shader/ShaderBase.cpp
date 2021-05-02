@@ -11,27 +11,24 @@ namespace JumaEngine
     {
         if (isShaderLoaded())
         {
-            JUMA_LOG(warning, JTEXT("Shader already loaded!"));
+            JUMA_LOG(warning, JTEXT("Shader already loaded."));
             return false;
         }
         if (shaderName.empty())
         {
-            JUMA_LOG(warning, JTEXT("Empty shader name!"));
-            return false;
-        }
-        if (shaderName == m_ShaderName)
-        {
-            JUMA_LOG(warning, JTEXT("Shader name is the same as old one!"));
+            JUMA_LOG(warning, JTEXT("Empty shader name."));
             return false;
         }
 
-        loadShaderInternal(shaderName);
-        if (isShaderLoaded())
+        if (!loadShaderInternal(shaderName))
         {
-            m_ShaderName = shaderName;
-            return true;
+            JUMA_LOG(warning, jstring(JTEXT("Fail to load shader ")) + shaderName + JTEXT("."));
+            return false;
         }
-        return false;
+
+        m_ShaderName = shaderName;
+        m_ShaderLoaded = true;
+        return true;
     }
     void ShaderBase::clearShader()
     {

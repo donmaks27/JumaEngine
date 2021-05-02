@@ -11,13 +11,13 @@ namespace JumaEngine
     const char* Log::PREFIX_INFO    = JTEXT("[INFO] ");
     const char* Log::PREFIX_CORRECT = JTEXT("[OK]   ");
 
-#if LOG_ENABLED
+#if JLOG_ENABLED
     std::mutex Log::s_Mutex;
 #endif
 
     void Log::WriteLog(const char* prefix, const jstring& method, const char* message)
     {
-#if LOG_ENABLED
+#if JLOG_ENABLED
         std::unique_lock<std::mutex> lock(s_Mutex);
 
 	    std::cout << prefix;

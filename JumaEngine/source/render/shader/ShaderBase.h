@@ -17,8 +17,10 @@ namespace JumaEngine
         const jstring& getShaderName() const { return m_ShaderName; }
 
         bool loadShader(const jstring& shaderName);
-        virtual bool isShaderLoaded() const = 0;
+        bool isShaderLoaded() const { return m_ShaderLoaded; }
         void clearShader();
+
+        virtual void cacheShaderUniformName(const char* uniformName) {}
 
         void activate();
         bool isActive() const { return getActiveShader() == this; }
@@ -39,7 +41,7 @@ namespace JumaEngine
 
     protected:
 
-        virtual void loadShaderInternal(const jstring& shaderName) = 0;
+        virtual bool loadShaderInternal(const jstring& shaderName) = 0;
         virtual void clearShaderInternal() = 0;
 
         virtual void activateShaderInternal() = 0;
@@ -59,6 +61,7 @@ namespace JumaEngine
 
         static ShaderBase* s_ActiveShader;
 
+        bool m_ShaderLoaded = false;
         jstring m_ShaderName = jstring();
     };
 }

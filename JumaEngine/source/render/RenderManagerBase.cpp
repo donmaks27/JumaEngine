@@ -2,6 +2,7 @@
 
 #include "RenderManagerBase.h"
 #include "renderTarget/RenderTargetBase.h"
+#include "vertexBuffer/VertexBufferBase.h"
 
 namespace JumaEngine
 {
@@ -136,6 +137,15 @@ namespace JumaEngine
         if (description != nullptr)
         {
             description->activeCamera = camera;
+        }
+    }
+
+    void RenderManagerBase::deleteVertexBuffer(VertexBufferBase* vertexBuffer)
+    {
+        if ((vertexBuffer != nullptr) && vertexBuffer->isInit())
+        {
+            vertexBuffer->clearWindowData(getMainWindowID());
+            delete vertexBuffer;
         }
     }
 }
