@@ -9,15 +9,19 @@ namespace JumaEngine
 {
     class CameraComponent;
 
-    class RenderTargetDirect : public RenderTargetBase
+    class RenderTargetDirectBase : public RenderTargetBase
     {
     public:
-        RenderTargetDirect() = default;
-        virtual ~RenderTargetDirect() override = default;
+        RenderTargetDirectBase() = default;
+        virtual ~RenderTargetDirectBase() override = default;
 
         void setCamera(CameraComponent* camera) { m_Camera = camera; }
 
         virtual void render(window_id windowID) override;
+
+    protected:
+
+        virtual void clearFrame() = 0;
 
     private:
 

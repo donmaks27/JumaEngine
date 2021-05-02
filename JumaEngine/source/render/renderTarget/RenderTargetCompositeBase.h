@@ -7,10 +7,10 @@
 
 namespace JumaEngine
 {
-    class RenderTargetComposite : public RenderTargetBase
+    class RenderTargetCompositeBase : public RenderTargetBase
     {
     public:
-        RenderTargetComposite() = default;
-        virtual ~RenderTargetComposite() override = default;
+        RenderTargetCompositeBase() = default;
+        virtual ~RenderTargetCompositeBase() override = default;
     };
 }

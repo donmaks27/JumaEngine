@@ -5,9 +5,11 @@
 #if defined(JUMAENGINE_USE_GRAPHIC_API_OPENGL)
 
 #include "GL/glew.h"
+#include "Engine.h"
 #include "utils/log.h"
 #include "shader/Shader_OpenGL.h"
 #include "vertexBuffer/VertexBuffer_OpenGL.h"
+#include "renderTarget/RenderTargetDirect_OpenGL.h"
 
 namespace JumaEngine
 {
@@ -30,13 +32,14 @@ namespace JumaEngine
     {
         return new VertexBuffer_OpenGL();
     }
-
-    void RenderManagerBase_OpenGL::startRender()
+    RenderTargetDirectBase* RenderManagerBase_OpenGL::createRenderTargetDirect()
     {
-        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-        Super::startRender();
+        Engine* engine = getOwnerEngine();
+        if (engine != nullptr)
+        {
+            return engine->createObject<RenderTargetDirect_OpenGL>();
+        }
+        return nullptr;
     }
 }
 

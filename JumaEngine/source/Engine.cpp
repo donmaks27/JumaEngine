@@ -12,7 +12,7 @@
 #include "asset/material/MaterialInstance.h"
 #include "asset/mesh/Mesh.h"
 #include "render/RenderManagerImpl.h"
-#include "render/renderTarget/RenderTargetDirect.h"
+#include "render/renderTarget/RenderTargetDirectBase.h"
 #include "render/vertexBuffer/VertexPosition.h"
 #include "render/vertexBuffer/importer/MeshImporterBase.h"
 #include "utils/system_functions.h"
@@ -79,7 +79,7 @@ namespace JumaEngine
 
     bool Engine::initEngine()
     {
-		m_RenderManager = new RenderManager_OpenGL();
+		m_RenderManager = createObject<RenderManager_OpenGL>();
     	if (!m_RenderManager->init())
     	{
     		return false;
@@ -107,14 +107,12 @@ namespace JumaEngine
         component->setMesh(m_Mesh);
 
         CameraComponent* camera = m_World->createSceneComponent<CameraComponent>();
-        //m_RenderManager->setWindowActiveCamera(camera);
-
-        m_RenderTarget = createObject<RenderTargetDirect>();
-        m_RenderTarget->setCamera(camera);
-        m_RenderManager->setWindowRenderTarget(m_RenderManager->getMainWindowID(), m_RenderTarget);
-
     	//m_Camera->setWorldLocation({ -50.0f, 0.0f, 0.0f });
     	//m_Camera->setWorldRotation({ 0.0f, 0.0f, 0.0f });
+
+        m_RenderTarget = m_RenderManager->createRenderTargetDirect();
+        m_RenderTarget->setCamera(camera);
+        m_RenderManager->setWindowRenderTarget(m_RenderManager->getMainWindowID(), m_RenderTarget);
     }
 
     void Engine::startEngineLoop()
@@ -159,12 +157,6 @@ namespace JumaEngine
     void Engine::render()
     {
     	m_RenderManager->startRender();
-    	
-    	/*if (m_World != nullptr)
-    	{
-    		m_World->render();
-    	}*/
-    	
     	m_RenderManager->finishRender();
     }
 

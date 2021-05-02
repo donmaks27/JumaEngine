@@ -1,6 +1,6 @@
 ﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
 
-#include "RenderTargetComposite.h"
+#include "RenderTargetCompositeBase.h"
 
 namespace JumaEngine
 {

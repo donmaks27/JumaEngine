@@ -13,6 +13,7 @@ namespace JumaEngine
 {
     class ShaderBase;
     class VertexBufferBase;
+    class RenderTargetDirectBase;
 
     class RenderManagerBase : public EngineContextObject, public IRenderInterface
     {
@@ -35,6 +36,7 @@ namespace JumaEngine
         
         virtual ShaderBase* createShader() = 0;
         virtual VertexBufferBase* createVertextBuffer() = 0;
+        virtual RenderTargetDirectBase* createRenderTargetDirect() = 0;
 
         virtual void startRender();
         virtual void render(window_id windowID) override;
