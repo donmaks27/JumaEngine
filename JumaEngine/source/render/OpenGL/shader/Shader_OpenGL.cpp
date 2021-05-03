@@ -43,11 +43,6 @@ namespace JumaEngine
     }
     void Shader_OpenGL::clearOpenGLShader()
     {
-        if (isActive())
-        {
-            deactivateShaderOpenGL();
-            clearActiveShaderRef();
-        }
         if (m_ShaderProgramIndex != 0)
         {
             glDeleteProgram(m_ShaderProgramIndex);

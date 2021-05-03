@@ -4,6 +4,8 @@
 
 #include "common_header.h"
 #include "glm/vec2.hpp"
+#include <thread>
+#include <atomic>
 
 namespace JumaEngine
 {
@@ -21,5 +23,8 @@ namespace JumaEngine
 
         RenderTargetBase* windowRenderTarget = nullptr;
         CameraComponent* activeCamera = nullptr;
+
+        std::thread windowThread;
+        std::atomic_bool windowRenderInProcess = false;
     };
 }

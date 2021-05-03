@@ -3,6 +3,7 @@
 #pragma once
 
 #include "common_header.h"
+#include <thread>
 #include "EngineContextObject.h"
 #include "utils/subclass.h"
 #include "utils/type_traits_macros.h"
@@ -21,8 +22,10 @@ namespace JumaEngine
     class Engine
     {
     public:
-        Engine() = default;
+        Engine();
         virtual ~Engine() = default;
+
+        bool isMainThread() const { return std::this_thread::get_id() == m_MainThreadID; }
 
         template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<MeshImporterBase, T>)>
         void setVertexBufferImporter()
@@ -59,6 +62,8 @@ namespace JumaEngine
         EngineWorld* getActiveWorld() const { return m_World; }
 
     private:
+
+        std::thread::id m_MainThreadID;
 
 		bool m_EngineStarted = false;
     	

@@ -5,7 +5,7 @@
 
 namespace JumaEngine
 {
-    ShaderBase* ShaderBase::s_ActiveShader = nullptr;
+    jmap<window_id, ShaderBase*> ShaderBase::s_ActiveShaders = {};
 
     bool ShaderBase::loadShader(const jstring& shaderName)
     {
@@ -32,35 +32,40 @@ namespace JumaEngine
     }
     void ShaderBase::clearShader()
     {
-        deactivate();
         if (isShaderLoaded())
         {
             clearShaderInternal();
         }
     }
 
-    void ShaderBase::activate()
+    void ShaderBase::activate(const window_id windowID)
     {
-        if (!isActive() && isShaderLoaded())
+        if (isShaderLoaded() && !isActive(windowID))
         {
             activateShaderInternal();
-            s_ActiveShader = this;
+            s_ActiveShaders.add(windowID, this);
         }
     }
-    void ShaderBase::deactivate()
+    void ShaderBase::deactivate(const window_id windowID)
     {
-        if (isActive())
+        if (isActive(windowID))
         {
             deactivateShaderInternal();
-            clearActiveShaderRef();
+            s_ActiveShaders.add(windowID, nullptr);
         }
     }
 
-    void ShaderBase::deactivateActiveShader()
+    ShaderBase* ShaderBase::getActiveShader(const window_id windowID)
     {
-        if (hasActiveShader())
+        ShaderBase** shaderPtr = s_ActiveShaders.findByKey(windowID);
+        return shaderPtr != nullptr ? *shaderPtr : nullptr;
+    }
+    void ShaderBase::deactivateActiveShader(const window_id windowID)
+    {
+        ShaderBase* shader = getActiveShader(windowID);
+        if (shader != nullptr)
         {
-            s_ActiveShader->deactivate();
+            shader->deactivate(windowID);
         }
     }
 }

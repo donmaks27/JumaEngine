@@ -65,12 +65,12 @@ namespace JumaEngine
             MaterialBase* material = m_Materials[index].get();
             if ((vertexBuffer != nullptr) && (material != nullptr) && vertexBuffer->isInit())
             {
-                material->activate();
-                if (material->isActive())
+                material->activate(windowID);
+                if (material->isActive(windowID))
                 {
-                	material->loadMaterialParams();
+                	material->loadMaterialParams(windowID);
                     vertexBuffer->render(windowID);
-                	material->deactivate();
+                	material->deactivate(windowID);
                 }
             }
         }

@@ -39,9 +39,9 @@ namespace JumaEngine
 		void finishInitialization() { m_Initialized = true; }
 
 		virtual bool isInit() const override { return m_Initialized && isShaderValid(); }
-		virtual void activate() const override;
-		virtual bool isActive() const override;
-		virtual void deactivate() const override;
+		virtual void activate(window_id windowID) const override;
+		virtual bool isActive(window_id windowID) const override;
+		virtual void deactivate(window_id windowID) const override;
 
 	protected:
 

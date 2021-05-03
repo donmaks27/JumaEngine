@@ -15,10 +15,14 @@
 #include "render/renderTarget/RenderTargetDirectBase.h"
 #include "render/vertexBuffer/VertexPosition.h"
 #include "render/vertexBuffer/importer/MeshImporterBase.h"
-#include "utils/system_functions.h"
 
 namespace JumaEngine
 {
+    Engine::Engine()
+    {
+        m_MainThreadID = std::this_thread::get_id();
+    }
+
     void Engine::registerEngineObject(EngineContextObject* object)
     {
         if (object != nullptr)
@@ -114,6 +118,9 @@ namespace JumaEngine
         m_RenderTarget = m_RenderManager->createRenderTargetDirect();
         m_RenderTarget->setCamera(camera);
         m_RenderManager->setWindowRenderTarget(m_RenderManager->getMainWindowID(), m_RenderTarget);
+
+        const window_id windowID = m_RenderManager->createWindow(glm::uvec2(800, 600), JTEXT("Second window"));
+        m_RenderManager->setWindowRenderTarget(windowID, m_RenderTarget);
     }
 
     void Engine::startEngineLoop()
@@ -158,7 +165,6 @@ namespace JumaEngine
     void Engine::render()
     {
     	m_RenderManager->startRender();
-    	m_RenderManager->finishRender();
     }
 
     void Engine::stopEngine()

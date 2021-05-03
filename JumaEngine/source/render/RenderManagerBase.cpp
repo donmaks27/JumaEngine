@@ -44,6 +44,77 @@ namespace JumaEngine
         m_MainWindowID = INVALID_WINDOW_ID;
     }
 
+    WindowDescriptionBase* RenderManagerBase::getWindowDescriptionBase(const window_id windowID)
+    {
+        if (windowID != INVALID_WINDOW_ID)
+        {
+            const bool shouldUseMutex = !isMainThread();
+
+            if (shouldUseMutex)
+            {
+                m_WindowsListMutex.lock();
+            }
+            WindowDescriptionBase* const* description = m_Windows.find(windowID);
+            WindowDescriptionBase* result = description != nullptr ? *description : nullptr;
+            if (shouldUseMutex)
+            {
+                m_WindowsListMutex.unlock();
+            }
+
+            return result;
+        }
+        return nullptr;
+    }
+    const WindowDescriptionBase* RenderManagerBase::getWindowDescriptionBase(const window_id windowID) const
+    {
+        if (windowID != INVALID_WINDOW_ID)
+        {
+            const bool shouldUseMutex = !isMainThread();
+
+            if (shouldUseMutex)
+            {
+                m_WindowsListMutex.lock();
+            }
+            WindowDescriptionBase* const* description = m_Windows.find(windowID);
+            const WindowDescriptionBase* result = description != nullptr ? *description : nullptr;
+            if (shouldUseMutex)
+            {
+                m_WindowsListMutex.unlock();
+            }
+
+            return result;
+        }
+        return nullptr;
+    }
+
+    window_id RenderManagerBase::createWindow(const glm::uvec2& size, const jstring& title)
+    {
+        if (isMainThread())
+        {
+            WindowDescriptionBase* description = createWindowInternal(size, title);
+            if (description != nullptr)
+            {
+                m_WindowsListMutex.lock();
+
+                const window_id windowID = m_Windows.add(description);
+                if (m_MainWindowID == INVALID_WINDOW_ID)
+                {
+                    m_MainWindowID = windowID;
+                    setActiveWindowInCurrentThread(windowID);
+                }
+                else
+                {
+                    description->windowThread = std::thread(&RenderManagerBase::windowThreadFunction, this, windowID);
+                }
+
+                m_WindowsListMutex.unlock();
+
+                return windowID;
+            }
+        }
+        return INVALID_WINDOW_ID;
+    }
+
     bool RenderManagerBase::getWindowSize(const window_id windowID, glm::uvec2& outWindowSize) const
     {
         if (isInit())
@@ -106,8 +177,55 @@ namespace JumaEngine
 
     void RenderManagerBase::startRender()
     {
-        render(getMainWindowID());
+        const window_id mainWindowID = getMainWindowID();
+        WindowDescriptionBase* mainWindowDescription = getWindowDescriptionBase(mainWindowID);
+        if (mainWindowDescription == nullptr)
+        {
+            return;
+        }
+
+        mainWindowDescription->windowRenderInProcess.store(true);
+        for (auto& windowIDAndDescription : m_Windows)
+        {
+            const window_id& windowID = windowIDAndDescription.first;
+            if (windowID != mainWindowID)
+            {
+                WindowDescriptionBase*& description = windowIDAndDescription.second;
+                description->windowRenderInProcess.store(true);
+            }
+        }
+
+        render(mainWindowID);
+
+        mainWindowDescription->windowRenderInProcess.store(false);
+        for (auto& windowIDAndDescription : m_Windows)
+        {
+            const window_id& windowID = windowIDAndDescription.first;
+            if (windowID != mainWindowID)
+            {
+                WindowDescriptionBase*& description = windowIDAndDescription.second;
+                while (description->windowRenderInProcess.load()) {}
+            }
+        }
     }
+    void RenderManagerBase::windowThreadFunction(const window_id windowID)
+    {
+        WindowDescriptionBase* windowDescription = getWindowDescriptionBase(windowID);
+        WindowDescriptionBase* mainWindowDescription = getWindowDescriptionBase(getMainWindowID());
+
+        setActiveWindowInCurrentThread(windowID);
+
+        while (!shouldCloseWindow(windowID))
+        {
+            while (!windowDescription->windowRenderInProcess.load()) {}
+
+            render(windowID);
+            
+            windowDescription->windowRenderInProcess.store(false);
+            while (mainWindowDescription->windowRenderInProcess.load()) {}
+        }
+    }
+
     void RenderManagerBase::render(const window_id windowID)
     {
         WindowDescriptionBase* description = getWindowDescription(windowID);

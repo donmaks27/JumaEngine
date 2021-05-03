@@ -27,22 +27,22 @@ namespace JumaEngine
         }
     }
 
-	void Material::activate() const
+	void Material::activate(const window_id windowID) const
 	{
 		if (isInit())
 		{
-			m_Shader->activate();
+			m_Shader->activate(windowID);
 		}
 	}
-	bool Material::isActive() const
+	bool Material::isActive(const window_id windowID) const
 	{
-		return isInit() && m_Shader->isActive();
+		return isInit() && m_Shader->isActive(windowID);
 	}
-	void Material::deactivate() const
+	void Material::deactivate(const window_id windowID) const
 	{
-		if (isActive())
+		if (isActive(windowID))
         {
-            m_Shader->deactivate();
+            m_Shader->deactivate(windowID);
         }
 	}
 

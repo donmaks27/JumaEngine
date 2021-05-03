@@ -5,7 +5,7 @@
 
 namespace JumaEngine
 {
-	void MaterialBase::loadMaterialParams() const
+	void MaterialBase::loadMaterialParams(const window_id windowID) const
 	{
 		const jmap<jstring, MaterialParamType>& paramsList = getMaterialParamsList();
 		for (const auto& paramNameAndType : paramsList)
@@ -18,7 +18,7 @@ namespace JumaEngine
 					bool value;
 					if (getMaterialParam(name, value))
 					{
-						ShaderBase::setActiveShaderUniformValue(*name, value);
+						ShaderBase::setActiveShaderUniformValue(windowID, *name, value);
 					}
 				}
 				break;
@@ -28,7 +28,7 @@ namespace JumaEngine
 					int32 value;
 					if (getMaterialParam(name, value))
 					{
-						ShaderBase::setActiveShaderUniformValue(*name, value);
+						ShaderBase::setActiveShaderUniformValue(windowID, *name, value);
 					}
 				}
 				break;
@@ -38,7 +38,7 @@ namespace JumaEngine
 					float value;
 					if (getMaterialParam(name, value))
 					{
-						ShaderBase::setActiveShaderUniformValue(*name, value);
+						ShaderBase::setActiveShaderUniformValue(windowID, *name, value);
 					}
 				}
 				break;
@@ -48,7 +48,7 @@ namespace JumaEngine
 					glm::vec2 value;
 					if (getMaterialParam(name, value))
 					{
-						ShaderBase::setActiveShaderUniformValue(*name, value);
+						ShaderBase::setActiveShaderUniformValue(windowID, *name, value);
 					}
 				}
 				break;
@@ -58,7 +58,7 @@ namespace JumaEngine
 					glm::vec3 value;
 					if (getMaterialParam(name, value))
 					{
-						ShaderBase::setActiveShaderUniformValue(*name, value);
+						ShaderBase::setActiveShaderUniformValue(windowID, *name, value);
 					}
 				}
 				break;
@@ -68,7 +68,7 @@ namespace JumaEngine
 					glm::vec4 value;
 					if (getMaterialParam(name, value))
 					{
-						ShaderBase::setActiveShaderUniformValue(*name, value);
+						ShaderBase::setActiveShaderUniformValue(windowID, *name, value);
 					}
 				}
 				break;
@@ -78,7 +78,7 @@ namespace JumaEngine
 					glm::mat4 value;
 					if (getMaterialParam(name, value))
 					{
-						ShaderBase::setActiveShaderUniformValue(*name, value);
+						ShaderBase::setActiveShaderUniformValue(windowID, *name, value);
 					}
 				}
 				break;

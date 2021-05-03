@@ -32,15 +32,7 @@ namespace JumaEngine
         glfwWindowHint(GLFW_SAMPLES, 0);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-        WindowDescriptionBase* windowDescription = createWindow(glm::uvec2(800, 600), JTEXT("JumaEngine"));
-        if (windowDescription == nullptr)
-        {
-            JUMA_LOG(error, JTEXT("Fail to create main window."));
-            terminateGLFW();
-            return false;
-        }
-        m_MainWindowID = m_Windows.add(windowDescription);
-        setActiveWindowInCurrentThread(m_MainWindowID);
+        createWindow(glm::uvec2(800, 600), JTEXT("JumaEngine"));
 
         if (!Super::initInternal())
         {
@@ -65,7 +57,7 @@ namespace JumaEngine
         glfwTerminate();
     }
     
-    WindowDescriptionBase* RenderManager_OpenGL_GLFW::createWindow(const glm::uvec2& size, const jstring& title)
+    WindowDescriptionBase* RenderManager_OpenGL_GLFW::createWindowInternal(const glm::uvec2& size, const jstring& title)
     {
         GLFWwindow* window = glfwCreateWindow(size.x, size.y, title.c_str(), nullptr, getWindowGLFW(getMainWindowID()));
         if (window == nullptr)
@@ -116,18 +108,11 @@ namespace JumaEngine
         return false;
     }
 
-    void RenderManager_OpenGL_GLFW::finishRender()
+    void RenderManager_OpenGL_GLFW::render(const window_id windowID)
     {
-        /*for (auto& windowIDAndDescription : m_Windows)
-        {
-            WindowDescriptionGLFW* description = dynamic_cast<WindowDescriptionGLFW*>(windowIDAndDescription.second);
-            GLFWwindow* window = description != nullptr ? description->windowPtr : nullptr;
-            if (window != nullptr)
-            {
-                glfwSwapBuffers(window);
-            }
-        }*/
-        GLFWwindow* window = getWindowGLFW(getMainWindowID());
+        Super::render(windowID);
+
+        GLFWwindow* window = getWindowGLFW(windowID);
         if (window != nullptr)
         {
             glfwSwapBuffers(window);
@@ -135,9 +120,9 @@ namespace JumaEngine
         glfwPollEvents();
     }
 
-    bool RenderManager_OpenGL_GLFW::shouldCloseMainWindow() const
+    bool RenderManager_OpenGL_GLFW::shouldCloseWindow(const window_id windowID) const
     {
-        GLFWwindow* mainWindow = getWindowGLFW(getMainWindowID());
+        GLFWwindow* mainWindow = getWindowGLFW(windowID);
         return glfwWindowShouldClose(mainWindow);
     }
 }

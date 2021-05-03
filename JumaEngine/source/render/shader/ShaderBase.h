@@ -4,7 +4,9 @@
 
 #include "common_header.h"
 #include "glm/mat4x4.hpp"
+#include "render/window/window_id.h"
 #include "utils/jarray.h"
+#include "utils/jmap.h"
 
 namespace JumaEngine
 {
@@ -22,20 +24,21 @@ namespace JumaEngine
 
         virtual void cacheShaderUniformName(const char* uniformName) {}
 
-        void activate();
-        bool isActive() const { return getActiveShader() == this; }
-        void deactivate();
+        void activate(window_id windowID);
+        bool isActive(const window_id windowID) const { return getActiveShader(windowID) == this; }
+        void deactivate(window_id windowID);
 
-        static ShaderBase* getActiveShader() { return s_ActiveShader; }
-        static bool hasActiveShader() { return getActiveShader() != nullptr; }
-        static void deactivateActiveShader();
+        static ShaderBase* getActiveShader(window_id windowID);
+        static bool hasActiveShader(const window_id windowID) { return getActiveShader(windowID) != nullptr; }
+        static void deactivateActiveShader(window_id windowID);
 
         template<typename T>
-        static void setActiveShaderUniformValue(const char* uniformName, T value)
+        static void setActiveShaderUniformValue(const window_id windowID, const char* uniformName, T value)
         {
-            if (hasActiveShader())
+            ShaderBase* shader = getActiveShader(windowID);
+            if (shader != nullptr)
             {
-                s_ActiveShader->setUniformValue(uniformName, value);
+                shader->setUniformValue(uniformName, value);
             }
         }
 
@@ -46,7 +49,7 @@ namespace JumaEngine
 
         virtual void activateShaderInternal() = 0;
         virtual void deactivateShaderInternal() = 0;
-        static void clearActiveShaderRef() { s_ActiveShader = nullptr; }
+        static void clearActiveShaderRef(const window_id windowID) { s_ActiveShaders.remove(windowID); }
 
         virtual void setUniformValue(const char* uniformName, bool value) = 0;
         virtual void setUniformValue(const char* uniformName, int32 value) = 0;
@@ -59,7 +62,7 @@ namespace JumaEngine
 
     private:
 
-        static ShaderBase* s_ActiveShader;
+        static jmap<window_id, ShaderBase*> s_ActiveShaders;
 
         bool m_ShaderLoaded = false;
         jstring m_ShaderName = jstring();

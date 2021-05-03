@@ -3,6 +3,7 @@
 #pragma once
 
 #include "common_header.h"
+#include <mutex>
 #include "window/window_id.h"
 #include "window/WindowDescriptionBase.h"
 #include "utils/jmap_auto_id.h"
@@ -17,6 +18,8 @@ namespace JumaEngine
 
     class RenderManagerBase : public EngineContextObject, public IRenderInterface
     {
+        friend Engine;
+
     public:
         RenderManagerBase() = default;
         virtual ~RenderManagerBase() override;
@@ -27,6 +30,7 @@ namespace JumaEngine
 
         window_id getMainWindowID() const { return m_MainWindowID; }
         bool isValidWindowID(const window_id windowID) const { return isInit() && m_Windows.contains(windowID); }
+        window_id createWindow(const glm::uvec2& size, const jstring& title);
 
         bool getWindowSize(window_id windowID, glm::uvec2& outWindowSize) const;
         bool setWindowSize(window_id windowID, const glm::uvec2& size);
@@ -38,11 +42,8 @@ namespace JumaEngine
         virtual VertexBufferBase* createVertextBuffer() = 0;
         virtual RenderTargetDirectBase* createRenderTargetDirect() = 0;
 
-        virtual void startRender();
-        virtual void render(window_id windowID) override;
-        virtual void finishRender() = 0;
-
-        virtual bool shouldCloseMainWindow() const = 0;
+        bool shouldCloseMainWindow() const { return shouldCloseWindow(getMainWindowID()); }
+        virtual bool shouldCloseWindow(window_id windowID) const = 0;
 
         void setWindowRenderTarget(window_id windowID, RenderTargetBase* renderTarget);
 
@@ -53,51 +54,46 @@ namespace JumaEngine
 
     protected:
 
-        window_id m_MainWindowID = INVALID_WINDOW_ID;
-        jmap_auto_id<window_id, WindowDescriptionBase*> m_Windows;
-
-
         virtual bool initInternal() = 0;
         virtual void terminateInternal();
         void terminateWindowDescriptions();
 
+        WindowDescriptionBase* getWindowDescriptionBase(const window_id windowID);
+        const WindowDescriptionBase* getWindowDescriptionBase(const window_id windowID) const;
         template<typename T = WindowDescriptionBase, TEMPLATE_ENABLE(std::is_base_of_v<WindowDescriptionBase, T>)>
         T* getWindowDescription(const window_id windowID)
         {
-            if (windowID != INVALID_WINDOW_ID)
-            {
-                WindowDescriptionBase* const* description = m_Windows.find(windowID);
-                if (description != nullptr)
-                {
-                    return dynamic_cast<T*>(*description);
-                }
-            }
-            return nullptr;
+            WindowDescriptionBase* description = getWindowDescriptionBase(windowID);
+            return description != nullptr ? dynamic_cast<T*>(description) : nullptr;
         }
         template<typename T = WindowDescriptionBase, TEMPLATE_ENABLE(std::is_base_of_v<WindowDescriptionBase, T>)>
         const T* getWindowDescription(const window_id windowID) const
         {
-            if (windowID != INVALID_WINDOW_ID)
-            {
-                WindowDescriptionBase* const* description = m_Windows.find(windowID);
-                if (description != nullptr)
-                {
-                    return dynamic_cast<const T*>(*description);
-                }
-            }
-            return nullptr;
+            const WindowDescriptionBase* description = getWindowDescriptionBase(windowID);
+            return description != nullptr ? dynamic_cast<const T*>(description) : nullptr;
         }
 
-        virtual WindowDescriptionBase* createWindow(const glm::uvec2& size, const jstring& title) = 0;
+        virtual WindowDescriptionBase* createWindowInternal(const glm::uvec2& size, const jstring& title) = 0;
 
         virtual void setActiveWindowInCurrentThread(window_id windowID) = 0;
 
         virtual bool updateWindowSize(window_id windowID, const glm::uvec2& size) = 0;
         virtual bool updateWindowTitle(window_id windowID, const jstring& title) = 0;
 
+        void startRender();
+        virtual void render(window_id windowID) override;
+
     private:
 
         bool m_Initialized = false;
         bool m_Terminated = false;
+
+        // Only main thream can write in this fields
+        mutable std::mutex m_WindowsListMutex;
+        window_id m_MainWindowID = INVALID_WINDOW_ID;
+        jmap_auto_id<window_id, WindowDescriptionBase*> m_Windows;
+
+
+        void windowThreadFunction(window_id windowID);
     };
 }
