@@ -7,6 +7,7 @@
 #include "render/window/window_id.h"
 #include "utils/jarray.h"
 #include "utils/jmap.h"
+#include "utils/jmutex_shared.h"
 
 namespace JumaEngine
 {
@@ -49,7 +50,6 @@ namespace JumaEngine
 
         virtual void activateShaderInternal() = 0;
         virtual void deactivateShaderInternal() = 0;
-        static void clearActiveShaderRef(const window_id windowID) { s_ActiveShaders.remove(windowID); }
 
         virtual void setUniformValue(const char* uniformName, bool value) = 0;
         virtual void setUniformValue(const char* uniformName, int32 value) = 0;
@@ -62,6 +62,7 @@ namespace JumaEngine
 
     private:
 
+        static jmutex_shared s_ActiveShadersMutex;
         static jmap<window_id, ShaderBase*> s_ActiveShaders;
 
         bool m_ShaderLoaded = false;

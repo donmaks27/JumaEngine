@@ -52,13 +52,13 @@ namespace JumaEngine
 
             if (shouldUseMutex)
             {
-                m_WindowsListMutex.lock();
+                m_WindowsListMutex.lock_shared();
             }
             WindowDescriptionBase* const* description = m_Windows.find(windowID);
             WindowDescriptionBase* result = description != nullptr ? *description : nullptr;
             if (shouldUseMutex)
             {
-                m_WindowsListMutex.unlock();
+                m_WindowsListMutex.unlock_shared();
             }
 
             return result;
@@ -73,13 +73,13 @@ namespace JumaEngine
 
             if (shouldUseMutex)
             {
-                m_WindowsListMutex.lock();
+                m_WindowsListMutex.lock_shared();
             }
             WindowDescriptionBase* const* description = m_Windows.find(windowID);
             const WindowDescriptionBase* result = description != nullptr ? *description : nullptr;
             if (shouldUseMutex)
             {
-                m_WindowsListMutex.unlock();
+                m_WindowsListMutex.unlock_shared();
             }
 
             return result;

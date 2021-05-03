@@ -3,7 +3,7 @@
 #pragma once
 
 #include "common_header.h"
-#include <mutex>
+#include "utils/jmutex_shared.h"
 #include "window/window_id.h"
 #include "window/WindowDescriptionBase.h"
 #include "utils/jmap_auto_id.h"
@@ -89,7 +89,7 @@ namespace JumaEngine
         bool m_Terminated = false;
 
         // Only main thream can write in this fields
-        mutable std::mutex m_WindowsListMutex;
+        mutable jmutex_shared m_WindowsListMutex;
         window_id m_MainWindowID = INVALID_WINDOW_ID;
         jmap_auto_id<window_id, WindowDescriptionBase*> m_Windows;
 

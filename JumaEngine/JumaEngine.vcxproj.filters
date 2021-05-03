@@ -321,5 +321,8 @@
     <ClInclude Include="source\render\renderTarget\RenderTargetCompositeBase.h">
       <Filter>JumaEngine\render\renderTarget</Filter>
     </ClInclude>
+    <ClInclude Include="source\utils\jmutex_shared.h">
+      <Filter>JumaEngine\utils</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

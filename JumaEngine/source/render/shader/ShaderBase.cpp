@@ -5,6 +5,8 @@
 
 namespace JumaEngine
 {
+    // TODO: Need to recreate map on windows count changes, in that case i don't need mutex anymore
+    jmutex_shared ShaderBase::s_ActiveShadersMutex = jmutex_shared();
     jmap<window_id, ShaderBase*> ShaderBase::s_ActiveShaders = {};
 
     bool ShaderBase::loadShader(const jstring& shaderName)
@@ -43,7 +45,10 @@ namespace JumaEngine
         if (isShaderLoaded() && !isActive(windowID))
         {
             activateShaderInternal();
+
+            s_ActiveShadersMutex.lock();
             s_ActiveShaders.add(windowID, this);
+            s_ActiveShadersMutex.unlock();
         }
     }
     void ShaderBase::deactivate(const window_id windowID)
@@ -51,12 +56,16 @@ namespace JumaEngine
         if (isActive(windowID))
         {
             deactivateShaderInternal();
+
+            s_ActiveShadersMutex.lock_shared();
             s_ActiveShaders.add(windowID, nullptr);
+            s_ActiveShadersMutex.unlock_shared();
         }
     }
 
     ShaderBase* ShaderBase::getActiveShader(const window_id windowID)
     {
+        std::shared_lock lock(s_ActiveShadersMutex);
         ShaderBase** shaderPtr = s_ActiveShaders.findByKey(windowID);
         return shaderPtr != nullptr ? *shaderPtr : nullptr;
     }
