@@ -30,7 +30,10 @@ namespace JumaEngine
 
         window_id getMainWindowID() const { return m_MainWindowID; }
         bool isValidWindowID(const window_id windowID) const { return isInit() && m_Windows.contains(windowID); }
+
         window_id createWindow(const glm::uvec2& size, const jstring& title);
+        void closeWindow(window_id windowID, bool destroyImmediately = false);
+        void closeAllSecondaryWindows(bool destroyImmediately = false);
 
         bool getWindowSize(window_id windowID, glm::uvec2& outWindowSize) const;
         bool setWindowSize(window_id windowID, const glm::uvec2& size);
@@ -74,6 +77,8 @@ namespace JumaEngine
         }
 
         virtual WindowDescriptionBase* createWindowInternal(const glm::uvec2& size, const jstring& title) = 0;
+        virtual void markWindowShouldClose(window_id windowID) = 0;
+        virtual void destroyWindowInternal(window_id windowID) = 0;
 
         virtual void setActiveWindowInCurrentThread(window_id windowID) = 0;
 
@@ -95,5 +100,8 @@ namespace JumaEngine
 
 
         void windowThreadFunction(window_id windowID);
+
+        void destroyMarkedForCloseWindows();
+        void destroyWindow(window_id windowID);
     };
 }

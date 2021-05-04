@@ -25,6 +25,7 @@ namespace JumaEngine
     {
         if (isInit())
         {
+            closeAllSecondaryWindows(true);
             terminateInternal();
             m_Terminated = true;
         }
@@ -104,6 +105,7 @@ namespace JumaEngine
                 }
                 else
                 {
+                    description->windowActive.store(true);
                     description->windowThread = std::thread(&RenderManagerBase::windowThreadFunction, this, windowID);
                 }
 
@@ -113,6 +115,31 @@ namespace JumaEngine
             }
         }
         return INVALID_WINDOW_ID;
+    }
+    void RenderManagerBase::closeWindow(const window_id windowID, const bool destroyImmediately)
+    {
+        if (isMainThread())
+        {
+            markWindowShouldClose(windowID);
+            if ((windowID != getMainWindowID()) && (destroyImmediately || shouldCloseMainWindow()))
+            {
+                destroyWindow(windowID);
+            }
+        }
+    }
+    void RenderManagerBase::closeAllSecondaryWindows(const bool destroyImmediately)
+    {
+        if (isMainThread())
+        {
+            const window_id mainWindowID = getMainWindowID();
+            for (const auto& windowID : m_Windows.getIDs())
+            {
+                if (windowID != mainWindowID)
+                {
+                    closeWindow(windowID);
+                }
+            }
+        }
     }
 
     bool RenderManagerBase::getWindowSize(const window_id windowID, glm::uvec2& outWindowSize) const
@@ -184,27 +211,29 @@ namespace JumaEngine
             return;
         }
 
-        mainWindowDescription->windowRenderInProcess.store(true);
+        destroyMarkedForCloseWindows();
+
         for (auto& windowIDAndDescription : m_Windows)
         {
-            const window_id& windowID = windowIDAndDescription.first;
-            if (windowID != mainWindowID)
+            if (windowIDAndDescription.first != mainWindowID)
             {
                 WindowDescriptionBase*& description = windowIDAndDescription.second;
-                description->windowRenderInProcess.store(true);
+                if (description->windowActive.load())
+                {
+                    description->windowShouldStartRender.store(true);
+                }
             }
         }
 
         render(mainWindowID);
-
-        mainWindowDescription->windowRenderInProcess.store(false);
+        
         for (auto& windowIDAndDescription : m_Windows)
         {
-            const window_id& windowID = windowIDAndDescription.first;
-            if (windowID != mainWindowID)
+            if (windowIDAndDescription.first != mainWindowID)
             {
                 WindowDescriptionBase*& description = windowIDAndDescription.second;
-                while (description->windowRenderInProcess.load()) {}
+                while (!description->windowRenderFinish.load() && description->windowActive.load()) {}
+                description->windowRenderFinish.store(false);
             }
         }
     }
@@ -217,12 +246,58 @@ namespace JumaEngine
 
         while (!shouldCloseWindow(windowID))
         {
-            while (!windowDescription->windowRenderInProcess.load()) {}
+            if (windowDescription->windowShouldStartRender.load())
+            {
+                windowDescription->windowShouldStartRender.store(false);
+                render(windowID);
+                windowDescription->windowRenderFinish.store(true);
+            }
+        }
 
-            render(windowID);
-            
-            windowDescription->windowRenderInProcess.store(false);
-            while (mainWindowDescription->windowRenderInProcess.load()) {}
+        setActiveWindowInCurrentThread(INVALID_WINDOW_ID);
+        windowDescription->windowActive.store(false);
+    }
+
+    void RenderManagerBase::destroyMarkedForCloseWindows()
+    {
+        if (isMainThread())
+        {
+            const window_id mainWindowID = getMainWindowID();
+
+            jarray<window_id> markedWindowIDs;
+            for (auto& windowIDAndDescription : m_Windows)
+            {
+                const window_id windowID = windowIDAndDescription.first;
+                if (windowID != mainWindowID)
+                {
+                    WindowDescriptionBase*& description = windowIDAndDescription.second;
+                    if (!description->windowActive.load())
+                    {
+                        markedWindowIDs.add(windowID);
+                    }
+                }
+            }
+
+            for (const auto& windowID : markedWindowIDs)
+            {
+                destroyWindow(windowID);
+            }
+        }
+    }
+    void RenderManagerBase::destroyWindow(const window_id windowID)
+    {
+        WindowDescriptionBase* description = getWindowDescriptionBase(windowID);
+        if (description != nullptr)
+        {
+            destroyWindowInternal(windowID);
+            description->windowThread.join();
+
+            m_WindowsListMutex.lock();
+
+            delete description;
+            m_Windows.remove(windowID);
+
+            m_WindowsListMutex.unlock();
         }
     }
 

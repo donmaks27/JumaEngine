@@ -18,6 +18,7 @@ namespace JumaEngine
         virtual ~RenderManager_OpenGL_GLFW() override;
 
         virtual bool shouldCloseWindow(window_id windowID) const override;
+        virtual void markWindowShouldClose(window_id windowID) override;
 
     protected:
 
@@ -25,6 +26,7 @@ namespace JumaEngine
         virtual void terminateInternal() override;
         
         virtual WindowDescriptionBase* createWindowInternal(const glm::uvec2& size, const jstring& title) override;
+        virtual void destroyWindowInternal(window_id windowID) override;
 
         virtual void setActiveWindowInCurrentThread(window_id windowID) override;
         

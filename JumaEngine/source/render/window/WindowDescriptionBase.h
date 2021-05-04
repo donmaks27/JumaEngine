@@ -25,6 +25,8 @@ namespace JumaEngine
         CameraComponent* activeCamera = nullptr;
 
         std::thread windowThread;
-        std::atomic_bool windowRenderInProcess = false;
+        std::atomic_bool windowActive = false;
+        std::atomic_bool windowShouldStartRender = false;
+        std::atomic_bool windowRenderFinish = false;
     };
 }
