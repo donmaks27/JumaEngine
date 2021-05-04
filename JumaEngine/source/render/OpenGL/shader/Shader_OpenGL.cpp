@@ -217,7 +217,7 @@ namespace JumaEngine
     	}
         return -1;
     }
-    void Shader_OpenGL::setUniformValue(const char* uniformName, const int32 value)
+    void Shader_OpenGL::setUniformValueInternal(const char* uniformName, const int32 value)
     {
         const int32 uniformLocation = getUniformLocation(uniformName);
         if (uniformLocation != -1)
@@ -225,7 +225,7 @@ namespace JumaEngine
             glUniform1i(uniformLocation, value);
         }
     }
-    void Shader_OpenGL::setUniformValue(const char* uniformName, const float value)
+    void Shader_OpenGL::setUniformValueInternal(const char* uniformName, const float value)
     {
         const int32 uniformLocation = getUniformLocation(uniformName);
         if (uniformLocation != -1)
@@ -233,7 +233,7 @@ namespace JumaEngine
             glUniform1f(uniformLocation, value);
         }
     }
-    void Shader_OpenGL::setUniformValue(const char* uniformName, const glm::vec2& value)
+    void Shader_OpenGL::setUniformValueInternal(const char* uniformName, const glm::vec2& value)
     {
         const int32 uniformLocation = getUniformLocation(uniformName);
         if (uniformLocation != -1)
@@ -241,7 +241,7 @@ namespace JumaEngine
             glUniform2fv(uniformLocation, 1, &value[0]);
         }
     }
-    void Shader_OpenGL::setUniformValue(const char* uniformName, const glm::vec3& value)
+    void Shader_OpenGL::setUniformValueInternal(const char* uniformName, const glm::vec3& value)
     {
         const int32 uniformLocation = getUniformLocation(uniformName);
         if (uniformLocation != -1)
@@ -249,7 +249,7 @@ namespace JumaEngine
             glUniform3fv(uniformLocation, 1, &value[0]);
         }
     }
-    void Shader_OpenGL::setUniformValue(const char* uniformName, const glm::vec4& value)
+    void Shader_OpenGL::setUniformValueInternal(const char* uniformName, const glm::vec4& value)
     {
         const int32 uniformLocation = getUniformLocation(uniformName);
         if (uniformLocation != -1)
@@ -257,7 +257,7 @@ namespace JumaEngine
             glUniform4fv(uniformLocation, 1, &value[0]);
         }
     }
-    void Shader_OpenGL::setUniformValue(const char* uniformName, const glm::mat4& value)
+    void Shader_OpenGL::setUniformValueInternal(const char* uniformName, const glm::mat4& value)
     {
         const int32 uniformLocation = getUniformLocation(uniformName);
         if (uniformLocation != -1)
@@ -265,7 +265,7 @@ namespace JumaEngine
             glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, &value[0][0]);
         }
     }
-    void Shader_OpenGL::setUniformValue(const char* uniformName, const jarray<float>& value)
+    void Shader_OpenGL::setUniformValueInternal(const char* uniformName, const jarray<float>& value)
     {
         if (!value.empty())
         {

@@ -43,7 +43,7 @@ namespace JumaEngine
         asset_ptr<Material> asset = createAssetObject<Material>();
         if (asset != nullptr)
         {
-            RenderManagerBase* renderManager = SystemFunctions::getRenderManager(this);
+            RenderManagerBase* renderManager = getRenderManager();
             asset->m_Shader = renderManager != nullptr ? renderManager->createShader() : nullptr;
             if (asset->m_Shader != nullptr)
             {

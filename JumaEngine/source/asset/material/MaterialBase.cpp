@@ -5,8 +5,24 @@
 
 namespace JumaEngine
 {
-	void MaterialBase::loadMaterialParams(const window_id windowID) const
+    template<typename T>
+    void loadMaterialParam(const MaterialBase* material, ShaderBase* shader, const jstring& name)
+    {
+        T value = T();
+        if (material->getMaterialParam(name, value))
+        {
+            shader->setUniformValue(*name, value);
+        }
+    }
+
+	void MaterialBase::loadMaterialParams() const
 	{
+        ShaderBase* shader = getShader();
+        if (shader == nullptr)
+        {
+            return;
+        }
+
 		const jmap<jstring, MaterialParamType>& paramsList = getMaterialParamsList();
 		for (const auto& paramNameAndType : paramsList)
 		{
@@ -14,73 +30,31 @@ namespace JumaEngine
 			switch (paramNameAndType.second)
 			{
 			case MaterialParamType::Bool:
-				{
-					bool value;
-					if (getMaterialParam(name, value))
-					{
-						ShaderBase::setActiveShaderUniformValue(windowID, *name, value);
-					}
-				}
+				loadMaterialParam<bool>(this, shader, name);
 				break;
 				
 			case MaterialParamType::Int:
-				{
-					int32 value;
-					if (getMaterialParam(name, value))
-					{
-						ShaderBase::setActiveShaderUniformValue(windowID, *name, value);
-					}
-				}
+                loadMaterialParam<int32>(this, shader, name);
 				break;
 				
 			case MaterialParamType::Float:
-				{
-					float value;
-					if (getMaterialParam(name, value))
-					{
-						ShaderBase::setActiveShaderUniformValue(windowID, *name, value);
-					}
-				}
+                loadMaterialParam<float>(this, shader, name);
 				break;
 				
 			case MaterialParamType::Vec2:
-				{
-					glm::vec2 value;
-					if (getMaterialParam(name, value))
-					{
-						ShaderBase::setActiveShaderUniformValue(windowID, *name, value);
-					}
-				}
+                loadMaterialParam<glm::vec2>(this, shader, name);
 				break;
 				
 			case MaterialParamType::Vec3:
-				{
-					glm::vec3 value;
-					if (getMaterialParam(name, value))
-					{
-						ShaderBase::setActiveShaderUniformValue(windowID, *name, value);
-					}
-				}
+                loadMaterialParam<glm::vec3>(this, shader, name);
 				break;
 				
 			case MaterialParamType::Vec4:
-				{
-					glm::vec4 value;
-					if (getMaterialParam(name, value))
-					{
-						ShaderBase::setActiveShaderUniformValue(windowID, *name, value);
-					}
-				}
+                loadMaterialParam<glm::vec4>(this, shader, name);
 				break;
 				
 			case MaterialParamType::Mat4:
-				{
-					glm::mat4 value;
-					if (getMaterialParam(name, value))
-					{
-						ShaderBase::setActiveShaderUniformValue(windowID, *name, value);
-					}
-				}
+                loadMaterialParam<glm::mat4>(this, shader, name);
 				break;
 				
 			default: ;

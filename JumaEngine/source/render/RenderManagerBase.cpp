@@ -333,6 +333,20 @@ namespace JumaEngine
         }
     }
 
+    ShaderBase* RenderManagerBase::getWindowActiveShader(const window_id windowID) const
+    {
+        const WindowDescriptionBase* description = getWindowDescription(windowID);
+        return description != nullptr ? description->activeShader : nullptr;
+    }
+    void RenderManagerBase::setWindowActiveShader(const window_id windowID, ShaderBase* shader)
+    {
+        WindowDescriptionBase* description = getWindowDescription(windowID);
+        if (description != nullptr)
+        {
+            description->activeShader = shader;
+        }
+    }
+
     void RenderManagerBase::deleteVertexBuffer(VertexBufferBase* vertexBuffer)
     {
         if ((vertexBuffer != nullptr) && vertexBuffer->isInit())

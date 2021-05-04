@@ -6,8 +6,8 @@
 
 #if defined(JUMAENGINE_USE_GRAPHIC_API_OPENGL)
 
-#include "render/shader/ShaderBase.h"
 #include "utils/jmap.h"
+#include "render/shader/ShaderBase.h"
 
 namespace JumaEngine
 {
@@ -34,14 +34,14 @@ namespace JumaEngine
         virtual void activateShaderInternal() override;
         virtual void deactivateShaderInternal() override { deactivateShaderOpenGL(); }
 
-        virtual void setUniformValue(const char* uniformName, bool value) override { setUniformValue(uniformName, static_cast<int32>(value)); }
-        virtual void setUniformValue(const char* uniformName, int32 value) override;
-        virtual void setUniformValue(const char* uniformName, float value) override;
-        virtual void setUniformValue(const char* uniformName, const glm::vec2& value) override;
-        virtual void setUniformValue(const char* uniformName, const glm::vec3& value) override;
-        virtual void setUniformValue(const char* uniformName, const glm::vec4& value) override;
-        virtual void setUniformValue(const char* uniformName, const glm::mat4& value) override;
-        virtual void setUniformValue(const char* uniformName, const jarray<float>& value) override;
+        virtual void setUniformValueInternal(const char* uniformName, bool value) override { setUniformValueInternal(uniformName, static_cast<int32>(value)); }
+        virtual void setUniformValueInternal(const char* uniformName, int32 value) override;
+        virtual void setUniformValueInternal(const char* uniformName, float value) override;
+        virtual void setUniformValueInternal(const char* uniformName, const glm::vec2& value) override;
+        virtual void setUniformValueInternal(const char* uniformName, const glm::vec3& value) override;
+        virtual void setUniformValueInternal(const char* uniformName, const glm::vec4& value) override;
+        virtual void setUniformValueInternal(const char* uniformName, const glm::mat4& value) override;
+        virtual void setUniformValueInternal(const char* uniformName, const jarray<float>& value) override;
 
     private:
 

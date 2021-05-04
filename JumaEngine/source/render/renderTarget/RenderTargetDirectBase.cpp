@@ -13,7 +13,7 @@ namespace JumaEngine
         EngineWorld* world = m_Camera != nullptr ? m_Camera->getOwnerWorld() : nullptr;
         if (world != nullptr)
         {
-            RenderManagerBase* renderManager = SystemFunctions::getRenderManager(this);
+            RenderManagerBase* renderManager = getRenderManager();
             if ((renderManager != nullptr) && renderManager->isValidWindowID(windowID))
             {
                 renderManager->setWindowActiveCamera(windowID, m_Camera);

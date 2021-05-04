@@ -1,14 +1,12 @@
 ﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
 
 #include "ShaderBase.h"
+
+#include "render/RenderManagerBase.h"
 #include "utils/log.h"
 
 namespace JumaEngine
 {
-    // TODO: Need to recreate map on windows count changes, in that case i don't need mutex anymore
-    jmutex_shared ShaderBase::s_ActiveShadersMutex = jmutex_shared();
-    jmap<window_id, ShaderBase*> ShaderBase::s_ActiveShaders = {};
-
     bool ShaderBase::loadShader(const jstring& shaderName)
     {
         if (isShaderLoaded())
@@ -42,39 +40,28 @@ namespace JumaEngine
 
     void ShaderBase::activate(const window_id windowID)
     {
-        if (isShaderLoaded() && !isActive(windowID))
+        if (isShaderLoaded())
         {
-            activateShaderInternal();
-
-            s_ActiveShadersMutex.lock();
-            s_ActiveShaders.add(windowID, this);
-            s_ActiveShadersMutex.unlock();
+            RenderManagerBase* renderManager = getRenderManager();
+            if (renderManager != nullptr)
+            {
+                renderManager->setWindowActiveShader(windowID, this);
+                activateShaderInternal();
+            }
         }
+    }
+    bool ShaderBase::isActive(const window_id windowID) const
+    {
+        RenderManagerBase* renderManager = getRenderManager();
+        return (renderManager != nullptr) && (renderManager->getWindowActiveShader(windowID) == this);
     }
     void ShaderBase::deactivate(const window_id windowID)
     {
-        if (isActive(windowID))
+        RenderManagerBase* renderManager = getRenderManager();
+        if (renderManager != nullptr)
         {
             deactivateShaderInternal();
-
-            s_ActiveShadersMutex.lock_shared();
-            s_ActiveShaders.add(windowID, nullptr);
-            s_ActiveShadersMutex.unlock_shared();
-        }
-    }
-
-    ShaderBase* ShaderBase::getActiveShader(const window_id windowID)
-    {
-        std::shared_lock lock(s_ActiveShadersMutex);
-        ShaderBase** shaderPtr = s_ActiveShaders.findByKey(windowID);
-        return shaderPtr != nullptr ? *shaderPtr : nullptr;
-    }
-    void ShaderBase::deactivateActiveShader(const window_id windowID)
-    {
-        ShaderBase* shader = getActiveShader(windowID);
-        if (shader != nullptr)
-        {
-            shader->deactivate(windowID);
+            renderManager->setWindowActiveShader(windowID, nullptr);
         }
     }
 }

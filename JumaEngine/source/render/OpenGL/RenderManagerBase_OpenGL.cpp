@@ -26,7 +26,8 @@ namespace JumaEngine
 
     ShaderBase* RenderManagerBase_OpenGL::createShader()
     {
-        return new Shader_OpenGL();
+        Engine* engine = getOwnerEngine();
+        return engine != nullptr ? engine->createObject<Shader_OpenGL>() : nullptr;
     }
     VertexBufferBase* RenderManagerBase_OpenGL::createVertextBuffer()
     {

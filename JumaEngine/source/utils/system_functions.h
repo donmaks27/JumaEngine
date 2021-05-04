@@ -15,7 +15,7 @@ namespace JumaEngine
     {
     public:
 
-		static Engine* getEngine(const EngineContextObject* engineContextObject);
+		static Engine* getEngine(const EngineContextObject* engineContextObject) { return engineContextObject != nullptr ? engineContextObject->getOwnerEngine() : nullptr; }
         template<typename T, TEMPLATE_ENABLE(is_base_and_not_same<EngineContextObject, T>)>
         static T* createObject(const EngineContextObject* engineContextObject)
         {
@@ -37,8 +37,11 @@ namespace JumaEngine
             return nullptr;
         }
 
-    	static RenderManagerBase* getRenderManager(const EngineContextObject* engineContextObject);
-        static MeshImporterBase* getVertexBufferImporter(const EngineContextObject* engineContextObject);
+        static MeshImporterBase* getVertexBufferImporter(const EngineContextObject* engineContextObject)
+		{
+		    const Engine* engine = getEngine(engineContextObject);
+            return engine != nullptr ? engine->getVertexBufferImporter() : nullptr;
+		}
 
         static CameraComponent* getWindowActiveCamera(const EngineContextObject* engineContextObject, window_id windowID);
     };

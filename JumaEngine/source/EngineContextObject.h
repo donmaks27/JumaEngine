@@ -8,6 +8,7 @@
 namespace JumaEngine
 {
     class Engine;
+    class RenderManagerBase;
 
     class EngineContextObject
     {
@@ -20,6 +21,7 @@ namespace JumaEngine
     public:
 
         Engine* getOwnerEngine() const { return m_OwnerEngine; }
+        RenderManagerBase* getRenderManager() const;
 
         bool isMainThread() const;
 

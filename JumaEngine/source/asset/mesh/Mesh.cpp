@@ -17,7 +17,7 @@ namespace JumaEngine
     {
         if (!isMeshInit())
         {
-            RenderManagerBase* renderManager = SystemFunctions::getRenderManager(this);
+            RenderManagerBase* renderManager = getRenderManager();
 		    if (renderManager != nullptr)
 		    {
 		        for (const auto& vertexBufferData : vertexBuffersData)
@@ -37,7 +37,7 @@ namespace JumaEngine
     }
     void Mesh::terminateMesh()
     {
-        RenderManagerBase* renderManager = SystemFunctions::getRenderManager(this);
+        RenderManagerBase* renderManager = getRenderManager();
         if (renderManager != nullptr)
         {
             for (auto& vertexBuffer : m_VertexBuffers)
@@ -68,7 +68,7 @@ namespace JumaEngine
                 material->activate(windowID);
                 if (material->isActive(windowID))
                 {
-                	material->loadMaterialParams(windowID);
+                	material->loadMaterialParams();
                     vertexBuffer->render(windowID);
                 	material->deactivate(windowID);
                 }

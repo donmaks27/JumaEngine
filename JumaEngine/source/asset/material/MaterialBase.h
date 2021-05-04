@@ -10,6 +10,8 @@
 
 namespace JumaEngine
 {
+    class ShaderBase;
+
 	class MaterialBase : public AssetObject
 	{
 	protected:
@@ -69,13 +71,15 @@ namespace JumaEngine
 			}
 			return false;
 		}
+        
+        virtual ShaderBase* getShader() const = 0;
 
 		virtual bool isInit() const = 0;
         virtual void activate(window_id windowID) const = 0;
         virtual bool isActive(window_id windowID) const = 0;
         virtual void deactivate(window_id windowID) const = 0;
 		
-		void loadMaterialParams(window_id windowID) const;
+		void loadMaterialParams() const;
 
 	protected:
 

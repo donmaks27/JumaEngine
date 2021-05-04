@@ -14,6 +14,8 @@ namespace JumaEngine
 	public:
 		MaterialInstance() = default;
 		virtual ~MaterialInstance() override = default;
+
+        virtual ShaderBase* getShader() const override { return m_BaseMaterial != nullptr ? m_BaseMaterial->getShader() : nullptr; }
 		
 		virtual bool isInit() const override { return (m_BaseMaterial != nullptr) && m_BaseMaterial->isInit(); }
 		virtual void activate(const window_id windowID) const override

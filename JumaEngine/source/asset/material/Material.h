@@ -35,6 +35,7 @@ namespace JumaEngine
 
         bool isShaderValid() const;
         jstring getShaderName() const;
+        virtual ShaderBase* getShader() const override { return isInit() ? m_Shader : nullptr; }
 
 		void finishInitialization() { m_Initialized = true; }
 
