@@ -1,7 +1,6 @@
 ﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
 
 #include "Mesh.h"
-#include "utils/system_functions.h"
 #include "asset/material/MaterialBase.h"
 #include "render/RenderManagerBase.h"
 #include "render/vertexBuffer/VertexBufferBase.h"
@@ -65,12 +64,11 @@ namespace JumaEngine
             MaterialBase* material = m_Materials[index].get();
             if ((vertexBuffer != nullptr) && (material != nullptr) && vertexBuffer->isInit())
             {
-                material->activate(windowID);
-                if (material->isActive(windowID))
+                if (material->activate())
                 {
                 	material->loadMaterialParams();
                     vertexBuffer->render(windowID);
-                	material->deactivate(windowID);
+                	material->deactivate();
                 }
             }
         }

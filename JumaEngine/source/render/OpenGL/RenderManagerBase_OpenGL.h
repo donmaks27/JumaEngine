@@ -17,7 +17,9 @@ namespace JumaEngine
         virtual ~RenderManagerBase_OpenGL() override = default;
 
         virtual ShaderBase* createShader() override;
+
         virtual VertexBufferBase* createVertextBuffer() override;
+
         virtual RenderTargetDirectBase* createRenderTargetDirect() override;
 
     protected:

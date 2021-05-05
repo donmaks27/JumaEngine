@@ -32,6 +32,9 @@ namespace JumaEngine
         bool isValidWindowID(const window_id windowID) const { return isInit() && m_Windows.contains(windowID); }
 
         window_id createWindow(const glm::uvec2& size, const jstring& title);
+
+        bool shouldCloseMainWindow() const { return shouldCloseWindow(getMainWindowID()); }
+        virtual bool shouldCloseWindow(window_id windowID) const = 0;
         void closeWindow(window_id windowID, bool destroyImmediately = false);
         void closeAllSecondaryWindows(bool destroyImmediately = false);
 
@@ -40,23 +43,20 @@ namespace JumaEngine
 
         bool getWindowTitle(window_id windowID, jstring& outWindowTitle) const;
         bool setWindowTitle(window_id windowID, const jstring& title);
-        
-        virtual ShaderBase* createShader() = 0;
-        virtual VertexBufferBase* createVertextBuffer() = 0;
-        virtual RenderTargetDirectBase* createRenderTargetDirect() = 0;
-
-        bool shouldCloseMainWindow() const { return shouldCloseWindow(getMainWindowID()); }
-        virtual bool shouldCloseWindow(window_id windowID) const = 0;
 
         void setWindowRenderTarget(window_id windowID, RenderTargetBase* renderTarget);
 
         CameraComponent* getWindowActiveCamera(window_id windowID) const;
         void setWindowActiveCamera(window_id windowID, CameraComponent* camera);
 
-        ShaderBase* getWindowActiveShader(window_id windowID) const;
-        void setWindowActiveShader(window_id windowID, ShaderBase* shader);
+        virtual ShaderBase* createShader() = 0;
 
+        virtual VertexBufferBase* createVertextBuffer() = 0;
         void deleteVertexBuffer(VertexBufferBase* vertexBuffer);
+
+        virtual RenderTargetDirectBase* createRenderTargetDirect() = 0;
+        
+        virtual void render(window_id windowID) override;
 
     protected:
 
@@ -64,8 +64,9 @@ namespace JumaEngine
         virtual void terminateInternal();
         void terminateWindowDescriptions();
 
-        WindowDescriptionBase* getWindowDescriptionBase(const window_id windowID);
-        const WindowDescriptionBase* getWindowDescriptionBase(const window_id windowID) const;
+        virtual WindowDescriptionBase* createWindowInternal(const glm::uvec2& size, const jstring& title) = 0;
+        WindowDescriptionBase* getWindowDescriptionBase(window_id windowID);
+        const WindowDescriptionBase* getWindowDescriptionBase(window_id windowID) const;
         template<typename T = WindowDescriptionBase, TEMPLATE_ENABLE(std::is_base_of_v<WindowDescriptionBase, T>)>
         T* getWindowDescription(const window_id windowID)
         {
@@ -79,7 +80,6 @@ namespace JumaEngine
             return description != nullptr ? dynamic_cast<const T*>(description) : nullptr;
         }
 
-        virtual WindowDescriptionBase* createWindowInternal(const glm::uvec2& size, const jstring& title) = 0;
         virtual void markWindowShouldClose(window_id windowID) = 0;
         virtual void destroyWindowInternal(window_id windowID) = 0;
 
@@ -89,7 +89,6 @@ namespace JumaEngine
         virtual bool updateWindowTitle(window_id windowID, const jstring& title) = 0;
 
         void startRender();
-        virtual void render(window_id windowID) override;
 
     private:
 

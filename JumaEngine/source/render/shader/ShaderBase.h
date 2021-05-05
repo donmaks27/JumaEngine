@@ -3,7 +3,6 @@
 #pragma once
 
 #include "common_header.h"
-#include "render/window/window_id.h"
 #include "glm/mat4x4.hpp"
 #include "utils/jarray.h"
 #include "EngineContextObject.h"
@@ -24,9 +23,8 @@ namespace JumaEngine
 
         virtual void cacheShaderUniformName(const char* uniformName) {}
 
-        void activate(window_id windowID);
-        bool isActive(window_id windowID) const;
-        void deactivate(window_id windowID);
+        bool activate();
+        void deactivate();
 
         template<typename T>
         void setUniformValue(const char* uniformName, T value) { setUniformValueInternal(uniformName, value); }

@@ -1,8 +1,6 @@
 ﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
 
 #include "ShaderBase.h"
-
-#include "render/RenderManagerBase.h"
 #include "utils/log.h"
 
 namespace JumaEngine
@@ -38,30 +36,17 @@ namespace JumaEngine
         }
     }
 
-    void ShaderBase::activate(const window_id windowID)
+    bool ShaderBase::activate()
     {
         if (isShaderLoaded())
         {
-            RenderManagerBase* renderManager = getRenderManager();
-            if (renderManager != nullptr)
-            {
-                renderManager->setWindowActiveShader(windowID, this);
-                activateShaderInternal();
-            }
+            activateShaderInternal();
+            return true;
         }
+        return false;
     }
-    bool ShaderBase::isActive(const window_id windowID) const
+    void ShaderBase::deactivate()
     {
-        RenderManagerBase* renderManager = getRenderManager();
-        return (renderManager != nullptr) && (renderManager->getWindowActiveShader(windowID) == this);
-    }
-    void ShaderBase::deactivate(const window_id windowID)
-    {
-        RenderManagerBase* renderManager = getRenderManager();
-        if (renderManager != nullptr)
-        {
-            deactivateShaderInternal();
-            renderManager->setWindowActiveShader(windowID, nullptr);
-        }
+        deactivateShaderInternal();
     }
 }

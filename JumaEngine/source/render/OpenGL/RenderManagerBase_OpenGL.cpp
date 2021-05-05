@@ -29,10 +29,12 @@ namespace JumaEngine
         Engine* engine = getOwnerEngine();
         return engine != nullptr ? engine->createObject<Shader_OpenGL>() : nullptr;
     }
+
     VertexBufferBase* RenderManagerBase_OpenGL::createVertextBuffer()
     {
         return new VertexBuffer_OpenGL();
     }
+
     RenderTargetDirectBase* RenderManagerBase_OpenGL::createRenderTargetDirect()
     {
         Engine* engine = getOwnerEngine();

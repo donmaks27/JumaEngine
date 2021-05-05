@@ -18,19 +18,15 @@ namespace JumaEngine
         virtual ShaderBase* getShader() const override { return m_BaseMaterial != nullptr ? m_BaseMaterial->getShader() : nullptr; }
 		
 		virtual bool isInit() const override { return (m_BaseMaterial != nullptr) && m_BaseMaterial->isInit(); }
-		virtual void activate(const window_id windowID) const override
+		virtual bool activate() const override
 		{
-			if (m_BaseMaterial != nullptr)
-			{
-				m_BaseMaterial->activate(windowID);
-			}
+            return m_BaseMaterial != nullptr ? m_BaseMaterial->activate() : false;
 		}
-		virtual bool isActive(const window_id windowID) const override { return (m_BaseMaterial != nullptr) && m_BaseMaterial->isActive(windowID); }
-		virtual void deactivate(const window_id windowID) const override
+		virtual void deactivate() const override
 		{
 			if (m_BaseMaterial != nullptr)
 			{
-				m_BaseMaterial->deactivate(windowID);
+				m_BaseMaterial->deactivate();
 			}
 		}
 

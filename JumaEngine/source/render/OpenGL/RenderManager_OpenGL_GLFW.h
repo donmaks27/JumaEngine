@@ -19,6 +19,8 @@ namespace JumaEngine
 
         virtual bool shouldCloseWindow(window_id windowID) const override;
         virtual void markWindowShouldClose(window_id windowID) override;
+        
+        virtual void render(window_id windowID) override;
 
     protected:
 
@@ -26,14 +28,13 @@ namespace JumaEngine
         virtual void terminateInternal() override;
         
         virtual WindowDescriptionBase* createWindowInternal(const glm::uvec2& size, const jstring& title) override;
+
         virtual void destroyWindowInternal(window_id windowID) override;
 
         virtual void setActiveWindowInCurrentThread(window_id windowID) override;
         
         virtual bool updateWindowSize(window_id windowID, const glm::uvec2& size) override;
         virtual bool updateWindowTitle(window_id windowID, const jstring& title) override;
-        
-        virtual void render(window_id windowID) override;
 
     private:
 

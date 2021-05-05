@@ -11,7 +11,6 @@ namespace JumaEngine
 {
     class RenderTargetBase;
     class CameraComponent;
-    class ShaderBase;
 
     class WindowDescriptionBase
     {
@@ -30,6 +29,5 @@ namespace JumaEngine
         RenderTargetBase* windowRenderTarget = nullptr;
 
         CameraComponent* activeCamera = nullptr;
-        ShaderBase* activeShader = nullptr;
     };
 }

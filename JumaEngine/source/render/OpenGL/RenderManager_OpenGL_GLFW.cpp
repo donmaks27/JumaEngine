@@ -72,6 +72,20 @@ namespace JumaEngine
         windowDescription->windowPtr = window;
         return windowDescription;
     }
+    
+    bool RenderManager_OpenGL_GLFW::shouldCloseWindow(const window_id windowID) const
+    {
+        GLFWwindow* window = getWindowGLFW(windowID);
+        return (window != nullptr) && glfwWindowShouldClose(window);
+    }
+    void RenderManager_OpenGL_GLFW::markWindowShouldClose(const window_id windowID)
+    {
+        GLFWwindow* window = getWindowGLFW(windowID);
+        if (window != nullptr)
+        {
+            glfwSetWindowShouldClose(window, GLFW_TRUE);
+        }
+    }
     void RenderManager_OpenGL_GLFW::destroyWindowInternal(const window_id windowID)
     {
         GLFWwindow* window = getWindowGLFW(windowID);
@@ -126,20 +140,6 @@ namespace JumaEngine
             glfwSwapBuffers(window);
         }
         glfwPollEvents();
-    }
-
-    bool RenderManager_OpenGL_GLFW::shouldCloseWindow(const window_id windowID) const
-    {
-        GLFWwindow* window = getWindowGLFW(windowID);
-        return (window != nullptr) && glfwWindowShouldClose(window);
-    }
-    void RenderManager_OpenGL_GLFW::markWindowShouldClose(const window_id windowID)
-    {
-        GLFWwindow* window = getWindowGLFW(windowID);
-        if (window != nullptr)
-        {
-            glfwSetWindowShouldClose(window, GLFW_TRUE);
-        }
     }
 }
 

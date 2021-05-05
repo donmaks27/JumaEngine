@@ -6,7 +6,6 @@
 #include "asset/AssetObject.h"
 #include "utils/jmap.h"
 #include "glm/mat4x4.hpp"
-#include "render/window/window_id.h"
 
 namespace JumaEngine
 {
@@ -75,9 +74,8 @@ namespace JumaEngine
         virtual ShaderBase* getShader() const = 0;
 
 		virtual bool isInit() const = 0;
-        virtual void activate(window_id windowID) const = 0;
-        virtual bool isActive(window_id windowID) const = 0;
-        virtual void deactivate(window_id windowID) const = 0;
+        virtual bool activate() const = 0;
+        virtual void deactivate() const = 0;
 		
 		void loadMaterialParams() const;
 
