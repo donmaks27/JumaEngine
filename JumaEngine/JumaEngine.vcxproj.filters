@@ -324,5 +324,11 @@
     <ClInclude Include="source\utils\jmutex_shared.h">
       <Filter>JumaEngine\utils</Filter>
     </ClInclude>
+    <ClInclude Include="source\utils\jdelegate.h">
+      <Filter>JumaEngine\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\jdelegate_multicast.h">
+      <Filter>JumaEngine\utils</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

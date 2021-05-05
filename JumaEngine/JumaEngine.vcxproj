@@ -161,6 +161,8 @@
     <ClInclude Include="source\transform\Transform.h" />
     <ClInclude Include="source\utils\id_generator.h" />
     <ClInclude Include="source\utils\jarray.h" />
+    <ClInclude Include="source\utils\jdelegate.h" />
+    <ClInclude Include="source\utils\jdelegate_multicast.h" />
     <ClInclude Include="source\utils\jmap.h" />
     <ClInclude Include="source\utils\jmutex_shared.h" />
     <ClInclude Include="source\utils\jset.h" />
