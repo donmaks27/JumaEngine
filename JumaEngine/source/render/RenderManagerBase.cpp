@@ -33,6 +33,7 @@ namespace JumaEngine
     void RenderManagerBase::terminateInternal()
     {
         terminateWindowDescriptions();
+        terminateVertexBuffers();
     }
     void RenderManagerBase::terminateWindowDescriptions()
     {
@@ -43,6 +44,15 @@ namespace JumaEngine
         }
         m_Windows.clear();
         m_MainWindowID = INVALID_WINDOW_ID;
+    }
+    void RenderManagerBase::terminateVertexBuffers()
+    {
+        for (auto& vertexBuffer : m_VertexBuffers)
+        {
+            delete vertexBuffer;
+        }
+        m_VertexBuffers.clear();
+        m_VertexBuffersForDelete.clear();
     }
 
     window_id RenderManagerBase::createWindow(const glm::uvec2& size, const jstring& title)
@@ -268,13 +278,48 @@ namespace JumaEngine
         }
     }
 
+    ShaderBase* RenderManagerBase::createShader()
+    {
+        return isInit() ? createShaderInternal() : nullptr;
+    }
+
+    VertexBufferBase* RenderManagerBase::createVertextBuffer()
+    {
+        if (isInit())
+        {
+            VertexBufferBase* vertexBuffer = createVertextBufferInternal();
+
+            m_VertexBuffersMutex.lock();
+            m_VertexBuffers.add(vertexBuffer);
+            m_VertexBuffersMutex.unlock();
+
+            return vertexBuffer;
+        }
+        return nullptr;
+    }
     void RenderManagerBase::deleteVertexBuffer(VertexBufferBase* vertexBuffer)
     {
-        if ((vertexBuffer != nullptr) && vertexBuffer->isInit())
+        if (isInit() && isMainThread() && (vertexBuffer != nullptr))
         {
             vertexBuffer->clearWindowData(getMainWindowID());
-            delete vertexBuffer;
+
+            m_VertexBuffersMutex.lock();
+            if (vertexBuffer->hasAnyWindowData())
+            {
+                m_VertexBuffersForDelete.add(vertexBuffer);
+            }
+            else
+            {
+                m_VertexBuffers.remove(vertexBuffer);
+                delete vertexBuffer;
+            }
+            m_VertexBuffersMutex.unlock();
         }
+    }
+
+    RenderTargetDirectBase* RenderManagerBase::createRenderTargetDirect()
+    {
+        return createRenderTargetDirectInternal();
     }
 
     void RenderManagerBase::startRender()
@@ -311,6 +356,24 @@ namespace JumaEngine
                 description->windowRenderFinish.store(false);
             }
         }
+
+        m_VertexBuffersMutex.lock();
+        uint32 index = 0;
+        while (index < m_VertexBuffersForDelete.size())
+        {
+            VertexBufferBase* vertexBuffer = m_VertexBuffersForDelete[index];
+            if (!vertexBuffer->hasAnyWindowData())
+            {
+                m_VertexBuffersForDelete.removeAt(index);
+                m_VertexBuffers.remove(vertexBuffer);
+                delete vertexBuffer;
+            }
+            else
+            {
+                ++index;
+            }
+        }
+        m_VertexBuffersMutex.unlock();
     }
     void RenderManagerBase::windowThreadFunction(const window_id windowID)
     {
@@ -323,11 +386,23 @@ namespace JumaEngine
         {
             if (windowDescription->windowShouldStartRender.load())
             {
+                for (auto& vertexBuffer : m_VertexBuffersForDelete)
+                {
+                    vertexBuffer->clearWindowData(windowID);
+                }
+
                 windowDescription->windowShouldStartRender.store(false);
                 render(windowID);
                 windowDescription->windowRenderFinish.store(true);
             }
         }
+
+        m_VertexBuffersMutex.lock_shared();
+        for (auto& vertexBuffer : m_VertexBuffers)
+        {
+            vertexBuffer->clearWindowData(windowID);
+        }
+        m_VertexBuffersMutex.unlock_shared();
 
         setActiveWindowInCurrentThread(INVALID_WINDOW_ID);
         windowDescription->windowActive.store(false);

@@ -49,12 +49,12 @@ namespace JumaEngine
         CameraComponent* getWindowActiveCamera(window_id windowID) const;
         void setWindowActiveCamera(window_id windowID, CameraComponent* camera);
 
-        virtual ShaderBase* createShader() = 0;
+        ShaderBase* createShader();
 
-        virtual VertexBufferBase* createVertextBuffer() = 0;
+        VertexBufferBase* createVertextBuffer();
         void deleteVertexBuffer(VertexBufferBase* vertexBuffer);
 
-        virtual RenderTargetDirectBase* createRenderTargetDirect() = 0;
+        RenderTargetDirectBase* createRenderTargetDirect();
         
         virtual void render(window_id windowID) override;
 
@@ -63,6 +63,7 @@ namespace JumaEngine
         virtual bool initInternal() = 0;
         virtual void terminateInternal();
         void terminateWindowDescriptions();
+        void terminateVertexBuffers();
 
         virtual WindowDescriptionBase* createWindowInternal(const glm::uvec2& size, const jstring& title) = 0;
         WindowDescriptionBase* getWindowDescriptionBase(window_id windowID);
@@ -88,6 +89,10 @@ namespace JumaEngine
         virtual bool updateWindowSize(window_id windowID, const glm::uvec2& size) = 0;
         virtual bool updateWindowTitle(window_id windowID, const jstring& title) = 0;
 
+        virtual ShaderBase* createShaderInternal() = 0;
+        virtual VertexBufferBase* createVertextBufferInternal() = 0;
+        virtual RenderTargetDirectBase* createRenderTargetDirectInternal() = 0;
+
         void startRender();
 
     private:
@@ -99,6 +104,10 @@ namespace JumaEngine
         mutable jmutex_shared m_WindowsListMutex;
         window_id m_MainWindowID = INVALID_WINDOW_ID;
         jmap_auto_id<window_id, WindowDescriptionBase*> m_Windows;
+
+        mutable jmutex_shared m_VertexBuffersMutex;
+        jarray<VertexBufferBase*> m_VertexBuffers;
+        jarray<VertexBufferBase*> m_VertexBuffersForDelete;
 
 
         void windowThreadFunction(window_id windowID);

@@ -4,6 +4,7 @@
 
 #include "common_header.h"
 #include "VertexBufferDescription.h"
+#include "EngineContextObject.h"
 #include "render/IRenderInterface.h"
 
 namespace JumaEngine
@@ -11,7 +12,7 @@ namespace JumaEngine
     class RenderManagerBase;
     class VertexBufferDataBase;
 
-    class VertexBufferBase : public IRenderInterface
+    class VertexBufferBase : public EngineContextObject, public IRenderInterface
     {
         friend RenderManagerBase;
 
@@ -29,6 +30,7 @@ namespace JumaEngine
         virtual bool initInternal(VertexBufferDataBase* vertexBufferData) = 0;
 
         virtual void clearWindowData(window_id windowID) {}
+        virtual bool hasAnyWindowData() const { return false; }
 
     private:
 

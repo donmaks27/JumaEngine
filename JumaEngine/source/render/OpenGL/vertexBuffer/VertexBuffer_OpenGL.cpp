@@ -50,14 +50,30 @@ namespace JumaEngine
     {
         if (isInit())
         {
+            m_VerticesVAOsMutex.lock();
+
             uint32* VAOPtr = m_VerticesVAOs.findByKey(windowID);
             if (VAOPtr != nullptr)
             {
                 glDeleteVertexArrays(1, VAOPtr);
                 m_VerticesVAOs.remove(windowID);
             }
+
+            m_VerticesVAOsMutex.unlock();
         }
     }
+    bool VertexBuffer_OpenGL::hasAnyWindowData() const
+    {
+        if (isInit())
+        {
+            m_VerticesVAOsMutex.lock_shared();
+            const bool result = !m_VerticesVAOs.empty();
+            m_VerticesVAOsMutex.unlock_shared();
+            return result;
+        }
+        return false;
+    }
+
     void VertexBuffer_OpenGL::clearBuffers()
     {
         if (m_IndicesVBO != 0)
@@ -94,16 +110,21 @@ namespace JumaEngine
     }
     void VertexBuffer_OpenGL::bindVAO(const window_id windowID)
     {
+        m_VerticesVAOsMutex.lock_shared();
         uint32* VAOPtr = m_VerticesVAOs.findByKey(windowID);
-        if (VAOPtr != nullptr)
+        uint32 VAO = VAOPtr != nullptr ? *VAOPtr : 0;
+        m_VerticesVAOsMutex.unlock_shared();
+
+        if (VAO != 0)
         {
-            glBindVertexArray(*VAOPtr);
+            glBindVertexArray(VAO);
             return;
         }
 
-        uint32 VAO = 0;
         glGenVertexArrays(1, &VAO);
+        m_VerticesVAOsMutex.lock();
         m_VerticesVAOs.add(windowID, VAO);
+        m_VerticesVAOsMutex.unlock();
         
         glBindBuffer(GL_ARRAY_BUFFER, m_VerticesVBO);
         glBindVertexArray(VAO);

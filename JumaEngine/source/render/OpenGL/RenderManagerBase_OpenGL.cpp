@@ -24,25 +24,20 @@ namespace JumaEngine
         return true;
     }
 
-    ShaderBase* RenderManagerBase_OpenGL::createShader()
+    ShaderBase* RenderManagerBase_OpenGL::createShaderInternal()
     {
         Engine* engine = getOwnerEngine();
         return engine != nullptr ? engine->createObject<Shader_OpenGL>() : nullptr;
     }
-
-    VertexBufferBase* RenderManagerBase_OpenGL::createVertextBuffer()
-    {
-        return new VertexBuffer_OpenGL();
-    }
-
-    RenderTargetDirectBase* RenderManagerBase_OpenGL::createRenderTargetDirect()
+    VertexBufferBase* RenderManagerBase_OpenGL::createVertextBufferInternal()
     {
         Engine* engine = getOwnerEngine();
-        if (engine != nullptr)
-        {
-            return engine->createObject<RenderTargetDirect_OpenGL>();
-        }
-        return nullptr;
+        return engine != nullptr ? engine->createObject<VertexBuffer_OpenGL>() : nullptr;
+    }
+    RenderTargetDirectBase* RenderManagerBase_OpenGL::createRenderTargetDirectInternal()
+    {
+        Engine* engine = getOwnerEngine();
+        return engine != nullptr ? engine->createObject<RenderTargetDirect_OpenGL>() : nullptr;
     }
 }
 
