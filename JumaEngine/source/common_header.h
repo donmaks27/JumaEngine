@@ -15,12 +15,15 @@
 
 #endif
 
-#include "libs_using.h"
+
+#define JUMAENGINE_USE_GRAPHIC_API_OPENGL
+#define JUMAENGINE_USE_WINDOW_LIB_GLFW
+
+#define JUMAENGINE_SINGLE_WINDOW
+
 
 namespace JumaEngine { }
 namespace JE = JumaEngine;
-
-#include "utils/jstring.h"
 
 typedef char int8;
 typedef unsigned char uint8;
@@ -31,5 +34,6 @@ typedef unsigned int uint32;
 typedef long int64;
 typedef unsigned long uint64;
 
+#include "utils/jstring.h"
 #define JTEXT(str) u8 ## str
 #define TO_JTEXT(value) std::to_string(value)

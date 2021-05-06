@@ -86,6 +86,7 @@ namespace JumaEngine
             glfwSetWindowShouldClose(window, GLFW_TRUE);
         }
     }
+#ifndef JUMAENGINE_SINGLE_WINDOW
     void RenderManager_OpenGL_GLFW::destroyWindowInternal(const window_id windowID)
     {
         GLFWwindow* window = getWindowGLFW(windowID);
@@ -94,6 +95,7 @@ namespace JumaEngine
             glfwDestroyWindow(window);
         }
     }
+#endif
 
     void RenderManager_OpenGL_GLFW::setActiveWindowInCurrentThread(const window_id windowID)
     {

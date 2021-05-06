@@ -29,7 +29,9 @@ namespace JumaEngine
         
         virtual WindowDescriptionBase* createWindowInternal(const glm::uvec2& size, const jstring& title) override;
 
+#ifndef JUMAENGINE_SINGLE_WINDOW
         virtual void destroyWindowInternal(window_id windowID) override;
+#endif
 
         virtual void setActiveWindowInCurrentThread(window_id windowID) override;
         

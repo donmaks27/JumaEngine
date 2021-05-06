@@ -21,10 +21,12 @@ namespace JumaEngine
         jstring windowTitle;
         glm::uvec2 windowSize = { 0, 0 };
 
+#ifndef JUMAENGINE_SINGLE_WINDOW
         std::thread windowThread;
         std::atomic_bool windowActive = false;
         std::atomic_bool windowShouldStartRender = false;
         std::atomic_bool windowRenderFinish = false;
+#endif
 
         RenderTargetBase* windowRenderTarget = nullptr;
 

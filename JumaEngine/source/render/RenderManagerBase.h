@@ -3,12 +3,15 @@
 #pragma once
 
 #include "common_header.h"
-#include "utils/jmutex_shared.h"
 #include "window/window_id.h"
 #include "window/WindowDescriptionBase.h"
 #include "utils/jmap_auto_id.h"
 #include "EngineContextObject.h"
 #include "IRenderInterface.h"
+
+#ifndef JUMAENGINE_SINGLE_WINDOW
+#include "utils/jmutex_shared.h"
+#endif
 
 namespace JumaEngine
 {
@@ -18,8 +21,6 @@ namespace JumaEngine
 
     class RenderManagerBase : public EngineContextObject, public IRenderInterface
     {
-        friend Engine;
-
     public:
         RenderManagerBase() = default;
         virtual ~RenderManagerBase() override;
@@ -35,7 +36,7 @@ namespace JumaEngine
 
         bool shouldCloseMainWindow() const { return shouldCloseWindow(getMainWindowID()); }
         virtual bool shouldCloseWindow(window_id windowID) const = 0;
-        void closeWindow(window_id windowID, bool destroyImmediately = false);
+        void closeWindow(window_id windowID);
         void closeAllSecondaryWindows(bool destroyImmediately = false);
 
         bool getWindowSize(window_id windowID, glm::uvec2& outWindowSize) const;
@@ -56,6 +57,7 @@ namespace JumaEngine
 
         RenderTargetDirectBase* createRenderTargetDirect();
         
+        void startRender();
         virtual void render(window_id windowID) override;
 
     protected:
@@ -82,7 +84,9 @@ namespace JumaEngine
         }
 
         virtual void markWindowShouldClose(window_id windowID) = 0;
+#ifndef JUMAENGINE_SINGLE_WINDOW
         virtual void destroyWindowInternal(window_id windowID) = 0;
+#endif
 
         virtual void setActiveWindowInCurrentThread(window_id windowID) = 0;
 
@@ -93,26 +97,27 @@ namespace JumaEngine
         virtual VertexBufferBase* createVertextBufferInternal() = 0;
         virtual RenderTargetDirectBase* createRenderTargetDirectInternal() = 0;
 
-        void startRender();
-
     private:
 
         bool m_Initialized = false;
         bool m_Terminated = false;
 
-        // Only main thream can write in this fields
-        mutable jmutex_shared m_WindowsListMutex;
         window_id m_MainWindowID = INVALID_WINDOW_ID;
         jmap_auto_id<window_id, WindowDescriptionBase*> m_Windows;
 
-        mutable jmutex_shared m_VertexBuffersMutex;
         jarray<VertexBufferBase*> m_VertexBuffers;
+
+#ifndef JUMAENGINE_SINGLE_WINDOW
+        mutable jmutex_shared m_WindowsListMutex;
+
         jarray<VertexBufferBase*> m_VertexBuffersForDelete;
+        mutable jmutex_shared m_VertexBuffersMutex;
 
 
         void windowThreadFunction(window_id windowID);
 
         void destroyMarkedForCloseWindows();
         void destroyWindow(window_id windowID);
+#endif
     };
 }

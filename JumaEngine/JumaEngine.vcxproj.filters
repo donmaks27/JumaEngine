@@ -267,9 +267,6 @@
     <ClInclude Include="source\render\RenderManagerImpl.h">
       <Filter>JumaEngine\render</Filter>
     </ClInclude>
-    <ClInclude Include="source\libs_using.h">
-      <Filter>JumaEngine</Filter>
-    </ClInclude>
     <ClInclude Include="source\render\RenderManagerBase.h">
       <Filter>JumaEngine\render</Filter>
     </ClInclude>

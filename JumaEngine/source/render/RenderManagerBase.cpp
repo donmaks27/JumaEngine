@@ -9,6 +9,7 @@ namespace JumaEngine
     RenderManagerBase::~RenderManagerBase()
     {
         terminateWindowDescriptions();
+        terminateVertexBuffers();
     }
 
     bool RenderManagerBase::init()
@@ -25,7 +26,9 @@ namespace JumaEngine
     {
         if (isInit())
         {
+#ifndef JUMAENGINE_SINGLE_WINDOW
             closeAllSecondaryWindows(true);
+#endif
             terminateInternal();
             m_Terminated = true;
         }
@@ -52,11 +55,14 @@ namespace JumaEngine
             delete vertexBuffer;
         }
         m_VertexBuffers.clear();
+#ifndef JUMAENGINE_SINGLE_WINDOW
         m_VertexBuffersForDelete.clear();
+#endif
     }
 
     window_id RenderManagerBase::createWindow(const glm::uvec2& size, const jstring& title)
     {
+#ifndef JUMAENGINE_SINGLE_WINDOW
         if (isMainThread())
         {
             WindowDescriptionBase* description = createWindowInternal(size, title);
@@ -81,11 +87,24 @@ namespace JumaEngine
                 return windowID;
             }
         }
+#else
+        if (m_MainWindowID == INVALID_WINDOW_ID)
+        {
+            WindowDescriptionBase* description = createWindowInternal(size, title);
+            if (description != nullptr)
+            {
+                m_MainWindowID = m_Windows.add(description);
+                setActiveWindowInCurrentThread(m_MainWindowID);
+                return m_MainWindowID;
+            }
+        }
+#endif
         return INVALID_WINDOW_ID;
     }
 
     WindowDescriptionBase* RenderManagerBase::getWindowDescriptionBase(const window_id windowID)
     {
+#ifndef JUMAENGINE_SINGLE_WINDOW
         if (windowID != INVALID_WINDOW_ID)
         {
             const bool shouldUseMutex = !isMainThread();
@@ -103,10 +122,17 @@ namespace JumaEngine
 
             return result;
         }
+#else
+        if ((windowID != INVALID_WINDOW_ID) && (windowID == getMainWindowID()))
+        {
+            return *m_Windows.find(windowID);
+        }
+#endif
         return nullptr;
     }
     const WindowDescriptionBase* RenderManagerBase::getWindowDescriptionBase(const window_id windowID) const
     {
+#ifndef JUMAENGINE_SINGLE_WINDOW
         if (windowID != INVALID_WINDOW_ID)
         {
             const bool shouldUseMutex = !isMainThread();
@@ -124,22 +150,31 @@ namespace JumaEngine
 
             return result;
         }
+#else
+        if ((windowID != INVALID_WINDOW_ID) && (windowID == getMainWindowID()))
+        {
+            return *m_Windows.find(windowID);
+        }
+#endif
         return nullptr;
     }
 
-    void RenderManagerBase::closeWindow(const window_id windowID, const bool destroyImmediately)
+    void RenderManagerBase::closeWindow(const window_id windowID)
     {
-        if (isInit() && isMainThread())
+        if (isInit())
         {
             markWindowShouldClose(windowID);
-            if ((windowID != getMainWindowID()) && (destroyImmediately || shouldCloseMainWindow()))
+#ifndef JUMAENGINE_SINGLE_WINDOW
+            if (isMainThread() && (windowID != getMainWindowID()) && shouldCloseMainWindow())
             {
                 destroyWindow(windowID);
             }
+#endif
         }
     }
     void RenderManagerBase::closeAllSecondaryWindows(const bool destroyImmediately)
     {
+#ifndef JUMAENGINE_SINGLE_WINDOW
         if (isInit() && isMainThread())
         {
             const window_id mainWindowID = getMainWindowID();
@@ -151,7 +186,9 @@ namespace JumaEngine
                 }
             }
         }
+#endif
     }
+#ifndef JUMAENGINE_SINGLE_WINDOW
     void RenderManagerBase::destroyMarkedForCloseWindows()
     {
         if (isMainThread())
@@ -194,6 +231,7 @@ namespace JumaEngine
             m_WindowsListMutex.unlock();
         }
     }
+#endif
 
     bool RenderManagerBase::getWindowSize(const window_id windowID, glm::uvec2& outWindowSize) const
     {
@@ -289,9 +327,13 @@ namespace JumaEngine
         {
             VertexBufferBase* vertexBuffer = createVertextBufferInternal();
 
+#ifndef JUMAENGINE_SINGLE_WINDOW
             m_VertexBuffersMutex.lock();
             m_VertexBuffers.add(vertexBuffer);
             m_VertexBuffersMutex.unlock();
+#else
+            m_VertexBuffers.add(vertexBuffer);
+#endif
 
             return vertexBuffer;
         }
@@ -299,21 +341,30 @@ namespace JumaEngine
     }
     void RenderManagerBase::deleteVertexBuffer(VertexBufferBase* vertexBuffer)
     {
-        if (isInit() && isMainThread() && (vertexBuffer != nullptr))
+        if (isInit() && (vertexBuffer != nullptr))
         {
-            vertexBuffer->clearWindowData(getMainWindowID());
+#ifndef JUMAENGINE_SINGLE_WINDOW
+            if (isMainThread())
+            {
+                vertexBuffer->clearWindowData(getMainWindowID());
 
-            m_VertexBuffersMutex.lock();
-            if (vertexBuffer->hasAnyWindowData())
-            {
-                m_VertexBuffersForDelete.add(vertexBuffer);
+                m_VertexBuffersMutex.lock();
+                if (vertexBuffer->hasAnyWindowData())
+                {
+                    m_VertexBuffersForDelete.add(vertexBuffer);
+                }
+                else
+                {
+                    m_VertexBuffers.remove(vertexBuffer);
+                    delete vertexBuffer;
+                }
+                m_VertexBuffersMutex.unlock();
             }
-            else
-            {
-                m_VertexBuffers.remove(vertexBuffer);
-                delete vertexBuffer;
-            }
-            m_VertexBuffersMutex.unlock();
+#else
+            vertexBuffer->clearWindowData(getMainWindowID());
+            m_VertexBuffers.remove(vertexBuffer);
+            delete vertexBuffer;
+#endif
         }
     }
 
@@ -325,14 +376,9 @@ namespace JumaEngine
     void RenderManagerBase::startRender()
     {
         const window_id mainWindowID = getMainWindowID();
-        WindowDescriptionBase* mainWindowDescription = getWindowDescriptionBase(mainWindowID);
-        if (mainWindowDescription == nullptr)
-        {
-            return;
-        }
 
+#ifndef JUMAENGINE_SINGLE_WINDOW
         destroyMarkedForCloseWindows();
-
         for (auto& windowIDAndDescription : m_Windows)
         {
             if (windowIDAndDescription.first != mainWindowID)
@@ -344,9 +390,11 @@ namespace JumaEngine
                 }
             }
         }
+#endif
 
         render(mainWindowID);
-        
+
+#ifndef JUMAENGINE_SINGLE_WINDOW
         for (auto& windowIDAndDescription : m_Windows)
         {
             if (windowIDAndDescription.first != mainWindowID)
@@ -374,7 +422,9 @@ namespace JumaEngine
             }
         }
         m_VertexBuffersMutex.unlock();
+#endif
     }
+#ifndef JUMAENGINE_SINGLE_WINDOW
     void RenderManagerBase::windowThreadFunction(const window_id windowID)
     {
         WindowDescriptionBase* windowDescription = getWindowDescriptionBase(windowID);
@@ -407,6 +457,7 @@ namespace JumaEngine
         setActiveWindowInCurrentThread(INVALID_WINDOW_ID);
         windowDescription->windowActive.store(false);
     }
+#endif
 
     void RenderManagerBase::render(const window_id windowID)
     {

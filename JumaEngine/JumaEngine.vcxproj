@@ -135,7 +135,6 @@
     <ClInclude Include="source\framework\gameObject\WorldContextObject.h" />
     <ClInclude Include="source\framework\gameObject\TransformObject.h" />
     <ClInclude Include="source\framework\gameObject\EngineWorld.h" />
-    <ClInclude Include="source\libs_using.h" />
     <ClInclude Include="source\render\IRenderInterface.h" />
     <ClInclude Include="source\render\OpenGL\RenderManagerBase_OpenGL.h" />
     <ClInclude Include="source\render\OpenGL\RenderManager_OpenGL_GLFW.h" />

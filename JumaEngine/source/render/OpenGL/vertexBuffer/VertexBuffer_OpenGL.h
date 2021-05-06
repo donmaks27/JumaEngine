@@ -6,9 +6,12 @@
 
 #if defined(JUMAENGINE_USE_GRAPHIC_API_OPENGL)
 
+#include "render/vertexBuffer/VertexBufferBase.h"
+
+#ifndef JUMAENGINE_SINGLE_WINDOW
 #include "utils/jmutex_shared.h"
 #include "utils/jmap.h"
-#include "render/vertexBuffer/VertexBufferBase.h"
+#endif
 
 namespace JumaEngine
 {
@@ -32,8 +35,12 @@ namespace JumaEngine
         uint32 m_VerticesVBO = 0;
         uint32 m_IndicesVBO = 0;
 
-        mutable jmutex_shared m_VerticesVAOsMutex;
+#ifndef JUMAENGINE_SINGLE_WINDOW
         jmap<window_id, uint32> m_VerticesVAOs;
+        mutable jmutex_shared m_VerticesVAOsMutex;
+#else
+        uint32 m_VerticesVAO = 0;
+#endif
 
 
         void bindVAO(window_id windowID);
