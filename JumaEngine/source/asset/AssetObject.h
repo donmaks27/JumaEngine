@@ -4,18 +4,19 @@
 
 #include "common_header.h"
 #include "utils/type_traits_macros.h"
+#include "EngineContextObject.h"
 
 namespace JumaEngine
 {
 	class AssetsManager;
 
-	class AssetObject
+	class AssetObject : public EngineContextObject
 	{
 		friend AssetsManager;
 		
 	protected:
 		AssetObject() = default;
-		virtual ~AssetObject() = default;
+		virtual ~AssetObject() override = default;
 
 	private:
 

@@ -1,7 +1,7 @@
 ﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
 
 #include "ShaderBase.h"
-#include "utils/log.h"
+#include "utils/jlog.h"
 
 namespace JumaEngine
 {

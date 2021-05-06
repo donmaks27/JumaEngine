@@ -5,7 +5,7 @@
 #include "common_header.h"
 #include <thread>
 #include "EngineContextObject.h"
-#include "utils/subclass.h"
+#include "utils/jsubclass.h"
 #include "utils/type_traits_macros.h"
 
 namespace JumaEngine
@@ -47,7 +47,7 @@ namespace JumaEngine
         	return object;
         }
         template<typename T, TEMPLATE_ENABLE(is_base_and_not_same<EngineContextObject, T>)>
-        T* createObject(const subclass<T>& objectClass)
+        T* createObject(const jsubclass<T>& objectClass)
         {
         	T* object = objectClass.createObject();
 	        registerEngineObject(object);

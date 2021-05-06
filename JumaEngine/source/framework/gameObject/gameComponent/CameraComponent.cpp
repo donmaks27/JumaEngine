@@ -2,7 +2,7 @@
 
 #include "CameraComponent.h"
 
-#include "utils/log.h"
+#include "utils/jlog.h"
 #include "utils/math_functions.h"
 #include "utils/system_functions.h"
 

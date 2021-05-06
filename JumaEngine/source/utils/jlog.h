@@ -3,20 +3,16 @@
 #pragma once
 
 #include "common_header.h"
+#include <mutex>
 
 #define JLOG_ENABLED JDEBUG
 
-namespace std
-{
-    class mutex;
-}
-
 namespace JumaEngine
 {
-    class Log
+    class jlog
     {
     private:
-        Log() = default;
+        jlog() = default;
 
     public:
 
@@ -59,7 +55,7 @@ namespace JumaEngine
 }
 
 #if JLOG_ENABLED
-#define JUMA_LOG(type, message) Log::type(jstring(__FUNCTION__) + JTEXT("(") + TO_JTEXT(__LINE__) + JTEXT(")"), message)
+#define JUMA_LOG(type, message) jlog::type(jstring(__FUNCTION__) + JTEXT("(") + TO_JTEXT(__LINE__) + JTEXT(")"), message)
 #define JUMA_LOG_EMPTY(type) JUMA_LOG(type, nullptr)
 #else
 #define JUMA_LOG(type, message)

@@ -64,9 +64,6 @@
       <Filter>JumaEngine</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="source\utils\log.cpp">
-      <Filter>JumaEngine\utils</Filter>
-    </ClCompile>
     <ClCompile Include="source\EngineContextObject.cpp">
       <Filter>JumaEngine</Filter>
     </ClCompile>
@@ -160,6 +157,9 @@
     <ClCompile Include="source\render\renderTarget\RenderTargetCompositeBase.cpp">
       <Filter>JumaEngine\render\renderTarget</Filter>
     </ClCompile>
+    <ClCompile Include="source\utils\jlog.cpp">
+      <Filter>JumaEngine\utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\common_header.h">
@@ -167,9 +167,6 @@
     </ClInclude>
     <ClInclude Include="source\Engine.h">
       <Filter>JumaEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\log.h">
-      <Filter>JumaEngine\utils</Filter>
     </ClInclude>
     <ClInclude Include="source\EngineContextObject.h">
       <Filter>JumaEngine</Filter>
@@ -276,9 +273,6 @@
     <ClInclude Include="source\render\vertexBuffer\importer\MeshImporterBase.h">
       <Filter>JumaEngine\render\vertexBuffer\importer</Filter>
     </ClInclude>
-    <ClInclude Include="source\utils\subclass.h">
-      <Filter>JumaEngine\utils</Filter>
-    </ClInclude>
     <ClInclude Include="source\render\vertexBuffer\VertexBufferDescription.h">
       <Filter>JumaEngine\render\vertexBuffer</Filter>
     </ClInclude>
@@ -325,6 +319,12 @@
       <Filter>JumaEngine\utils</Filter>
     </ClInclude>
     <ClInclude Include="source\utils\jdelegate_multicast.h">
+      <Filter>JumaEngine\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\jsubclass.h">
+      <Filter>JumaEngine\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\jlog.h">
       <Filter>JumaEngine\utils</Filter>
     </ClInclude>
   </ItemGroup>

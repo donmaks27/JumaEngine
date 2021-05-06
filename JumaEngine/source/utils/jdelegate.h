@@ -54,7 +54,7 @@ namespace JumaEngine
             clear();
             if (object != nullptr)
             {
-                m_Container = new delegate_container_implementation<T>(object, function);
+                m_Container = new delegate_container_impl<T>(object, function);
             }
         }
 
@@ -63,7 +63,7 @@ namespace JumaEngine
         {
             if ((object != nullptr) && (m_Container != nullptr))
             {
-                const delegate_container_implementation<T>* container = dynamic_cast<const delegate_container_implementation<T>*>(m_Container);
+                const delegate_container_impl<T>* container = dynamic_cast<const delegate_container_impl<T>*>(m_Container);
                 if (container != nullptr)
                 {
                     return container->isBinded(object, function);
@@ -76,7 +76,7 @@ namespace JumaEngine
         {
             if ((object != nullptr) && (m_Container != nullptr))
             {
-                const delegate_container_implementation<T>* container = dynamic_cast<const delegate_container_implementation<T>*>(m_Container);
+                const delegate_container_impl<T>* container = dynamic_cast<const delegate_container_impl<T>*>(m_Container);
                 if (container != nullptr)
                 {
                     return container->isBinded(object);
@@ -114,17 +114,17 @@ namespace JumaEngine
             virtual void call(ArgTypes...) = 0;
         };
         template<typename T>
-        class delegate_container_implementation : public delegate_container
+        class delegate_container_impl : public delegate_container
         {
             typedef void (T::*function_type)(ArgTypes...);
 
         public:
-            delegate_container_implementation(T* object, function_type function)
+            delegate_container_impl(T* object, function_type function)
                 : m_Object(object)
                 , m_Function(function)
             {}
 
-            virtual delegate_container* copy() override { return new delegate_container_implementation(m_Object, m_Function); }
+            virtual delegate_container* copy() override { return new delegate_container_impl(m_Object, m_Function); }
 
             bool isBinded(T* object, function_type function) const { return isBinded(object) && (m_Function == function); }
             bool isBinded(T* object) const { return m_Object == object; }

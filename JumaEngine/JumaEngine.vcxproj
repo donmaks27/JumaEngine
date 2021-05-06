@@ -113,7 +113,7 @@
     <ClCompile Include="source\render\vertexBuffer\VertexBufferBase.cpp" />
     <ClCompile Include="source\render\vertexBuffer\VertexPosition.cpp" />
     <ClCompile Include="source\transform\Rotation.cpp" />
-    <ClCompile Include="source\utils\log.cpp" />
+    <ClCompile Include="source\utils\jlog.cpp" />
     <ClCompile Include="source\utils\math_functions.cpp" />
     <ClCompile Include="source\utils\system_functions.cpp" />
   </ItemGroup>
@@ -166,11 +166,11 @@
     <ClInclude Include="source\utils\jmutex_shared.h" />
     <ClInclude Include="source\utils\jset.h" />
     <ClInclude Include="source\utils\jstring.h" />
-    <ClInclude Include="source\utils\log.h" />
+    <ClInclude Include="source\utils\jlog.h" />
     <ClInclude Include="source\utils\jmap_auto_id.h" />
     <ClInclude Include="source\utils\math_consts.h" />
     <ClInclude Include="source\utils\math_functions.h" />
-    <ClInclude Include="source\utils\subclass.h" />
+    <ClInclude Include="source\utils\jsubclass.h" />
     <ClInclude Include="source\utils\system_functions.h" />
     <ClInclude Include="source\utils\type_traits_macros.h" />
   </ItemGroup>

@@ -4,7 +4,7 @@
 #include <chrono>
 #include "EngineContextObject.h"
 #include "asset/AssetsManager.h"
-#include "utils/log.h"
+#include "utils/jlog.h"
 #include "framework/gameObject/EngineWorld.h"
 #include "framework/gameObject/gameComponent/CameraComponent.h"
 #include "framework/gameObject/gameComponent/MeshComponent.h"

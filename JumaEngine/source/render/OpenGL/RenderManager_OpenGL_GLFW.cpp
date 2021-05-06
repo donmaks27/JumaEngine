@@ -4,7 +4,7 @@
 
 #if defined(JUMAENGINE_USE_GRAPHIC_API_OPENGL) && defined(JUMAENGINE_USE_WINDOW_LIB_GLFW)
 
-#include "utils/log.h"
+#include "utils/jlog.h"
 
 namespace JumaEngine
 {

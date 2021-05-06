@@ -19,7 +19,7 @@ namespace JumaEngine
         return result;
     }
 
-    jarray<VertexBufferDataBase*> MeshImporterBase::createVertexBuffersForMesh(const jstring& meshName, const subclass<VertexBufferDataBase>& bufferClass)
+    jarray<VertexBufferDataBase*> MeshImporterBase::createVertexBuffersForMesh(const jstring& meshName, const jsubclass<VertexBufferDataBase>& bufferClass)
     {
         jarray<VertexBufferDataBase*> result;
         for (const auto& meshData : m_Data.meshesData)

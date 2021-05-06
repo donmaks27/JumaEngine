@@ -6,7 +6,7 @@
 #include "MeshImporterData.h"
 #include "render/vertexBuffer/VertexBufferData.h"
 #include "utils/jarray.h"
-#include "utils/subclass.h"
+#include "utils/jsubclass.h"
 
 namespace JumaEngine
 {
@@ -20,7 +20,7 @@ namespace JumaEngine
 
         jarray<jstring> getMeshesNames() const;
 
-        jarray<VertexBufferDataBase*> createVertexBuffersForMesh(const jstring& meshName, const subclass<VertexBufferDataBase>& bufferClass);
+        jarray<VertexBufferDataBase*> createVertexBuffersForMesh(const jstring& meshName, const jsubclass<VertexBufferDataBase>& bufferClass);
 
     protected:
 

@@ -3,9 +3,10 @@
 #pragma once
 
 #include "common_header.h"
-#include "EngineContextObject.h"
 #include "AssetObject.h"
+#include "Engine.h"
 #include "utils/jmap.h"
+#include "EngineContextObject.h"
 
 namespace JumaEngine
 {
@@ -34,9 +35,10 @@ namespace JumaEngine
 		template<typename T, TEMPLATE_ENABLE(is_base_and_not_same_and_not_abstract<AssetObject, T>)>
 		std::shared_ptr<T> createAssetObject()
 		{
-			if (getOwnerEngine() != nullptr)
+            Engine* engine = getOwnerEngine();
+			if (engine != nullptr)
 			{
-                std::shared_ptr<T> asset = std::make_shared<T>();
+                std::shared_ptr<T> asset = std::shared_ptr<T>(engine->createObject<T>());
                 registerAssetObject(asset);
                 return asset;
 			}

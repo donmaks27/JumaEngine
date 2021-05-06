@@ -6,7 +6,7 @@
 
 #include "GL/glew.h"
 #include "Engine.h"
-#include "utils/log.h"
+#include "utils/jlog.h"
 #include "shader/Shader_OpenGL.h"
 #include "vertexBuffer/VertexBuffer_OpenGL.h"
 #include "renderTarget/RenderTargetDirect_OpenGL.h"
