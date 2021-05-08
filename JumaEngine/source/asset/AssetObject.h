@@ -12,9 +12,11 @@ namespace JumaEngine
 
 	class AssetObject : public EngineContextObject
 	{
+        JUMAENGINE_CLASS(AssetObject, EngineContextObject)
+
 		friend AssetsManager;
 		
-	protected:
+	public:
 		AssetObject() = default;
 		virtual ~AssetObject() override = default;
 

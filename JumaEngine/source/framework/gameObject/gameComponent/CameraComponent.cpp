@@ -10,6 +10,8 @@ namespace JumaEngine
 {
 	void CameraComponent::onRegister()
 	{
+        Super::onRegister();
+
 		updateProjectionMatrix();
 		updateViewMatrix();
 	}
@@ -94,6 +96,8 @@ namespace JumaEngine
 
 	void CameraComponent::onTransformChanged()
 	{
+        Super::onTransformChanged();
+
 		updateViewMatrix();
 	}
 

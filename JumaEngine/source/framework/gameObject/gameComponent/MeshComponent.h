@@ -11,6 +11,8 @@ namespace JumaEngine
 
     class MeshComponent : public SceneComponent
     {
+        JUMAENGINE_CLASS(MeshComponent, SceneComponent)
+
     public:
         MeshComponent() = default;
         virtual ~MeshComponent() override = default;
@@ -20,8 +22,6 @@ namespace JumaEngine
         virtual void render(window_id windowID) override;
 
     private:
-
-        typedef SceneComponent Super;
 
         Mesh* m_Mesh = nullptr;
     };

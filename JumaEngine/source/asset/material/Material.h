@@ -7,10 +7,10 @@
 
 namespace JumaEngine
 {
-	class ShaderBase;
-
 	class Material final : public MaterialBase
 	{
+        JUMAENGINE_CLASS(Material, MaterialBase)
+
 		friend AssetsManager;
 		
 	public:

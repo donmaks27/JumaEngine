@@ -4,6 +4,7 @@
 
 #include "common_header.h"
 #include "utils/type_traits_macros.h"
+#include "EngineObjectClass.h"
 
 namespace JumaEngine
 {
@@ -12,13 +13,13 @@ namespace JumaEngine
 
     class EngineContextObject
     {
+        DECLARE_JUMAENGINE_OBJECT_CLASS(EngineContextObject, EngineObjectClass)
+
         friend Engine; 
 
-    protected:
+    public:
         EngineContextObject() = default;
         virtual ~EngineContextObject() = default;
-
-    public:
 
         Engine* getOwnerEngine() const { return m_OwnerEngine; }
         RenderManagerBase* getRenderManager() const;

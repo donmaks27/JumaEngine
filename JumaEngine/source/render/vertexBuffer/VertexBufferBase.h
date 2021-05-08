@@ -14,6 +14,8 @@ namespace JumaEngine
 
     class VertexBufferBase : public EngineContextObject, public IRenderInterface
     {
+        JUMAENGINE_CLASS(VertexBufferBase, EngineContextObject)
+
         friend RenderManagerBase;
 
     public:

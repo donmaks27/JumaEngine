@@ -10,6 +10,8 @@ namespace JumaEngine
 {
     class RenderTargetBase : public EngineContextObject, public IRenderInterface
     {
+        JUMAENGINE_CLASS(RenderTargetBase, EngineContextObject)
+
     public:
         RenderTargetBase() = default;
         virtual ~RenderTargetBase() override = default;

@@ -17,6 +17,8 @@ namespace JumaEngine
 
     class EngineWorld : public EngineContextObject, public IRenderInterface
     {
+        JUMAENGINE_CLASS(EngineWorld, EngineContextObject)
+
     public:
         EngineWorld() = default;
         virtual ~EngineWorld() override;

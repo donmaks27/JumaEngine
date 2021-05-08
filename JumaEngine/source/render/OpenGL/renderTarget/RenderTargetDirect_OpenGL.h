@@ -10,8 +10,10 @@
 
 namespace JumaEngine
 {
-    class RenderTargetDirect_OpenGL : public RenderTargetDirectBase
+    class RenderTargetDirect_OpenGL final : public RenderTargetDirectBase
     {
+        JUMAENGINE_CLASS(RenderTargetDirect_OpenGL, RenderTargetDirectBase)
+
     public:
         RenderTargetDirect_OpenGL() = default;
         virtual ~RenderTargetDirect_OpenGL() override = default;

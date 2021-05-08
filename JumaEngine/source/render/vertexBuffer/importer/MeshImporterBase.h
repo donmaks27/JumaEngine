@@ -7,14 +7,17 @@
 #include "render/vertexBuffer/VertexBufferData.h"
 #include "utils/jarray.h"
 #include "utils/jsubclass.h"
+#include "EngineContextObject.h"
 
 namespace JumaEngine
 {
-    class MeshImporterBase
+    class MeshImporterBase : public EngineContextObject
     {
+        JUMAENGINE_CLASS(MeshImporterBase, EngineContextObject)
+
     public:
         MeshImporterBase() = default;
-        virtual ~MeshImporterBase() = default;
+        virtual ~MeshImporterBase() override = default;
 
         void importFile(const char* filePath);
 

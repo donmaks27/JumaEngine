@@ -12,6 +12,8 @@ namespace JumaEngine
 {
     class SceneComponent : public GameComponent, public TransformObject, public IRenderInterface
     {
+        JUMAENGINE_CLASS(SceneComponent, GameComponent)
+
         friend EngineWorld;
 
     public:

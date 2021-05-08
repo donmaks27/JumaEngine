@@ -160,6 +160,9 @@
     <ClCompile Include="source\utils\jlog.cpp">
       <Filter>JumaEngine\utils</Filter>
     </ClCompile>
+    <ClCompile Include="source\EngineObjectClass.cpp">
+      <Filter>JumaEngine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\common_header.h">
@@ -326,6 +329,9 @@
     </ClInclude>
     <ClInclude Include="source\utils\jlog.h">
       <Filter>JumaEngine\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="source\EngineObjectClass.h">
+      <Filter>JumaEngine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

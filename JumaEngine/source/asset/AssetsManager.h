@@ -16,6 +16,8 @@ namespace JumaEngine
 
     class AssetsManager final : public EngineContextObject
 	{
+        JUMAENGINE_CLASS(AssetsManager, EngineContextObject)
+
 	public:
 		AssetsManager() = default;
 		virtual ~AssetsManager() override;

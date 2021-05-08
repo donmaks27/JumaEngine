@@ -11,6 +11,8 @@ namespace JumaEngine
 {
     class ShaderBase : public EngineContextObject
     {
+        JUMAENGINE_CLASS(ShaderBase, EngineContextObject)
+
     public:
         ShaderBase() = default;
         virtual ~ShaderBase() override = default;

@@ -11,6 +11,8 @@ namespace JumaEngine
 
     class WorldContextObject : public EngineContextObject
     {
+        JUMAENGINE_CLASS(WorldContextObject, EngineContextObject)
+
         friend EngineWorld;
 
     public:

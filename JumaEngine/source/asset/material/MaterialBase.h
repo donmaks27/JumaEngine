@@ -13,11 +13,11 @@ namespace JumaEngine
 
 	class MaterialBase : public AssetObject
 	{
-	protected:
-		MaterialBase() = default;
-		virtual ~MaterialBase() override = default;
+        JUMAENGINE_CLASS(MaterialBase, AssetObject)
 
 	public:
+		MaterialBase() = default;
+		virtual ~MaterialBase() override = default;
 
 		template<typename T>
 		bool hasMaterialParam(const jstring& name) const

@@ -13,8 +13,10 @@ namespace JumaEngine
     class GameComponent;
     class SceneComponent;
 
-	class GameObject : public WorldContextObject, public TransformObject, public IRenderInterface
+    class GameObject : public WorldContextObject, public TransformObject, public IRenderInterface
 	{
+        JUMAENGINE_CLASS(GameObject, WorldContextObject)
+
         friend EngineWorld;
 
 	public:
@@ -40,5 +42,5 @@ namespace JumaEngine
         SceneComponent* m_RootComponent = nullptr;
 
         SceneComponent* m_ParentComponent = nullptr;
-	};
+    };
 }

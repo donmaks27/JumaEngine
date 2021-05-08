@@ -32,7 +32,7 @@ namespace JumaEngine
         {
             if (m_MeshImporter == nullptr)
             {
-                m_MeshImporter = new T();
+                m_MeshImporter = createObject<T>();
             }
         }
 

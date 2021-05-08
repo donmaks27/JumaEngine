@@ -11,6 +11,8 @@ namespace JumaEngine
 
     class RenderTargetDirectBase : public RenderTargetBase
     {
+        JUMAENGINE_CLASS(RenderTargetDirectBase, RenderTargetBase)
+
     public:
         RenderTargetDirectBase() = default;
         virtual ~RenderTargetDirectBase() override = default;

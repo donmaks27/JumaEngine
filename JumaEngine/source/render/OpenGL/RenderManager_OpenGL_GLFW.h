@@ -11,8 +11,10 @@
 
 namespace JumaEngine
 {
-    class RenderManager_OpenGL_GLFW : public RenderManagerBase_OpenGL
+    class RenderManager_OpenGL_GLFW final : public RenderManagerBase_OpenGL
     {
+        JUMAENGINE_CLASS(RenderManager_OpenGL_GLFW, RenderManagerBase_OpenGL)
+
     public:
         RenderManager_OpenGL_GLFW() = default;
         virtual ~RenderManager_OpenGL_GLFW() override;
@@ -39,9 +41,6 @@ namespace JumaEngine
         virtual bool updateWindowTitle(window_id windowID, const jstring& title) override;
 
     private:
-
-        typedef RenderManagerBase_OpenGL Super;
-
 
         void terminateGLFW();
 

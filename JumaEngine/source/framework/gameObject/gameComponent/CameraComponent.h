@@ -9,6 +9,8 @@ namespace JumaEngine
 {
 	class CameraComponent : public SceneComponent
 	{
+        JUMAENGINE_CLASS(CameraComponent, SceneComponent)
+
 	public:
 		CameraComponent() = default;
 		virtual ~CameraComponent() override = default;
@@ -42,8 +44,6 @@ namespace JumaEngine
 		virtual void tick(double deltaTime) override;
 	
 	private:
-
-		typedef SceneComponent Super;
 
 		glm::mat4 m_ProjectionMatrix = glm::identity<glm::mat4>();
 		glm::mat4 m_ViewMatrix = glm::identity<glm::mat4>();

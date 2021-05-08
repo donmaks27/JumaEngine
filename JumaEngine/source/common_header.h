@@ -1,15 +1,5 @@
 ﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
 
-/**
- * Possible macros:
- *
- * JUMAENGINE_USE_GRAPHIC_API_OPENGL - can use OpenGL graphic API
- *
- * JUMAENGINE_USE_WINDOW_LIB_GLFW - can use GLFW window lib
- *
- * JUMAENGINE_SINGLE_WINDOW - should create only one window
- */
-
 #pragma once
 
 #define GLM_FORCE_INLINE
@@ -25,6 +15,16 @@
 
 #endif
 
+
+/**
+ * Possible macros:
+ *
+ * JUMAENGINE_USE_GRAPHIC_API_OPENGL - can use OpenGL graphic API
+ *
+ * JUMAENGINE_USE_WINDOW_LIB_GLFW - can use GLFW window lib
+ *
+ * JUMAENGINE_SINGLE_WINDOW - should create only one window
+ */
 
 #define JUMAENGINE_USE_GRAPHIC_API_OPENGL
 #define JUMAENGINE_USE_WINDOW_LIB_GLFW

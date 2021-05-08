@@ -12,6 +12,8 @@ namespace JumaEngine
 {
     class RenderManagerBase_OpenGL : public RenderManagerBase
     {
+        JUMAENGINE_CLASS(RenderManagerBase_OpenGL, RenderManagerBase)
+
     public:
         RenderManagerBase_OpenGL() = default;
         virtual ~RenderManagerBase_OpenGL() override = default;

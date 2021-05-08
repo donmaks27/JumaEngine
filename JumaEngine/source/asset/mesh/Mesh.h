@@ -16,6 +16,8 @@ namespace JumaEngine
 
     class Mesh : public EngineContextObject, public IRenderInterface
     {
+        JUMAENGINE_CLASS(Mesh, EngineContextObject)
+
     public:
         Mesh() = default;
         virtual ~Mesh() override;

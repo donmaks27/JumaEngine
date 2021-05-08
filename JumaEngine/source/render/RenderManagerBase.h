@@ -21,6 +21,8 @@ namespace JumaEngine
 
     class RenderManagerBase : public EngineContextObject, public IRenderInterface
     {
+        JUMAENGINE_CLASS(RenderManagerBase, EngineContextObject)
+
     public:
         RenderManagerBase() = default;
         virtual ~RenderManagerBase() override;

@@ -13,10 +13,8 @@ namespace JumaEngine
         Float
     };
 
-    class VertexComponentDescription
+    struct VertexComponentDescription
     {
-    public:
-
         int32 componentID = -1;
         VertexComponentType componentType = VertexComponentType::None;
         uint32 componentSize = 0;
@@ -25,10 +23,8 @@ namespace JumaEngine
         bool isValid() const { return (componentID >= 0) && (componentType != VertexComponentType::None) && (componentSize > 0); }
     };
 
-    class VertexBufferDescription
+    struct VertexBufferDescription
     {
-    public:
-
         uint32 verticesCount = 0;
         uint32 indicesCount = 0;
 
