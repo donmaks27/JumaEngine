@@ -23,6 +23,16 @@ namespace JumaEngine
         m_MainThreadID = std::this_thread::get_id();
     }
 
+    EngineContextObject* Engine::createObject(const EngineObjectClass* objectClass)
+    {
+        EngineContextObject* object = objectClass != nullptr ? objectClass->createObject() : nullptr;
+        if (object != nullptr)
+        {
+            registerEngineObject(object);
+            return object;
+        }
+        return nullptr;
+    }
     void Engine::registerEngineObject(EngineContextObject* object)
     {
         if (object != nullptr)
@@ -105,7 +115,7 @@ namespace JumaEngine
 
         m_MeshImporter->importFile("");
         m_Mesh = createObject<Mesh>();
-        m_Mesh->initMesh(m_MeshImporter->createVertexBuffersForMesh(JTEXT("Triangle"), CLASS_TYPE(VertexBufferDataPosition)));
+        m_Mesh->initMesh(m_MeshImporter->createVertexBuffersForMesh(JTEXT("Triangle"), jclass_type<VertexBufferDataPosition>()));
         m_Mesh->setMaterial(0, m_AssetsManager->createMaterialInstance(material));
 
         MeshComponent* component = m_World->createSceneComponent<MeshComponent>();

@@ -120,7 +120,4 @@ namespace JumaEngine
             m_ClassType = nullptr;
         }
     };
-    
-#define CLASS_TYPE(class_name) jclass_type<class_name>()
-#define SUBCLASS(class_base, class_actual) jsubclass<class_base>(CLASS_TYPE(class_actual))
 }

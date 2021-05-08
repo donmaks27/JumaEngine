@@ -39,20 +39,9 @@ namespace JumaEngine
         RenderManagerBase* getRenderManager() const { return m_RenderManager; }
         MeshImporterBase* getVertexBufferImporter() const { return m_MeshImporter; }
 
+        EngineContextObject* createObject(const EngineObjectClass* objectClass);
         template<typename T, TEMPLATE_ENABLE(is_base_and_not_same<EngineContextObject, T>)>
-        T* createObject()
-        {
-        	T* object = new T();
-	        registerEngineObject(object);
-        	return object;
-        }
-        template<typename T, TEMPLATE_ENABLE(is_base_and_not_same<EngineContextObject, T>)>
-        T* createObject(const jsubclass<T>& objectClass)
-        {
-        	T* object = objectClass.createObject();
-	        registerEngineObject(object);
-        	return object;
-        }
+        T* createObject() { return dynamic_cast<T*>(createObject(T::getClass())); }
 
         bool startEngine(int argc, char** argv);
         bool startEngine() { return startEngine(0, nullptr); }
