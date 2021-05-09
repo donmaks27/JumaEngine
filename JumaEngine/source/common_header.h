@@ -47,3 +47,5 @@ typedef unsigned long uint64;
 #include "utils/jstring.h"
 #define JTEXT(str) u8 ## str
 #define TO_JTEXT(value) std::to_string(value)
+
+#define JUMAENGINE_CONCAT_HELPER(...) __VA_ARGS__

@@ -13,6 +13,12 @@ namespace JumaEngine
     {
     public:
         jdelegate_multicast() = default;
+        jdelegate_multicast(jdelegate_multicast&& delegate) = default;
+        jdelegate_multicast(const jdelegate_multicast& delegate) = default;
+        ~jdelegate_multicast() = default;
+
+        jdelegate_multicast& operator=(jdelegate_multicast&& delegate) = delete;
+        jdelegate_multicast& operator=(const jdelegate_multicast& delegate) = delete;
 
         template<typename T>
         void bind(T* object, void (T::*function)(ArgTypes...))
@@ -87,11 +93,11 @@ namespace JumaEngine
 
         void clear() { m_Delegates.clear(); }
 
-        void call(ArgTypes... args)
+        void _call(ArgTypes... args)
         {
             for (auto& delegate : m_Delegates)
             {
-                delegate.call(args...);
+                delegate._call(args...);
             }
         }
 
@@ -100,3 +106,28 @@ namespace JumaEngine
         jarray<jdelegate<ArgTypes...>> m_Delegates;
     };
 }
+
+#define DECLARE_JUMAENGINE_DELEGATE_MULTICAST_INTERNAL(DelegateName, ParamsTypes, ParamsNames, Params) \
+class DelegateName : public jdelegate_multicast<ParamsTypes> \
+{ \
+    using base_class = jdelegate_multicast<ParamsTypes>; \
+public: \
+    DelegateName() : base_class() {} \
+    DelegateName(base_class&& delegate) noexcept : base_class(std::move(delegate)) {} \
+    DelegateName(const base_class& delegate) : base_class(delegate) {} \
+    void call(Params) { _call(ParamsNames); } \
+};
+
+#define DECLARE_JUMAENGINE_DELEGATE_MULTICAST(DelegateName) DECLARE_JUMAENGINE_DELEGATE_MULTICAST_INTERNAL(DelegateName, , , )
+#define DECLARE_JUMAENGINE_DELEGATE_MULTICAST_OneParam(DelegateName, ParamType1, ParamName1) DECLARE_JUMAENGINE_DELEGATE_MULTICAST_INTERNAL(DelegateName, \
+    JUMAENGINE_CONCAT_HELPER(ParamType1), JUMAENGINE_CONCAT_HELPER(ParamName1), \
+    JUMAENGINE_CONCAT_HELPER(ParamType1 ParamName1))
+#define DECLARE_JUMAENGINE_DELEGATE_MULTICAST_TwoParams(DelegateName, ParamType1, ParamName1, ParamType2, ParamName2) DECLARE_JUMAENGINE_DELEGATE_MULTICAST_INTERNAL(DelegateName, \
+    JUMAENGINE_CONCAT_HELPER(ParamType1, ParamType2), JUMAENGINE_CONCAT_HELPER(ParamName1, ParamName2), \
+    JUMAENGINE_CONCAT_HELPER(ParamType1 ParamName1, ParamType2 ParamName2))
+#define DECLARE_JUMAENGINE_DELEGATE_MULTICAST_ThreeParams(DelegateName, ParamType1, ParamName1, ParamType2, ParamName2, ParamType3, ParamName3) DECLARE_JUMAENGINE_DELEGATE_MULTICAST_INTERNAL(DelegateName, \
+    JUMAENGINE_CONCAT_HELPER(ParamType1, ParamType2, ParamType3), JUMAENGINE_CONCAT_HELPER(ParamName1, ParamName2, ParamName3), \
+    JUMAENGINE_CONCAT_HELPER(ParamType1 ParamName1, ParamType2 ParamName2, ParamType3 ParamName3))
+#define DECLARE_JUMAENGINE_DELEGATE_MULTICAST_FourParams(DelegateName, ParamType1, ParamName1, ParamType2, ParamName2, ParamType3, ParamName3, ParamType4, ParamName4) DECLARE_JUMAENGINE_DELEGATE_MULTICAST_INTERNAL(DelegateName, \
+    JUMAENGINE_CONCAT_HELPER(ParamType1, ParamType2, ParamType3, ParamType4), JUMAENGINE_CONCAT_HELPER(ParamName1, ParamName2, ParamName3, ParamName4), \
+    JUMAENGINE_CONCAT_HELPER(ParamType1 ParamName1, ParamType2 ParamName2, ParamType3 ParamName3, ParamType4 ParamName4))
