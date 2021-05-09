@@ -5,7 +5,7 @@
 #if defined(JUMAENGINE_USE_GRAPHIC_API_OPENGL)
 
 #include "GL/glew.h"
-#include "Engine.h"
+#include "engine/Engine.h"
 #include "utils/jlog.h"
 #include "shader/Shader_OpenGL.h"
 #include "vertexBuffer/VertexBuffer_OpenGL.h"

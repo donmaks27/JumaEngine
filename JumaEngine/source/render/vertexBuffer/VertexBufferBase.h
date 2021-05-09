@@ -4,7 +4,7 @@
 
 #include "common_header.h"
 #include "VertexBufferDescription.h"
-#include "EngineContextObject.h"
+#include "engine/EngineContextObject.h"
 #include "render/IRenderInterface.h"
 
 namespace JumaEngine

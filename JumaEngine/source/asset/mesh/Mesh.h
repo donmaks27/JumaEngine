@@ -5,7 +5,7 @@
 #include "common_header.h"
 #include "asset/AssetObject.h"
 #include "utils/jarray.h"
-#include "EngineContextObject.h"
+#include "engine/EngineContextObject.h"
 #include "render/IRenderInterface.h"
 
 namespace JumaEngine

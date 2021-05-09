@@ -4,9 +4,9 @@
 
 #include "common_header.h"
 #include "AssetObject.h"
-#include "Engine.h"
+#include "engine/Engine.h"
 #include "utils/jmap.h"
-#include "EngineContextObject.h"
+#include "engine/EngineContextObject.h"
 
 namespace JumaEngine
 {

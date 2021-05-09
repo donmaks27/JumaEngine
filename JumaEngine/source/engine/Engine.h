@@ -5,8 +5,6 @@
 #include "common_header.h"
 #include <thread>
 #include "EngineContextObject.h"
-#include "utils/jsubclass.h"
-#include "utils/type_traits_macros.h"
 
 namespace JumaEngine
 {

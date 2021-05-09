@@ -7,7 +7,7 @@
 #include "render/vertexBuffer/VertexBufferData.h"
 #include "utils/jarray.h"
 #include "utils/jsubclass.h"
-#include "EngineContextObject.h"
+#include "engine/EngineContextObject.h"
 
 namespace JumaEngine
 {

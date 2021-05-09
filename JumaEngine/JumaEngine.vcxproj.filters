@@ -58,15 +58,12 @@
     <Filter Include="JumaEngine\render\OpenGL\renderTarget">
       <UniqueIdentifier>{6eca40e8-f964-4d5e-add2-5e750319288d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="JumaEngine\engine">
+      <UniqueIdentifier>{d24a0c7e-968b-45c2-b9c3-b7d211e73081}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\Engine.cpp">
-      <Filter>JumaEngine</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="source\EngineContextObject.cpp">
-      <Filter>JumaEngine</Filter>
-    </ClCompile>
     <ClCompile Include="source\utils\system_functions.cpp">
       <Filter>JumaEngine\utils</Filter>
     </ClCompile>
@@ -160,22 +157,16 @@
     <ClCompile Include="source\utils\jlog.cpp">
       <Filter>JumaEngine\utils</Filter>
     </ClCompile>
-    <ClCompile Include="source\EngineObjectClass.cpp">
-      <Filter>JumaEngine</Filter>
+    <ClCompile Include="source\engine\Engine.cpp">
+      <Filter>JumaEngine\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="source\engine\EngineContextObject.cpp">
+      <Filter>JumaEngine\engine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\common_header.h">
       <Filter>JumaEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Engine.h">
-      <Filter>JumaEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="source\EngineContextObject.h">
-      <Filter>JumaEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\type_traits_macros.h">
-      <Filter>JumaEngine\utils</Filter>
     </ClInclude>
     <ClInclude Include="source\utils\system_functions.h">
       <Filter>JumaEngine\utils</Filter>
@@ -330,8 +321,17 @@
     <ClInclude Include="source\utils\jlog.h">
       <Filter>JumaEngine\utils</Filter>
     </ClInclude>
-    <ClInclude Include="source\EngineObjectClass.h">
-      <Filter>JumaEngine</Filter>
+    <ClInclude Include="source\engine\Engine.h">
+      <Filter>JumaEngine\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="source\engine\EngineContextObject.h">
+      <Filter>JumaEngine\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="source\engine\EngineObjectClass.h">
+      <Filter>JumaEngine\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\type_traits_macros.h">
+      <Filter>JumaEngine\utils</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

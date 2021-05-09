@@ -5,7 +5,7 @@
 #include "common_header.h"
 #include "glm/mat4x4.hpp"
 #include "utils/jarray.h"
-#include "EngineContextObject.h"
+#include "engine/EngineContextObject.h"
 
 namespace JumaEngine
 {

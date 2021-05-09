@@ -89,9 +89,8 @@
     <ClCompile Include="source\asset\material\MaterialBase.cpp" />
     <ClCompile Include="source\asset\material\MaterialInstance.cpp" />
     <ClCompile Include="source\asset\mesh\Mesh.cpp" />
-    <ClCompile Include="source\Engine.cpp" />
-    <ClCompile Include="source\EngineContextObject.cpp" />
-    <ClCompile Include="source\EngineObjectClass.cpp" />
+    <ClCompile Include="source\engine\Engine.cpp" />
+    <ClCompile Include="source\engine\EngineContextObject.cpp" />
     <ClCompile Include="source\framework\gameObject\gameComponent\CameraComponent.cpp" />
     <ClCompile Include="source\framework\gameObject\gameComponent\GameComponent.cpp" />
     <ClCompile Include="source\framework\gameObject\gameComponent\MeshComponent.cpp" />
@@ -126,9 +125,9 @@
     <ClInclude Include="source\asset\material\MaterialInstance.h" />
     <ClInclude Include="source\asset\mesh\Mesh.h" />
     <ClInclude Include="source\common_header.h" />
-    <ClInclude Include="source\Engine.h" />
-    <ClInclude Include="source\EngineContextObject.h" />
-    <ClInclude Include="source\EngineObjectClass.h" />
+    <ClInclude Include="source\engine\Engine.h" />
+    <ClInclude Include="source\engine\EngineContextObject.h" />
+    <ClInclude Include="source\engine\EngineObjectClass.h" />
     <ClInclude Include="source\framework\gameObject\gameComponent\CameraComponent.h" />
     <ClInclude Include="source\framework\gameObject\gameComponent\GameComponent.h" />
     <ClInclude Include="source\framework\gameObject\gameComponent\MeshComponent.h" />

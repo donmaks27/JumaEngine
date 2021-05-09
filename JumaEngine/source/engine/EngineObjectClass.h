@@ -48,12 +48,6 @@ namespace JumaEngine
 
 #define DECLARE_JUMAENGINE_OBJECT_CLASS(ClassName, ParentClassName)                                     \
 public:                                                                                                 \
-    static const EngineObjectClass* getClass()                                                          \
-    {                                                                                                   \
-        static ClassName##_Class Class;                                                                 \
-        return &Class;                                                                                  \
-    }                                                                                                   \
-protected:                                                                                              \
     class ClassName##_Class : public ParentClassName                                                    \
     {                                                                                                   \
     private:                                                                                            \
@@ -70,6 +64,11 @@ protected:                                                                      
             return ParentClassName::isDerrivedOrEqual(classObject);                                     \
         }                                                                                               \
     };                                                                                                  \
+    static const ClassName##_Class* getClass()                                                          \
+    {                                                                                                   \
+        static ClassName##_Class Class;                                                                 \
+        return &Class;                                                                                  \
+    }                                                                                                   \
 private:                                                                                    
 
 

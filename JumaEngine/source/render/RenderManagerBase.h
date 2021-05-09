@@ -6,7 +6,7 @@
 #include "window/window_id.h"
 #include "window/WindowDescriptionBase.h"
 #include "utils/jmap_auto_id.h"
-#include "EngineContextObject.h"
+#include "engine/EngineContextObject.h"
 #include "IRenderInterface.h"
 
 #ifndef JUMAENGINE_SINGLE_WINDOW
