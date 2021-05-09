@@ -23,7 +23,7 @@ namespace JumaEngine
         m_MainThreadID = std::this_thread::get_id();
     }
 
-    EngineContextObject* Engine::createObject(const EngineObjectClass* objectClass)
+    EngineContextObject* Engine::createObject(const EngineContextObject::ClassType* objectClass)
     {
         EngineContextObject* object = objectClass != nullptr ? objectClass->createObject() : nullptr;
         if (object != nullptr)

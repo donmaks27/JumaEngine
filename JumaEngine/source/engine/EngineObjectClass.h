@@ -50,7 +50,7 @@ namespace JumaEngine
 public:                                                                                                 \
     class ClassName##_Class : public ParentClassName                                                    \
     {                                                                                                   \
-    private:                                                                                            \
+        friend Engine;                                                                                  \
     public:                                                                                             \
         ClassName##_Class() = default;                                                                  \
         virtual ~ClassName##_Class() override = default;                                                \
@@ -64,9 +64,10 @@ public:                                                                         
             return ParentClassName::isDerrivedOrEqual(classObject);                                     \
         }                                                                                               \
     };                                                                                                  \
-    static const ClassName##_Class* getClass()                                                          \
+    typedef ClassName##_Class ClassType;                                                                \
+    static const ClassType* getClass()                                                                  \
     {                                                                                                   \
-        static ClassName##_Class Class;                                                                 \
+        static ClassType Class;                                                                         \
         return &Class;                                                                                  \
     }                                                                                                   \
 private:                                                                                    
