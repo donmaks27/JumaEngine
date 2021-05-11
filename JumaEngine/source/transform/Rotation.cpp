@@ -8,12 +8,12 @@ namespace JumaEngine
 {
 	glm::quat Rotation::toQuat() const
 	{
-		return glm::quat(glm::radians(glm::vec3(roll, pitch, yaw)));
+		return glm::quat(glm::radians(glm::vec3(roll, -pitch, yaw)));
 	}
 	void Rotation::fromQuat(const glm::quat& quat)
 	{
 		roll = glm::degrees(glm::pitch(quat));
-		pitch = glm::degrees(glm::yaw(quat));
+		pitch = glm::degrees(-glm::yaw(quat));
 		yaw = glm::degrees(glm::roll(quat));
 	}
 

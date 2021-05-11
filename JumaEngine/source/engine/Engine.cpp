@@ -123,7 +123,11 @@ namespace JumaEngine
         component->setWorldScale({ 0.3f, 0.3f, 0.3f });
 
         CameraComponent* camera = m_World->createSceneComponent<CameraComponent>();
-    	camera->setWorldLocation({ 0.0f, 0.0f, 20.0f });
+        Rotation rotation = { 0.0f, 90.0f };
+        camera->setWorldRotation(rotation);
+        glm::vec3 location = -rotation.toDirection() * 50.0f;
+        location.z = 30.0f;
+    	camera->setWorldLocation(location);
     	//camera->setWorldRotation({ 0.0f, 0.0f, 0.0f });
 
         m_RenderTarget = m_RenderManager->createRenderTargetDirect();
