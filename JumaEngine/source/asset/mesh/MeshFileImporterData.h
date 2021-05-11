@@ -8,25 +8,25 @@
 
 namespace JumaEngine
 {
-    struct MeshImporterVertexData
+    struct MeshFileImporterVertexData
     {
         glm::vec3 position;
     };
 
-    struct MeshImporterMeshPartData
+    struct MeshFileImporterMeshPartData
     {
-        jarray<MeshImporterVertexData> verticesData;
+        jarray<MeshFileImporterVertexData> verticesData;
     };
 
-    struct MeshImporterMeshData
+    struct MeshFileImporterMeshData
     {
         jstring name;
         Transform transform;
-        jarray<MeshImporterMeshPartData> meshPartsData;
+        jarray<MeshFileImporterMeshPartData> meshPartsData;
     };
 
-    struct MeshImporterData
+    struct MeshFileImporterData
     {
-        jarray<MeshImporterMeshData> meshesData;
+        jarray<MeshFileImporterMeshData> meshesData;
     };
 }

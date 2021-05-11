@@ -19,9 +19,6 @@
     <Filter Include="JumaEngine\render\vertexBuffer">
       <UniqueIdentifier>{2bdde275-7e30-4376-bfc0-fdf806b21fc2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="JumaEngine\render\vertexBuffer\importer">
-      <UniqueIdentifier>{b7b573db-6bcd-4618-bea6-86cbcab5634a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="JumaEngine\transform">
       <UniqueIdentifier>{0edfba4a-f301-4182-95f0-fdcaa8b25347}</UniqueIdentifier>
     </Filter>
@@ -127,9 +124,6 @@
     <ClCompile Include="source\render\RenderManagerBase.cpp">
       <Filter>JumaEngine\render</Filter>
     </ClCompile>
-    <ClCompile Include="source\render\vertexBuffer\importer\MeshImporterBase.cpp">
-      <Filter>JumaEngine\render\vertexBuffer\importer</Filter>
-    </ClCompile>
     <ClCompile Include="source\render\OpenGL\RenderManager_OpenGL_GLFW.cpp">
       <Filter>JumaEngine\render\OpenGL</Filter>
     </ClCompile>
@@ -162,6 +156,12 @@
     </ClCompile>
     <ClCompile Include="source\engine\EngineContextObject.cpp">
       <Filter>JumaEngine\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="source\asset\mesh\MeshFileImporterBase.cpp">
+      <Filter>JumaEngine\asset\mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="source\asset\mesh\MeshFileImporter_Assimp.cpp">
+      <Filter>JumaEngine\asset\mesh</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -261,12 +261,6 @@
     <ClInclude Include="source\render\RenderManagerBase.h">
       <Filter>JumaEngine\render</Filter>
     </ClInclude>
-    <ClInclude Include="source\render\vertexBuffer\importer\MeshImporterData.h">
-      <Filter>JumaEngine\render\vertexBuffer\importer</Filter>
-    </ClInclude>
-    <ClInclude Include="source\render\vertexBuffer\importer\MeshImporterBase.h">
-      <Filter>JumaEngine\render\vertexBuffer\importer</Filter>
-    </ClInclude>
     <ClInclude Include="source\render\vertexBuffer\VertexBufferDescription.h">
       <Filter>JumaEngine\render\vertexBuffer</Filter>
     </ClInclude>
@@ -332,6 +326,15 @@
     </ClInclude>
     <ClInclude Include="source\utils\type_traits_macros.h">
       <Filter>JumaEngine\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="source\asset\mesh\MeshFileImporterBase.h">
+      <Filter>JumaEngine\asset\mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="source\asset\mesh\MeshFileImporter_Assimp.h">
+      <Filter>JumaEngine\asset\mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="source\asset\mesh\MeshFileImporterData.h">
+      <Filter>JumaEngine\asset\mesh</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

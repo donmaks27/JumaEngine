@@ -8,7 +8,7 @@
 
 namespace JumaEngine
 {
-    class MeshImporterBase;
+    class MeshFileImporterBase;
     class CameraComponent;
 
     class SystemFunctions final
@@ -16,12 +16,6 @@ namespace JumaEngine
     public:
 
 		static Engine* getEngine(const EngineContextObject* engineContextObject) { return engineContextObject != nullptr ? engineContextObject->getOwnerEngine() : nullptr; }
-
-        static MeshImporterBase* getVertexBufferImporter(const EngineContextObject* engineContextObject)
-		{
-		    const Engine* engine = getEngine(engineContextObject);
-            return engine != nullptr ? engine->getVertexBufferImporter() : nullptr;
-		}
 
         static CameraComponent* getWindowActiveCamera(const EngineContextObject* engineContextObject, window_id windowID);
     };

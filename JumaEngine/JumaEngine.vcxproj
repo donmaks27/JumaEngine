@@ -41,6 +41,8 @@
     <Import Project="..\lib\GLEW.props" />
     <Import Project="..\lib\GLFW.props" />
     <Import Project="..\lib\GLM.props" />
+    <Import Project="..\lib\irrXML.props" />
+    <Import Project="..\lib\Assimp.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -48,6 +50,8 @@
     <Import Project="..\lib\GLEW.props" />
     <Import Project="..\lib\GLFW.props" />
     <Import Project="..\lib\GLM.props" />
+    <Import Project="..\lib\irrXML.props" />
+    <Import Project="..\lib\Assimp.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup />
@@ -89,6 +93,8 @@
     <ClCompile Include="source\asset\material\MaterialBase.cpp" />
     <ClCompile Include="source\asset\material\MaterialInstance.cpp" />
     <ClCompile Include="source\asset\mesh\Mesh.cpp" />
+    <ClCompile Include="source\asset\mesh\MeshFileImporterBase.cpp" />
+    <ClCompile Include="source\asset\mesh\MeshFileImporter_Assimp.cpp" />
     <ClCompile Include="source\engine\Engine.cpp" />
     <ClCompile Include="source\engine\EngineContextObject.cpp" />
     <ClCompile Include="source\framework\gameObject\gameComponent\CameraComponent.cpp" />
@@ -109,7 +115,6 @@
     <ClCompile Include="source\render\renderTarget\RenderTargetDirectBase.cpp" />
     <ClCompile Include="source\render\renderTarget\RenderTargetCompositeBase.cpp" />
     <ClCompile Include="source\render\shader\ShaderBase.cpp" />
-    <ClCompile Include="source\render\vertexBuffer\importer\MeshImporterBase.cpp" />
     <ClCompile Include="source\render\vertexBuffer\VertexBufferBase.cpp" />
     <ClCompile Include="source\render\vertexBuffer\VertexPosition.cpp" />
     <ClCompile Include="source\transform\Rotation.cpp" />
@@ -124,6 +129,9 @@
     <ClInclude Include="source\asset\material\MaterialBase.h" />
     <ClInclude Include="source\asset\material\MaterialInstance.h" />
     <ClInclude Include="source\asset\mesh\Mesh.h" />
+    <ClInclude Include="source\asset\mesh\MeshFileImporterBase.h" />
+    <ClInclude Include="source\asset\mesh\MeshFileImporter_Assimp.h" />
+    <ClInclude Include="source\asset\mesh\MeshFileImporterData.h" />
     <ClInclude Include="source\common_header.h" />
     <ClInclude Include="source\engine\Engine.h" />
     <ClInclude Include="source\engine\EngineContextObject.h" />
@@ -148,8 +156,6 @@
     <ClInclude Include="source\render\renderTarget\RenderTargetDirectBase.h" />
     <ClInclude Include="source\render\renderTarget\RenderTargetCompositeBase.h" />
     <ClInclude Include="source\render\shader\ShaderBase.h" />
-    <ClInclude Include="source\render\vertexBuffer\importer\MeshImporterBase.h" />
-    <ClInclude Include="source\render\vertexBuffer\importer\MeshImporterData.h" />
     <ClInclude Include="source\render\vertexBuffer\VertexBufferBase.h" />
     <ClInclude Include="source\render\vertexBuffer\VertexBufferData.h" />
     <ClInclude Include="source\render\vertexBuffer\VertexBufferDescription.h" />

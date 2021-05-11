@@ -11,7 +11,7 @@ namespace JumaEngine
     class RenderManagerBase;
     class AssetsManager;
 	class WindowBaseOld;
-    class MeshImporterBase;
+    class MeshFileImporterBase;
 
     class EngineWorld;
     class Mesh;
@@ -25,7 +25,7 @@ namespace JumaEngine
 
         bool isMainThread() const { return std::this_thread::get_id() == m_MainThreadID; }
 
-        template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<MeshImporterBase, T>)>
+        template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<MeshFileImporterBase, T>)>
         void setVertexBufferImporter()
         {
             if (m_MeshImporter == nullptr)
@@ -35,7 +35,7 @@ namespace JumaEngine
         }
 
         RenderManagerBase* getRenderManager() const { return m_RenderManager; }
-        MeshImporterBase* getVertexBufferImporter() const { return m_MeshImporter; }
+        MeshFileImporterBase* getVertexBufferImporter() const { return m_MeshImporter; }
 
         EngineContextObject* createObject(const EngineContextObject::ClassType* objectClass);
         template<typename T, TEMPLATE_ENABLE(is_base_and_not_same<EngineContextObject, T>)>
@@ -55,7 +55,7 @@ namespace JumaEngine
 		bool m_EngineStarted = false;
     	
         RenderManagerBase* m_RenderManager = nullptr;
-        MeshImporterBase* m_MeshImporter = nullptr;
+        MeshFileImporterBase* m_MeshImporter = nullptr;
     	AssetsManager* m_AssetsManager = nullptr;
 
         EngineWorld* m_World = nullptr;

@@ -19,6 +19,6 @@ namespace JumaEngine
 
         virtual void fillVertexBufferDescription(VertexBufferDescription& description) const override;
 
-        virtual void copyFromVertexBufferImporterData(const MeshImporterMeshPartData& data) override;
+        virtual void copyFromMeshFileImporterData(const MeshFileImporterMeshPartData& data) override;
     };
 }

@@ -14,7 +14,7 @@
 #include "render/RenderManagerImpl.h"
 #include "render/renderTarget/RenderTargetDirectBase.h"
 #include "render/vertexBuffer/VertexPosition.h"
-#include "render/vertexBuffer/importer/MeshImporterBase.h"
+#include "asset/mesh/MeshFileImporterBase.h"
 
 namespace JumaEngine
 {
@@ -113,24 +113,22 @@ namespace JumaEngine
     	material->addMaterialParam("uModel", glm::mat4(1));
     	material->finishInitialization();
 
-        m_MeshImporter->importFile("");
+        m_MeshImporter->importMeshFile("content/SK_Mannequin.FBX");
         m_Mesh = createObject<Mesh>();
-        m_Mesh->initMesh(m_MeshImporter->createVertexBuffersForMesh(JTEXT("Triangle"), jclass_type<VertexBufferDataPosition>()));
+        m_Mesh->initMesh(m_MeshImporter->createVertexBufferDataForMesh(JTEXT("SK_Mannequin001"), jclass_type<VertexBufferDataPosition>()));
         m_Mesh->setMaterial(0, m_AssetsManager->createMaterialInstance(material));
 
         MeshComponent* component = m_World->createSceneComponent<MeshComponent>();
         component->setMesh(m_Mesh);
+        component->setWorldScale({ 0.3f, 0.3f, 0.3f });
 
         CameraComponent* camera = m_World->createSceneComponent<CameraComponent>();
-    	//m_Camera->setWorldLocation({ -50.0f, 0.0f, 0.0f });
-    	//m_Camera->setWorldRotation({ 0.0f, 0.0f, 0.0f });
+    	camera->setWorldLocation({ 0.0f, 0.0f, 20.0f });
+    	//camera->setWorldRotation({ 0.0f, 0.0f, 0.0f });
 
         m_RenderTarget = m_RenderManager->createRenderTargetDirect();
         m_RenderTarget->setCamera(camera);
         m_RenderManager->setWindowRenderTarget(m_RenderManager->getMainWindowID(), m_RenderTarget);
-
-        const window_id windowID = m_RenderManager->createWindow(glm::uvec2(800, 600), JTEXT("Second window"));
-        m_RenderManager->setWindowRenderTarget(windowID, m_RenderTarget);
     }
 
     void Engine::startEngineLoop()

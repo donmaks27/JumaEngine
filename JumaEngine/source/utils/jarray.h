@@ -23,12 +23,9 @@ namespace JumaEngine
             : base_class(vector)
         {}
 
-        bool isValidIndex(const size_t index) const
-        {
-            return (index >= 0) && (index < this->size());
-        }
+        bool isValidIndex(const int64 index) const { return (index >= 0) && (index < this->size()); }
 
-        size_t indexOf(const T& value) const
+        int64 indexOf(const T& value) const
         {
             if (!this->empty())
             {
@@ -44,16 +41,19 @@ namespace JumaEngine
         }
         bool contains(const T& value) const { return indexOf(value) != -1; }
         
-		void add(const T& value) { this->push_back(value); }
-    	void addUnique(const T& value)
+		T& add(const T& value) { return this->emplace_back(value); }
+		T& addDefault() { return this->emplace_back(T()); }
+    	T& addUnique(const T& value)
         {
-	        if (indexOf(value) != -1)
+            const int64 index = indexOf(value);
+	        if (index == -1)
 	        {
-		        add(value);
+		        return add(value);
 	        }
+            return this->at(index);
         }
     	
-        bool removeAt(const size_t index)
+        bool removeAt(const int64 index)
         {
             if (isValidIndex(index))
             {

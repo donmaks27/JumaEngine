@@ -19,7 +19,7 @@ namespace JumaEngine
         {
             if (!m_UnusedIDs.empty())
             {
-                size_t index = m_UnusedIDs.size() - 1;
+                const int64 index = static_cast<int64>(m_UnusedIDs.size()) - 1;
                 T id = m_UnusedIDs[index];
                 m_UnusedIDs.removeAt(index);
                 return id;

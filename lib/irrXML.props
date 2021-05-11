@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+    <IRRXML_VERSION>1.2</IRRXML_VERSION>
+    <IRRXML_DIR>$(LIBS_DIR)IrrXML\</IRRXML_DIR>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(IRRXML_DIR)include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(IRRXML_DIR)lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>IrrXML.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>
+      </IgnoreSpecificDefaultLibraries>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <BuildMacro Include="IRRXML_VERSION">
+      <Value>$(IRRXML_VERSION)</Value>
+    </BuildMacro>
+    <BuildMacro Include="IRRXML_DIR">
+      <Value>$(IRRXML_DIR)</Value>
+    </BuildMacro>
+  </ItemGroup>
+</Project>

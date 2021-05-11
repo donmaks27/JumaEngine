@@ -123,9 +123,11 @@ namespace JumaEngine
 			m_Angle -= 360.0f;
 		}
 
-		Rotation r = { 0.0f, angle };
-		glm::vec3 direction = r.toDirection();
-		r.fromDirection(-direction);
-		setWorldTransform({ direction * 50.0f, r });
+		Rotation rotation = { 0.0f, angle };
+		const glm::vec3 direction = rotation.toDirection();
+		rotation.fromDirection(-direction);
+        glm::vec3 location = direction * 50.0f;
+        location.z = getWorldLocatoin().z;
+		setWorldTransform({ location, rotation });
 	}
 }

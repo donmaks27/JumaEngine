@@ -4,7 +4,7 @@
 
 #include "common_header.h"
 #include "VertexBufferDescription.h"
-#include "importer/MeshImporterData.h"
+#include "asset/mesh/MeshFileImporterData.h"
 
 namespace JumaEngine
 {
@@ -22,7 +22,7 @@ namespace JumaEngine
             description.indicesCount = static_cast<uint32>(vertexIndices.size());
         }
 
-        virtual void copyFromVertexBufferImporterData(const MeshImporterMeshPartData& data) = 0;
+        virtual void copyFromMeshFileImporterData(const MeshFileImporterMeshPartData& data) = 0;
 
     protected:
 
