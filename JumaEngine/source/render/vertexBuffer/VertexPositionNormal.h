@@ -7,12 +7,13 @@
 
 namespace JumaEngine
 {
-    struct VertexPosition
+    struct VertexPositionNormal
     {
         glm::vec3 position;
+        glm::vec3 normal;
     };
 
-    class VertexBufferDataPosition final : public VertexBufferData<VertexPosition>
+    class VertexBufferDataPositionNormal final : public VertexBufferData<VertexPositionNormal>
     {
     public:
 

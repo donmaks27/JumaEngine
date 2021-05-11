@@ -163,6 +163,9 @@
     <ClCompile Include="source\asset\mesh\MeshFileImporter_Assimp.cpp">
       <Filter>JumaEngine\asset\mesh</Filter>
     </ClCompile>
+    <ClCompile Include="source\render\vertexBuffer\VertexPositionNormal.cpp">
+      <Filter>JumaEngine\render\vertexBuffer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\common_header.h">
@@ -335,6 +338,9 @@
     </ClInclude>
     <ClInclude Include="source\asset\mesh\MeshFileImporterData.h">
       <Filter>JumaEngine\asset\mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\vertexBuffer\VertexPositionNormal.h">
+      <Filter>JumaEngine\render\vertexBuffer</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

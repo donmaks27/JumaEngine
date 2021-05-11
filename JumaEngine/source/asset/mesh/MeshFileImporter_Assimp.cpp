@@ -23,6 +23,12 @@ namespace JumaEngine
 
             const aiVector3D position = mesh->mVertices[i];
             vertexData.position = { position.x, position.y, position.z };
+
+            if (mesh->mNormals != nullptr)
+            {
+                const aiVector3D normal = mesh->mNormals[i];
+                vertexData.normal = { normal.x, normal.y, normal.z };
+            }
         }
     }
 

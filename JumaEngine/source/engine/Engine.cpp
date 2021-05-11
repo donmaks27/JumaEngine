@@ -13,8 +13,8 @@
 #include "asset/mesh/Mesh.h"
 #include "render/RenderManagerImpl.h"
 #include "render/renderTarget/RenderTargetDirectBase.h"
-#include "render/vertexBuffer/VertexPosition.h"
 #include "asset/mesh/MeshFileImporterBase.h"
+#include "render/vertexBuffer/VertexPositionNormal.h"
 
 namespace JumaEngine
 {
@@ -115,7 +115,7 @@ namespace JumaEngine
 
         m_MeshImporter->importMeshFile("content/SK_Mannequin.FBX");
         m_Mesh = createObject<Mesh>();
-        m_Mesh->initMesh(m_MeshImporter->createVertexBufferDataForMesh(JTEXT("SK_Mannequin001"), jclass_type<VertexBufferDataPosition>()));
+        m_Mesh->initMesh(m_MeshImporter->createVertexBufferDataForMesh(JTEXT("SK_Mannequin001"), jclass_type<VertexBufferDataPositionNormal>()));
         m_Mesh->setMaterial(0, m_AssetsManager->createMaterialInstance(material));
 
         MeshComponent* component = m_World->createSceneComponent<MeshComponent>();

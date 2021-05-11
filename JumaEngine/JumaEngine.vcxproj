@@ -117,6 +117,7 @@
     <ClCompile Include="source\render\shader\ShaderBase.cpp" />
     <ClCompile Include="source\render\vertexBuffer\VertexBufferBase.cpp" />
     <ClCompile Include="source\render\vertexBuffer\VertexPosition.cpp" />
+    <ClCompile Include="source\render\vertexBuffer\VertexPositionNormal.cpp" />
     <ClCompile Include="source\transform\Rotation.cpp" />
     <ClCompile Include="source\utils\jlog.cpp" />
     <ClCompile Include="source\utils\math_functions.cpp" />
@@ -160,6 +161,7 @@
     <ClInclude Include="source\render\vertexBuffer\VertexBufferData.h" />
     <ClInclude Include="source\render\vertexBuffer\VertexBufferDescription.h" />
     <ClInclude Include="source\render\vertexBuffer\VertexPosition.h" />
+    <ClInclude Include="source\render\vertexBuffer\VertexPositionNormal.h" />
     <ClInclude Include="source\render\window\WindowDescriptionBase.h" />
     <ClInclude Include="source\render\window\WindowDescriptionGLFW.h" />
     <ClInclude Include="source\render\window\window_id.h" />
