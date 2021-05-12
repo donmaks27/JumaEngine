@@ -13,7 +13,7 @@ namespace JumaEngine
         m_Mesh = mesh;
     }
 
-    void MeshComponent::render(const window_id windowID)
+    void MeshComponent::render(const window_id windowID, const RenderParams& renderParams)
     {
         if (m_Mesh != nullptr)
         {
@@ -28,10 +28,28 @@ namespace JumaEngine
 				}
 				material->setMaterialParam("uModel", getWorldTransform().toMatrix());
 			}
-        	
-            m_Mesh->render(windowID);
+
+            const glm::vec3 scale = getWorldScale();
+            uint8 negativeCount = 0;
+            if (scale.x < 0)
+            {
+                ++negativeCount;
+            }
+            if (scale.y < 0)
+            {
+                ++negativeCount;
+            }
+            if (scale.z < 0)
+            {
+                ++negativeCount;
+            }
+            const bool shouldInvertFacesOrientation = negativeCount % 2 == 0 ? renderParams.invertFacesOrientation : !renderParams.invertFacesOrientation;
+
+            RenderParams newRenderParams = renderParams;
+            newRenderParams.invertFacesOrientation = negativeCount % 2 == 0 ? renderParams.invertFacesOrientation : !renderParams.invertFacesOrientation;
+            m_Mesh->render(windowID, newRenderParams);
         }
 
-        Super::render(windowID);
+        Super::render(windowID, renderParams);
     }
 }

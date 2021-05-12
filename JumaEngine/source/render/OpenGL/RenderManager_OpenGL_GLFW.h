@@ -22,7 +22,7 @@ namespace JumaEngine
         virtual bool shouldCloseWindow(window_id windowID) const override;
         virtual void markWindowShouldClose(window_id windowID) override;
         
-        virtual void render(window_id windowID) override;
+        virtual void render(window_id windowID, const RenderParams& renderParams) override;
 
     protected:
 

@@ -29,9 +29,9 @@ namespace JumaEngine
         asset_ptr<MaterialBase> getMaterial(const uint32 slotIndex) const { return m_Materials.size() > slotIndex ? m_Materials[slotIndex] : asset_ptr<MaterialBase>(); }
         void setMaterial(uint32 slotIndex, const asset_ptr<MaterialBase>& material);
 
-        virtual void render(window_id windowID) override;
+        virtual void render(window_id windowID, const RenderParams& renderParams) override;
 
-    protected:
+    private:
 
         jarray<VertexBufferBase*> m_VertexBuffers;
         jarray<asset_ptr<MaterialBase>> m_Materials;

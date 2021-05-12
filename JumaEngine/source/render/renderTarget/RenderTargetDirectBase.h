@@ -19,7 +19,7 @@ namespace JumaEngine
 
         void setCamera(CameraComponent* camera) { m_Camera = camera; }
 
-        virtual void render(window_id windowID) override;
+        virtual void render(window_id windowID, const RenderParams& renderParams) override;
 
     protected:
 

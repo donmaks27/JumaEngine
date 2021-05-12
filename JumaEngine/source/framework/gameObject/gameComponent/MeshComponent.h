@@ -19,7 +19,7 @@ namespace JumaEngine
 
         void setMesh(Mesh* mesh);
 
-        virtual void render(window_id windowID) override;
+        virtual void render(window_id windowID, const RenderParams& renderParams) override;
 
     private:
 

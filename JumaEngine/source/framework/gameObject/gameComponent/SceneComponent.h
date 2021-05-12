@@ -25,7 +25,7 @@ namespace JumaEngine
 
         bool isRootComponent() const { return (getParentComponent() == nullptr) && (getOwnerGameObject() != nullptr); }
 
-        virtual void render(window_id windowID) override;
+        virtual void render(window_id windowID, const RenderParams& renderParams) override;
 
     protected:
 

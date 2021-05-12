@@ -132,9 +132,9 @@ namespace JumaEngine
         return false;
     }
 
-    void RenderManager_OpenGL_GLFW::render(const window_id windowID)
+    void RenderManager_OpenGL_GLFW::render(const window_id windowID, const RenderParams& renderParams)
     {
-        Super::render(windowID);
+        Super::render(windowID, renderParams);
 
         GLFWwindow* window = getWindowGLFW(windowID);
         if (window != nullptr)

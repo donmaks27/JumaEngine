@@ -56,7 +56,7 @@ namespace JumaEngine
         }
     }
 
-    void Mesh::render(const window_id windowID)
+    void Mesh::render(const window_id windowID, const RenderParams& renderParams)
     {
         for (uint32 index = 0; index < m_VertexBuffers.size(); index++)
         {
@@ -67,7 +67,7 @@ namespace JumaEngine
                 if (material->activate())
                 {
                 	material->loadMaterialParams();
-                    vertexBuffer->render(windowID);
+                    vertexBuffer->render(windowID, renderParams);
                 	material->deactivate();
                 }
             }

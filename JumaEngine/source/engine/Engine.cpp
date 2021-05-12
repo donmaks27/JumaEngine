@@ -128,7 +128,6 @@ namespace JumaEngine
         glm::vec3 location = -rotation.toDirection() * 50.0f;
         location.z = 30.0f;
     	camera->setWorldLocation(location);
-    	//camera->setWorldRotation({ 0.0f, 0.0f, 0.0f });
 
         m_RenderTarget = m_RenderManager->createRenderTargetDirect();
         m_RenderTarget->setCamera(camera);

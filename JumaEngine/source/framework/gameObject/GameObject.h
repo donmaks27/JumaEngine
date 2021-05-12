@@ -28,7 +28,7 @@ namespace JumaEngine
         SceneComponent* getParentComponent() const { return m_ParentComponent; }
         GameObject* getParentGameObject() const;
 		
-        virtual void render(window_id windowID) override;
+        virtual void render(window_id windowID, const RenderParams& renderParams) override;
 
 	protected:
 

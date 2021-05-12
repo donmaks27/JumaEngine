@@ -7,6 +7,11 @@
 
 namespace JumaEngine
 {
+    struct RenderParams
+    {
+        bool invertFacesOrientation = false;
+    };
+
     class IRenderInterface
     {
     protected:
@@ -15,6 +20,6 @@ namespace JumaEngine
 
     public:
 
-        virtual void render(window_id windowID) {}
+        virtual void render(window_id windowID, const RenderParams& renderParams) {}
     };
 }

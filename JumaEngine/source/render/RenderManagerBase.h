@@ -60,7 +60,7 @@ namespace JumaEngine
         RenderTargetDirectBase* createRenderTargetDirect();
         
         void startRender();
-        virtual void render(window_id windowID) override;
+        virtual void render(window_id windowID, const RenderParams& renderParams) override;
 
     protected:
 

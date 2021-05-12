@@ -392,7 +392,7 @@ namespace JumaEngine
         }
 #endif
 
-        render(mainWindowID);
+        render(mainWindowID, { false });
 
 #ifndef JUMAENGINE_SINGLE_WINDOW
         for (auto& windowIDAndDescription : m_Windows)
@@ -459,12 +459,12 @@ namespace JumaEngine
     }
 #endif
 
-    void RenderManagerBase::render(const window_id windowID)
+    void RenderManagerBase::render(const window_id windowID, const RenderParams& renderParams)
     {
         WindowDescriptionBase* description = getWindowDescription(windowID);
         if (description != nullptr)
         {
-            description->windowRenderTarget->render(windowID);
+            description->windowRenderTarget->render(windowID, renderParams);
         }
     }
 }

@@ -100,13 +100,18 @@ namespace JumaEngine
         }
     }
 
-    void VertexBuffer_OpenGL::render(const window_id windowID)
+    void VertexBuffer_OpenGL::render(const window_id windowID, const RenderParams& renderParams)
     {
         if (isInit())
         {
             const VertexBufferDescription& description = getVertexBufferDescription();
 
             bindVAO(windowID);
+            if (renderParams.invertFacesOrientation)
+            {
+                glCullFace(GL_FRONT);
+            }
+
             if (m_IndicesVBO == 0)
             {
                 glDrawArrays(GL_TRIANGLES, 0, description.verticesCount);
@@ -116,6 +121,11 @@ namespace JumaEngine
                 glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndicesVBO);
                 glDrawElements(GL_TRIANGLES, description.indicesCount, GL_UNSIGNED_INT, nullptr);
                 glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+            }
+            
+            if (renderParams.invertFacesOrientation)
+            {
+                glCullFace(GL_BACK);
             }
             glBindVertexArray(0);
         }

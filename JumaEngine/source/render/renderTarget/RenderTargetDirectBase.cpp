@@ -8,7 +8,7 @@
 
 namespace JumaEngine
 {
-    void RenderTargetDirectBase::render(const window_id windowID)
+    void RenderTargetDirectBase::render(const window_id windowID, const RenderParams& renderParams)
     {
         EngineWorld* world = m_Camera != nullptr ? m_Camera->getOwnerWorld() : nullptr;
         if (world != nullptr)
@@ -19,7 +19,7 @@ namespace JumaEngine
                 renderManager->setWindowActiveCamera(windowID, m_Camera);
 
                 clearFrame();
-                world->render(windowID);
+                world->render(windowID, renderParams);
             }
         }
     }

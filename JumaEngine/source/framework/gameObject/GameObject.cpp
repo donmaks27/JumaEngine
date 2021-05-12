@@ -10,11 +10,11 @@ namespace JumaEngine
         return getParentComponent() != nullptr ? getParentComponent()->getOwnerGameObject() : nullptr;
     }
 
-    void GameObject::render(const window_id windowID)
+    void GameObject::render(const window_id windowID, const RenderParams& renderParams)
     {
         if (m_RootComponent != nullptr)
         {
-            m_RootComponent->render(windowID);
+            m_RootComponent->render(windowID, renderParams);
         }
     }
 }
