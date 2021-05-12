@@ -114,12 +114,14 @@ namespace JumaEngine
     	material->finishInitialization();
 
         m_MeshImporter->importMeshFile("content/SK_Mannequin.FBX");
-        m_Mesh = createObject<Mesh>();
-        m_Mesh->initMesh(m_MeshImporter->createVertexBufferDataForMesh(JTEXT("SK_Mannequin001"), jclass_type<VertexBufferDataPositionNormal>()));
-        m_Mesh->setMaterial(0, m_AssetsManager->createMaterialInstance(material));
+        asset_ptr<Mesh> mesh = m_AssetsManager->createMesh(
+            JTEXT("SK_Mannequin"), 
+            m_MeshImporter->createVertexBufferDataForMesh(JTEXT("SK_Mannequin001"), jclass_type<VertexBufferDataPositionNormal>())
+        );
+        mesh->setMaterial(0, m_AssetsManager->createMaterialInstance(material));
 
         MeshComponent* component = m_World->createSceneComponent<MeshComponent>();
-        component->setMesh(m_Mesh);
+        component->setMesh(mesh);
         component->setWorldScale({ 0.3f, 0.3f, 0.3f });
 
         CameraComponent* camera = m_World->createSceneComponent<CameraComponent>();
@@ -185,9 +187,6 @@ namespace JumaEngine
 
         delete m_World;
         m_World = nullptr;
-
-		delete m_Mesh;
-        m_Mesh = nullptr;
 
 		delete m_AssetsManager;
     	m_AssetsManager = nullptr;

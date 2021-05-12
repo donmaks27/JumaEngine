@@ -15,6 +15,8 @@ namespace JumaEngine
         MeshFileImporter_Assimp() = default;
         virtual ~MeshFileImporter_Assimp() override = default;
 
-        virtual void importMeshFile(const char* filePath) override;
+    protected:
+
+        virtual void importMeshFileInternal() override;
     };
 }

@@ -13,6 +13,8 @@ namespace JumaEngine
     class MaterialBase;
     class Material;
     class MaterialInstance;
+    class Mesh;
+    class VertexBufferDataBase;
 
     class AssetsManager final : public EngineContextObject
 	{
@@ -27,34 +29,28 @@ namespace JumaEngine
 		asset_ptr<Material> createMaterial(const jstring& materialName);
 		asset_ptr<MaterialInstance> createMaterialInstance(const jstring& materialInstanceName, const asset_ptr<MaterialBase>& baseMaterial);
 		asset_ptr<MaterialInstance> createMaterialInstance(const asset_ptr<MaterialBase>& baseMaterial);
+
+        asset_ptr<Mesh> createMesh(const jstring& meshName, const jarray<VertexBufferDataBase*>& meshPartsData);
 	
 	private:
 
     	jmap<jstring, asset_ptr<Material>> m_Materials;
         jmap<jstring, asset_ptr<MaterialInstance>> m_MaterialInstances;
+        jmap<jstring, asset_ptr<Mesh>> m_Meshes;
 
 
 		template<typename T, TEMPLATE_ENABLE(is_base_and_not_same_and_not_abstract<AssetObject, T>)>
-		std::shared_ptr<T> createAssetObject()
+		asset_ptr<T> createAssetObject()
 		{
             Engine* engine = getOwnerEngine();
 			if (engine != nullptr)
 			{
-                std::shared_ptr<T> asset = std::shared_ptr<T>(engine->createObject<T>());
+                asset_ptr<T> asset = asset_ptr<T>(engine->createObject<T>());
                 registerAssetObject(asset);
                 return asset;
 			}
 			return nullptr;
 		}
-		void registerAssetObject(const std::shared_ptr<AssetObject>& asset);
-
-    	template<typename T>
-    	void destroyUnusedAssets(jmap<jstring, asset_ptr<T>>& assetsMap)
-    	{
-    		assetsMap.removeByPredicate([](const jstring& key, const asset_ptr<T>& value)
-    		{
-    			return (value == nullptr) || (value.use_count() == 1);
-    		});
-    	}
+		void registerAssetObject(const asset_ptr<AssetObject>& asset);
 	};
 }

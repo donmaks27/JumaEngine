@@ -10,11 +10,9 @@ namespace JumaEngine
 {
     class RenderManagerBase;
     class AssetsManager;
-	class WindowBaseOld;
     class MeshFileImporterBase;
 
     class EngineWorld;
-    class Mesh;
     class RenderTargetDirectBase;
 
     class Engine
@@ -59,8 +57,6 @@ namespace JumaEngine
     	AssetsManager* m_AssetsManager = nullptr;
 
         EngineWorld* m_World = nullptr;
-
-        Mesh* m_Mesh = nullptr;
 
         RenderTargetDirectBase* m_RenderTarget = nullptr;
 

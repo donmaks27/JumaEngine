@@ -43,12 +43,10 @@ namespace JumaEngine
         {}
 
     private:
-
-        asset_ptr(const std::shared_ptr<T>& asset)
-            : base_class(asset)
-        {}
-        asset_ptr(std::shared_ptr<T>&& asset)
-            : base_class(asset)
+        
+        template<typename U, TEMPLATE_ENABLE(std::is_base_of_v<T, U>)>
+        asset_ptr(U* object)
+            : base_class(object)
         {}
 
     public:

@@ -3,9 +3,8 @@
 #pragma once
 
 #include "common_header.h"
-#include "asset/AssetObject.h"
 #include "utils/jarray.h"
-#include "engine/EngineContextObject.h"
+#include "asset/AssetObject.h"
 #include "render/IRenderInterface.h"
 
 namespace JumaEngine
@@ -14,17 +13,17 @@ namespace JumaEngine
     class VertexBufferBase;
     class MaterialBase;
 
-    class Mesh : public EngineContextObject, public IRenderInterface
+    class Mesh : public AssetObject, public IRenderInterface
     {
-        JUMAENGINE_CLASS(Mesh, EngineContextObject)
+        JUMAENGINE_CLASS(Mesh, AssetObject)
+
+        friend AssetsManager;
 
     public:
         Mesh() = default;
         virtual ~Mesh() override;
 
-        bool initMesh(const jarray<VertexBufferDataBase*>& vertexBuffersData);
         bool isMeshInit() const { return !m_VertexBuffers.empty(); }
-        void terminateMesh();
 
         asset_ptr<MaterialBase> getMaterial(const uint32 slotIndex) const { return m_Materials.size() > slotIndex ? m_Materials[slotIndex] : asset_ptr<MaterialBase>(); }
         void setMaterial(uint32 slotIndex, const asset_ptr<MaterialBase>& material);
@@ -35,5 +34,9 @@ namespace JumaEngine
 
         jarray<VertexBufferBase*> m_VertexBuffers;
         jarray<asset_ptr<MaterialBase>> m_Materials;
+
+        
+        bool initMesh(const jarray<VertexBufferDataBase*>& meshPartsData);
+        void terminateMesh();
     };
 }

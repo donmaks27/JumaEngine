@@ -3,6 +3,7 @@
 #pragma once
 
 #include "common_header.h"
+#include "asset/AssetObject.h"
 #include "SceneComponent.h"
 
 namespace JumaEngine
@@ -17,12 +18,12 @@ namespace JumaEngine
         MeshComponent() = default;
         virtual ~MeshComponent() override = default;
 
-        void setMesh(Mesh* mesh);
+        void setMesh(const asset_ptr<Mesh>& mesh);
 
         virtual void render(window_id windowID, const RenderParams& renderParams) override;
 
     private:
 
-        Mesh* m_Mesh = nullptr;
+        asset_ptr<Mesh> m_Mesh = nullptr;
     };
 }

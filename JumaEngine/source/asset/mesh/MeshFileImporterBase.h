@@ -4,13 +4,14 @@
 
 #include "common_header.h"
 #include "MeshFileImporterData.h"
-#include "render/vertexBuffer/VertexBufferData.h"
 #include "utils/jarray.h"
 #include "utils/jsubclass.h"
 #include "engine/EngineContextObject.h"
 
 namespace JumaEngine
 {
+    class VertexBufferDataBase;
+
     class MeshFileImporterBase : public EngineContextObject
     {
         JUMAENGINE_CLASS(MeshFileImporterBase, EngineContextObject)
@@ -19,14 +20,18 @@ namespace JumaEngine
         MeshFileImporterBase() = default;
         virtual ~MeshFileImporterBase() override = default;
 
-        virtual void importMeshFile(const char* filePath) = 0;
-        void clear() { m_Data = MeshFileImporterData(); }
+        void importMeshFile(const jstring& filePath, bool forceLoad = false);
+        void clear();
 
         const MeshFileImporterData& getData() const { return m_Data; }
-        jarray<VertexBufferDataBase*> createVertexBufferDataForMesh(const jstring& meshName, const jsubclass<VertexBufferDataBase>& bufferDataClass);
+        jarray<VertexBufferDataBase*> createVertexBufferDataForMesh(const jstring& meshName, const jsubclass<VertexBufferDataBase>& bufferDataClass) const;
 
     protected:
 
+        jstring m_LoadedMeshFilePath;
         MeshFileImporterData m_Data;
+
+
+        virtual void importMeshFileInternal() = 0;
     };
 }

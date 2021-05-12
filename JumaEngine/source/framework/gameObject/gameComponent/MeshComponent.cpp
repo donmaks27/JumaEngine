@@ -8,7 +8,7 @@
 
 namespace JumaEngine
 {
-    void MeshComponent::setMesh(Mesh* mesh)
+    void MeshComponent::setMesh(const asset_ptr<Mesh>& mesh)
     {
         m_Mesh = mesh;
     }

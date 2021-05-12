@@ -68,13 +68,13 @@ namespace JumaEngine
         }
     }
 
-    void MeshFileImporter_Assimp::importMeshFile(const char* filePath)
+    void MeshFileImporter_Assimp::importMeshFileInternal()
     {
         Assimp::Importer importer;
         importer.SetPropertyInteger(AI_CONFIG_PP_RVC_FLAGS, aiComponent_COLORS | aiComponent_LIGHTS | aiComponent_CAMERAS);
 
         const aiScene* scene = importer.ReadFile(
-            filePath, 
+            m_LoadedMeshFilePath, 
             aiProcess_Triangulate | aiProcess_RemoveComponent | aiProcess_GenNormals | aiProcess_GenUVCoords | aiProcess_OptimizeMeshes | aiProcess_OptimizeGraph
         );
         if (scene != nullptr)
