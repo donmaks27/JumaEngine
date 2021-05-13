@@ -58,6 +58,9 @@
     <Filter Include="JumaEngine\engine">
       <UniqueIdentifier>{d24a0c7e-968b-45c2-b9c3-b7d211e73081}</UniqueIdentifier>
     </Filter>
+    <Filter Include="JumaEngine\render\vertexBuffer\vertexType">
+      <UniqueIdentifier>{d5afbd2b-c25e-427c-aa93-d6a199e7285d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -68,9 +71,6 @@
       <Filter>JumaEngine\utils</Filter>
     </ClCompile>
     <ClCompile Include="source\render\vertexBuffer\VertexBufferBase.cpp">
-      <Filter>JumaEngine\render\vertexBuffer</Filter>
-    </ClCompile>
-    <ClCompile Include="source\render\vertexBuffer\VertexPosition.cpp">
       <Filter>JumaEngine\render\vertexBuffer</Filter>
     </ClCompile>
     <ClCompile Include="source\framework\gameObject\GameObject.cpp">
@@ -163,9 +163,6 @@
     <ClCompile Include="source\asset\mesh\MeshFileImporter_Assimp.cpp">
       <Filter>JumaEngine\asset\mesh</Filter>
     </ClCompile>
-    <ClCompile Include="source\render\vertexBuffer\VertexPositionNormal.cpp">
-      <Filter>JumaEngine\render\vertexBuffer</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\common_header.h">
@@ -184,9 +181,6 @@
       <Filter>JumaEngine\render\vertexBuffer</Filter>
     </ClInclude>
     <ClInclude Include="source\render\vertexBuffer\VertexBufferData.h">
-      <Filter>JumaEngine\render\vertexBuffer</Filter>
-    </ClInclude>
-    <ClInclude Include="source\render\vertexBuffer\VertexPosition.h">
       <Filter>JumaEngine\render\vertexBuffer</Filter>
     </ClInclude>
     <ClInclude Include="source\framework\gameObject\GameObject.h">
@@ -339,8 +333,14 @@
     <ClInclude Include="source\asset\mesh\MeshFileImporterData.h">
       <Filter>JumaEngine\asset\mesh</Filter>
     </ClInclude>
-    <ClInclude Include="source\render\vertexBuffer\VertexPositionNormal.h">
-      <Filter>JumaEngine\render\vertexBuffer</Filter>
+    <ClInclude Include="source\render\vertexBuffer\vertexType\Vertex3D.h">
+      <Filter>JumaEngine\render\vertexBuffer\vertexType</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\vertexBuffer\vertexType\Vertex3D_Normal_TexCoord.h">
+      <Filter>JumaEngine\render\vertexBuffer\vertexType</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\vertexBuffer\vertexType\Vertex3D_Normal.h">
+      <Filter>JumaEngine\render\vertexBuffer\vertexType</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

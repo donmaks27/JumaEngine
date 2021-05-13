@@ -14,7 +14,7 @@
 #include "render/RenderManagerImpl.h"
 #include "render/renderTarget/RenderTargetDirectBase.h"
 #include "asset/mesh/MeshFileImporterBase.h"
-#include "render/vertexBuffer/VertexPositionNormal.h"
+#include "render/vertexBuffer/vertexType/Vertex3D_Normal_TexCoord.h"
 
 namespace JumaEngine
 {
@@ -107,28 +107,28 @@ namespace JumaEngine
     	
         m_World = createObject<EngineWorld>();
 
-        asset_ptr<Material> material = m_AssetsManager->createMaterial("content/shaders/testShader");
+        asset_ptr<Material> material = m_AssetsManager->createMaterial("content/shaders/testShaderTexCoords");
     	material->addMaterialParam("uProjection", glm::mat4(1));
     	material->addMaterialParam("uView", glm::mat4(1));
     	material->addMaterialParam("uModel", glm::mat4(1));
     	material->finishInitialization();
 
-        m_MeshImporter->importMeshFile("content/SK_Mannequin.FBX");
+        m_MeshImporter->importMeshFile("content/SM_Cube.fbx");
         asset_ptr<Mesh> mesh = m_AssetsManager->createMesh(
-            JTEXT("SK_Mannequin"), 
-            m_MeshImporter->createVertexBufferDataForMesh(JTEXT("SK_Mannequin001"), jclass_type<VertexBufferDataPositionNormal>())
+            JTEXT("Cube"), 
+            m_MeshImporter->createVertexBufferDataForMesh(JTEXT("Cube"), jclass_type<VertexBufferData3D_Normal_TexCoord>())
         );
         mesh->setMaterial(0, m_AssetsManager->createMaterialInstance(material));
 
         MeshComponent* component = m_World->createSceneComponent<MeshComponent>();
         component->setMesh(mesh);
-        component->setWorldScale({ 0.3f, 0.3f, 0.3f });
+        //component->setWorldScale({ 0.3f, 0.3f, 0.3f });
 
         CameraComponent* camera = m_World->createSceneComponent<CameraComponent>();
-        Rotation rotation = { 0.0f, 90.0f };
+        Rotation rotation = { -30.0f, 60.0f };
         camera->setWorldRotation(rotation);
-        glm::vec3 location = -rotation.toDirection() * 50.0f;
-        location.z = 30.0f;
+        glm::vec3 location = -rotation.toDirection() * 5.0f;
+        //location.z = 30.0f;
     	camera->setWorldLocation(location);
 
         m_RenderTarget = m_RenderManager->createRenderTargetDirect();

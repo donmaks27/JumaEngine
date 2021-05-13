@@ -29,6 +29,16 @@ namespace JumaEngine
                 const aiVector3D normal = mesh->mNormals[i];
                 vertexData.normal = { normal.x, normal.y, normal.z };
             }
+
+            if constexpr (AI_MAX_NUMBER_OF_TEXTURECOORDS > 0)
+            {
+                const aiVector3D* textureCoordsArray = mesh->mTextureCoords[0];
+                if (textureCoordsArray != nullptr)
+                {
+                    const aiVector3D texCoords = textureCoordsArray[i];
+                    vertexData.textureCoords = { texCoords.x, texCoords.y };
+                }
+            }
         }
     }
 
