@@ -24,6 +24,7 @@ namespace JumaEngine
 
         virtual ShaderBase* createShaderInternal() override;
         virtual VertexBufferBase* createVertextBufferInternal() override;
+        virtual TextureBase* createTextureInternal() override;
         virtual RenderTargetDirectBase* createRenderTargetDirectInternal() override;
 
     private:

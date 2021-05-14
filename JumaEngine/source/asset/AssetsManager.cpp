@@ -7,6 +7,7 @@
 #include "mesh/Mesh.h"
 #include "render/RenderManagerBase.h"
 #include "render/shader/ShaderBase.h"
+#include "render/texture/TextureBase.h"
 
 namespace JumaEngine
 {
@@ -24,6 +25,7 @@ namespace JumaEngine
         m_MaterialInstances.clear();
         m_Materials.clear();
         m_Meshes.clear();
+        m_Textures.clear();
 	}
 
 	void AssetsManager::destroyUnusedAssets()
@@ -31,6 +33,7 @@ namespace JumaEngine
 		DestroyUnusedAssets(m_Materials);
 		DestroyUnusedAssets(m_MaterialInstances);
 		DestroyUnusedAssets(m_Meshes);
+		DestroyUnusedAssets(m_Textures);
 	}
 
 	void AssetsManager::registerAssetObject(const asset_ptr<AssetObject>& asset)
@@ -74,10 +77,9 @@ namespace JumaEngine
 			return *existingAsset;
 		}
 
-        asset_ptr<MaterialInstance> asset = createAssetObject<MaterialInstance>();
+        asset_ptr<MaterialInstance> asset = createMaterialInstance(baseMaterial);
         if (asset != nullptr)
         {
-            asset->m_BaseMaterial = baseMaterial;
             m_MaterialInstances.add(actuallName, asset);
         }
         return asset;
@@ -96,7 +98,7 @@ namespace JumaEngine
 		return nullptr;
     }
 
-    asset_ptr<Mesh> AssetsManager::createMesh(const jstring& meshName, const jarray<VertexBufferDataBase*>& meshPartsData)
+    asset_ptr<Mesh> AssetsManager::createMesh(const jstring& meshName)
     {
         const jstring actuallName = jstring(JTEXT("Mesh.")) + meshName;
 		
@@ -109,9 +111,37 @@ namespace JumaEngine
         asset_ptr<Mesh> asset = createAssetObject<Mesh>();
         if (asset != nullptr)
         {
-            asset->initMesh(meshPartsData);
             m_Meshes.add(actuallName, asset);
         }
         return asset;
+    }
+
+    asset_ptr<TextureBase> AssetsManager::createTexture(const jstring& textureName)
+    {
+        const jstring actuallName = jstring(JTEXT("Texture.")) + textureName;
+		
+        asset_ptr<TextureBase>* existingAsset = m_Textures.findByKey(actuallName);
+		if (existingAsset != nullptr)
+		{
+			return *existingAsset;
+		}
+
+        asset_ptr<TextureBase> asset = createTexture();
+        if (asset != nullptr)
+        {
+            m_Textures.add(actuallName, asset);
+        }
+        return asset;
+    }
+    asset_ptr<TextureBase> AssetsManager::createTexture()
+    {
+        RenderManagerBase* renderManager = getRenderManager();
+        if (renderManager != nullptr)
+        {
+            asset_ptr<TextureBase> asset = renderManager->createTexture();
+            registerAssetObject(asset);
+            return asset;
+        }
+        return nullptr;
     }
 }

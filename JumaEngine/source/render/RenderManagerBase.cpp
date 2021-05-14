@@ -12,14 +12,11 @@ namespace JumaEngine
         terminateVertexBuffers();
     }
 
-    bool RenderManagerBase::init()
+    void RenderManagerBase::onRegister()
     {
-        if (!m_Initialized)
-        {
-            m_Initialized = initInternal();
-            return m_Initialized;
-        }
-        return false;
+        Super::onRegister();
+
+        m_Initialized = initInternal();
     }
 
     void RenderManagerBase::terminate()
@@ -366,6 +363,11 @@ namespace JumaEngine
             delete vertexBuffer;
 #endif
         }
+    }
+
+    TextureBase* RenderManagerBase::createTexture()
+    {
+        return createTextureInternal();
     }
 
     RenderTargetDirectBase* RenderManagerBase::createRenderTargetDirect()

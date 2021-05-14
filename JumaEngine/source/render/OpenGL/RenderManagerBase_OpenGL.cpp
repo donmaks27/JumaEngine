@@ -10,6 +10,7 @@
 #include "shader/Shader_OpenGL.h"
 #include "vertexBuffer/VertexBuffer_OpenGL.h"
 #include "renderTarget/RenderTargetDirect_OpenGL.h"
+#include "texture/Texture_OpenGL.h"
 
 namespace JumaEngine
 {
@@ -33,6 +34,11 @@ namespace JumaEngine
     {
         Engine* engine = getOwnerEngine();
         return engine != nullptr ? engine->createObject<VertexBuffer_OpenGL>() : nullptr;
+    }
+    TextureBase* RenderManagerBase_OpenGL::createTextureInternal()
+    {
+        Engine* engine = getOwnerEngine();
+        return engine != nullptr ? engine->createObject<Texture_OpenGL>() : nullptr;
     }
     RenderTargetDirectBase* RenderManagerBase_OpenGL::createRenderTargetDirectInternal()
     {

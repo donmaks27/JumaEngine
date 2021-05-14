@@ -12,12 +12,13 @@ namespace JumaEngine
     class VertexBufferDataBase;
     class VertexBufferBase;
     class MaterialBase;
+    class MeshFileImporterBase;
 
     class Mesh : public AssetObject, public IRenderInterface
     {
         JUMAENGINE_CLASS(Mesh, AssetObject)
 
-        friend AssetsManager;
+        friend MeshFileImporterBase;
 
     public:
         Mesh() = default;

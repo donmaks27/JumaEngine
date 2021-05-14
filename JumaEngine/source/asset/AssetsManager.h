@@ -14,7 +14,7 @@ namespace JumaEngine
     class Material;
     class MaterialInstance;
     class Mesh;
-    class VertexBufferDataBase;
+    class TextureBase;
 
     class AssetsManager final : public EngineContextObject
 	{
@@ -30,13 +30,17 @@ namespace JumaEngine
 		asset_ptr<MaterialInstance> createMaterialInstance(const jstring& materialInstanceName, const asset_ptr<MaterialBase>& baseMaterial);
 		asset_ptr<MaterialInstance> createMaterialInstance(const asset_ptr<MaterialBase>& baseMaterial);
 
-        asset_ptr<Mesh> createMesh(const jstring& meshName, const jarray<VertexBufferDataBase*>& meshPartsData);
+        asset_ptr<Mesh> createMesh(const jstring& meshName);
+
+        asset_ptr<TextureBase> createTexture(const jstring& textureName);
+        asset_ptr<TextureBase> createTexture();
 	
 	private:
 
     	jmap<jstring, asset_ptr<Material>> m_Materials;
         jmap<jstring, asset_ptr<MaterialInstance>> m_MaterialInstances;
         jmap<jstring, asset_ptr<Mesh>> m_Meshes;
+        jmap<jstring, asset_ptr<TextureBase>> m_Textures;
 
 
 		template<typename T, TEMPLATE_ENABLE(is_base_and_not_same_and_not_abstract<AssetObject, T>)>
@@ -45,7 +49,7 @@ namespace JumaEngine
             Engine* engine = getOwnerEngine();
 			if (engine != nullptr)
 			{
-                asset_ptr<T> asset = asset_ptr<T>(engine->createObject<T>());
+                asset_ptr<T> asset = engine->createObject<T>();
                 registerAssetObject(asset);
                 return asset;
 			}

@@ -61,6 +61,15 @@
     <Filter Include="JumaEngine\render\vertexBuffer\vertexType">
       <UniqueIdentifier>{d5afbd2b-c25e-427c-aa93-d6a199e7285d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="JumaEngine\render\texture">
+      <UniqueIdentifier>{d6ba6774-51cd-4861-8cfc-139575577c69}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="JumaEngine\render\OpenGL\texture">
+      <UniqueIdentifier>{161f858d-4305-45b6-b02c-a311d6d09869}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="JumaEngine\asset\texture">
+      <UniqueIdentifier>{3616da7b-b45f-45b9-8d66-d0accf2fb578}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -162,6 +171,18 @@
     </ClCompile>
     <ClCompile Include="source\asset\mesh\MeshFileImporter_Assimp.cpp">
       <Filter>JumaEngine\asset\mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="source\render\texture\TextureBase.cpp">
+      <Filter>JumaEngine\render\texture</Filter>
+    </ClCompile>
+    <ClCompile Include="source\render\OpenGL\texture\Texture_OpenGL.cpp">
+      <Filter>JumaEngine\render\OpenGL\texture</Filter>
+    </ClCompile>
+    <ClCompile Include="source\asset\texture\TextureFileImporterBase.cpp">
+      <Filter>JumaEngine\asset\texture</Filter>
+    </ClCompile>
+    <ClCompile Include="source\asset\texture\TextureFileImporter_DevIL.cpp">
+      <Filter>JumaEngine\asset\texture</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -341,6 +362,18 @@
     </ClInclude>
     <ClInclude Include="source\render\vertexBuffer\vertexType\Vertex3D_Normal.h">
       <Filter>JumaEngine\render\vertexBuffer\vertexType</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\texture\TextureBase.h">
+      <Filter>JumaEngine\render\texture</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\OpenGL\texture\Texture_OpenGL.h">
+      <Filter>JumaEngine\render\OpenGL\texture</Filter>
+    </ClInclude>
+    <ClInclude Include="source\asset\texture\TextureFileImporterBase.h">
+      <Filter>JumaEngine\asset\texture</Filter>
+    </ClInclude>
+    <ClInclude Include="source\asset\texture\TextureFileImporter_DevIL.h">
+      <Filter>JumaEngine\asset\texture</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

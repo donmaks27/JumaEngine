@@ -1,11 +1,12 @@
 ﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
 
 #include "MeshFileImporterBase.h"
+#include "Mesh.h"
 #include "render/vertexBuffer/VertexBufferData.h"
 
 namespace JumaEngine
 {
-    void MeshFileImporterBase::importMeshFile(const jstring& filePath, const bool forceLoad)
+    void MeshFileImporterBase::importFile(const jstring& filePath, const bool forceLoad)
     {
         if (forceLoad || (filePath != m_LoadedMeshFilePath))
         {
@@ -24,22 +25,27 @@ namespace JumaEngine
         m_Data = MeshFileImporterData();
     }
 
-    jarray<VertexBufferDataBase*> MeshFileImporterBase::createVertexBufferDataForMesh(const jstring& meshName, const jsubclass<VertexBufferDataBase>& bufferDataClass) const
+    bool MeshFileImporterBase::copyMeshData(const asset_ptr<Mesh>& outMesh, const jstring& meshName, const jsubclass<VertexBufferDataBase>& bufferDataClass) const
     {
-        jarray<VertexBufferDataBase*> result;
+        if ((outMesh == nullptr) || outMesh->isMeshInit() || !bufferDataClass.isValid())
+        {
+            return false;
+        }
+
         for (const auto& meshData : m_Data.meshesData)
         {
             if (meshData.name == meshName)
             {
+                jarray<VertexBufferDataBase*> vertexBuffersData;
                 for (const auto& meshPartData : meshData.meshPartsData)
                 {
-                    VertexBufferDataBase* vertexBufferData = bufferDataClass.createObject();
-                    vertexBufferData->copyFromMeshFileImporterData(meshPartData);
-                    result.add(vertexBufferData);
+                    VertexBufferDataBase* data = bufferDataClass.createObject();
+                    data->copyFromMeshFileImporterData(meshPartData);
+                    vertexBuffersData.add(data);
                 }
-                break;
+                return outMesh->initMesh(vertexBuffersData);
             }
         }
-        return result;
+        return false;
     }
 }

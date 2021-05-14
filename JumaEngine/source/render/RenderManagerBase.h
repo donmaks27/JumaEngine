@@ -17,6 +17,7 @@ namespace JumaEngine
 {
     class ShaderBase;
     class VertexBufferBase;
+    class TextureBase;
     class RenderTargetDirectBase;
 
     class RenderManagerBase : public EngineContextObject, public IRenderInterface
@@ -27,7 +28,6 @@ namespace JumaEngine
         RenderManagerBase() = default;
         virtual ~RenderManagerBase() override;
 
-        bool init();
         bool isInit() const { return m_Initialized && !m_Terminated; }
         void terminate();
 
@@ -57,12 +57,16 @@ namespace JumaEngine
         VertexBufferBase* createVertextBuffer();
         void deleteVertexBuffer(VertexBufferBase* vertexBuffer);
 
+        TextureBase* createTexture();
+
         RenderTargetDirectBase* createRenderTargetDirect();
         
         void startRender();
         virtual void render(window_id windowID, const RenderParams& renderParams) override;
 
     protected:
+        
+        virtual void onRegister() override;
 
         virtual bool initInternal() = 0;
         virtual void terminateInternal();
@@ -97,6 +101,7 @@ namespace JumaEngine
 
         virtual ShaderBase* createShaderInternal() = 0;
         virtual VertexBufferBase* createVertextBufferInternal() = 0;
+        virtual TextureBase* createTextureInternal() = 0;
         virtual RenderTargetDirectBase* createRenderTargetDirectInternal() = 0;
 
     private:

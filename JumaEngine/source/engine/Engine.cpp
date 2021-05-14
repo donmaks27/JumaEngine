@@ -94,7 +94,7 @@ namespace JumaEngine
     bool Engine::initEngine()
     {
 		m_RenderManager = createObject<RenderManager_OpenGL>();
-    	if (!m_RenderManager->init())
+    	if (!m_RenderManager->isInit())
     	{
     		return false;
     	}
@@ -113,11 +113,9 @@ namespace JumaEngine
     	material->addMaterialParam("uModel", glm::mat4(1));
     	material->finishInitialization();
 
-        m_MeshImporter->importMeshFile("content/SM_Cube.fbx");
-        asset_ptr<Mesh> mesh = m_AssetsManager->createMesh(
-            JTEXT("Cube"), 
-            m_MeshImporter->createVertexBufferDataForMesh(JTEXT("Cube"), jclass_type<VertexBufferData3D_Normal_TexCoord>())
-        );
+        m_MeshFileImporter->importFile("content/SM_Cube.fbx");
+        asset_ptr<Mesh> mesh = m_AssetsManager->createMesh(JTEXT("Cube"));
+        m_MeshFileImporter->copyMeshData(mesh, JTEXT("Cube"), jclass_type<VertexBufferData3D_Normal_TexCoord>());
         mesh->setMaterial(0, m_AssetsManager->createMaterialInstance(material));
 
         MeshComponent* component = m_World->createSceneComponent<MeshComponent>();
@@ -194,8 +192,8 @@ namespace JumaEngine
 	
     void Engine::terminateEngine()
     {
-    	delete m_MeshImporter;
-    	m_MeshImporter = nullptr;
+    	delete m_MeshFileImporter;
+    	m_MeshFileImporter = nullptr;
 
         if (m_RenderManager != nullptr)
         {

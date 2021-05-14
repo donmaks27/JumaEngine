@@ -29,7 +29,7 @@ namespace JumaEngine
         template<typename U, TEMPLATE_ENABLE(is_base_and_not_abstract<T, U>)>
         jsubclass(const jsubclass<U>& subclassType)
         {
-            if (subclassType.m_ClassType != nullptr)
+            if (subclassType.isValid())
             {
                 m_ClassType = subclassType.m_ClassType->copy();
             }
@@ -70,7 +70,7 @@ namespace JumaEngine
             if (this != &subclassType)
             {
                 clear();
-                if (subclassType.m_ClassType != nullptr)
+                if (subclassType.isValid())
                 {
                     m_ClassType = subclassType.m_ClassType->copy();
                 }
@@ -86,7 +86,9 @@ namespace JumaEngine
             return *this;
         }
 
-        T* createObject() const { return m_ClassType != nullptr ? m_ClassType->createObject() : nullptr; }
+        bool isValid() const { return m_ClassType != nullptr; }
+
+        T* createObject() const { return isValid() ? m_ClassType->createObject() : nullptr; }
 
     private:
 
