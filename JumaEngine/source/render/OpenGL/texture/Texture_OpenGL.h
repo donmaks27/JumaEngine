@@ -17,6 +17,9 @@ namespace JumaEngine
     public:
         Texture_OpenGL() = default;
         virtual ~Texture_OpenGL() override;
+        
+        virtual void activate(uint32 index) override;
+        virtual void deactivate(uint32 index) override;
 
     protected:
 

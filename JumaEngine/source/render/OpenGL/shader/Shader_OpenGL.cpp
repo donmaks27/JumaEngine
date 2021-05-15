@@ -7,6 +7,7 @@
 #include <fstream>
 #include "GL/glew.h"
 #include "utils/jlog.h"
+#include "render/texture/TextureBase.h"
 
 namespace JumaEngine
 {
@@ -273,6 +274,31 @@ namespace JumaEngine
             if (uniformLocation != -1)
             {
                 glUniform1fv(uniformLocation, static_cast<GLsizei>(value.size()), value.data());
+            }
+        }
+    }
+    void Shader_OpenGL::setUniformValueInternal(const char* uniformName, const ShaderUniformTexture& value)
+    {
+        if (value.texture != nullptr)
+        {
+            const asset_ptr<TextureBase>& texture = *value.texture;
+
+            static uint32 maxTextureCount = 0;
+            if (maxTextureCount == 0)
+            {
+                int32 count = 0;
+                glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &count);
+                maxTextureCount = count;
+            }
+
+            if (value.index < maxTextureCount)
+            {
+                const int32 uniformLocation = getUniformLocation(uniformName);
+                if (uniformLocation != -1)
+                {
+                    texture->activate(value.index);
+                    glUniform1i(uniformLocation, value.index);
+                }
             }
         }
     }

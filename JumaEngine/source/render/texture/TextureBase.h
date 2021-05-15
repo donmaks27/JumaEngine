@@ -32,6 +32,9 @@ namespace JumaEngine
 
         bool isInit() const { return m_Format != TextureFormat::None; }
 
+        virtual void activate(uint32 index) = 0;
+        virtual void deactivate(uint32 index) {}
+
     protected:
 
         glm::uvec2 m_Size = { 0, 0 };

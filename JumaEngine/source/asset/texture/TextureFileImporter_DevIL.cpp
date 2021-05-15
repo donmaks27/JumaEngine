@@ -13,7 +13,7 @@ namespace JumaEngine
         ilInit();
     }
 
-    bool TextureFileImporter_DevIL::importFileInternal(TextureBase* outTexture, const jstring& filePath)
+    bool TextureFileImporter_DevIL::importFileInternal(const asset_ptr<TextureBase>& outTexture, const jstring& filePath)
     {
         const size_t filePathLength = filePath.size();
         std::wstring wFilePath;

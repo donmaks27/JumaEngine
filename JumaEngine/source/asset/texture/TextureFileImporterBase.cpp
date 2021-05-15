@@ -4,7 +4,7 @@
 
 namespace JumaEngine
 {
-    bool TextureFileImporterBase::importFile(TextureBase* outTexture, const jstring& filePath)
+    bool TextureFileImporterBase::importFile(const asset_ptr<TextureBase>& outTexture, const jstring& filePath)
     {
         if ((outTexture == nullptr) || outTexture->isInit() || filePath.empty())
         {
@@ -14,7 +14,7 @@ namespace JumaEngine
         return importFileInternal(outTexture, filePath);
     }
 
-    void TextureFileImporterBase::copyTextureData(TextureBase* outTexture, const glm::uvec2& size, const TextureFormat format, const uint8* data)
+    void TextureFileImporterBase::copyTextureData(const asset_ptr<TextureBase>& outTexture, const glm::uvec2& size, const TextureFormat format, const uint8* data)
     {
         outTexture->initTexture(size, format, data);
     }

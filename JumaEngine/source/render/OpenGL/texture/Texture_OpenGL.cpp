@@ -42,8 +42,15 @@ namespace JumaEngine
 
         glGenTextures(1, &m_TextureIndex);
         glBindTexture(GL_TEXTURE_2D, m_TextureIndex);
-
+        
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size.x, size.y, 0, glFormat, glType, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 8);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
         glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -59,6 +66,23 @@ namespace JumaEngine
             m_Size = { 0, 0 };
             m_Format = TextureFormat::None;
         }
+    }
+
+    void Texture_OpenGL::activate(const uint32 index)
+    {
+        if (isInit())
+        {
+            glActiveTexture(GL_TEXTURE0 + index);
+            glEnable(GL_TEXTURE_2D);
+            glBindTexture(GL_TEXTURE_2D, m_TextureIndex);
+        }
+    }
+
+    void Texture_OpenGL::deactivate(uint32 index)
+    {
+        glActiveTexture(GL_TEXTURE0 + index);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glDisable(GL_TEXTURE_2D);
     }
 }
 

@@ -17,12 +17,12 @@ namespace JumaEngine
 		Material() = default;
 		virtual ~Material() override;
 
-		template<typename T>
-		bool addMaterialParam(const jstring& name, const T& value)
+		template<typename T, typename U = T>
+		bool addMaterialParam(const jstring& name, const U& value)
 		{
 			if (!m_Initialized)
 			{
-                if (addMaterialParamInternal<T>(name, value))
+                if (addMaterialParamInternal<T, U>(name, value))
                 {
                     cacheShaderUniformName(name);
                     return true;
@@ -30,8 +30,8 @@ namespace JumaEngine
 			}
 			return false;
 		}
-		template<typename T>
-		bool addMaterialParam(const jstring& name) { return addMaterialParam(name, T()); }
+		template<typename T, typename U = T>
+		bool addMaterialParam(const jstring& name) { return addMaterialParam<T>(name, U()); }
 
         bool isShaderValid() const;
         jstring getShaderName() const;

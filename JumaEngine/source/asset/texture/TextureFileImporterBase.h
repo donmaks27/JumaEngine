@@ -17,11 +17,11 @@ namespace JumaEngine
         TextureFileImporterBase() = default;
         virtual ~TextureFileImporterBase() override = default;
 
-        bool importFile(TextureBase* outTexture, const jstring& filePath);
+        bool importFile(const asset_ptr<TextureBase>& outTexture, const jstring& filePath);
 
     protected:
 
-        virtual bool importFileInternal(TextureBase* outTexture, const jstring& filePath) = 0;
-        void copyTextureData(TextureBase* outTexture, const glm::uvec2& size, TextureFormat format, const uint8* data);
+        virtual bool importFileInternal(const asset_ptr<TextureBase>& outTexture, const jstring& filePath) = 0;
+        void copyTextureData(const asset_ptr<TextureBase>& outTexture, const glm::uvec2& size, TextureFormat format, const uint8* data);
     };
 }

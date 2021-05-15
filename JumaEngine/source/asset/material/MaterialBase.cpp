@@ -6,12 +6,21 @@
 namespace JumaEngine
 {
     template<typename T>
-    void loadMaterialParam(const MaterialBase* material, ShaderBase* shader, const jstring& name)
+    void loadMaterialParam(const MaterialBase* material, ShaderBase* shader, const jstring& name, const uint32 index = 0)
     {
-        T value = T();
-        if (material->getMaterialParam(name, value))
+        const T* valuePtr = material->findMaterialParam<T>(name);
+        if (valuePtr != nullptr)
         {
-            shader->setUniformValue(*name, value);
+            shader->setUniformValue(*name, *valuePtr);
+        }
+    }
+    template<>
+    void loadMaterialParam<TextureBase>(const MaterialBase* material, ShaderBase* shader, const jstring& name, const uint32 index)
+    {
+        const asset_ptr<TextureBase>* texture = material->findMaterialParam<TextureBase, asset_ptr<TextureBase>>(name);
+        if (texture != nullptr)
+        {
+            shader->setUniformValue(*name, ShaderUniformTexture{ texture, index });
         }
     }
 
@@ -24,6 +33,7 @@ namespace JumaEngine
         }
 
 		const jmap<jstring, MaterialParamType>& paramsList = getMaterialParamsList();
+        int32 nextTextureIndex = 0;
 		for (const auto& paramNameAndType : paramsList)
 		{
 			const jstring& name = paramNameAndType.first;
@@ -56,7 +66,12 @@ namespace JumaEngine
 			case MaterialParamType::Mat4:
                 loadMaterialParam<glm::mat4>(this, shader, name);
 				break;
-				
+
+            case MaterialParamType::Texture: 
+                loadMaterialParam<TextureBase>(this, shader, name, nextTextureIndex);
+                ++nextTextureIndex;
+                break;
+
 			default: ;
 			}
 		}

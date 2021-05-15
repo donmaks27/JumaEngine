@@ -19,6 +19,6 @@ namespace JumaEngine
 
         virtual void onRegister() override;
 
-        virtual bool importFileInternal(TextureBase* outTexture, const jstring& filePath) override;
+        virtual bool importFileInternal(const asset_ptr<TextureBase>& outTexture, const jstring& filePath) override;
     };
 }

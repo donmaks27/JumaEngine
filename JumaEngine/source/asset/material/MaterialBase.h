@@ -9,6 +9,7 @@
 
 namespace JumaEngine
 {
+    class TextureBase;
     class ShaderBase;
 
 	class MaterialBase : public AssetObject
@@ -36,16 +37,15 @@ namespace JumaEngine
 
 			return false;
 		}
-		template<typename T>
-		bool getMaterialParam(const jstring& name, T& outValue) const
+		template<typename T, typename U = T>
+		const U* findMaterialParam(const jstring& name) const
 		{
-			const MaterialParamType* typePtr = m_MaterialParams.findByKey(name);
+		    const MaterialParamType* typePtr = m_MaterialParams.findByKey(name);
 			if (typePtr != nullptr)
 			{
 				if (getMaterialParamType<T>() == *typePtr)
 				{
-					outValue = *getMaterialParams<T>().findByKey(name);
-					return true;
+					return getMaterialParams<T, U>().findByKey(name);
 				}
 			}
 			else
@@ -53,10 +53,10 @@ namespace JumaEngine
 				const MaterialBase* baseMaterial = getBaseMaterial();
 				if (baseMaterial != nullptr)
 				{
-					return baseMaterial->getMaterialParam(name, outValue);
+                    return baseMaterial->findMaterialParam<T, U>(name);
 				}
 			}
-			return false;
+			return nullptr;
 		}
 		
 		template<typename T>
@@ -83,13 +83,13 @@ namespace JumaEngine
 
 		virtual MaterialBase* getBaseMaterial() const = 0;
 		
-		template<typename T>
-		bool addMaterialParamInternal(const jstring& name, const T& value)
+		template<typename T, typename U = T>
+		bool addMaterialParamInternal(const jstring& name, const U& value)
 		{
 			if (!m_MaterialParams.contains(name))
 			{
 				m_MaterialParams.add(name, getMaterialParamType<T>());
-				getMaterialParams<T>().add(name, value);
+				getMaterialParams<T, U>().add(name, value);
 				return true;
 			}
 			return false;
@@ -99,7 +99,7 @@ namespace JumaEngine
 
 		enum class MaterialParamType
 		{
-			Bool, Int, Float, Vec2, Vec3, Vec4, Mat4
+			Bool, Int, Float, Vec2, Vec3, Vec4, Mat4, Texture
 		};
 		
 		jmap<jstring, MaterialParamType> m_MaterialParams;
@@ -110,6 +110,7 @@ namespace JumaEngine
 		jmap<jstring, glm::vec3> m_MaterialParamsVec3;
 		jmap<jstring, glm::vec4> m_MaterialParamsVec4;
 		jmap<jstring, glm::mat4> m_MaterialParamsMat4;
+		jmap<jstring, asset_ptr<TextureBase>> m_MaterialParamsTexture;
 
 
 		jmap<jstring, bool>& getMaterialParams(const bool*) { return m_MaterialParamsBool; }
@@ -126,10 +127,12 @@ namespace JumaEngine
 		const jmap<jstring, glm::vec4>& getMaterialParams(const glm::vec4*) const { return m_MaterialParamsVec4; }
 		jmap<jstring, glm::mat4>& getMaterialParams(const glm::mat4*) { return m_MaterialParamsMat4; }
 		const jmap<jstring, glm::mat4>& getMaterialParams(const glm::mat4*) const { return m_MaterialParamsMat4; }
-		template<typename T>
-		jmap<jstring, T>& getMaterialParams() { return getMaterialParams(static_cast<T*>(nullptr)); }
-		template<typename T>
-		const jmap<jstring, T>& getMaterialParams() const { return getMaterialParams(static_cast<T*>(nullptr)); }
+		jmap<jstring, asset_ptr<TextureBase>>& getMaterialParams(const TextureBase*) { return m_MaterialParamsTexture; }
+		const jmap<jstring, asset_ptr<TextureBase>>& getMaterialParams(const TextureBase*) const { return m_MaterialParamsTexture; }
+		template<typename T, typename U = T>
+		jmap<jstring, U>& getMaterialParams() { return getMaterialParams(static_cast<T*>(nullptr)); }
+		template<typename T, typename U = T>
+		const jmap<jstring, U>& getMaterialParams() const { return getMaterialParams(static_cast<T*>(nullptr)); }
 
 		static MaterialParamType getMaterialParamType(const bool*) { return MaterialParamType::Bool; }
 		static MaterialParamType getMaterialParamType(const int32*) { return MaterialParamType::Int; }
@@ -138,6 +141,7 @@ namespace JumaEngine
 		static MaterialParamType getMaterialParamType(const glm::vec3*) { return MaterialParamType::Vec3; }
 		static MaterialParamType getMaterialParamType(const glm::vec4*) { return MaterialParamType::Vec4; }
 		static MaterialParamType getMaterialParamType(const glm::mat4*) { return MaterialParamType::Mat4; }
+		static MaterialParamType getMaterialParamType(const TextureBase*) { return MaterialParamType::Texture; }
 		template<typename T>
 		static MaterialParamType getMaterialParamType() { return getMaterialParamType(static_cast<T*>(nullptr)); }
 

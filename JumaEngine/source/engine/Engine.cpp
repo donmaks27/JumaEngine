@@ -14,6 +14,7 @@
 #include "render/RenderManagerImpl.h"
 #include "render/renderTarget/RenderTargetDirectBase.h"
 #include "asset/mesh/MeshFileImporterBase.h"
+#include "asset/texture/TextureFileImporterBase.h"
 #include "render/vertexBuffer/vertexType/Vertex3D_Normal_TexCoord.h"
 
 namespace JumaEngine
@@ -108,9 +109,13 @@ namespace JumaEngine
         m_World = createObject<EngineWorld>();
 
         asset_ptr<Material> material = m_AssetsManager->createMaterial("content/shaders/testShaderTexCoords");
-    	material->addMaterialParam("uProjection", glm::mat4(1));
-    	material->addMaterialParam("uView", glm::mat4(1));
-    	material->addMaterialParam("uModel", glm::mat4(1));
+    	material->addMaterialParam<glm::mat4>("uProjection", glm::mat4(1));
+    	material->addMaterialParam<glm::mat4>("uView", glm::mat4(1));
+    	material->addMaterialParam<glm::mat4>("uModel", glm::mat4(1));
+
+        asset_ptr<TextureBase> texture = m_AssetsManager->createTexture(JTEXT("JUMA"));
+        m_TextureFileImporter->importFile(texture, "content/1.png");
+        material->addMaterialParam<TextureBase>("uTexture", texture);
     	material->finishInitialization();
 
         m_MeshFileImporter->importFile("content/SM_Cube.fbx");

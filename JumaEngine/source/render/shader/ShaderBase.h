@@ -3,12 +3,21 @@
 #pragma once
 
 #include "common_header.h"
+#include "asset/AssetObject.h"
 #include "glm/mat4x4.hpp"
 #include "utils/jarray.h"
 #include "engine/EngineContextObject.h"
 
 namespace JumaEngine
 {
+    class TextureBase;
+
+    struct ShaderUniformTexture
+    {
+        const asset_ptr<TextureBase>* texture = nullptr;
+        uint32 index = 0;
+    };
+
     class ShaderBase : public EngineContextObject
     {
         JUMAENGINE_CLASS(ShaderBase, EngineContextObject)
@@ -47,6 +56,7 @@ namespace JumaEngine
         virtual void setUniformValueInternal(const char* uniformName, const glm::vec4& value) = 0;
         virtual void setUniformValueInternal(const char* uniformName, const glm::mat4& value) = 0;
         virtual void setUniformValueInternal(const char* uniformName, const jarray<float>& value) = 0;
+        virtual void setUniformValueInternal(const char* uniformName, const ShaderUniformTexture& value) = 0;
 
     private:
 
