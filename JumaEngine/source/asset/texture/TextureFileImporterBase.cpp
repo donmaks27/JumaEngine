@@ -16,6 +16,6 @@ namespace JumaEngine
 
     void TextureFileImporterBase::copyTextureData(const asset_ptr<TextureBase>& outTexture, const glm::uvec2& size, const TextureFormat format, const uint8* data)
     {
-        outTexture->initTexture(size, format, data);
+        outTexture->init(size, format, data);
     }
 }

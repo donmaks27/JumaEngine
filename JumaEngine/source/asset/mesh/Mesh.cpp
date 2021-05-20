@@ -12,9 +12,9 @@ namespace JumaEngine
         terminateMesh();
     }
 
-    bool Mesh::initMesh(const jarray<VertexBufferDataBase*>& meshPartsData)
+    bool Mesh::init(const jarray<VertexBufferDataBase*>& meshPartsData)
     {
-        if (!isMeshInit())
+        if (!isInit())
         {
             RenderManagerBase* renderManager = getRenderManager();
 		    if (renderManager != nullptr)

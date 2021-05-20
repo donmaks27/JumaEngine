@@ -327,9 +327,6 @@
     <ClInclude Include="source\utils\jdelegate_multicast.h">
       <Filter>JumaEngine\utils</Filter>
     </ClInclude>
-    <ClInclude Include="source\utils\jsubclass.h">
-      <Filter>JumaEngine\utils</Filter>
-    </ClInclude>
     <ClInclude Include="source\utils\jlog.h">
       <Filter>JumaEngine\utils</Filter>
     </ClInclude>
@@ -374,6 +371,9 @@
     </ClInclude>
     <ClInclude Include="source\asset\texture\TextureFileImporter_DevIL.h">
       <Filter>JumaEngine\asset\texture</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\texture\TextureShaderUniform.h">
+      <Filter>JumaEngine\render\texture</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -164,6 +164,7 @@
     <ClInclude Include="source\render\renderTarget\RenderTargetDirectBase.h" />
     <ClInclude Include="source\render\renderTarget\RenderTargetCompositeBase.h" />
     <ClInclude Include="source\render\shader\ShaderBase.h" />
+    <ClInclude Include="source\render\texture\TextureShaderUniform.h" />
     <ClInclude Include="source\render\texture\TextureBase.h" />
     <ClInclude Include="source\render\vertexBuffer\VertexBufferBase.h" />
     <ClInclude Include="source\render\vertexBuffer\VertexBufferData.h" />
@@ -188,7 +189,6 @@
     <ClInclude Include="source\utils\jmap_auto_id.h" />
     <ClInclude Include="source\utils\math_consts.h" />
     <ClInclude Include="source\utils\math_functions.h" />
-    <ClInclude Include="source\utils\jsubclass.h" />
     <ClInclude Include="source\utils\system_functions.h" />
     <ClInclude Include="source\utils\type_traits_macros.h" />
   </ItemGroup>

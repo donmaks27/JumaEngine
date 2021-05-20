@@ -23,7 +23,7 @@ namespace JumaEngine
 
     protected:
 
-        virtual bool initTexture(const glm::uvec2& size, TextureFormat format, const uint8* data) override;
+        virtual bool initInternal(const uint8* data) override;
 
     private:
 

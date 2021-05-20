@@ -277,11 +277,11 @@ namespace JumaEngine
             }
         }
     }
-    void Shader_OpenGL::setUniformValueInternal(const char* uniformName, const ShaderUniformTexture& value)
+    void Shader_OpenGL::setUniformValueInternal(const char* uniformName, const TextureShaderUniform& value)
     {
         if (value.texture != nullptr)
         {
-            const asset_ptr<TextureBase>& texture = *value.texture;
+            const asset_ptr<TextureBase>& texture = value.texture;
 
             static uint32 maxTextureCount = 0;
             if (maxTextureCount == 0)

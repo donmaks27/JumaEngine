@@ -44,7 +44,7 @@ namespace JumaEngine
         virtual void setUniformValueInternal(const char* uniformName, const glm::vec4& value) override;
         virtual void setUniformValueInternal(const char* uniformName, const glm::mat4& value) override;
         virtual void setUniformValueInternal(const char* uniformName, const jarray<float>& value) override;
-        virtual void setUniformValueInternal(const char* uniformName, const ShaderUniformTexture& value) override;
+        virtual void setUniformValueInternal(const char* uniformName, const TextureShaderUniform& value) override;
 
     private:
 

@@ -113,14 +113,14 @@ namespace JumaEngine
     	material->addMaterialParam<glm::mat4>("uView", glm::mat4(1));
     	material->addMaterialParam<glm::mat4>("uModel", glm::mat4(1));
 
-        asset_ptr<TextureBase> texture = m_AssetsManager->createTexture(JTEXT("JUMA"));
+        const asset_ptr<TextureBase> texture = m_AssetsManager->createTexture(JTEXT("JUMA"));
         m_TextureFileImporter->importFile(texture, "content/1.png");
-        material->addMaterialParam<TextureBase>("uTexture", texture);
+        material->addMaterialParam<TextureBase>("uTexture", TextureShaderUniform{ texture, 0 });
     	material->finishInitialization();
 
         m_MeshFileImporter->importFile("content/SM_Cube.fbx");
         asset_ptr<Mesh> mesh = m_AssetsManager->createMesh(JTEXT("Cube"));
-        m_MeshFileImporter->copyMeshData(mesh, JTEXT("Cube"), jclass_type<VertexBufferData3D_Normal_TexCoord>());
+        m_MeshFileImporter->copyMeshData<VertexBufferData3D_Normal_TexCoord>(mesh, JTEXT("Cube"));
         mesh->setMaterial(0, m_AssetsManager->createMaterialInstance(material));
 
         MeshComponent* component = m_World->createSceneComponent<MeshComponent>();

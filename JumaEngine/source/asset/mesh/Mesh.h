@@ -18,13 +18,12 @@ namespace JumaEngine
     {
         JUMAENGINE_CLASS(Mesh, AssetObject)
 
-        friend MeshFileImporterBase;
-
     public:
         Mesh() = default;
         virtual ~Mesh() override;
-
-        bool isMeshInit() const { return !m_VertexBuffers.empty(); }
+        
+        bool init(const jarray<VertexBufferDataBase*>& meshPartsData);
+        bool isInit() const { return !m_VertexBuffers.empty(); }
 
         asset_ptr<MaterialBase> getMaterial(const uint32 slotIndex) const { return m_Materials.size() > slotIndex ? m_Materials[slotIndex] : asset_ptr<MaterialBase>(); }
         void setMaterial(uint32 slotIndex, const asset_ptr<MaterialBase>& material);
@@ -37,7 +36,6 @@ namespace JumaEngine
         jarray<asset_ptr<MaterialBase>> m_Materials;
 
         
-        bool initMesh(const jarray<VertexBufferDataBase*>& meshPartsData);
         void terminateMesh();
     };
 }

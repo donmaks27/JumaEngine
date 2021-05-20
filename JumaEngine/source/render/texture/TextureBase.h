@@ -24,23 +24,24 @@ namespace JumaEngine
     {
         JUMAENGINE_CLASS(TextureBase, AssetObject)
 
-        friend TextureFileImporterBase;
-
     public:
         TextureBase() = default;
         virtual ~TextureBase() override = default;
-
-        bool isInit() const { return m_Format != TextureFormat::None; }
+        
+        bool init(const glm::uvec2& size, TextureFormat format, const uint8* data);
+        bool isInit() const { return m_Initialized; }
 
         virtual void activate(uint32 index) = 0;
         virtual void deactivate(uint32 index) {}
 
     protected:
 
+        bool m_Initialized = false;
+
         glm::uvec2 m_Size = { 0, 0 };
         TextureFormat m_Format = TextureFormat::None;
 
 
-        virtual bool initTexture(const glm::uvec2& size, TextureFormat format, const uint8* data) = 0;
+        virtual bool initInternal(const uint8* data) = 0;
     };
 }

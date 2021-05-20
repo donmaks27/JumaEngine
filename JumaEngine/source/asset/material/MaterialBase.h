@@ -3,9 +3,10 @@
 #pragma once
 
 #include "common_header.h"
-#include "asset/AssetObject.h"
 #include "utils/jmap.h"
 #include "glm/mat4x4.hpp"
+#include "render/texture/TextureShaderUniform.h"
+#include "asset/AssetObject.h"
 
 namespace JumaEngine
 {
@@ -110,7 +111,7 @@ namespace JumaEngine
 		jmap<jstring, glm::vec3> m_MaterialParamsVec3;
 		jmap<jstring, glm::vec4> m_MaterialParamsVec4;
 		jmap<jstring, glm::mat4> m_MaterialParamsMat4;
-		jmap<jstring, asset_ptr<TextureBase>> m_MaterialParamsTexture;
+		jmap<jstring, TextureShaderUniform> m_MaterialParamsTexture;
 
 
 		jmap<jstring, bool>& getMaterialParams(const bool*) { return m_MaterialParamsBool; }
@@ -127,8 +128,8 @@ namespace JumaEngine
 		const jmap<jstring, glm::vec4>& getMaterialParams(const glm::vec4*) const { return m_MaterialParamsVec4; }
 		jmap<jstring, glm::mat4>& getMaterialParams(const glm::mat4*) { return m_MaterialParamsMat4; }
 		const jmap<jstring, glm::mat4>& getMaterialParams(const glm::mat4*) const { return m_MaterialParamsMat4; }
-		jmap<jstring, asset_ptr<TextureBase>>& getMaterialParams(const TextureBase*) { return m_MaterialParamsTexture; }
-		const jmap<jstring, asset_ptr<TextureBase>>& getMaterialParams(const TextureBase*) const { return m_MaterialParamsTexture; }
+		jmap<jstring, TextureShaderUniform>& getMaterialParams(const TextureBase*) { return m_MaterialParamsTexture; }
+		const jmap<jstring, TextureShaderUniform>& getMaterialParams(const TextureBase*) const { return m_MaterialParamsTexture; }
 		template<typename T, typename U = T>
 		jmap<jstring, U>& getMaterialParams() { return getMaterialParams(static_cast<T*>(nullptr)); }
 		template<typename T, typename U = T>

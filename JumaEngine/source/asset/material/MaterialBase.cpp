@@ -17,10 +17,10 @@ namespace JumaEngine
     template<>
     void loadMaterialParam<TextureBase>(const MaterialBase* material, ShaderBase* shader, const jstring& name, const uint32 index)
     {
-        const asset_ptr<TextureBase>* texture = material->findMaterialParam<TextureBase, asset_ptr<TextureBase>>(name);
+        const TextureShaderUniform* texture = material->findMaterialParam<TextureBase, TextureShaderUniform>(name);
         if (texture != nullptr)
         {
-            shader->setUniformValue(*name, ShaderUniformTexture{ texture, index });
+            shader->setUniformValue(*name, *texture);
         }
     }
 

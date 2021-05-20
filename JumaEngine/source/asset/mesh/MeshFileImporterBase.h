@@ -4,13 +4,12 @@
 
 #include "common_header.h"
 #include "MeshFileImporterData.h"
-#include "asset/AssetObject.h"
-#include "utils/jsubclass.h"
+#include "Mesh.h"
+#include "render/vertexBuffer/VertexBufferData.h"
 #include "engine/EngineContextObject.h"
 
 namespace JumaEngine
 {
-    class Mesh;
     class VertexBufferDataBase;
 
     class MeshFileImporterBase : public EngineContextObject
@@ -25,7 +24,30 @@ namespace JumaEngine
         void clear();
 
         const MeshFileImporterData& getData() const { return m_Data; }
-        bool copyMeshData(const asset_ptr<Mesh>& outMesh, const jstring& meshName, const jsubclass<VertexBufferDataBase>& bufferDataClass) const;
+        template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<VertexBufferDataBase, T>)>
+        bool copyMeshData(const asset_ptr<Mesh>& outMesh, const jstring& meshName) const
+        {
+            if ((outMesh == nullptr) || outMesh->isInit())
+            {
+                return false;
+            }
+
+            for (const auto& meshData : m_Data.meshesData)
+            {
+                if (meshData.name == meshName)
+                {
+                    jarray<VertexBufferDataBase*> vertexBuffersData;
+                    for (const auto& meshPartData : meshData.meshPartsData)
+                    {
+                        VertexBufferDataBase* data = new T();
+                        data->copyFromMeshFileImporterData(meshPartData);
+                        vertexBuffersData.add(data);
+                    }
+                    return outMesh->init(vertexBuffersData);
+                }
+            }
+            return false;
+        }
 
     protected:
 

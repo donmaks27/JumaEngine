@@ -13,16 +13,11 @@ namespace JumaEngine
         terminate_OpenGL();
     }
 
-    bool Texture_OpenGL::initTexture(const glm::uvec2& size, const TextureFormat format, const uint8* data)
+    bool Texture_OpenGL::initInternal(const uint8* data)
     {
-        if ((size.x == 0) || (size.y == 0) || (format == TextureFormat::None) || (data == nullptr))
-        {
-            return false;
-        }
-
         GLenum glFormat = 0;
         const GLenum glType = GL_UNSIGNED_BYTE;
-        switch (format)
+        switch (m_Format)
         {
         case TextureFormat::R8G8B8: glFormat = GL_RGB; break;
         case TextureFormat::R8G8B8A8: glFormat = GL_RGBA; break;
@@ -37,14 +32,11 @@ namespace JumaEngine
             return false;
         }
 
-        m_Size = size;
-        m_Format = format;
-
         glGenTextures(1, &m_TextureIndex);
         glBindTexture(GL_TEXTURE_2D, m_TextureIndex);
         
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size.x, size.y, 0, glFormat, glType, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_Size.x, m_Size.y, 0, glFormat, glType, data);
         glGenerateMipmap(GL_TEXTURE_2D);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
