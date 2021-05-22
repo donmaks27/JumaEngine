@@ -46,30 +46,30 @@ namespace JumaEngine
     };
 }
 
-#define DECLARE_JUMAENGINE_OBJECT_CLASS(ClassName, ParentClassName)                                     \
-public:                                                                                                 \
-    class ClassName##_Class : public ParentClassName                                                    \
-    {                                                                                                   \
-        friend Engine;                                                                                  \
-    public:                                                                                             \
-        ClassName##_Class() = default;                                                                  \
-        virtual ~ClassName##_Class() override = default;                                                \
-        virtual const char* getClassName() const override { return #ClassName; }                        \
-    protected:                                                                                          \
-        virtual EngineContextObject* createObject() const { return createObjectTemplate<ClassName>(); } \
-        virtual bool isDerrivedOrEqual(const EngineObjectClass* classObject) const override             \
-        {                                                                                               \
-            if (classObject == nullptr) { return false; }                                               \
-            if (classObject == ClassName::getClass()) { return true; }                                  \
-            return ParentClassName::isDerrivedOrEqual(classObject);                                     \
-        }                                                                                               \
-    };                                                                                                  \
-    typedef ClassName##_Class ClassType;                                                                \
-    static const ClassType* getClass()                                                                  \
-    {                                                                                                   \
-        static ClassType Class;                                                                         \
-        return &Class;                                                                                  \
-    }                                                                                                   \
+#define DECLARE_JUMAENGINE_OBJECT_CLASS(ClassName, ParentClassName)                                                 \
+public:                                                                                                             \
+    class ClassName##_Class : public ParentClassName                                                                \
+    {                                                                                                               \
+        friend Engine;                                                                                              \
+    public:                                                                                                         \
+        ClassName##_Class() = default;                                                                              \
+        virtual ~ClassName##_Class() override = default;                                                            \
+        virtual const char* getClassName() const override { return #ClassName; }                                    \
+    protected:                                                                                                      \
+        virtual EngineContextObject* createObject() const override { return createObjectTemplate<ClassName>(); }    \
+        virtual bool isDerrivedOrEqual(const EngineObjectClass* classObject) const override                         \
+        {                                                                                                           \
+            if (classObject == nullptr) { return false; }                                                           \
+            if (classObject == ClassName::getClass()) { return true; }                                              \
+            return ParentClassName::isDerrivedOrEqual(classObject);                                                 \
+        }                                                                                                           \
+    };                                                                                                              \
+    typedef ClassName##_Class ClassType;                                                                            \
+    static const ClassType* getClass()                                                                              \
+    {                                                                                                               \
+        static ClassType Class;                                                                                     \
+        return &Class;                                                                                              \
+    }                                                                                                               \
 private:                                                                                    
 
 

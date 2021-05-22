@@ -15,15 +15,9 @@ namespace JumaEngine
 
     bool TextureFileImporter_DevIL::importFileInternal(const asset_ptr<TextureBase>& outTexture, const jstring& filePath)
     {
-        const size_t filePathLength = filePath.size();
-        std::wstring wFilePath;
-        wFilePath.reserve(filePathLength);
-        size_t convertetCharsCount = 0;
-        mbstowcs_s(&convertetCharsCount, wFilePath.data(), filePathLength + 1, filePath.c_str(), filePathLength);
-
         const ILuint imageIndex = ilGenImage();
         ilBindImage(imageIndex);
-        if (ilLoadImage(wFilePath.c_str()) == IL_FALSE)
+        if (ilLoadImage(filePath.c_str()) == IL_FALSE)
         {
 #if JLOG_ENABLED
             const ILenum errorCode = ilGetError();

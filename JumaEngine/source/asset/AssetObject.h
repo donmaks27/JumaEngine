@@ -3,6 +3,7 @@
 #pragma once
 
 #include "common_header.h"
+#include <memory>
 #include "utils/type_traits_macros.h"
 #include "engine/EngineContextObject.h"
 
@@ -34,7 +35,7 @@ namespace JumaEngine
 		using base_class = std::shared_ptr<T>;
     	
         asset_ptr() = default;
-		asset_ptr(nullptr_t)
+		asset_ptr(std::nullptr_t)
 			: base_class(nullptr)
     	{}
         template<typename U, TEMPLATE_ENABLE(std::is_base_of_v<T, U>)>

@@ -26,10 +26,6 @@ namespace JumaEngine
         virtual VertexBufferBase* createVertextBufferInternal() override;
         virtual TextureBase* createTextureInternal() override;
         virtual RenderTargetDirectBase* createRenderTargetDirectInternal() override;
-
-    private:
-
-        typedef RenderManagerBase Super;
     };
 }
 
