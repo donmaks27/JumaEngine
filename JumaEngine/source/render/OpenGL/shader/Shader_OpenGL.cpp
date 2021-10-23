@@ -191,7 +191,7 @@ namespace JumaEngine
         if (isShaderLoaded() && !m_CachedUniformLocations.contains(uniformName))
         {
             const int32 location = glGetUniformLocation(m_ShaderProgramIndex, uniformName);
-    		m_CachedUniformLocations.add(uniformName, location);
+    		m_CachedUniformLocations.set(uniformName, location);
         }
     }
 
@@ -208,7 +208,7 @@ namespace JumaEngine
     {
     	if (isShaderLoaded())
     	{
-    		const int32* cachedLocation = m_CachedUniformLocations.findByKey(uniformName);
+    		const int32* cachedLocation = m_CachedUniformLocations.find(uniformName);
     		if (cachedLocation != nullptr)
     		{
     			return *cachedLocation;

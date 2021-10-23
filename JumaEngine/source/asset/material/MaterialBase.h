@@ -24,7 +24,7 @@ namespace JumaEngine
 		template<typename T>
 		bool hasMaterialParam(const jstring& name) const
 		{
-			const MaterialParamType* typePtr = m_MaterialParams.findByKey(name);
+			const MaterialParamType* typePtr = m_MaterialParams.find(name);
 			if (typePtr != nullptr)
 			{
 				return getMaterialParamType<T>() == *typePtr;
@@ -41,12 +41,12 @@ namespace JumaEngine
 		template<typename T, typename U = T>
 		const U* findMaterialParam(const jstring& name) const
 		{
-		    const MaterialParamType* typePtr = m_MaterialParams.findByKey(name);
+		    const MaterialParamType* typePtr = m_MaterialParams.find(name);
 			if (typePtr != nullptr)
 			{
 				if (getMaterialParamType<T>() == *typePtr)
 				{
-					return getMaterialParams<T, U>().findByKey(name);
+					return getMaterialParams<T, U>().find(name);
 				}
 			}
 			else
@@ -65,8 +65,8 @@ namespace JumaEngine
 		{
 			if (hasMaterialParam<T>(name))
 			{
-				m_MaterialParams.add(name, getMaterialParamType<T>());
-				getMaterialParams<T>().add(name, value);
+				m_MaterialParams.set(name, getMaterialParamType<T>());
+				getMaterialParams<T>().set(name, value);
 				return true;
 			}
 			return false;
@@ -89,8 +89,8 @@ namespace JumaEngine
 		{
 			if (!m_MaterialParams.contains(name))
 			{
-				m_MaterialParams.add(name, getMaterialParamType<T>());
-				getMaterialParams<T, U>().add(name, value);
+				m_MaterialParams.set(name, getMaterialParamType<T>());
+				getMaterialParams<T, U>().set(name, value);
 				return true;
 			}
 			return false;

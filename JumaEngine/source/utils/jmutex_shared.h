@@ -2,11 +2,10 @@
 
 #pragma once
 
-#include "common_header.h"
 #include <shared_mutex>
 #include <atomic>
 
-namespace JumaEngine
+namespace jutils
 {
     class jmutex_shared
     {

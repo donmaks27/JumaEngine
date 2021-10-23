@@ -48,7 +48,7 @@ namespace JumaEngine
 	{
 		const jstring actualName = jstring(JSTR("Material.")) + materialName;
 		
-        asset_ptr<Material>* existingAsset = m_Materials.findByKey(actualName);
+        asset_ptr<Material>* existingAsset = m_Materials.find(actualName);
 		if (existingAsset != nullptr)
 		{
 			return *existingAsset;
@@ -63,7 +63,7 @@ namespace JumaEngine
             {
                 asset->m_Shader->loadShader(materialName);
             }
-            m_Materials.add(actualName, asset);
+            m_Materials.set(actualName, asset);
         }
         return asset;
 	}
@@ -71,7 +71,7 @@ namespace JumaEngine
     {
 		const jstring actuallName = jstring(JSTR("MaterialInstance.")) + materialInstanceName;
 		
-        asset_ptr<MaterialInstance>* existingAsset = m_MaterialInstances.findByKey(actuallName);
+        asset_ptr<MaterialInstance>* existingAsset = m_MaterialInstances.find(actuallName);
 		if (existingAsset != nullptr)
 		{
 			return *existingAsset;
@@ -80,7 +80,7 @@ namespace JumaEngine
         asset_ptr<MaterialInstance> asset = createMaterialInstance(baseMaterial);
         if (asset != nullptr)
         {
-            m_MaterialInstances.add(actuallName, asset);
+            m_MaterialInstances.set(actuallName, asset);
         }
         return asset;
     }
@@ -102,7 +102,7 @@ namespace JumaEngine
     {
         const jstring actuallName = jstring(JSTR("Mesh.")) + meshName;
 		
-        asset_ptr<Mesh>* existingAsset = m_Meshes.findByKey(actuallName);
+        asset_ptr<Mesh>* existingAsset = m_Meshes.find(actuallName);
 		if (existingAsset != nullptr)
 		{
 			return *existingAsset;
@@ -111,7 +111,7 @@ namespace JumaEngine
         asset_ptr<Mesh> asset = createAssetObject<Mesh>();
         if (asset != nullptr)
         {
-            m_Meshes.add(actuallName, asset);
+            m_Meshes.set(actuallName, asset);
         }
         return asset;
     }
@@ -120,7 +120,7 @@ namespace JumaEngine
     {
         const jstring actuallName = jstring(JSTR("Texture.")) + textureName;
 		
-        asset_ptr<TextureBase>* existingAsset = m_Textures.findByKey(actuallName);
+        asset_ptr<TextureBase>* existingAsset = m_Textures.find(actuallName);
 		if (existingAsset != nullptr)
 		{
 			return *existingAsset;
@@ -129,7 +129,7 @@ namespace JumaEngine
         asset_ptr<TextureBase> asset = createTexture();
         if (asset != nullptr)
         {
-            m_Textures.add(actuallName, asset);
+            m_Textures.set(actuallName, asset);
         }
         return asset;
     }
