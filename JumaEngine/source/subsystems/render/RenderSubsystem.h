@@ -5,7 +5,7 @@
 #include "common_header.h"
 #include "subsystems/SubsystemBase.h"
 #include "subsystems/render/RenderInterface.h"
-#include "subsystems/render/window/WindowDescriptionBase.h"
+#include "subsystems/render/window/WindowDescription.h"
 
 namespace JumaEngine
 {
@@ -19,13 +19,13 @@ namespace JumaEngine
 
     protected:
 
-        virtual bool initSubsystem() override;
-        virtual void terminateSubsystem() override;
-
-        virtual WindowDescriptionBase* createWindowInternal(const glm::uvec2& size, const jstring& title) = 0;
+        void createMainWindow();
+        void terminateMainWindow();
+        virtual WindowDescription* createWindowInternal(const glm::uvec2& size, const jstring& title) = 0;
+        virtual void terminateWindowInternal(WindowDescription* windowDescription) = 0;
 
     private:
 
-        WindowDescriptionBase* m_MainWindow = nullptr;
+        WindowDescription* m_MainWindow = nullptr;
     };
 }

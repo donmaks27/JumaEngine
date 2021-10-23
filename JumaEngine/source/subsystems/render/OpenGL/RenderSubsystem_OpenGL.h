@@ -17,6 +17,10 @@ namespace JumaEngine
     public:
         RenderSubsystem_OpenGL() = default;
         virtual ~RenderSubsystem_OpenGL() override = default;
+
+    protected:
+
+        bool initOpenGL();
     };
 }
 

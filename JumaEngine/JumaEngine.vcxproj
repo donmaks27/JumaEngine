@@ -177,13 +177,14 @@
     <ClInclude Include="source\render\vertexBuffer\vertexType\Vertex3D_Normal.h" />
     <ClInclude Include="source\render\vertexBuffer\vertexType\Vertex3D_Normal_TexCoord.h" />
     <ClInclude Include="source\render\window\WindowDescriptionBaseOld.h" />
-    <ClInclude Include="source\render\window\WindowDescriptionGLFW.h" />
+    <ClInclude Include="source\render\window\WindowDescriptionGLFWOld.h" />
     <ClInclude Include="source\render\window\window_id.h" />
     <ClInclude Include="source\subsystems\render\OpenGL\RenderSubsystem_OpenGL.h" />
     <ClInclude Include="source\subsystems\render\OpenGL\RenderSubsystem_OpenGL_GLFW.h" />
     <ClInclude Include="source\subsystems\render\RenderInterface.h" />
     <ClInclude Include="source\subsystems\render\RenderSubsystem.h" />
-    <ClInclude Include="source\subsystems\render\window\WindowDescriptionBase.h" />
+    <ClInclude Include="source\subsystems\render\window\WindowDescription.h" />
+    <ClInclude Include="source\subsystems\render\window\WindowDescription_GLFW.h" />
     <ClInclude Include="source\subsystems\SubsystemBase.h" />
     <ClInclude Include="source\transform\Rotation.h" />
     <ClInclude Include="source\transform\Transform.h" />

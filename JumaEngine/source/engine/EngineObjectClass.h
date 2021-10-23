@@ -18,7 +18,7 @@ namespace JumaEngine
         EngineObjectClass() = default;
         virtual ~EngineObjectClass() = default;
 
-        virtual const char* getClassName() const = 0;
+        virtual jstring getClassName() const = 0;
 
         template<typename T, TEMPLATE_ENABLE(std::is_base_of_v<EngineContextObject, T>)>
         bool isChild() const { return isDerrivedOrEqual(T::getClass()); }
@@ -54,7 +54,7 @@ public:                                                                         
     public:                                                                                                         \
         ClassName##_Class() = default;                                                                              \
         virtual ~ClassName##_Class() override = default;                                                            \
-        virtual const char* getClassName() const override { return #ClassName; }                                    \
+        virtual jstring getClassName() const override { return #ClassName; }                                    \
     protected:                                                                                                      \
         virtual EngineContextObject* createObject() const override { return createObjectTemplate<ClassName>(); }    \
         virtual bool isDerrivedOrEqual(const EngineObjectClass* classObject) const override                         \

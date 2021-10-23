@@ -7,11 +7,12 @@
 
 namespace JumaEngine
 {
-    struct WindowDescriptionBase
+    class WindowDescription
     {
     protected:
-        WindowDescriptionBase() = default;
+        WindowDescription() = default;
     public:
+        virtual ~WindowDescription() = default;
 
         jstring title;
         glm::uvec2 size = { 0, 0 };

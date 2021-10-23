@@ -6,7 +6,7 @@
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_OPENGL) && defined(JUMAENGINE_INCLUDE_WINDOW_LIB_GLFW)
 
-#include "render/window/WindowDescriptionGLFW.h"
+#include "render/window/WindowDescriptionGLFWOld.h"
 #include "RenderManagerBase_OpenGL.h"
 
 namespace JumaEngine
@@ -46,11 +46,11 @@ namespace JumaEngine
 
         static void errorCallback(int code, const char* errorMessage);
 
-        WindowDescriptionGLFW* getWindowDescriptionGLFW(const window_id windowID) { return getWindowDescription<WindowDescriptionGLFW>(windowID); }
-        const WindowDescriptionGLFW* getWindowDescriptionGLFW(const window_id windowID) const { return getWindowDescription<WindowDescriptionGLFW>(windowID); }
+        WindowDescriptionGLFWOld* getWindowDescriptionGLFW(const window_id windowID) { return getWindowDescription<WindowDescriptionGLFWOld>(windowID); }
+        const WindowDescriptionGLFWOld* getWindowDescriptionGLFW(const window_id windowID) const { return getWindowDescription<WindowDescriptionGLFWOld>(windowID); }
         GLFWwindow* getWindowGLFW(const window_id windowID) const
         {
-            const WindowDescriptionGLFW* description = getWindowDescriptionGLFW(windowID);
+            const WindowDescriptionGLFWOld* description = getWindowDescriptionGLFW(windowID);
             return description != nullptr ? description->windowPtr : nullptr;
         }
     };

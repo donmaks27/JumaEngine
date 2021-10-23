@@ -8,7 +8,11 @@ namespace JumaEngine
     {
         Super::onRegister();
 
-        m_Initialized = initSubsystem();
+        if (!initSubsystem())
+        {
+            throw std::runtime_error("Failed to initialize subsystem " + getClass()->getClassName());
+        }
+        m_Initialized = true;
     }
 
     void SubsystemBase::terminate()

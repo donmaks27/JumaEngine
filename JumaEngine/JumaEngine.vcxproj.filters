@@ -205,7 +205,9 @@
     <ClCompile Include="source\subsystems\render\OpenGL\RenderSubsystem_OpenGL.cpp">
       <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
     </ClCompile>
-    <ClCompile Include="source\subsystems\render\OpenGL\RenderSubsystem_OpenGL_GLFW.cpp" />
+    <ClCompile Include="source\subsystems\render\OpenGL\RenderSubsystem_OpenGL_GLFW.cpp">
+      <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\common_header.h">
@@ -316,9 +318,6 @@
     <ClInclude Include="source\render\OpenGL\vertexBuffer\VertexBuffer_OpenGL.h">
       <Filter>JumaEngine\render\OpenGL\vertexBuffer</Filter>
     </ClInclude>
-    <ClInclude Include="source\render\window\WindowDescriptionGLFW.h">
-      <Filter>JumaEngine\render\window</Filter>
-    </ClInclude>
     <ClInclude Include="source\render\window\window_id.h">
       <Filter>JumaEngine\render\window</Filter>
     </ClInclude>
@@ -412,14 +411,20 @@
     <ClInclude Include="source\render\window\WindowDescriptionBaseOld.h">
       <Filter>JumaEngine\render\window</Filter>
     </ClInclude>
-    <ClInclude Include="source\subsystems\render\window\WindowDescriptionBase.h">
-      <Filter>JumaEngine\subsystems\render\window</Filter>
-    </ClInclude>
     <ClInclude Include="source\subsystems\render\OpenGL\RenderSubsystem_OpenGL.h">
       <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="source\subsystems\render\OpenGL\RenderSubsystem_OpenGL_GLFW.h">
       <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\window\WindowDescriptionGLFWOld.h">
+      <Filter>JumaEngine\render\window</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\window\WindowDescription_GLFW.h">
+      <Filter>JumaEngine\subsystems\render\window</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\window\WindowDescription.h">
+      <Filter>JumaEngine\subsystems\render\window</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

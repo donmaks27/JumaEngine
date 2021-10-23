@@ -66,7 +66,7 @@ namespace JumaEngine
             return nullptr;
         }
 
-        WindowDescriptionGLFW* windowDescription = new WindowDescriptionGLFW();
+        WindowDescriptionGLFWOld* windowDescription = new WindowDescriptionGLFWOld();
         windowDescription->windowSize = size;
         windowDescription->windowTitle = title;
         windowDescription->windowPtr = window;

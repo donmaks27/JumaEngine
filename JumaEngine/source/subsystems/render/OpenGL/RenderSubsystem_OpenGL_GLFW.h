@@ -7,6 +7,7 @@
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_OPENGL) && defined(JUMAENGINE_INCLUDE_WINDOW_LIB_GLFW)
 
 #include "subsystems/render/OpenGL/RenderSubsystem_OpenGL.h"
+#include "subsystems/render/window/WindowDescription_GLFW.h"
 
 namespace JumaEngine
 {
@@ -17,6 +18,20 @@ namespace JumaEngine
     public:
         RenderSubsystem_OpenGL_GLFW() = default;
         virtual ~RenderSubsystem_OpenGL_GLFW() override = default;
+
+    protected:
+
+        virtual bool initSubsystem() override;
+        virtual void terminateSubsystem() override;
+        
+        virtual WindowDescription* createWindowInternal(const glm::uvec2& size, const jstring& title) override;
+        virtual void terminateWindowInternal(WindowDescription* windowDescription) override;
+
+    private:
+
+        static void GLFW_ErrorCallback(int code, const char* errorMessage);
+
+        void terminateGLFW();
     };
 }
 

@@ -4,18 +4,20 @@
 
 namespace JumaEngine
 {
-    bool RenderSubsystem::initSubsystem()
+    void RenderSubsystem::createMainWindow()
     {
-        if (!Super::initSubsystem())
+        if (m_MainWindow == nullptr)
         {
-            return false;
+            m_MainWindow = createWindowInternal({ 800, 600 }, JSTR("JumaEngine"));
         }
-
-        return true;
     }
-
-    void RenderSubsystem::terminateSubsystem()
+    void RenderSubsystem::terminateMainWindow()
     {
-        Super::terminateSubsystem();
+        if (m_MainWindow != nullptr)
+        {
+            terminateWindowInternal(m_MainWindow);
+            delete m_MainWindow;
+            m_MainWindow = nullptr;
+        }
     }
 }
