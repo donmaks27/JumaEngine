@@ -6,6 +6,8 @@
 
 int main(int argc, char** argv)
 {
+    JE::jarray<int> a;
+    for (auto b : a) {}
     JumaEngine::Engine engine;
     engine.setMeshFileImporter<JumaEngine::MeshFileImporter_Assimp>();
     engine.setTextureFileImporter<JumaEngine::TextureFileImporter_DevIL>();

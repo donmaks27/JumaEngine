@@ -8,30 +8,45 @@
 namespace JumaEngine
 {
     template<typename T>
-    class jarray : public std::vector<T>
+    class jarray : std::vector<T>
     {
     public:
 		using base_class = std::vector<T>;
+        using iterator = typename base_class::iterator;
+        using const_iterator = typename base_class::const_iterator;
     	
         jarray()
 		    : base_class()
-		{}
+	    {}
+        explicit jarray(const size_t size)
+		    : base_class(size)
+	    {}
+        explicit jarray(const size_t size, const T& defaultValue)
+		    : base_class(size, defaultValue)
+	    {}
         jarray(std::initializer_list<T> list)
 		    : base_class(list)
-		{}
+	    {}
         jarray(const base_class& vector)
             : base_class(vector)
         {}
 
-        bool isValidIndex(const int64 index) const { return (index >= 0) && (index < this->size()); }
+        int64 getSize() const { return this->size(); }
+        bool isValidIndex(const int64 index) const { return (index >= 0) && (index < getSize()); }
+        bool isEmpty() const { return this->empty(); }
+
+        T& get(const int64 index) { return this->at(index); }
+        const T& get(const int64 index) const { return this->at(index); }
+        T& operator[](const int64 index) { return get(index); }
+        const T& operator[](const int64 index) const { return get(index); }
 
         int64 indexOf(const T& value) const
         {
-            if (!this->empty())
+            if (!isEmpty())
             {
-                for (uint32 index = 0; index < this->size(); index++)
+                for (uint32 index = 0; index < getSize(); ++index)
                 {
-                    if (this->at(index) == value)
+                    if (get(index) == value)
                     {
                         return index;
                     }
@@ -41,8 +56,12 @@ namespace JumaEngine
         }
         bool contains(const T& value) const { return indexOf(value) != -1; }
         
-		T& add(const T& value) { return this->emplace_back(value); }
-		T& addDefault() { return this->emplace_back(T()); }
+		T& add(const T& value)
+        {
+            this->emplace_back(value);
+            return get(getSize() - 1);
+        }
+		T& addDefault() { return this->emplace_back(); }
     	T& addUnique(const T& value)
         {
             const int64 index = indexOf(value);
@@ -50,7 +69,7 @@ namespace JumaEngine
 	        {
 		        return add(value);
 	        }
-            return this->at(index);
+            return get(index);
         }
     	
         bool removeAt(const int64 index)
@@ -68,17 +87,27 @@ namespace JumaEngine
             uint32 index = 0;
             while (isValidIndex(index))
             {
-                if (this->at(index) == value)
+                if (get(index) == value)
                 {
-                    count++;
-                    this->erase(this->begin() + index);
+                    ++count;
+                    removeAt(index);
                 }
                 else
                 {
-                    index++;
+                    ++index;
                 }
             }
             return count;
         }
+        void clear() { return this->base_class::clear(); }
+
+        T* getData() noexcept { return this->data(); }
+        const T* getData() const noexcept { return this->data(); }
+
+        iterator begin() noexcept { return this->base_class::begin(); }
+        iterator end() noexcept { return this->base_class::end(); }
+
+        const_iterator begin() const noexcept { return this->base_class::begin(); }
+        const_iterator end() const noexcept { return this->base_class::end(); }
     };
 }

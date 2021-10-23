@@ -23,9 +23,9 @@ namespace JumaEngine
         virtual ~Mesh() override;
         
         bool init(const jarray<VertexBufferDataBase*>& meshPartsData);
-        bool isInit() const { return !m_VertexBuffers.empty(); }
+        bool isInit() const { return !m_VertexBuffers.isEmpty(); }
 
-        asset_ptr<MaterialBase> getMaterial(const uint32 slotIndex) const { return m_Materials.size() > slotIndex ? m_Materials[slotIndex] : asset_ptr<MaterialBase>(); }
+        asset_ptr<MaterialBase> getMaterial(const uint32 slotIndex) const { return m_Materials.isValidIndex(slotIndex) ? m_Materials[slotIndex] : asset_ptr<MaterialBase>(); }
         void setMaterial(uint32 slotIndex, const asset_ptr<MaterialBase>& material);
 
         virtual void render(window_id windowID, const RenderParams& renderParams) override;

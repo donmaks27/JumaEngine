@@ -15,11 +15,11 @@ namespace JumaEngine
         virtual ~VertexBufferDataBase() = default;
 
         virtual const void* getVertices() const { return nullptr; }
-        const void* getVertexIndices() const { return !vertexIndices.empty() ? vertexIndices.data() : nullptr; }
+        const void* getVertexIndices() const { return !vertexIndices.isEmpty() ? vertexIndices.getData() : nullptr; }
 
         virtual void fillVertexBufferDescription(VertexBufferDescription& description) const
         {
-            description.indicesCount = static_cast<uint32>(vertexIndices.size());
+            description.indicesCount = static_cast<uint32>(vertexIndices.getSize());
         }
 
         virtual void copyFromMeshFileImporterData(const MeshFileImporterMeshPartData& data) = 0;
@@ -34,13 +34,13 @@ namespace JumaEngine
     {
     public:
 
-        virtual const void* getVertices() const override final { return vertices.data(); }
+        virtual const void* getVertices() const override final { return vertices.getData(); }
 
         virtual void fillVertexBufferDescription(VertexBufferDescription& description) const override
         {
             VertexBufferDataBase::fillVertexBufferDescription(description);
 
-            description.verticesCount = static_cast<uint32>(vertices.size());
+            description.verticesCount = static_cast<uint32>(vertices.getSize());
             description.vertexSize = sizeof(T);
         }
 

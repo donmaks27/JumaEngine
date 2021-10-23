@@ -11,7 +11,7 @@ namespace JumaEngine
     class MeshFileImporterBase;
     class CameraComponent;
 
-    class SystemFunctions final
+    class System final
     {
     public:
 

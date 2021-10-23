@@ -20,7 +20,7 @@ namespace JumaEngine
     		MaterialBase* material = m_Mesh->getMaterial(0).get();
     		if (material != nullptr)
     		{
-    			const CameraComponent* camera = SystemFunctions::getWindowActiveCamera(this, windowID);
+    			const CameraComponent* camera = System::getWindowActiveCamera(this, windowID);
 				if (camera != nullptr)
 				{
 					material->setMaterialParam("uProjection", camera->getProjectionMatrix());

@@ -23,7 +23,7 @@ namespace JumaEngine
 	}
 	void Rotation::fromDirection(const glm::vec3& direction)
 	{
-		if (MathFunctions::isNearlyZero(direction))
+		if (Math::isNearlyZero(direction))
 		{
 			pitch = 0.0f;
 			yaw = 0.0f;

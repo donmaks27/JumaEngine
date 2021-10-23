@@ -8,7 +8,7 @@
 
 namespace JumaEngine
 {
-    class MathFunctions final
+    class Math final
     {
     public:
 

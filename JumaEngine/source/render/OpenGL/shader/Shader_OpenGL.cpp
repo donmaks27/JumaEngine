@@ -74,9 +74,9 @@ namespace JumaEngine
     uint32 Shader_OpenGL::compileShader(const jarray<jstring>& shaderText, const ShaderType shaderType) const
     {
         uint32 shaderIndex = 0;
-        if (!shaderText.empty())
+        if (!shaderText.isEmpty())
         {
-            const int32 linesCount = static_cast<int32>(shaderText.size());
+            const int32 linesCount = static_cast<int32>(shaderText.getSize());
             const GLchar** shader = new const GLchar*[linesCount];
             GLint* shaderLineLength = new GLint[linesCount];
             for (int32 lineIndex = 0; lineIndex < linesCount; lineIndex++)
@@ -268,12 +268,12 @@ namespace JumaEngine
     }
     void Shader_OpenGL::setUniformValueInternal(const char* uniformName, const jarray<float>& value)
     {
-        if (!value.empty())
+        if (!value.isEmpty())
         {
             const int32 uniformLocation = getUniformLocation(uniformName);
             if (uniformLocation != -1)
             {
-                glUniform1fv(uniformLocation, static_cast<GLsizei>(value.size()), value.data());
+                glUniform1fv(uniformLocation, static_cast<GLsizei>(value.getSize()), value.getData());
             }
         }
     }
