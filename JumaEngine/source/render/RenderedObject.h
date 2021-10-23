@@ -3,7 +3,7 @@
 #pragma once
 
 #include "common_header.h"
-#include "window/window_id.h"
+#include "render/window/window_id.h"
 
 namespace JumaEngine
 {
@@ -12,11 +12,11 @@ namespace JumaEngine
         bool invertFacesOrientation = false;
     };
 
-    class IRenderInterface
+    class IRenderedObject
     {
     protected:
-        IRenderInterface() = default;
-        virtual ~IRenderInterface() = default;
+        IRenderedObject() = default;
+        virtual ~IRenderedObject() = default;
 
     public:
 

@@ -62,7 +62,7 @@ namespace JumaEngine
 #ifndef JUMAENGINE_SINGLE_WINDOW
         if (isMainThread())
         {
-            WindowDescriptionBase* description = createWindowInternal(size, title);
+            WindowDescriptionBaseOld* description = createWindowInternal(size, title);
             if (description != nullptr)
             {
                 m_WindowsListMutex.lock();
@@ -87,7 +87,7 @@ namespace JumaEngine
 #else
         if (m_MainWindowID == INVALID_WINDOW_ID)
         {
-            WindowDescriptionBase* description = createWindowInternal(size, title);
+            WindowDescriptionBaseOld* description = createWindowInternal(size, title);
             if (description != nullptr)
             {
                 m_MainWindowID = m_Windows.add(description);
@@ -99,7 +99,7 @@ namespace JumaEngine
         return INVALID_WINDOW_ID;
     }
 
-    WindowDescriptionBase* RenderManagerBase::getWindowDescriptionBase(const window_id windowID)
+    WindowDescriptionBaseOld* RenderManagerBase::getWindowDescriptionBase(const window_id windowID)
     {
 #ifndef JUMAENGINE_SINGLE_WINDOW
         if (windowID != INVALID_WINDOW_ID)
@@ -110,8 +110,8 @@ namespace JumaEngine
             {
                 m_WindowsListMutex.lock_shared();
             }
-            WindowDescriptionBase* const* description = m_Windows.find(windowID);
-            WindowDescriptionBase* result = description != nullptr ? *description : nullptr;
+            WindowDescriptionBaseOld* const* description = m_Windows.find(windowID);
+            WindowDescriptionBaseOld* result = description != nullptr ? *description : nullptr;
             if (shouldUseMutex)
             {
                 m_WindowsListMutex.unlock_shared();
@@ -127,7 +127,7 @@ namespace JumaEngine
 #endif
         return nullptr;
     }
-    const WindowDescriptionBase* RenderManagerBase::getWindowDescriptionBase(const window_id windowID) const
+    const WindowDescriptionBaseOld* RenderManagerBase::getWindowDescriptionBase(const window_id windowID) const
     {
 #ifndef JUMAENGINE_SINGLE_WINDOW
         if (windowID != INVALID_WINDOW_ID)
@@ -138,8 +138,8 @@ namespace JumaEngine
             {
                 m_WindowsListMutex.lock_shared();
             }
-            WindowDescriptionBase* const* description = m_Windows.find(windowID);
-            const WindowDescriptionBase* result = description != nullptr ? *description : nullptr;
+            WindowDescriptionBaseOld* const* description = m_Windows.find(windowID);
+            const WindowDescriptionBaseOld* result = description != nullptr ? *description : nullptr;
             if (shouldUseMutex)
             {
                 m_WindowsListMutex.unlock_shared();
@@ -198,7 +198,7 @@ namespace JumaEngine
                 const window_id windowID = windowIDAndDescription.first;
                 if (windowID != mainWindowID)
                 {
-                    WindowDescriptionBase*& description = windowIDAndDescription.second;
+                    WindowDescriptionBaseOld*& description = windowIDAndDescription.second;
                     if (!description->windowActive.load())
                     {
                         markedWindowIDs.add(windowID);
@@ -214,7 +214,7 @@ namespace JumaEngine
     }
     void RenderManagerBase::destroyWindow(const window_id windowID)
     {
-        WindowDescriptionBase* description = getWindowDescriptionBase(windowID);
+        WindowDescriptionBaseOld* description = getWindowDescriptionBase(windowID);
         if (description != nullptr)
         {
             destroyWindowInternal(windowID);
@@ -234,7 +234,7 @@ namespace JumaEngine
     {
         if (isInit())
         {
-            const WindowDescriptionBase* windowDescription = getWindowDescription(windowID);
+            const WindowDescriptionBaseOld* windowDescription = getWindowDescription(windowID);
             if (windowDescription != nullptr)
             {
                 outWindowSize = windowDescription->windowSize;
@@ -247,7 +247,7 @@ namespace JumaEngine
     {
         if (isInit())
         {
-            WindowDescriptionBase* windowDescription = getWindowDescription(windowID);
+            WindowDescriptionBaseOld* windowDescription = getWindowDescription(windowID);
             if ((windowDescription != nullptr) && (windowDescription->windowSize != size))
             {
                 if (updateWindowSize(windowID, size))
@@ -264,7 +264,7 @@ namespace JumaEngine
     {
         if (isInit())
         {
-            const WindowDescriptionBase* windowDescription = getWindowDescription(windowID);
+            const WindowDescriptionBaseOld* windowDescription = getWindowDescription(windowID);
             if (windowDescription != nullptr)
             {
                 outWindowTitle = windowDescription->windowTitle;
@@ -277,7 +277,7 @@ namespace JumaEngine
     {
         if (isInit())
         {
-            WindowDescriptionBase* windowDescription = getWindowDescription(windowID);
+            WindowDescriptionBaseOld* windowDescription = getWindowDescription(windowID);
             if ((windowDescription != nullptr) && (windowDescription->windowTitle != title))
             {
                 if (updateWindowTitle(windowID, title))
@@ -292,7 +292,7 @@ namespace JumaEngine
 
     void RenderManagerBase::setWindowRenderTarget(const window_id windowID, RenderTargetBase* renderTarget)
     {
-        WindowDescriptionBase* description = getWindowDescription(windowID);
+        WindowDescriptionBaseOld* description = getWindowDescription(windowID);
         if (description != nullptr)
         {
             description->windowRenderTarget = renderTarget;
@@ -301,12 +301,12 @@ namespace JumaEngine
 
     CameraComponent* RenderManagerBase::getWindowActiveCamera(const window_id windowID) const
     {
-        const WindowDescriptionBase* description = getWindowDescription(windowID);
+        const WindowDescriptionBaseOld* description = getWindowDescription(windowID);
         return description != nullptr ? description->activeCamera : nullptr;
     }
     void RenderManagerBase::setWindowActiveCamera(const window_id windowID, CameraComponent* camera)
     {
-        WindowDescriptionBase* description = getWindowDescription(windowID);
+        WindowDescriptionBaseOld* description = getWindowDescription(windowID);
         if (description != nullptr)
         {
             description->activeCamera = camera;
@@ -385,7 +385,7 @@ namespace JumaEngine
         {
             if (windowIDAndDescription.first != mainWindowID)
             {
-                WindowDescriptionBase*& description = windowIDAndDescription.second;
+                WindowDescriptionBaseOld*& description = windowIDAndDescription.second;
                 if (description->windowActive.load())
                 {
                     description->windowShouldStartRender.store(true);
@@ -401,7 +401,7 @@ namespace JumaEngine
         {
             if (windowIDAndDescription.first != mainWindowID)
             {
-                WindowDescriptionBase*& description = windowIDAndDescription.second;
+                WindowDescriptionBaseOld*& description = windowIDAndDescription.second;
                 while (!description->windowRenderFinish.load() && description->windowActive.load()) {}
                 description->windowRenderFinish.store(false);
             }
@@ -429,8 +429,8 @@ namespace JumaEngine
 #ifndef JUMAENGINE_SINGLE_WINDOW
     void RenderManagerBase::windowThreadFunction(const window_id windowID)
     {
-        WindowDescriptionBase* windowDescription = getWindowDescriptionBase(windowID);
-        WindowDescriptionBase* mainWindowDescription = getWindowDescriptionBase(getMainWindowID());
+        WindowDescriptionBaseOld* windowDescription = getWindowDescriptionBase(windowID);
+        WindowDescriptionBaseOld* mainWindowDescription = getWindowDescriptionBase(getMainWindowID());
 
         setActiveWindowInCurrentThread(windowID);
 
@@ -463,7 +463,7 @@ namespace JumaEngine
 
     void RenderManagerBase::render(const window_id windowID, const RenderParams& renderParams)
     {
-        WindowDescriptionBase* description = getWindowDescription(windowID);
+        WindowDescriptionBaseOld* description = getWindowDescription(windowID);
         if (description != nullptr)
         {
             description->windowRenderTarget->render(windowID, renderParams);

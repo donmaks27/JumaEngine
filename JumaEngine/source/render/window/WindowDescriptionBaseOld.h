@@ -12,11 +12,11 @@ namespace JumaEngine
     class RenderTargetBase;
     class CameraComponent;
 
-    class WindowDescriptionBase
+    class WindowDescriptionBaseOld
     {
     public:
-        WindowDescriptionBase() = default;
-        virtual ~WindowDescriptionBase() = default;
+        WindowDescriptionBaseOld() = default;
+        virtual ~WindowDescriptionBaseOld() = default;
 
         jstring windowTitle;
         glm::uvec2 windowSize = { 0, 0 };

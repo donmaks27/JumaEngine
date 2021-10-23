@@ -7,7 +7,7 @@
 #include "WorldContextObject.h"
 #include "utils/jarray.h"
 #include "engine/EngineContextObject.h"
-#include "render/IRenderInterface.h"
+#include "render/RenderedObject.h"
 
 namespace JumaEngine
 {
@@ -15,7 +15,7 @@ namespace JumaEngine
     class GameComponent;
     class SceneComponent;
 
-    class EngineWorld : public EngineContextObject, public IRenderInterface
+    class EngineWorld : public EngineContextObject, public IRenderedObject
     {
         JUMAENGINE_CLASS(EngineWorld, EngineContextObject)
 

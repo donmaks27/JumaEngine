@@ -4,8 +4,8 @@
 
 #include "common_header.h"
 
-#if defined(JUMAENGINE_USE_GRAPHIC_API_OPENGL)
-#   if defined(JUMAENGINE_USE_WINDOW_LIB_GLFW)
+#if defined(JUMAENGINE_INCLUDE_RENDER_API_OPENGL)
+#   if defined(JUMAENGINE_INCLUDE_WINDOW_LIB_GLFW)
 
 #include "OpenGL/RenderManager_OpenGL_GLFW.h"
 

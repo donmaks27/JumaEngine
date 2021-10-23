@@ -4,14 +4,14 @@
 
 #include "common_header.h"
 
-#if defined(JUMAENGINE_USE_WINDOW_LIB_GLFW)
+#if defined(JUMAENGINE_INCLUDE_WINDOW_LIB_GLFW)
 
 #include "GLFW/glfw3.h"
-#include "WindowDescriptionBase.h"
+#include "WindowDescriptionBaseOld.h"
 
 namespace JumaEngine
 {
-    class WindowDescriptionGLFW : public WindowDescriptionBase
+    class WindowDescriptionGLFW : public WindowDescriptionBaseOld
     {
     public:
         WindowDescriptionGLFW() = default;

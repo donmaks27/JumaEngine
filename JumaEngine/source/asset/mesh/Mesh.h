@@ -5,7 +5,7 @@
 #include "common_header.h"
 #include "utils/jarray.h"
 #include "asset/AssetObject.h"
-#include "render/IRenderInterface.h"
+#include "render/RenderedObject.h"
 
 namespace JumaEngine
 {
@@ -14,7 +14,7 @@ namespace JumaEngine
     class MaterialBase;
     class MeshFileImporterBase;
 
-    class Mesh : public AssetObject, public IRenderInterface
+    class Mesh : public AssetObject, public IRenderedObject
     {
         JUMAENGINE_CLASS(Mesh, AssetObject)
 

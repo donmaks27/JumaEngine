@@ -2,7 +2,7 @@
 
 #include "VertexBuffer_OpenGL.h"
 
-#if defined(JUMAENGINE_USE_GRAPHIC_API_OPENGL)
+#if defined(JUMAENGINE_INCLUDE_RENDER_API_OPENGL)
 
 #include "render/vertexBuffer/VertexBufferData.h"
 #include "GL/glew.h"

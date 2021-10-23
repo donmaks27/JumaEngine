@@ -2,7 +2,7 @@
 
 #include "RenderManagerBase_OpenGL.h"
 
-#if defined(JUMAENGINE_USE_GRAPHIC_API_OPENGL)
+#if defined(JUMAENGINE_INCLUDE_RENDER_API_OPENGL)
 
 #include "GL/glew.h"
 #include "engine/Engine.h"

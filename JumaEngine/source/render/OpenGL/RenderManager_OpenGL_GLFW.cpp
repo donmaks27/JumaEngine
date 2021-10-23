@@ -2,7 +2,7 @@
 
 #include "RenderManager_OpenGL_GLFW.h"
 
-#if defined(JUMAENGINE_USE_GRAPHIC_API_OPENGL) && defined(JUMAENGINE_USE_WINDOW_LIB_GLFW)
+#if defined(JUMAENGINE_INCLUDE_RENDER_API_OPENGL) && defined(JUMAENGINE_INCLUDE_WINDOW_LIB_GLFW)
 
 #include "utils/jlog.h"
 
@@ -57,7 +57,7 @@ namespace JumaEngine
         glfwTerminate();
     }
     
-    WindowDescriptionBase* RenderManager_OpenGL_GLFW::createWindowInternal(const glm::uvec2& size, const jstring& title)
+    WindowDescriptionBaseOld* RenderManager_OpenGL_GLFW::createWindowInternal(const glm::uvec2& size, const jstring& title)
     {
         GLFWwindow* window = glfwCreateWindow(size.x, size.y, title.c_str(), nullptr, getWindowGLFW(getMainWindowID()));
         if (window == nullptr)

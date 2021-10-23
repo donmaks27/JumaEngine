@@ -4,11 +4,11 @@
 
 #include "common_header.h"
 #include "engine/EngineContextObject.h"
-#include "render/IRenderInterface.h"
+#include "render/RenderedObject.h"
 
 namespace JumaEngine
 {
-    class RenderTargetBase : public EngineContextObject, public IRenderInterface
+    class RenderTargetBase : public EngineContextObject, public IRenderedObject
     {
         JUMAENGINE_CLASS(RenderTargetBase, EngineContextObject)
 

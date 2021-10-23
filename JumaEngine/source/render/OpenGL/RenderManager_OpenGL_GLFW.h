@@ -4,7 +4,7 @@
 
 #include "common_header.h"
 
-#if defined(JUMAENGINE_USE_GRAPHIC_API_OPENGL) && defined(JUMAENGINE_USE_WINDOW_LIB_GLFW)
+#if defined(JUMAENGINE_INCLUDE_RENDER_API_OPENGL) && defined(JUMAENGINE_INCLUDE_WINDOW_LIB_GLFW)
 
 #include "render/window/WindowDescriptionGLFW.h"
 #include "RenderManagerBase_OpenGL.h"
@@ -29,7 +29,7 @@ namespace JumaEngine
         virtual bool initInternal() override;
         virtual void terminateInternal() override;
         
-        virtual WindowDescriptionBase* createWindowInternal(const glm::uvec2& size, const jstring& title) override;
+        virtual WindowDescriptionBaseOld* createWindowInternal(const glm::uvec2& size, const jstring& title) override;
 
 #ifndef JUMAENGINE_SINGLE_WINDOW
         virtual void destroyWindowInternal(window_id windowID) override;

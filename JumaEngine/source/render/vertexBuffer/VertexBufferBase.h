@@ -5,14 +5,14 @@
 #include "common_header.h"
 #include "VertexBufferDescription.h"
 #include "engine/EngineContextObject.h"
-#include "render/IRenderInterface.h"
+#include "render/RenderedObject.h"
 
 namespace JumaEngine
 {
     class RenderManagerBase;
     class VertexBufferDataBase;
 
-    class VertexBufferBase : public EngineContextObject, public IRenderInterface
+    class VertexBufferBase : public EngineContextObject, public IRenderedObject
     {
         JUMAENGINE_CLASS(VertexBufferBase, EngineContextObject)
 
