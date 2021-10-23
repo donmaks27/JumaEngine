@@ -33,8 +33,11 @@
 #define JUMAENGINE_SINGLE_WINDOW
 
 
-namespace JumaEngine { }
-namespace JE = JumaEngine;
-
 #include "utils/int_defines.h"
 #include "utils/jstring.h"
+
+namespace JumaEngine
+{
+    using namespace jutils;
+}
+namespace JE = JumaEngine;

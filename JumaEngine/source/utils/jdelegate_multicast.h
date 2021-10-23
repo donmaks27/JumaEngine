@@ -5,103 +5,106 @@
 #include "jdelegate.h"
 #include "jarray.h"
 
-template<typename... ArgTypes>
-class jdelegate_multicast
+namespace jutils
 {
-public:
-    jdelegate_multicast() = default;
-    jdelegate_multicast(jdelegate_multicast&& delegate) = default;
-    jdelegate_multicast(const jdelegate_multicast& delegate) = default;
-    ~jdelegate_multicast() = default;
-
-    jdelegate_multicast& operator=(jdelegate_multicast&& delegate) = delete;
-    jdelegate_multicast& operator=(const jdelegate_multicast& delegate) = delete;
-
-    template<typename T>
-    void bind(T* object, void (T::*function)(ArgTypes...))
+    template<typename... ArgTypes>
+    class jdelegate_multicast
     {
-        if ((object != nullptr) && !isBinded(object, function))
-        {
-            m_Delegates.add(jdelegate<ArgTypes...>());
-            m_Delegates[m_Delegates.size() - 1].bind(object, function);
-        }
-    }
+    public:
+        jdelegate_multicast() = default;
+        jdelegate_multicast(jdelegate_multicast&& delegate) = default;
+        jdelegate_multicast(const jdelegate_multicast& delegate) = default;
+        ~jdelegate_multicast() = default;
 
-    template<typename T>
-    bool isBinded(T* object, void (T::*function)(ArgTypes...)) const
-    {
-        if (object != nullptr)
+        jdelegate_multicast& operator=(jdelegate_multicast&& delegate) = delete;
+        jdelegate_multicast& operator=(const jdelegate_multicast& delegate) = delete;
+
+        template<typename T>
+        void bind(T* object, void (T::*function)(ArgTypes...))
         {
-            for (const auto& delegate : m_Delegates)
+            if ((object != nullptr) && !isBinded(object, function))
             {
-                if (delegate.isBinded(object, function))
+                m_Delegates.add(jdelegate<ArgTypes...>());
+                m_Delegates[m_Delegates.size() - 1].bind(object, function);
+            }
+        }
+
+        template<typename T>
+        bool isBinded(T* object, void (T::*function)(ArgTypes...)) const
+        {
+            if (object != nullptr)
+            {
+                for (const auto& delegate : m_Delegates)
                 {
-                    return true;
+                    if (delegate.isBinded(object, function))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        template<typename T>
+        bool isBinded(T* object) const
+        {
+            if (object != nullptr)
+            {
+                for (const auto& delegate : m_Delegates)
+                {
+                    if (delegate.isBinded(object))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        template<typename T>
+        void unbind(T* object)
+        {
+            if (object != nullptr)
+            {
+                for (int i = 0; i < m_Delegates.size(); i++)
+                {
+                    if (m_Delegates[i].isBinded(object))
+                    {
+                        m_Delegates.removeAt(i);
+                    }
                 }
             }
         }
-        return false;
-    }
-    template<typename T>
-    bool isBinded(T* object) const
-    {
-        if (object != nullptr)
+        template<typename T>
+        void unbind(T* object, void (T::*callback)(ArgTypes...))
         {
-            for (const auto& delegate : m_Delegates)
+            if (object != nullptr)
             {
-                if (delegate.isBinded(object))
+                for (int i = 0; i < m_Delegates.size(); i++)
                 {
-                    return true;
+                    if (m_Delegates[i].isBinded(object, callback))
+                    {
+                        m_Delegates.removeAt(i);
+                        return;
+                    }
                 }
             }
         }
-        return false;
-    }
 
-    template<typename T>
-    void unbind(T* object)
-    {
-        if (object != nullptr)
+        void clear() { m_Delegates.clear(); }
+
+        void _call(ArgTypes... args)
         {
-            for (int i = 0; i < m_Delegates.size(); i++)
+            for (auto& delegate : m_Delegates)
             {
-                if (m_Delegates[i].isBinded(object))
-                {
-                    m_Delegates.removeAt(i);
-                }
+                delegate._call(args...);
             }
         }
-    }
-    template<typename T>
-    void unbind(T* object, void (T::*callback)(ArgTypes...))
-    {
-        if (object != nullptr)
-        {
-            for (int i = 0; i < m_Delegates.size(); i++)
-            {
-                if (m_Delegates[i].isBinded(object, callback))
-                {
-                    m_Delegates.removeAt(i);
-                    return;
-                }
-            }
-        }
-    }
 
-    void clear() { m_Delegates.clear(); }
+    private:
 
-    void _call(ArgTypes... args)
-    {
-        for (auto& delegate : m_Delegates)
-        {
-            delegate._call(args...);
-        }
-    }
-
-private:
-
-    jarray<jdelegate<ArgTypes...>> m_Delegates;
-};
+        jarray<jdelegate<ArgTypes...>> m_Delegates;
+    };
+}
 
 #define CREATE_JDELEGATE_MULTICAST_TYPE_INTERNAL(DelegateName, ParamsTypes, ParamsNames, Params) \
 class DelegateName : public jdelegate_multicast<ParamsTypes> \
