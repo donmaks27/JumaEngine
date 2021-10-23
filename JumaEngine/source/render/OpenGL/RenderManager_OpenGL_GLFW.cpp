@@ -32,7 +32,7 @@ namespace JumaEngine
         glfwWindowHint(GLFW_SAMPLES, 0);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-        createWindow(glm::uvec2(800, 600), JTEXT("JumaEngine"));
+        createWindow(glm::uvec2(800, 600), JSTR("JumaEngine"));
 
         if (!Super::initInternal())
         {
@@ -44,7 +44,7 @@ namespace JumaEngine
     }
     void RenderManager_OpenGL_GLFW::errorCallback(const int code, const char* errorMessage)
     {
-        JUMA_LOG(error, jstring(JTEXT("Code: ")) + TO_JTEXT(code) + JTEXT(". ") + errorMessage);
+        JUMA_LOG(error, jstring(JSTR("Code: ")) + TO_JSTR(code) + JSTR(". ") + errorMessage);
     }
 
     void RenderManager_OpenGL_GLFW::terminateInternal()
@@ -62,7 +62,7 @@ namespace JumaEngine
         GLFWwindow* window = glfwCreateWindow(size.x, size.y, title.c_str(), nullptr, getWindowGLFW(getMainWindowID()));
         if (window == nullptr)
         {
-            JUMA_LOG(warning, JTEXT("Fail to create GLFW window."));
+            JUMA_LOG(warning, JSTR("Fail to create GLFW window."));
             return nullptr;
         }
 

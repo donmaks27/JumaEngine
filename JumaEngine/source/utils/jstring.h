@@ -2,26 +2,25 @@
 
 #pragma once
 
-#include "common_header.h"
 #include <string>
 
-namespace JumaEngine
+class jstring : public std::string
 {
-    class jstring : public std::string
-    {
-    public:
-		using base_class = std::string;
-    	
-        jstring()
-            : base_class()
-        {}
-        jstring(const char* str)
-            : base_class(str)
-        {}
-        jstring(const base_class& str)
-            : base_class(str)
-        {}
+public:
+	using base_class = std::string;
+    
+    jstring()
+        : base_class()
+    {}
+    jstring(const char* str)
+        : base_class(str)
+    {}
+    jstring(const base_class& str)
+        : base_class(str)
+    {}
 
-    	const char* operator*() const noexcept { return this->c_str(); }
-    };
-}
+    const char* operator*() const noexcept { return this->c_str(); }
+};
+
+#define JSTR(str) u8 ## str
+#define TO_JSTR(value) std::to_string(value)

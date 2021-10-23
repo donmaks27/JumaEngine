@@ -4,7 +4,7 @@
 
 #include "common_header.h"
 #include <memory>
-#include "utils/type_traits_macros.h"
+#include "utils/type_checks.h"
 #include "engine/EngineContextObject.h"
 
 namespace JumaEngine

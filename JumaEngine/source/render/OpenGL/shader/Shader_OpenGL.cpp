@@ -130,14 +130,14 @@ namespace JumaEngine
 #if JLOG_ENABLED
             if (shaderIndex == 0)
             {
-                jstring message = JTEXT("Failed to compile ");
+                jstring message = JSTR("Failed to compile ");
                 switch (shaderType)
                 {
-                case ShaderType::Vertex:   message += JTEXT("vertex"); break;
-                case ShaderType::Geometry: message += JTEXT("geometry"); break;
-                case ShaderType::Fragment: message += JTEXT("fragment"); break;
+                case ShaderType::Vertex:   message += JSTR("vertex"); break;
+                case ShaderType::Geometry: message += JSTR("geometry"); break;
+                case ShaderType::Fragment: message += JSTR("fragment"); break;
                 }
-                message += JTEXT(" shader - ") + shaderFilePath;
+                message += JSTR(" shader - ") + shaderFilePath;
                 JUMA_LOG(error, message);
             }
 #endif

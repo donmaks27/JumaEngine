@@ -21,7 +21,7 @@ namespace JumaEngine
         {
 #if JLOG_ENABLED
             const ILenum errorCode = ilGetError();
-            JUMA_LOG(warning, jstring(JTEXT("Fail to load image. Code: ")) + TO_JTEXT(errorCode));
+            JUMA_LOG(warning, jstring(JSTR("Fail to load image. Code: ")) + TO_JSTR(errorCode));
 #endif
             return false;
         }

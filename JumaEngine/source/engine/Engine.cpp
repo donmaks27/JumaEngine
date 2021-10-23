@@ -72,22 +72,22 @@ namespace JumaEngine
     }
     bool Engine::startEngineInternal(int argc, char** argv)
     {
-        JUMA_LOG(info, JTEXT("Initialize engine..."));
+        JUMA_LOG(info, JSTR("Initialize engine..."));
 		if (!initEngine())
 		{
-			JUMA_LOG(error, JTEXT("Engnie initialization failed"));
+			JUMA_LOG(error, JSTR("Engnie initialization failed"));
 			return false;
 		}
-		JUMA_LOG(correct, JTEXT("Initialization complete"));
+		JUMA_LOG(correct, JSTR("Initialization complete"));
     	onEngineInit();
 
-    	JUMA_LOG(info, JTEXT("Start engine loop"));
+    	JUMA_LOG(info, JSTR("Start engine loop"));
     	startEngineLoop();
-    	JUMA_LOG(info, JTEXT("Engine loop finished"));
+    	JUMA_LOG(info, JSTR("Engine loop finished"));
 
-    	JUMA_LOG(info, JTEXT("Stopping engine..."));
+    	JUMA_LOG(info, JSTR("Stopping engine..."));
         stopEngine();
-        JUMA_LOG(info, JTEXT("Engine stopped"));
+        JUMA_LOG(info, JSTR("Engine stopped"));
 
     	return true;
     }
@@ -113,14 +113,14 @@ namespace JumaEngine
     	material->addMaterialParam<glm::mat4>("uView", glm::mat4(1));
     	material->addMaterialParam<glm::mat4>("uModel", glm::mat4(1));
 
-        const asset_ptr<TextureBase> texture = m_AssetsManager->createTexture(JTEXT("JUMA"));
+        const asset_ptr<TextureBase> texture = m_AssetsManager->createTexture(JSTR("JUMA"));
         m_TextureFileImporter->importFile(texture, "content/1.png");
         material->addMaterialParam<TextureBase>("uTexture", TextureShaderUniform{ texture, 0 });
     	material->finishInitialization();
 
         m_MeshFileImporter->importFile("content/SM_Cube.fbx");
-        asset_ptr<Mesh> mesh = m_AssetsManager->createMesh(JTEXT("Cube"));
-        m_MeshFileImporter->copyMeshData<VertexBufferData3D_Normal_TexCoord>(mesh, JTEXT("Cube"));
+        asset_ptr<Mesh> mesh = m_AssetsManager->createMesh(JSTR("Cube"));
+        m_MeshFileImporter->copyMeshData<VertexBufferData3D_Normal_TexCoord>(mesh, JSTR("Cube"));
         mesh->setMaterial(0, m_AssetsManager->createMaterialInstance(material));
 
         MeshComponent* component = m_World->createSceneComponent<MeshComponent>();

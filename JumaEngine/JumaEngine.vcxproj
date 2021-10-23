@@ -178,6 +178,7 @@
     <ClInclude Include="source\transform\Rotation.h" />
     <ClInclude Include="source\transform\Transform.h" />
     <ClInclude Include="source\utils\id_generator.h" />
+    <ClInclude Include="source\utils\int_defines.h" />
     <ClInclude Include="source\utils\jarray.h" />
     <ClInclude Include="source\utils\jdelegate.h" />
     <ClInclude Include="source\utils\jdelegate_multicast.h" />
@@ -190,7 +191,7 @@
     <ClInclude Include="source\utils\math_consts.h" />
     <ClInclude Include="source\utils\math_functions.h" />
     <ClInclude Include="source\utils\system_functions.h" />
-    <ClInclude Include="source\utils\type_traits_macros.h" />
+    <ClInclude Include="source\utils\type_checks.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -4,7 +4,7 @@
 
 #include "common_header.h"
 #include "jarray.h"
-#include "type_traits_macros.h"
+#include "type_checks.h"
 
 namespace JumaEngine
 {
