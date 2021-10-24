@@ -4,6 +4,13 @@
 
 namespace JumaEngine
 {
+    void RenderSubsystem::terminateSubsystem()
+    {
+        terminateMainWindow();
+
+        Super::terminateSubsystem();
+    }
+
     void RenderSubsystem::createMainWindow()
     {
         if (m_MainWindow == nullptr)
@@ -39,9 +46,6 @@ namespace JumaEngine
     }
 
     void RenderSubsystem::callEngineRender(const RenderOptions& options)
-    {
-    }
-    void RenderSubsystem::onRenderFinished(const RenderQuery& query)
     {
     }
 }

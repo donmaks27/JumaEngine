@@ -1,6 +1,8 @@
 ﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
 
 #include "Engine.h"
+#include "subsystems/render/OpenGL/RenderSubsystem_OpenGL_GLFW.h"
+#include "utils/jlog.h"
 
 namespace JumaEngine
 {
@@ -21,5 +23,82 @@ namespace JumaEngine
             object->m_OwnerEngine = this;
         	object->onRegistered();
         }
+    }
+
+    bool Engine::startEngine()
+    {
+        if (m_Started)
+        {
+            return false;
+        }
+
+        m_Started = true;
+    	
+#if JDEBUG && _WIN32
+        _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
+        _CrtSetReportFile(_CRT_WARN, _CRTDBG_FILE_STDOUT);
+
+        _CrtMemState memoryState;
+        _CrtMemCheckpoint(&memoryState);
+#endif
+
+        const bool result = startEngineInternal();
+
+#if JDEBUG && _WIN32
+        _CrtMemDumpAllObjectsSince(&memoryState);
+#endif
+        
+		m_Started = false;
+        return result;
+    }
+    bool Engine::startEngineInternal()
+    {
+        JUMA_LOG(info, JSTR("Initializing engine..."));
+        if (!initEngine())
+        {
+            throw std::runtime_error("Failed to initialize Engine!");
+        }
+        JUMA_LOG(correct, JSTR("Engine initialized"));
+
+        JUMA_LOG(info, JSTR("Starting engine loop..."));
+        startEngineLoop();
+        JUMA_LOG(info, JSTR("Engine loop finished"));
+
+        terminate();
+        JUMA_LOG(info, JSTR("Engine terminated"));
+
+        return true;
+    }
+    bool Engine::initEngine()
+    {
+        m_RenderSubsystem = createObject<RenderSubsystem_OpenGL_GLFW>();
+        if (m_RenderSubsystem == nullptr)
+        {
+            return false;
+        }
+        m_RenderSubsystem->onSubsystemCreated();
+
+        return true;
+    }
+
+    void Engine::startEngineLoop()
+    {
+        std::chrono::time_point<std::chrono::steady_clock> lastTimestamp = std::chrono::steady_clock::now();
+        while (!m_RenderSubsystem->shouldCloseMainWindow())
+        {
+            const std::chrono::time_point<std::chrono::steady_clock> timestamp = std::chrono::steady_clock::now();
+    		const double deltaTime = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(timestamp - lastTimestamp).count()) / 1000000.0;
+            lastTimestamp = timestamp;
+
+            RenderQuery query;
+            m_RenderSubsystem->render(query);
+        }
+    }
+
+    void Engine::terminate()
+    {
+        m_RenderSubsystem->terminate();
+        delete m_RenderSubsystem;
+        m_RenderSubsystem = nullptr;
     }
 }

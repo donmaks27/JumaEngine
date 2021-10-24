@@ -5,27 +5,41 @@
 #include "common_header.h"
 #include <thread>
 #include "EngineContextObject.h"
+#include "subsystems/render/RenderInterface.h"
 
 namespace JumaEngine
 {
     class RenderSubsystem;
 
-    class Engine final
+    class Engine final : public IRenderInterface
     {
     public:
         Engine() = default;
-        ~Engine() = default;
+        virtual ~Engine() override = default;
+
+        EngineContextObject* createObject(const EngineContextObject::ClassType* objectClass);
+        template<typename T, TEMPLATE_ENABLE(is_base_and_not_same<EngineContextObject, T>)>
+        T* createObject() { return EngineContextObject::cast<T>(createObject(T::getClass())); }
+
+        bool startEngine();
 
         RenderSubsystem* getRenderSubsystem() const { return m_RenderSubsystem; }
 
-        EngineContextObject* createObject(const EngineContextObject::ClassType* objectClass);
-
     private:
+
+        bool m_Started = false;
 
         RenderSubsystem* m_RenderSubsystem = nullptr;
 
 
         void registerEngineObject(EngineContextObject* object);
+
+        bool startEngineInternal();
+        bool initEngine();
+
+        void startEngineLoop();
+
+        void terminate();
     };
 
 

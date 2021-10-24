@@ -26,9 +26,12 @@ namespace JumaEngine
         void setMainWindowTitle(const jstring& title);
 
         virtual void render(const RenderQuery& query) = 0;
-        virtual void onEngineRenderFinished(const RenderOptions& options) = 0;
 
     protected:
+        
+        virtual void terminateSubsystem() override;
+
+        const WindowDescription* getMainWindow() const { return m_MainWindow; }
 
         void createMainWindow();
         void terminateMainWindow();
@@ -41,7 +44,6 @@ namespace JumaEngine
         virtual void setWindowTitleInternal(const WindowDescription* window, const jstring& title) = 0;
 
         void callEngineRender(const RenderOptions& options);
-        void onRenderFinished(const RenderQuery& query);
 
     private:
 

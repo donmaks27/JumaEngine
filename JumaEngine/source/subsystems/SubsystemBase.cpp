@@ -4,10 +4,8 @@
 
 namespace JumaEngine
 {
-    void SubsystemBase::onRegistered()
+    void SubsystemBase::onSubsystemCreated()
     {
-        Super::onRegistered();
-
         if (!initSubsystem())
         {
             throw std::runtime_error("Failed to initialize subsystem " + getClass()->getClassName());

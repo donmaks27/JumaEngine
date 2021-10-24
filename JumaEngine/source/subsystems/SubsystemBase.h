@@ -11,6 +11,8 @@ namespace JumaEngine
     {
         JUMAENGINE_CLASS(SubsystemBase, EngineContextObject)
 
+        friend Engine;
+
     public:
         SubsystemBase() = default;
         virtual ~SubsystemBase() override = default;
@@ -20,7 +22,7 @@ namespace JumaEngine
 
     protected:
 
-        virtual void onRegistered() override;
+        virtual void onSubsystemCreated();
 
         virtual bool initSubsystem() { return true; }
         virtual void terminateSubsystem() {}

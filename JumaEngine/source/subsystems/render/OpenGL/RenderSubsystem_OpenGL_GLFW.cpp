@@ -59,11 +59,13 @@ namespace JumaEngine
     WindowDescription* RenderSubsystem_OpenGL_GLFW::createWindowInternal(const glm::uvec2& size, const jstring& title)
     {
         GLFWwindow* window = glfwCreateWindow(size.x, size.y, title.c_str(), nullptr, nullptr);
-        if (window != nullptr)
+        if (window == nullptr)
         {
             JUMA_LOG(warning, JSTR("Fail to create GLFW window"));
             return nullptr;
         }
+        glfwMakeContextCurrent(window);
+        glfwSwapInterval(0);
 
         WindowDescription_GLFW* windowDescription = new WindowDescription_GLFW();
         windowDescription->size = size;
@@ -105,6 +107,19 @@ namespace JumaEngine
         {
             glfwSetWindowTitle(window_GLFW->window, *title);
         }
+    }
+
+    void RenderSubsystem_OpenGL_GLFW::render(const RenderQuery& query)
+    {
+        Super::render(query);
+
+        const WindowDescription* window = getMainWindow();
+        const WindowDescription_GLFW* window_GLFW = window != nullptr ? dynamic_cast<const WindowDescription_GLFW*>(window) : nullptr;
+        if (window_GLFW->window)
+        {
+            glfwSwapBuffers(window_GLFW->window);
+        }
+        glfwPollEvents();
     }
 }
 

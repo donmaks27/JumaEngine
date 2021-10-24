@@ -40,10 +40,6 @@ namespace JumaEngine
 
         callEngineRender(options);
     }
-    void RenderSubsystem_OpenGL::onEngineRenderFinished(const RenderOptions& options)
-    {
-        onRenderFinished(options.query);
-    }
 }
 
 #endif

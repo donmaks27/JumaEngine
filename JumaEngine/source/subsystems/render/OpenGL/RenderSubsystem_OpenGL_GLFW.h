@@ -19,6 +19,8 @@ namespace JumaEngine
         RenderSubsystem_OpenGL_GLFW() = default;
         virtual ~RenderSubsystem_OpenGL_GLFW() override = default;
 
+        virtual void render(const RenderQuery& query) override;
+
     protected:
 
         virtual bool initSubsystem() override;
