@@ -426,5 +426,8 @@
     <ClInclude Include="source\subsystems\render\window\WindowDescription.h">
       <Filter>JumaEngine\subsystems\render\window</Filter>
     </ClInclude>
+    <ClInclude Include="source\subsystems\render\RenderOptions.h">
+      <Filter>JumaEngine\subsystems\render</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

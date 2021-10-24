@@ -20,4 +20,28 @@ namespace JumaEngine
             m_MainWindow = nullptr;
         }
     }
+
+    void RenderSubsystem::setMainWindowSize(const glm::uvec2& size)
+    {
+        if (m_MainWindow != nullptr)
+        {
+            setWindowSizeInternal(m_MainWindow, size);
+            m_MainWindow->size = size;
+        }
+    }
+    void RenderSubsystem::setMainWindowTitle(const jstring& title)
+    {
+        if (m_MainWindow != nullptr)
+        {
+            setWindowTitleInternal(m_MainWindow, title);
+            m_MainWindow->title = title;
+        }
+    }
+
+    void RenderSubsystem::callEngineRender(const RenderOptions& options)
+    {
+    }
+    void RenderSubsystem::onRenderFinished(const RenderQuery& query)
+    {
+    }
 }

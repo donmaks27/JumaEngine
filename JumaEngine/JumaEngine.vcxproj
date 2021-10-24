@@ -182,6 +182,7 @@
     <ClInclude Include="source\subsystems\render\OpenGL\RenderSubsystem_OpenGL.h" />
     <ClInclude Include="source\subsystems\render\OpenGL\RenderSubsystem_OpenGL_GLFW.h" />
     <ClInclude Include="source\subsystems\render\RenderInterface.h" />
+    <ClInclude Include="source\subsystems\render\RenderOptions.h" />
     <ClInclude Include="source\subsystems\render\RenderSubsystem.h" />
     <ClInclude Include="source\subsystems\render\window\WindowDescription.h" />
     <ClInclude Include="source\subsystems\render\window\WindowDescription_GLFW.h" />

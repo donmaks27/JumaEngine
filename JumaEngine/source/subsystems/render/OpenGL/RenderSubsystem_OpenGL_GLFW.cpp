@@ -71,15 +71,40 @@ namespace JumaEngine
         windowDescription->window = window;
         return windowDescription;
     }
-    void RenderSubsystem_OpenGL_GLFW::terminateWindowInternal(WindowDescription* windowDescription)
+    void RenderSubsystem_OpenGL_GLFW::terminateWindowInternal(WindowDescription* window)
     {
-        WindowDescription_GLFW* windowDescription_GLFW = windowDescription != nullptr ? dynamic_cast<WindowDescription_GLFW*>(windowDescription) : nullptr;
-        if ((windowDescription_GLFW == nullptr) || (windowDescription_GLFW->window == nullptr))
+        WindowDescription_GLFW* window_GLFW = window != nullptr ? dynamic_cast<WindowDescription_GLFW*>(window) : nullptr;
+        if ((window_GLFW != nullptr) && (window_GLFW->window != nullptr))
         {
-            return;
+            glfwDestroyWindow(window_GLFW->window);
+            window_GLFW->window = nullptr;
         }
-
-        glfwDestroyWindow(windowDescription_GLFW->window);
+    }
+    
+    bool RenderSubsystem_OpenGL_GLFW::shouldCloseWindowInternal(const WindowDescription* window) const
+    {
+        const WindowDescription_GLFW* window_GLFW = window != nullptr ? dynamic_cast<const WindowDescription_GLFW*>(window) : nullptr;
+        if ((window_GLFW != nullptr) && (window_GLFW->window != nullptr))
+        {
+            return glfwWindowShouldClose(window_GLFW->window) != GLFW_FALSE;
+        }
+        return false;
+    }
+    void RenderSubsystem_OpenGL_GLFW::setWindowSizeInternal(const WindowDescription* window, const glm::uvec2& size)
+    {
+        const WindowDescription_GLFW* window_GLFW = window != nullptr ? dynamic_cast<const WindowDescription_GLFW*>(window) : nullptr;
+        if ((window_GLFW != nullptr) && (window_GLFW->window != nullptr))
+        {
+            glfwSetWindowSize(window_GLFW->window, size.x, size.y);
+        }
+    }
+    void RenderSubsystem_OpenGL_GLFW::setWindowTitleInternal(const WindowDescription* window, const jstring& title)
+    {
+        const WindowDescription_GLFW* window_GLFW = window != nullptr ? dynamic_cast<const WindowDescription_GLFW*>(window) : nullptr;
+        if ((window_GLFW != nullptr) && (window_GLFW->window != nullptr))
+        {
+            glfwSetWindowTitle(window_GLFW->window, *title);
+        }
     }
 }
 

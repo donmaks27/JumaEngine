@@ -18,6 +18,9 @@ namespace JumaEngine
         RenderSubsystem_OpenGL() = default;
         virtual ~RenderSubsystem_OpenGL() override = default;
 
+        virtual void render(const RenderQuery& query) override;
+        virtual void onEngineRenderFinished(const RenderOptions& options) override;
+
     protected:
 
         bool initOpenGL();

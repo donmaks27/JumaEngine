@@ -25,7 +25,11 @@ namespace JumaEngine
         virtual void terminateSubsystem() override;
         
         virtual WindowDescription* createWindowInternal(const glm::uvec2& size, const jstring& title) override;
-        virtual void terminateWindowInternal(WindowDescription* windowDescription) override;
+        virtual void terminateWindowInternal(WindowDescription* window) override;
+
+        virtual bool shouldCloseWindowInternal(const WindowDescription* window) const override;
+        virtual void setWindowSizeInternal(const WindowDescription* window, const glm::uvec2& size) override;
+        virtual void setWindowTitleInternal(const WindowDescription* window, const jstring& title) override;
 
     private:
 
