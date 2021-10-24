@@ -15,7 +15,7 @@ namespace JumaEngine
 
     class GameObject : public WorldContextObject, public TransformObject, public IRenderedObject
 	{
-        JUMAENGINE_CLASS(GameObject, WorldContextObject)
+        JUMAENGINE_CLASS_OLD(GameObject, WorldContextObject)
 
         friend EngineWorld;
 

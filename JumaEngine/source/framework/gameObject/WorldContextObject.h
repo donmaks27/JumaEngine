@@ -9,9 +9,9 @@ namespace JumaEngine
 {
     class EngineWorld;
 
-    class WorldContextObject : public EngineContextObject
+    class WorldContextObject : public EngineContextObjectOld
     {
-        JUMAENGINE_CLASS(WorldContextObject, EngineContextObject)
+        JUMAENGINE_CLASS_OLD(WorldContextObject, EngineContextObjectOld)
 
         friend EngineWorld;
 

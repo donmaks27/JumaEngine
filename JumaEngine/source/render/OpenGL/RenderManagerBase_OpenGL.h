@@ -12,7 +12,7 @@ namespace JumaEngine
 {
     class RenderManagerBase_OpenGL : public RenderManagerBase
     {
-        JUMAENGINE_CLASS(RenderManagerBase_OpenGL, RenderManagerBase)
+        JUMAENGINE_CLASS_OLD(RenderManagerBase_OpenGL, RenderManagerBase)
 
     public:
         RenderManagerBase_OpenGL() = default;

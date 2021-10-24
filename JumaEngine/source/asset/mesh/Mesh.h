@@ -16,7 +16,7 @@ namespace JumaEngine
 
     class Mesh : public AssetObject, public IRenderedObject
     {
-        JUMAENGINE_CLASS(Mesh, AssetObject)
+        JUMAENGINE_CLASS_OLD(Mesh, AssetObject)
 
     public:
         Mesh() = default;

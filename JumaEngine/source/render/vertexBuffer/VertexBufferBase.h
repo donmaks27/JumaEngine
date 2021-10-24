@@ -12,9 +12,9 @@ namespace JumaEngine
     class RenderManagerBase;
     class VertexBufferDataBase;
 
-    class VertexBufferBase : public EngineContextObject, public IRenderedObject
+    class VertexBufferBase : public EngineContextObjectOld, public IRenderedObject
     {
-        JUMAENGINE_CLASS(VertexBufferBase, EngineContextObject)
+        JUMAENGINE_CLASS_OLD(VertexBufferBase, EngineContextObjectOld)
 
         friend RenderManagerBase;
 

@@ -9,7 +9,7 @@ namespace JumaEngine
 {
     class RenderTargetCompositeBase : public RenderTargetBase
     {
-        JUMAENGINE_CLASS(RenderTargetCompositeBase, RenderTargetBase)
+        JUMAENGINE_CLASS_OLD(RenderTargetCompositeBase, RenderTargetBase)
 
     public:
         RenderTargetCompositeBase() = default;

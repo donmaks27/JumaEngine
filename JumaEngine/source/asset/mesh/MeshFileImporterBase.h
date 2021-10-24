@@ -12,9 +12,9 @@ namespace JumaEngine
 {
     class VertexBufferDataBase;
 
-    class MeshFileImporterBase : public EngineContextObject
+    class MeshFileImporterBase : public EngineContextObjectOld
     {
-        JUMAENGINE_CLASS(MeshFileImporterBase, EngineContextObject)
+        JUMAENGINE_CLASS_OLD(MeshFileImporterBase, EngineContextObjectOld)
 
     public:
         MeshFileImporterBase() = default;

@@ -9,9 +9,9 @@
 
 namespace JumaEngine
 {
-    class TextureFileImporterBase : public EngineContextObject
+    class TextureFileImporterBase : public EngineContextObjectOld
     {
-        JUMAENGINE_CLASS(TextureFileImporterBase, EngineContextObject)
+        JUMAENGINE_CLASS_OLD(TextureFileImporterBase, EngineContextObjectOld)
 
     public:
         TextureFileImporterBase() = default;

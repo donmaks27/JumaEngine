@@ -12,7 +12,7 @@ namespace JumaEngine
 {
     class Texture_OpenGL : public TextureBase
     {
-        JUMAENGINE_CLASS(Texture_OpenGL, TextureBase)
+        JUMAENGINE_CLASS_OLD(Texture_OpenGL, TextureBase)
 
     public:
         Texture_OpenGL() = default;

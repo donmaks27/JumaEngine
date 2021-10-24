@@ -13,7 +13,7 @@ namespace JumaEngine
 {
     class RenderManager_OpenGL_GLFW final : public RenderManagerBase_OpenGL
     {
-        JUMAENGINE_CLASS(RenderManager_OpenGL_GLFW, RenderManagerBase_OpenGL)
+        JUMAENGINE_CLASS_OLD(RenderManager_OpenGL_GLFW, RenderManagerBase_OpenGL)
 
     public:
         RenderManager_OpenGL_GLFW() = default;

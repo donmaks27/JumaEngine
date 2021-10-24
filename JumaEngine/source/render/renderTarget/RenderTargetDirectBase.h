@@ -11,7 +11,7 @@ namespace JumaEngine
 
     class RenderTargetDirectBase : public RenderTargetBase
     {
-        JUMAENGINE_CLASS(RenderTargetDirectBase, RenderTargetBase)
+        JUMAENGINE_CLASS_OLD(RenderTargetDirectBase, RenderTargetBase)
 
     public:
         RenderTargetDirectBase() = default;

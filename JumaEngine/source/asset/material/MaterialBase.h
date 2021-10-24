@@ -15,7 +15,7 @@ namespace JumaEngine
 
 	class MaterialBase : public AssetObject
 	{
-        JUMAENGINE_CLASS(MaterialBase, AssetObject)
+        JUMAENGINE_CLASS_OLD(MaterialBase, AssetObject)
 
 	public:
 		MaterialBase() = default;

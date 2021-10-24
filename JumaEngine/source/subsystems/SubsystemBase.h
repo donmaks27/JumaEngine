@@ -20,7 +20,7 @@ namespace JumaEngine
 
     protected:
 
-        virtual void onRegister() override;
+        virtual void onRegistered() override;
 
         virtual bool initSubsystem() { return true; }
         virtual void terminateSubsystem() {}

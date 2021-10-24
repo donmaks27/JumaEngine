@@ -1,4 +1,4 @@
-// Copyright 2021 Leonov Maksim. All Rights Reserved.
+﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
 
 #pragma once
 
@@ -8,6 +8,28 @@
 
 namespace JumaEngine
 {
+    class RenderSubsystem;
+
+    class Engine final
+    {
+    public:
+        Engine() = default;
+        ~Engine() = default;
+
+        RenderSubsystem* getRenderSubsystem() const { return m_RenderSubsystem; }
+
+        EngineContextObject* createObject(const EngineContextObject::ClassType* objectClass);
+
+    private:
+
+        RenderSubsystem* m_RenderSubsystem = nullptr;
+
+
+        void registerEngineObject(EngineContextObject* object);
+    };
+
+
+    
     class RenderManagerBase;
     class AssetsManager;
     class MeshFileImporterBase;
@@ -16,11 +38,11 @@ namespace JumaEngine
     class EngineWorld;
     class RenderTargetDirectBase;
 
-    class Engine
+    class EngineOld
     {
     public:
-        Engine();
-        virtual ~Engine() = default;
+        EngineOld();
+        virtual ~EngineOld() = default;
 
         bool isMainThread() const { return std::this_thread::get_id() == m_MainThreadID; }
 
@@ -44,8 +66,8 @@ namespace JumaEngine
         RenderManagerBase* getRenderManager() const { return m_RenderManager; }
         MeshFileImporterBase* getVertexBufferImporter() const { return m_MeshFileImporter; }
 
-        EngineContextObject* createObject(const EngineContextObject::ClassType* objectClass);
-        template<typename T, TEMPLATE_ENABLE(is_base_and_not_same<EngineContextObject, T>)>
+        EngineContextObjectOld* createObject(const EngineContextObjectOld::ClassType* objectClass);
+        template<typename T, TEMPLATE_ENABLE(is_base_and_not_same<EngineContextObjectOld, T>)>
         T* createObject() { return dynamic_cast<T*>(createObject(T::getClass())); }
 
         bool startEngine(int argc, char** argv);
@@ -71,7 +93,7 @@ namespace JumaEngine
         RenderTargetDirectBase* m_RenderTarget = nullptr;
 
 
-        void registerEngineObject(EngineContextObject* object);
+        void registerEngineObject(EngineContextObjectOld* object);
 
         bool startEngineInternal(int argc, char** argv);
 

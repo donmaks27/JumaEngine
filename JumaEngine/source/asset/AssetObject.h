@@ -11,9 +11,9 @@ namespace JumaEngine
 {
 	class AssetsManager;
 
-	class AssetObject : public EngineContextObject
+	class AssetObject : public EngineContextObjectOld
 	{
-        JUMAENGINE_CLASS(AssetObject, EngineContextObject)
+        JUMAENGINE_CLASS_OLD(AssetObject, EngineContextObjectOld)
 
 		friend AssetsManager;
 		

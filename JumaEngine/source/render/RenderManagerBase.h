@@ -20,9 +20,9 @@ namespace JumaEngine
     class TextureBase;
     class RenderTargetDirectBase;
 
-    class RenderManagerBase : public EngineContextObject, public IRenderedObject
+    class RenderManagerBase : public EngineContextObjectOld, public IRenderedObject
     {
-        JUMAENGINE_CLASS(RenderManagerBase, EngineContextObject)
+        JUMAENGINE_CLASS_OLD(RenderManagerBase, EngineContextObjectOld)
 
     public:
         RenderManagerBase() = default;

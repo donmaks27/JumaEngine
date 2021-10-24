@@ -5,12 +5,12 @@
 
 namespace JumaEngine
 {
-    RenderManagerBase* EngineContextObject::getRenderManager() const
+    RenderManagerBase* EngineContextObjectOld::getRenderManager() const
     {
         return m_OwnerEngine != nullptr ? m_OwnerEngine->getRenderManager() : nullptr;
     }
 
-    bool EngineContextObject::isMainThread() const
+    bool EngineContextObjectOld::isMainThread() const
     {
         return (m_OwnerEngine != nullptr) && m_OwnerEngine->isMainThread();
     }

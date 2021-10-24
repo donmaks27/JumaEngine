@@ -12,7 +12,7 @@ namespace JumaEngine
 {
     class SceneComponent : public GameComponent, public TransformObject, public IRenderedObject
     {
-        JUMAENGINE_CLASS(SceneComponent, GameComponent)
+        JUMAENGINE_CLASS_OLD(SceneComponent, GameComponent)
 
         friend EngineWorld;
 

@@ -22,7 +22,7 @@ namespace JumaEngine
 
     class TextureBase : public AssetObject
     {
-        JUMAENGINE_CLASS(TextureBase, AssetObject)
+        JUMAENGINE_CLASS_OLD(TextureBase, AssetObject)
 
     public:
         TextureBase() = default;

@@ -17,7 +17,7 @@ namespace JumaEngine
 {
     class VertexBuffer_OpenGL final : public VertexBufferBase
     {
-        JUMAENGINE_CLASS(VertexBuffer_OpenGL, VertexBufferBase)
+        JUMAENGINE_CLASS_OLD(VertexBuffer_OpenGL, VertexBufferBase)
 
     public:
         VertexBuffer_OpenGL() = default;

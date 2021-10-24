@@ -8,9 +8,9 @@
 
 namespace JumaEngine
 {
-    class RenderTargetBase : public EngineContextObject, public IRenderedObject
+    class RenderTargetBase : public EngineContextObjectOld, public IRenderedObject
     {
-        JUMAENGINE_CLASS(RenderTargetBase, EngineContextObject)
+        JUMAENGINE_CLASS_OLD(RenderTargetBase, EngineContextObjectOld)
 
     public:
         RenderTargetBase() = default;

@@ -12,7 +12,7 @@ namespace JumaEngine
 
     class MeshComponent : public SceneComponent
     {
-        JUMAENGINE_CLASS(MeshComponent, SceneComponent)
+        JUMAENGINE_CLASS_OLD(MeshComponent, SceneComponent)
 
     public:
         MeshComponent() = default;

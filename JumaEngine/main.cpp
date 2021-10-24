@@ -6,7 +6,7 @@
 
 int main(int argc, char** argv)
 {
-    JumaEngine::Engine engine;
+    JumaEngine::EngineOld engine;
     engine.setMeshFileImporter<JumaEngine::MeshFileImporter_Assimp>();
     engine.setTextureFileImporter<JumaEngine::TextureFileImporter_DevIL>();
     return engine.startEngine(argc, argv);

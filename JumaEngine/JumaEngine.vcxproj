@@ -100,6 +100,7 @@
     <ClCompile Include="source\asset\texture\TextureFileImporterBase.cpp" />
     <ClCompile Include="source\asset\texture\TextureFileImporter_DevIL.cpp" />
     <ClCompile Include="source\engine\Engine.cpp" />
+    <ClCompile Include="source\engine\EngineOld.cpp" />
     <ClCompile Include="source\engine\EngineContextObject.cpp" />
     <ClCompile Include="source\framework\gameObject\gameComponent\CameraComponent.cpp" />
     <ClCompile Include="source\framework\gameObject\gameComponent\GameComponent.cpp" />

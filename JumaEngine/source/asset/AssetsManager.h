@@ -16,9 +16,9 @@ namespace JumaEngine
     class Mesh;
     class TextureBase;
 
-    class AssetsManager final : public EngineContextObject
+    class AssetsManager final : public EngineContextObjectOld
 	{
-        JUMAENGINE_CLASS(AssetsManager, EngineContextObject)
+        JUMAENGINE_CLASS_OLD(AssetsManager, EngineContextObjectOld)
 
 	public:
 		AssetsManager() = default;
@@ -46,7 +46,7 @@ namespace JumaEngine
 		template<typename T, TEMPLATE_ENABLE(is_base_and_not_same_and_not_abstract<AssetObject, T>)>
 		asset_ptr<T> createAssetObject()
 		{
-            Engine* engine = getOwnerEngine();
+            EngineOld* engine = getOwnerEngine();
 			if (engine != nullptr)
 			{
                 asset_ptr<T> asset = engine->createObject<T>();

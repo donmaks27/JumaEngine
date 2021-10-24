@@ -13,7 +13,7 @@ namespace JumaEngine
 {
     class Shader_OpenGL final : public ShaderBase
     {
-        JUMAENGINE_CLASS(Shader_OpenGL, ShaderBase)
+        JUMAENGINE_CLASS_OLD(Shader_OpenGL, ShaderBase)
 
     public:
         Shader_OpenGL() = default;

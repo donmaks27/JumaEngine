@@ -9,7 +9,7 @@ namespace JumaEngine
 {
 	class MaterialInstance final : public MaterialBase
 	{
-        JUMAENGINE_CLASS(MaterialInstance, MaterialBase)
+        JUMAENGINE_CLASS_OLD(MaterialInstance, MaterialBase)
 
         friend AssetsManager;
 

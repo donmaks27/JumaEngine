@@ -9,7 +9,7 @@ namespace JumaEngine
 {
     class TextureFileImporter_DevIL : public TextureFileImporterBase
     {
-        JUMAENGINE_CLASS(TextureFileImporter_DevIL, TextureFileImporterBase)
+        JUMAENGINE_CLASS_OLD(TextureFileImporter_DevIL, TextureFileImporterBase)
 
     public:
         TextureFileImporter_DevIL() = default;

@@ -4,9 +4,9 @@
 
 namespace JumaEngine
 {
-    void SubsystemBase::onRegister()
+    void SubsystemBase::onRegistered()
     {
-        Super::onRegister();
+        Super::onRegistered();
 
         if (!initSubsystem())
         {

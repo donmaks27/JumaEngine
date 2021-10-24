@@ -27,22 +27,22 @@ namespace JumaEngine
 
     ShaderBase* RenderManagerBase_OpenGL::createShaderInternal()
     {
-        Engine* engine = getOwnerEngine();
+        EngineOld* engine = getOwnerEngine();
         return engine != nullptr ? engine->createObject<Shader_OpenGL>() : nullptr;
     }
     VertexBufferBase* RenderManagerBase_OpenGL::createVertextBufferInternal()
     {
-        Engine* engine = getOwnerEngine();
+        EngineOld* engine = getOwnerEngine();
         return engine != nullptr ? engine->createObject<VertexBuffer_OpenGL>() : nullptr;
     }
     TextureBase* RenderManagerBase_OpenGL::createTextureInternal()
     {
-        Engine* engine = getOwnerEngine();
+        EngineOld* engine = getOwnerEngine();
         return engine != nullptr ? engine->createObject<Texture_OpenGL>() : nullptr;
     }
     RenderTargetDirectBase* RenderManagerBase_OpenGL::createRenderTargetDirectInternal()
     {
-        Engine* engine = getOwnerEngine();
+        EngineOld* engine = getOwnerEngine();
         return engine != nullptr ? engine->createObject<RenderTargetDirect_OpenGL>() : nullptr;
     }
 }

@@ -9,7 +9,7 @@ namespace JumaEngine
 {
     class MeshFileImporter_Assimp : public MeshFileImporterBase
     {
-        JUMAENGINE_CLASS(MeshFileImporter_Assimp, MeshFileImporterBase)
+        JUMAENGINE_CLASS_OLD(MeshFileImporter_Assimp, MeshFileImporterBase)
 
     public:
         MeshFileImporter_Assimp() = default;

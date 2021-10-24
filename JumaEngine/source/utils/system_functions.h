@@ -15,8 +15,8 @@ namespace JumaEngine
     {
     public:
 
-		static Engine* getEngine(const EngineContextObject* engineContextObject) { return engineContextObject != nullptr ? engineContextObject->getOwnerEngine() : nullptr; }
+		static EngineOld* getEngine(const EngineContextObjectOld* EngineContextObjectOld) { return EngineContextObjectOld != nullptr ? EngineContextObjectOld->getOwnerEngine() : nullptr; }
 
-        static CameraComponent* getWindowActiveCamera(const EngineContextObject* engineContextObject, window_id windowID);
+        static CameraComponent* getWindowActiveCamera(const EngineContextObjectOld* EngineContextObjectOld, window_id windowID);
     };
 }
