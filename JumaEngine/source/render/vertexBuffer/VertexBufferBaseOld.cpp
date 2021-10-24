@@ -1,11 +1,11 @@
 ﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
 
-#include "VertexBufferBase.h"
-#include "VertexBufferData.h"
+#include "VertexBufferBaseOld.h"
+#include "asset/mesh/VertexBufferData.h"
 
 namespace JumaEngine
 {
-    bool VertexBufferBase::init(VertexBufferDataBase* vertexBufferData)
+    bool VertexBufferBaseOld::init(VertexBufferDataBase* vertexBufferData)
     {
         if (!isInit() && (vertexBufferData != nullptr))
         {

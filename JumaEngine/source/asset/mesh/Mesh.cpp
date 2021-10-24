@@ -3,7 +3,7 @@
 #include "Mesh.h"
 #include "asset/material/MaterialBase.h"
 #include "render/RenderManagerBase.h"
-#include "render/vertexBuffer/VertexBufferBase.h"
+#include "render/vertexBuffer/VertexBufferBaseOld.h"
 
 namespace JumaEngine
 {
@@ -21,7 +21,7 @@ namespace JumaEngine
 		    {
 		        for (const auto& vertexBufferData : meshPartsData)
 		        {
-                    VertexBufferBase* vertexBuffer = renderManager->createVertextBuffer();
+                    VertexBufferBaseOld* vertexBuffer = renderManager->createVertextBuffer();
                     if (vertexBuffer != nullptr)
                     {
                         vertexBuffer->init(vertexBufferData);
@@ -60,7 +60,7 @@ namespace JumaEngine
     {
         for (uint32 index = 0; index < m_VertexBuffers.getSize(); index++)
         {
-            VertexBufferBase*& vertexBuffer = m_VertexBuffers[index];
+            VertexBufferBaseOld*& vertexBuffer = m_VertexBuffers[index];
             MaterialBase* material = m_Materials[index].get();
             if ((vertexBuffer != nullptr) && (material != nullptr) && vertexBuffer->isInit())
             {

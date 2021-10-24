@@ -2,7 +2,7 @@
 
 #include "RenderManagerBase.h"
 #include "renderTarget/RenderTargetBase.h"
-#include "vertexBuffer/VertexBufferBase.h"
+#include "vertexBuffer/VertexBufferBaseOld.h"
 
 namespace JumaEngine
 {
@@ -318,11 +318,11 @@ namespace JumaEngine
         return isInit() ? createShaderInternal() : nullptr;
     }
 
-    VertexBufferBase* RenderManagerBase::createVertextBuffer()
+    VertexBufferBaseOld* RenderManagerBase::createVertextBuffer()
     {
         if (isInit())
         {
-            VertexBufferBase* vertexBuffer = createVertextBufferInternal();
+            VertexBufferBaseOld* vertexBuffer = createVertextBufferInternal();
 
 #ifndef JUMAENGINE_SINGLE_WINDOW
             m_VertexBuffersMutex.lock();
@@ -336,7 +336,7 @@ namespace JumaEngine
         }
         return nullptr;
     }
-    void RenderManagerBase::deleteVertexBuffer(VertexBufferBase* vertexBuffer)
+    void RenderManagerBase::deleteVertexBuffer(VertexBufferBaseOld* vertexBuffer)
     {
         if (isInit() && (vertexBuffer != nullptr))
         {
@@ -411,7 +411,7 @@ namespace JumaEngine
         uint32 index = 0;
         while (index < m_VertexBuffersForDelete.size())
         {
-            VertexBufferBase* vertexBuffer = m_VertexBuffersForDelete[index];
+            VertexBufferBaseOld* vertexBuffer = m_VertexBuffersForDelete[index];
             if (!vertexBuffer->hasAnyWindowData())
             {
                 m_VertexBuffersForDelete.removeAt(index);

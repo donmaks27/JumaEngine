@@ -5,7 +5,7 @@
 #include "common_header.h"
 #include "MeshFileImporterData.h"
 #include "Mesh.h"
-#include "render/vertexBuffer/VertexBufferData.h"
+#include "VertexBufferData.h"
 #include "engine/EngineContextObject.h"
 
 namespace JumaEngine
@@ -39,8 +39,18 @@ namespace JumaEngine
                     jarray<VertexBufferDataBase*> vertexBuffersData;
                     for (const auto& meshPartData : meshData.meshPartsData)
                     {
+                        DefaultVertexBuffer defaultBuffer;
+                        for (const auto& vertex : meshPartData.verticesData)
+                        {
+                            DefaultVertex defaultVertex;
+                            defaultVertex.position = vertex.position;
+                            defaultVertex.normal = vertex.normal;
+                            defaultVertex.textureCoords = vertex.textureCoords;
+                            defaultBuffer.vertices.add(defaultVertex);
+                        }
+
                         VertexBufferDataBase* data = new T();
-                        data->copyFromMeshFileImporterData(meshPartData);
+                        data->copyFromDefaultVertexBuffer(defaultBuffer);
                         vertexBuffersData.add(data);
                     }
                     return outMesh->init(vertexBuffersData);

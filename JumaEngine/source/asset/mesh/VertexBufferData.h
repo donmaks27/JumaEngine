@@ -4,7 +4,7 @@
 
 #include "common_header.h"
 #include "VertexBufferDescription.h"
-#include "asset/mesh/MeshFileImporterData.h"
+#include "DefaultVertexBuffer.h"
 
 namespace JumaEngine
 {
@@ -14,7 +14,7 @@ namespace JumaEngine
         VertexBufferDataBase() = default;
         virtual ~VertexBufferDataBase() = default;
 
-        virtual const void* getVertices() const { return nullptr; }
+        virtual const void* getVertices() const = 0;
         const void* getVertexIndices() const { return !vertexIndices.isEmpty() ? vertexIndices.getData() : nullptr; }
 
         virtual void fillVertexBufferDescription(VertexBufferDescription& description) const
@@ -22,7 +22,10 @@ namespace JumaEngine
             description.indicesCount = static_cast<uint32>(vertexIndices.getSize());
         }
 
-        virtual void copyFromMeshFileImporterData(const MeshFileImporterMeshPartData& data) = 0;
+        virtual void copyFromDefaultVertexBuffer(const DefaultVertexBuffer& buffer)
+        {
+            vertexIndices = buffer.vertexIndices;
+        }
 
     protected:
 
@@ -44,10 +47,24 @@ namespace JumaEngine
             description.vertexSize = sizeof(T);
         }
 
+        virtual void copyFromDefaultVertexBuffer(const DefaultVertexBuffer& buffer) override final
+        {
+            VertexBufferDataBase::copyFromDefaultVertexBuffer(buffer);
+
+            vertices.resize(buffer.vertices.getSize());
+            for (uint32 index = 0; index < vertices.getSize(); ++index)
+            {
+                copyFromDefaultVertex(index, buffer.vertices[index]);
+            }
+        }
+
     protected:
 
         typedef VertexBufferData<T> Super;
 
         jarray<T> vertices;
+
+
+        virtual void copyFromDefaultVertex(uint32 index, const DefaultVertex& vertex) = 0;
     };
 }

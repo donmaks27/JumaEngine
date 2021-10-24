@@ -6,7 +6,7 @@
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_OPENGL)
 
-#include "render/vertexBuffer/VertexBufferBase.h"
+#include "render/vertexBuffer/VertexBufferBaseOld.h"
 
 #ifndef JUMAENGINE_SINGLE_WINDOW
 #include "utils/jmutex_shared.h"
@@ -15,9 +15,9 @@
 
 namespace JumaEngine
 {
-    class VertexBuffer_OpenGL final : public VertexBufferBase
+    class VertexBuffer_OpenGL final : public VertexBufferBaseOld
     {
-        JUMAENGINE_CLASS_OLD(VertexBuffer_OpenGL, VertexBufferBase)
+        JUMAENGINE_CLASS_OLD(VertexBuffer_OpenGL, VertexBufferBaseOld)
 
     public:
         VertexBuffer_OpenGL() = default;

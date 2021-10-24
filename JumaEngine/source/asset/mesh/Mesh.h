@@ -10,7 +10,7 @@
 namespace JumaEngine
 {
     class VertexBufferDataBase;
-    class VertexBufferBase;
+    class VertexBufferBaseOld;
     class MaterialBase;
     class MeshFileImporterBase;
 
@@ -32,7 +32,7 @@ namespace JumaEngine
 
     private:
 
-        jarray<VertexBufferBase*> m_VertexBuffers;
+        jarray<VertexBufferBaseOld*> m_VertexBuffers;
         jarray<asset_ptr<MaterialBase>> m_Materials;
 
         

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "common_header.h"
-#include "render/vertexBuffer/VertexBufferData.h"
+#include "asset/mesh/VertexBufferData.h"
 
 namespace JumaEngine
 {
@@ -14,7 +14,7 @@ namespace JumaEngine
         glm::vec2 textureCoords;
     };
 
-    class VertexBufferData3D_Normal_TexCoord final : public VertexBufferData<Vertex3D_Normal_TexCoord>
+    class VertexBufferData_Vertex3D_Normal_TexCoord final : public VertexBufferData<Vertex3D_Normal_TexCoord>
     {
     public:
 
@@ -29,12 +29,11 @@ namespace JumaEngine
             };
         }
 
-        virtual void copyFromMeshFileImporterData(const MeshFileImporterMeshPartData& data) override
+    protected:
+
+        void copyFromDefaultVertex(const uint32 index, const DefaultVertex& vertex) override
         {
-            for (const auto& vertexData : data.verticesData)
-            {
-                vertices.add({ vertexData.position, vertexData.normal, vertexData.textureCoords });
-            }
+            vertices[index] = { vertex.position, vertex.normal, vertex.textureCoords };
         }
     };
 }

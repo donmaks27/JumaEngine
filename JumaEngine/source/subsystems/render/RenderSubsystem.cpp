@@ -2,6 +2,8 @@
 
 #include "RenderSubsystem.h"
 
+#include "engine/Engine.h"
+
 namespace JumaEngine
 {
     void RenderSubsystem::terminateSubsystem()
@@ -45,7 +47,12 @@ namespace JumaEngine
         }
     }
 
-    void RenderSubsystem::callEngineRender(const RenderOptions& options)
+    void RenderSubsystem::callEngineRender(const RenderOptions& options) const
     {
+        Engine* engine = getOwnerEngine();
+        if (engine != nullptr)
+        {
+            engine->render(options);
+        }
     }
 }

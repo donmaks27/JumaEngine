@@ -3,9 +3,9 @@
 #pragma once
 
 #include "common_header.h"
-#include <thread>
 #include "EngineContextObject.h"
 #include "subsystems/render/RenderInterface.h"
+#include <thread>
 
 namespace JumaEngine
 {
@@ -22,6 +22,8 @@ namespace JumaEngine
         T* createObject() { return EngineContextObject::cast<T>(createObject(T::getClass())); }
 
         bool startEngine();
+        
+        virtual void render(const RenderOptions& options) override;
 
         RenderSubsystem* getRenderSubsystem() const { return m_RenderSubsystem; }
 

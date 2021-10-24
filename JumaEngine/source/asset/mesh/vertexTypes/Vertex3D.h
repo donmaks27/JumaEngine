@@ -3,7 +3,7 @@
 #pragma once
 
 #include "common_header.h"
-#include "render/vertexBuffer/VertexBufferData.h"
+#include "asset/mesh/VertexBufferData.h"
 
 namespace JumaEngine
 {
@@ -12,7 +12,7 @@ namespace JumaEngine
         glm::vec3 position;
     };
 
-    class VertexBufferDataPosition3D final : public VertexBufferData<Vertex3D>
+    class VertexBufferData_Vertex3D final : public VertexBufferData<Vertex3D>
     {
     public:
 
@@ -25,12 +25,11 @@ namespace JumaEngine
             };
         }
 
-        virtual void copyFromMeshFileImporterData(const MeshFileImporterMeshPartData& data) override
+    protected:
+
+        void copyFromDefaultVertex(const uint32 index, const DefaultVertex& vertex) override
         {
-            for (const auto& vertexData : data.verticesData)
-            {
-                vertices.add({ vertexData.position });
-            }
+            vertices[index] = { vertex.position };
         }
     };
 }

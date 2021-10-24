@@ -30,7 +30,7 @@ namespace JumaEngine
         EngineOld* engine = getOwnerEngine();
         return engine != nullptr ? engine->createObject<Shader_OpenGL>() : nullptr;
     }
-    VertexBufferBase* RenderManagerBase_OpenGL::createVertextBufferInternal()
+    VertexBufferBaseOld* RenderManagerBase_OpenGL::createVertextBufferInternal()
     {
         EngineOld* engine = getOwnerEngine();
         return engine != nullptr ? engine->createObject<VertexBuffer_OpenGL>() : nullptr;

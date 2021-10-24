@@ -16,7 +16,7 @@
 namespace JumaEngine
 {
     class ShaderBase;
-    class VertexBufferBase;
+    class VertexBufferBaseOld;
     class TextureBase;
     class RenderTargetDirectBase;
 
@@ -54,8 +54,8 @@ namespace JumaEngine
 
         ShaderBase* createShader();
 
-        VertexBufferBase* createVertextBuffer();
-        void deleteVertexBuffer(VertexBufferBase* vertexBuffer);
+        VertexBufferBaseOld* createVertextBuffer();
+        void deleteVertexBuffer(VertexBufferBaseOld* vertexBuffer);
 
         TextureBase* createTexture();
 
@@ -100,7 +100,7 @@ namespace JumaEngine
         virtual bool updateWindowTitle(window_id windowID, const jstring& title) = 0;
 
         virtual ShaderBase* createShaderInternal() = 0;
-        virtual VertexBufferBase* createVertextBufferInternal() = 0;
+        virtual VertexBufferBaseOld* createVertextBufferInternal() = 0;
         virtual TextureBase* createTextureInternal() = 0;
         virtual RenderTargetDirectBase* createRenderTargetDirectInternal() = 0;
 
@@ -112,12 +112,12 @@ namespace JumaEngine
         window_id m_MainWindowID = INVALID_WINDOW_ID;
         jmap_auto_id<window_id, WindowDescriptionBaseOld*> m_Windows;
 
-        jarray<VertexBufferBase*> m_VertexBuffers;
+        jarray<VertexBufferBaseOld*> m_VertexBuffers;
 
 #ifndef JUMAENGINE_SINGLE_WINDOW
         mutable jmutex_shared m_WindowsListMutex;
 
-        jarray<VertexBufferBase*> m_VertexBuffersForDelete;
+        jarray<VertexBufferBaseOld*> m_VertexBuffersForDelete;
         mutable jmutex_shared m_VertexBuffersMutex;
 
 

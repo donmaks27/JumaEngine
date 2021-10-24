@@ -3,7 +3,7 @@
 #pragma once
 
 #include "common_header.h"
-#include "VertexBufferDescription.h"
+#include "asset/mesh/VertexBufferDescription.h"
 #include "engine/EngineContextObject.h"
 #include "render/RenderedObject.h"
 
@@ -12,15 +12,15 @@ namespace JumaEngine
     class RenderManagerBase;
     class VertexBufferDataBase;
 
-    class VertexBufferBase : public EngineContextObjectOld, public IRenderedObject
+    class VertexBufferBaseOld : public EngineContextObjectOld, public IRenderedObject
     {
-        JUMAENGINE_CLASS_OLD(VertexBufferBase, EngineContextObjectOld)
+        JUMAENGINE_CLASS_OLD(VertexBufferBaseOld, EngineContextObjectOld)
 
         friend RenderManagerBase;
 
     public:
-        VertexBufferBase() = default;
-        virtual ~VertexBufferBase() override = default;
+        VertexBufferBaseOld() = default;
+        virtual ~VertexBufferBaseOld() override = default;
 
         bool init(VertexBufferDataBase* vertexBufferData);
         bool isInit() const { return m_Initialized; }

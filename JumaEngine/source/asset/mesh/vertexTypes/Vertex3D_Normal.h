@@ -3,7 +3,7 @@
 #pragma once
 
 #include "common_header.h"
-#include "render/vertexBuffer/VertexBufferData.h"
+#include "asset/mesh/VertexBufferData.h"
 
 namespace JumaEngine
 {
@@ -13,7 +13,7 @@ namespace JumaEngine
         glm::vec3 normal;
     };
 
-    class VertexBufferData3D_Normal final : public VertexBufferData<Vertex3D_Normal>
+    class VertexBufferData_Vertex3D_Normal final : public VertexBufferData<Vertex3D_Normal>
     {
     public:
 
@@ -27,12 +27,11 @@ namespace JumaEngine
             };
         }
 
-        virtual void copyFromMeshFileImporterData(const MeshFileImporterMeshPartData& data) override
+    protected:
+
+        void copyFromDefaultVertex(const uint32 index, const DefaultVertex& vertex) override
         {
-            for (const auto& vertexData : data.verticesData)
-            {
-                vertices.add({ vertexData.position, vertexData.normal });
-            }
+            vertices[index] = { vertex.position, vertex.normal };
         }
     };
 }

@@ -72,6 +72,8 @@ namespace jutils
             return get(index);
         }
 
+        void resize(const int64 size) { this->base_class::resize(size > 0 ? size : 0); }
+
         bool removeAt(const int64 index)
         {
             if (isValidIndex(index))

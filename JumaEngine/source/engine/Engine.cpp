@@ -101,4 +101,9 @@ namespace JumaEngine
         delete m_RenderSubsystem;
         m_RenderSubsystem = nullptr;
     }
+
+    void Engine::render(const RenderOptions& options)
+    {
+        
+    }
 }

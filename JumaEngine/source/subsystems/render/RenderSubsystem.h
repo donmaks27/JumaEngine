@@ -43,7 +43,7 @@ namespace JumaEngine
         virtual void setWindowSizeInternal(const WindowDescription* window, const glm::uvec2& size) = 0;
         virtual void setWindowTitleInternal(const WindowDescription* window, const jstring& title) = 0;
 
-        void callEngineRender(const RenderOptions& options);
+        void callEngineRender(const RenderOptions& options) const;
 
     private:
 
