@@ -15,13 +15,13 @@
 
 namespace JumaEngine
 {
-    class VertexBuffer_OpenGL final : public VertexBufferBaseOld
+    class VertexBufferOld_OpenGL final : public VertexBufferBaseOld
     {
-        JUMAENGINE_CLASS_OLD(VertexBuffer_OpenGL, VertexBufferBaseOld)
+        JUMAENGINE_CLASS_OLD(VertexBufferOld_OpenGL, VertexBufferBaseOld)
 
     public:
-        VertexBuffer_OpenGL() = default;
-        virtual ~VertexBuffer_OpenGL() override;
+        VertexBufferOld_OpenGL() = default;
+        virtual ~VertexBufferOld_OpenGL() override;
 
         virtual void render(window_id windowID, const RenderParams& renderParams) override;
 

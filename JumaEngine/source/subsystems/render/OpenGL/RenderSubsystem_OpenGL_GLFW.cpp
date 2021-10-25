@@ -8,9 +8,9 @@
 
 namespace JumaEngine
 {
-    bool RenderSubsystem_OpenGL_GLFW::initSubsystem()
+    bool RenderSubsystem_OpenGL_GLFW::initSubsystemInternal()
     {
-        if (!Super::initSubsystem())
+        if (!Super::initSubsystemInternal())
         {
             return false;
         }

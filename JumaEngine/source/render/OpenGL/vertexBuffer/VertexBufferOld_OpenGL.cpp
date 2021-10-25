@@ -1,6 +1,6 @@
 ﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
 
-#include "VertexBuffer_OpenGL.h"
+#include "VertexBufferOld_OpenGL.h"
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_OPENGL)
 
@@ -9,12 +9,12 @@
 
 namespace JumaEngine
 {
-    VertexBuffer_OpenGL::~VertexBuffer_OpenGL()
+    VertexBufferOld_OpenGL::~VertexBufferOld_OpenGL()
     {
         clearBuffers();
     }
 
-    bool VertexBuffer_OpenGL::initInternal(VertexBufferDataBase* vertexBufferData)
+    bool VertexBufferOld_OpenGL::initInternal(VertexBufferDataBase* vertexBufferData)
     {
         const VertexBufferDescription& bufferDescription = getVertexBufferDescription();
 
@@ -46,7 +46,7 @@ namespace JumaEngine
         return true;
     }
 
-    void VertexBuffer_OpenGL::clearWindowData(const window_id windowID)
+    void VertexBufferOld_OpenGL::clearWindowData(const window_id windowID)
     {
         if (isInit())
         {
@@ -70,7 +70,7 @@ namespace JumaEngine
 #endif
         }
     }
-    bool VertexBuffer_OpenGL::hasAnyWindowData() const
+    bool VertexBufferOld_OpenGL::hasAnyWindowData() const
     {
         if (isInit())
         {
@@ -86,7 +86,7 @@ namespace JumaEngine
         return false;
     }
 
-    void VertexBuffer_OpenGL::clearBuffers()
+    void VertexBufferOld_OpenGL::clearBuffers()
     {
         if (m_IndicesVBO != 0)
         {
@@ -100,7 +100,7 @@ namespace JumaEngine
         }
     }
 
-    void VertexBuffer_OpenGL::render(const window_id windowID, const RenderParams& renderParams)
+    void VertexBufferOld_OpenGL::render(const window_id windowID, const RenderParams& renderParams)
     {
         if (isInit())
         {
@@ -130,7 +130,7 @@ namespace JumaEngine
             glBindVertexArray(0);
         }
     }
-    void VertexBuffer_OpenGL::bindVAO(const window_id windowID)
+    void VertexBufferOld_OpenGL::bindVAO(const window_id windowID)
     {
 #ifndef JUMAENGINE_SINGLE_WINDOW
         m_VerticesVAOsMutex.lock_shared();

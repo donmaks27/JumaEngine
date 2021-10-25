@@ -23,7 +23,7 @@ namespace JumaEngine
 
     protected:
 
-        virtual bool initSubsystem() override;
+        virtual bool initSubsystemInternal() override;
         virtual void terminateSubsystem() override;
         
         virtual WindowDescription* createWindowInternal(const glm::uvec2& size, const jstring& title) override;

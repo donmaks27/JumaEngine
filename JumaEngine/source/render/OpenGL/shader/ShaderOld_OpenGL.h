@@ -6,25 +6,19 @@
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_OPENGL)
 
+#include "subsystems/render/ShaderStage.h"
 #include "utils/jmap.h"
 #include "render/shader/ShaderBase.h"
 
 namespace JumaEngine
 {
-    class Shader_OpenGL final : public ShaderBase
+    class ShaderOld_OpenGL final : public ShaderBase
     {
-        JUMAENGINE_CLASS_OLD(Shader_OpenGL, ShaderBase)
+        JUMAENGINE_CLASS_OLD(ShaderOld_OpenGL, ShaderBase)
 
     public:
-        Shader_OpenGL() = default;
-        virtual ~Shader_OpenGL() override;
-
-        enum class ShaderType
-        {
-            Vertex,
-            Geometry,
-            Fragment
-        };
+        ShaderOld_OpenGL() = default;
+        virtual ~ShaderOld_OpenGL() override;
 
         virtual void cacheShaderUniformName(const char* uniformName) override;
 
@@ -53,8 +47,8 @@ namespace JumaEngine
 
 
         bool loadShaderText(const jstring& shaderFilePath, jarray<jstring>& shaderText) const;
-        uint32 compileShader(const jarray<jstring>& shaderText, ShaderType shaderType) const;
-        uint32 loadAndCompileShader(const jstring& shaderFilePath, ShaderType shaderType) const;
+        uint32 compileShader(const jarray<jstring>& shaderText, ShaderStage shaderType) const;
+        uint32 loadAndCompileShader(const jstring& shaderFilePath, ShaderStage shaderType) const;
         uint32 compileShaderProgram(uint32 vertexShader, uint32 geometryShader, uint32 fragmentShader) const;
 
         static void deactivateShaderOpenGL();

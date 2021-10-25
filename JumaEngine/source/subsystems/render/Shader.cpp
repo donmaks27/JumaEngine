@@ -1,35 +1,35 @@
 ﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
 
-#include "VertexBuffer.h"
-#include "asset/mesh/VertexBufferData.h"
+#include "Shader.h"
+
 #include "utils/jlog.h"
 
 namespace JumaEngine
 {
-    bool VertexBuffer::init(const VertexBufferDataBase* data)
+    bool Shader::init(const jstring& shaderName, const jarray<ShaderUniform>& uniforms)
     {
         if (isValid())
         {
-            JUMA_LOG(warning, JSTR("Vertex buffer already initialized"));
+            JUMA_LOG(warning, JSTR("Shader already loaded"));
             return false;
         }
-        if (data == nullptr)
+        if (shaderName.empty())
         {
-            JUMA_LOG(warning, JSTR("Data is null"));
+            JUMA_LOG(warning, JSTR("Shader name is empty"));
             return false;
         }
-
-        data->fillVertexBufferDescription(m_Description);
-        if (!initInternal(data))
+        if (!initInternal(shaderName, uniforms))
         {
             return false;
         }
 
         m_Initialized = true;
+        m_Name = shaderName;
+        m_ShaderUniforms = uniforms;
         return true;
     }
 
-    void VertexBuffer::clear()
+    void Shader::clear()
     {
         if (isValid())
         {

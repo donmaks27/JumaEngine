@@ -22,14 +22,15 @@ namespace JumaEngine
 
     protected:
 
-        virtual void onSubsystemCreated();
-
-        virtual bool initSubsystem() { return true; }
+        virtual bool initSubsystemInternal() { return true; }
         virtual void terminateSubsystem() {}
 
     private:
 
         bool m_Initialized = false;
         bool m_Terminated = false;
+
+
+        void initSubsystem();
     };
 }

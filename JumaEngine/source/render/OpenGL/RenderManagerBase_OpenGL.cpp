@@ -7,8 +7,8 @@
 #include "GL/glew.h"
 #include "engine/Engine.h"
 #include "utils/jlog.h"
-#include "shader/Shader_OpenGL.h"
-#include "vertexBuffer/VertexBuffer_OpenGL.h"
+#include "shader/ShaderOld_OpenGL.h"
+#include "vertexBuffer/VertexBufferOld_OpenGL.h"
 #include "renderTarget/RenderTargetDirect_OpenGL.h"
 #include "texture/Texture_OpenGL.h"
 
@@ -28,12 +28,12 @@ namespace JumaEngine
     ShaderBase* RenderManagerBase_OpenGL::createShaderInternal()
     {
         EngineOld* engine = getOwnerEngine();
-        return engine != nullptr ? engine->createObject<Shader_OpenGL>() : nullptr;
+        return engine != nullptr ? engine->createObject<ShaderOld_OpenGL>() : nullptr;
     }
     VertexBufferBaseOld* RenderManagerBase_OpenGL::createVertextBufferInternal()
     {
         EngineOld* engine = getOwnerEngine();
-        return engine != nullptr ? engine->createObject<VertexBuffer_OpenGL>() : nullptr;
+        return engine != nullptr ? engine->createObject<VertexBufferOld_OpenGL>() : nullptr;
     }
     TextureBase* RenderManagerBase_OpenGL::createTextureInternal()
     {

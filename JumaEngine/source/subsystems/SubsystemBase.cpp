@@ -4,9 +4,9 @@
 
 namespace JumaEngine
 {
-    void SubsystemBase::onSubsystemCreated()
+    void SubsystemBase::initSubsystem()
     {
-        if (!initSubsystem())
+        if (!initSubsystemInternal())
         {
             throw std::runtime_error("Failed to initialize subsystem " + getClass()->getClassName());
         }

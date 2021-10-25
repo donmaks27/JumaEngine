@@ -76,7 +76,7 @@ namespace JumaEngine
         {
             return false;
         }
-        m_RenderSubsystem->onSubsystemCreated();
+        m_RenderSubsystem->initSubsystem();
 
         return true;
     }
