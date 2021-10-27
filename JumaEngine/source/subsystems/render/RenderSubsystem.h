@@ -6,9 +6,14 @@
 #include "RenderOptions.h"
 #include "subsystems/SubsystemBase.h"
 #include "subsystems/render/window/WindowDescription.h"
+#include "utils/jshared_ptr.h"
 
 namespace JumaEngine
 {
+    class VertexBuffer;
+    class Material;
+    class Shader;
+
     class RenderSubsystem : public SubsystemBase
     {
         JUMAENGINE_CLASS(RenderSubsystem, SubsystemBase)
@@ -27,10 +32,12 @@ namespace JumaEngine
 
         virtual void render(const RenderQuery& query) = 0;
 
+        virtual jshared_ptr<VertexBuffer> createVertexBuffer() = 0;
+        virtual jshared_ptr<Shader> createShader() = 0;
+        virtual jshared_ptr<Material> createMaterial() = 0;
+
     protected:
         
-        virtual void terminateSubsystem() override;
-
         const WindowDescription* getMainWindow() const { return m_MainWindow; }
 
         void createMainWindow();

@@ -1,12 +1,12 @@
 ﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
 
-#include "MaterialBase.h"
+#include "MaterialBaseOld.h"
 #include "render/shader/ShaderBase.h"
 
 namespace JumaEngine
 {
     template<typename T>
-    void loadMaterialParam(const MaterialBase* material, ShaderBase* shader, const jstring& name, const uint32 index = 0)
+    void loadMaterialParam(const MaterialBaseOld* material, ShaderBase* shader, const jstring& name, const uint32 index = 0)
     {
         const T* valuePtr = material->findMaterialParam<T>(name);
         if (valuePtr != nullptr)
@@ -15,7 +15,7 @@ namespace JumaEngine
         }
     }
     template<>
-    void loadMaterialParam<TextureBase>(const MaterialBase* material, ShaderBase* shader, const jstring& name, const uint32 index)
+    void loadMaterialParam<TextureBase>(const MaterialBaseOld* material, ShaderBase* shader, const jstring& name, const uint32 index)
     {
         const TextureShaderUniform* texture = material->findMaterialParam<TextureBase, TextureShaderUniform>(name);
         if (texture != nullptr)
@@ -24,7 +24,7 @@ namespace JumaEngine
         }
     }
 
-	void MaterialBase::loadMaterialParams() const
+	void MaterialBaseOld::loadMaterialParams() const
 	{
         ShaderBase* shader = getShader();
         if (shader == nullptr)

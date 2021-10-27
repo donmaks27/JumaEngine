@@ -5,10 +5,14 @@
 #include "common_header.h"
 #include "EngineContextObject.h"
 #include "subsystems/render/RenderInterface.h"
+#include "utils/jshared_ptr.h"
 #include <thread>
 
 namespace JumaEngine
 {
+    class VertexBuffer;
+    class Material;
+    class Shader;
     class RenderSubsystem;
 
     class Engine final : public IRenderInterface
@@ -32,6 +36,10 @@ namespace JumaEngine
         bool m_Started = false;
 
         RenderSubsystem* m_RenderSubsystem = nullptr;
+
+        jshared_ptr<Shader> m_Shader = nullptr;
+        jshared_ptr<Material> m_Material = nullptr;
+        jshared_ptr<VertexBuffer> m_VertexBuffer = nullptr;
 
 
         void registerEngineObject(EngineContextObject* object);

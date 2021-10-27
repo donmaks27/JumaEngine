@@ -5,35 +5,47 @@
 #include "common_header.h"
 #include "ShaderUniform.h"
 #include "engine/EngineContextObject.h"
-#include "utils/jarray.h"
+#include "utils/jmap.h"
+#include "utils/jdelegate_multicast.h"
 
 namespace JumaEngine
 {
+    class Shader;
+
+    CREATE_JDELEGATE_MULTICAST_TYPE_OneParam(OnShaderEvent, Shader*, shader)
+
     class Shader : public EngineContextObject
     {
         JUMAENGINE_CLASS(Shader, EngineContextObject)
 
     public:
         Shader() = default;
-        virtual ~Shader() override = default;
+        virtual ~Shader() override;
 
-        bool init(const jstring& shaderName, const jarray<ShaderUniform>& uniforms = {});
+        OnShaderEvent onPreClear;
+        OnShaderEvent onCleared;
+
+
+        bool init(const jstring& shaderName, const jmap<jstring, ShaderUniform>& uniforms = {});
         bool isValid() const { return m_Initialized; }
         void clear();
 
         jstring getName() const { return isValid() ? m_Name : JSTR(""); }
-        const jarray<ShaderUniform>& getUniforms() const { return m_ShaderUniforms; }
+        const jmap<jstring, ShaderUniform>& getUniforms() const { return m_ShaderUniforms; }
 
     protected:
 
-        virtual bool initInternal(const jstring& shaderName, const jarray<ShaderUniform>& uniforms) = 0;
+        virtual bool initInternal(const jstring& shaderName, const jmap<jstring, ShaderUniform>& uniforms) = 0;
         virtual void clearInternal() = 0;
+
+        void onShaderPreClear() { onPreClear.call(this); }
+        void onShaderCleared() { onCleared.call(this); }
 
     private:
 
         bool m_Initialized = false;
         jstring m_Name;
 
-        jarray<ShaderUniform> m_ShaderUniforms;
+        jmap<jstring, ShaderUniform> m_ShaderUniforms;
     };
 }

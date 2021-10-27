@@ -23,8 +23,20 @@ namespace jutils
         }
         ~jdelegate() { clear(); }
 
-        jdelegate& operator=(const jdelegate& otherDelegate) = delete;
-        jdelegate& operator=(jdelegate&& otherDelegate) = delete;
+        jdelegate& operator=(const jdelegate& otherDelegate) noexcept
+        {
+            if ((this != &otherDelegate) && (otherDelegate.m_Container != nullptr))
+            {
+                m_Container = otherDelegate.m_Container->copy();
+            }
+            return *this;
+        }
+        jdelegate& operator=(jdelegate&& otherDelegate) noexcept
+        {
+            m_Container = otherDelegate.m_Container;
+            otherDelegate.m_Container = nullptr;
+            return *this;
+        }
 
         template<typename T>
         void bind(T* object, void (T::*function)(ArgTypes...))

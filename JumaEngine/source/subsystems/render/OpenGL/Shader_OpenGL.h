@@ -10,7 +10,7 @@
 
 namespace JumaEngine
 {
-    class Shader_OpenGL : public Shader
+    class Shader_OpenGL final : public Shader
     {
         JUMAENGINE_CLASS(Shader_OpenGL, Shader)
 
@@ -25,7 +25,7 @@ namespace JumaEngine
 
     protected:
 
-        virtual bool initInternal(const jstring& shaderName, const jarray<ShaderUniform>& uniforms) override;
+        virtual bool initInternal(const jstring& shaderName, const jmap<jstring, ShaderUniform>& uniforms) override;
         virtual void clearInternal() override;
 
     private:

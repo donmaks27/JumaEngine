@@ -2,7 +2,7 @@
 
 #include "MeshComponent.h"
 #include "CameraComponent.h"
-#include "asset/material/MaterialBase.h"
+#include "asset/material/MaterialBaseOld.h"
 #include "asset/mesh/Mesh.h"
 #include "utils/system_functions.h"
 
@@ -17,7 +17,7 @@ namespace JumaEngine
     {
         if (m_Mesh != nullptr)
         {
-    		MaterialBase* material = m_Mesh->getMaterial(0).get();
+    		MaterialBaseOld* material = m_Mesh->getMaterial(0).get();
     		if (material != nullptr)
     		{
     			const CameraComponent* camera = System::getWindowActiveCamera(this, windowID);

@@ -13,13 +13,13 @@ namespace JumaEngine
     class TextureBase;
     class ShaderBase;
 
-	class MaterialBase : public AssetObject
+	class MaterialBaseOld : public AssetObject
 	{
-        JUMAENGINE_CLASS_OLD(MaterialBase, AssetObject)
+        JUMAENGINE_CLASS_OLD(MaterialBaseOld, AssetObject)
 
 	public:
-		MaterialBase() = default;
-		virtual ~MaterialBase() override = default;
+		MaterialBaseOld() = default;
+		virtual ~MaterialBaseOld() override = default;
 
 		template<typename T>
 		bool hasMaterialParam(const jstring& name) const
@@ -30,7 +30,7 @@ namespace JumaEngine
 				return getMaterialParamType<T>() == *typePtr;
 			}
 
-			const MaterialBase* baseMaterial = getBaseMaterial();
+			const MaterialBaseOld* baseMaterial = getBaseMaterial();
 			if (baseMaterial != nullptr)
 			{
 				return baseMaterial->hasMaterialParam<T>(name);
@@ -51,7 +51,7 @@ namespace JumaEngine
 			}
 			else
 			{
-				const MaterialBase* baseMaterial = getBaseMaterial();
+				const MaterialBaseOld* baseMaterial = getBaseMaterial();
 				if (baseMaterial != nullptr)
 				{
                     return baseMaterial->findMaterialParam<T, U>(name);
@@ -82,7 +82,7 @@ namespace JumaEngine
 
 	protected:
 
-		virtual MaterialBase* getBaseMaterial() const = 0;
+		virtual MaterialBaseOld* getBaseMaterial() const = 0;
 		
 		template<typename T, typename U = T>
 		bool addMaterialParamInternal(const jstring& name, const U& value)
@@ -148,7 +148,7 @@ namespace JumaEngine
 
 		const jmap<jstring, MaterialParamType>& getMaterialParamsList() const
 		{
-			const MaterialBase* baseMaterial = getBaseMaterial();
+			const MaterialBaseOld* baseMaterial = getBaseMaterial();
 			return baseMaterial != nullptr ? baseMaterial->getMaterialParamsList() : m_MaterialParams;
 		}
 	};

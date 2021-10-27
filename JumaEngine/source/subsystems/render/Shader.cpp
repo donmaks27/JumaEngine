@@ -6,7 +6,15 @@
 
 namespace JumaEngine
 {
-    bool Shader::init(const jstring& shaderName, const jarray<ShaderUniform>& uniforms)
+    Shader::~Shader()
+    {
+        if (isValid())
+        {
+            onShaderCleared();
+        }
+    }
+
+    bool Shader::init(const jstring& shaderName, const jmap<jstring, ShaderUniform>& uniforms)
     {
         if (isValid())
         {
@@ -33,8 +41,12 @@ namespace JumaEngine
     {
         if (isValid())
         {
+            onShaderPreClear();
+
             clearInternal();
             m_Initialized = false;
+
+            onShaderCleared();
         }
     }
 }

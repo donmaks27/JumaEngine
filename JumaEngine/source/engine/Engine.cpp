@@ -1,6 +1,11 @@
 ﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
 
 #include "Engine.h"
+
+#include "asset/mesh/vertexTypes/Vertex2D.h"
+#include "subsystems/render/Material.h"
+#include "subsystems/render/Shader.h"
+#include "subsystems/render/VertexBuffer.h"
 #include "subsystems/render/OpenGL/RenderSubsystem_OpenGL_GLFW.h"
 #include "utils/jlog.h"
 
@@ -78,6 +83,26 @@ namespace JumaEngine
         }
         m_RenderSubsystem->initSubsystem();
 
+        m_Shader = m_RenderSubsystem->createShader();
+        m_Shader->init(JSTR("content/shaders/ui"));
+        m_Material = m_RenderSubsystem->createMaterial();
+        m_Material->init(m_Shader);
+
+        DefaultVertexBuffer defaultVertexBufferData;
+        defaultVertexBufferData.vertices = {
+            { { 0.0f, 0.0f, 0.0f } },
+            { { 0.5f, 0.0f, 0.0f } },
+            { { 0.0f, 0.5f, 0.0f } },
+            { { 0.0f, 0.5f, 0.0f } },
+            { { 0.5f, 0.0f, 0.0f } },
+            { { 0.5f, 0.5f, 0.0f } }
+        };
+        VertexBufferDataBase* vertexBufferData = new VertexBufferData_Vertex2D();
+        vertexBufferData->copyFromDefaultVertexBuffer(defaultVertexBufferData);
+        m_VertexBuffer = m_RenderSubsystem->createVertexBuffer();
+        m_VertexBuffer->init(vertexBufferData);
+        delete vertexBufferData;
+
         return true;
     }
 
@@ -97,6 +122,10 @@ namespace JumaEngine
 
     void Engine::terminate()
     {
+        m_VertexBuffer.reset();
+        m_Material.reset();
+        m_Shader.reset();
+
         m_RenderSubsystem->terminate();
         delete m_RenderSubsystem;
         m_RenderSubsystem = nullptr;
@@ -104,6 +133,8 @@ namespace JumaEngine
 
     void Engine::render(const RenderOptions& options)
     {
-        
+        m_Material->renderActivate(options);
+        m_VertexBuffer->render(options);
+        m_Material->renderDeactivate(options);
     }
 }

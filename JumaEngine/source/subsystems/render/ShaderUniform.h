@@ -11,13 +11,11 @@ namespace JumaEngine
     enum class ShaderUniformType
     {
         None,
-        Mat4,
-        Texture
+        Mat4
     };
 
     struct ShaderUniform
     {
-        jstring name;
         uint32 location = 0;
 
         ShaderUniformType type = ShaderUniformType::None;

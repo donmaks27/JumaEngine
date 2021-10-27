@@ -20,6 +20,10 @@ namespace JumaEngine
 
         virtual void render(const RenderQuery& query) override;
 
+        virtual jshared_ptr<VertexBuffer> createVertexBuffer() override;
+        virtual jshared_ptr<Shader> createShader() override;
+        virtual jshared_ptr<Material> createMaterial() override;
+
     protected:
 
         bool initOpenGL();

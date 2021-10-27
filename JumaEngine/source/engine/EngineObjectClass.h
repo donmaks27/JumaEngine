@@ -97,7 +97,7 @@ public:                                                                         
         virtual jstring getClassName() const override { return #ClassName; }                                        \
     protected:                                                                                                      \
         virtual EngineContextObject* createObject() const override { return createObjectTemplate<ClassName>(); }    \
-        virtual bool isDerrivedOrEqual(const EngineObjectClass* classObject) const override                       \
+        virtual bool isDerrivedOrEqual(const EngineObjectClass* classObject) const override                         \
         {                                                                                                           \
             if (classObject == nullptr) { return false; }                                                           \
             if (classObject == ClassName::getClass()) { return true; }                                              \

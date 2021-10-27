@@ -48,7 +48,9 @@ namespace JumaEngine
 
     void RenderSubsystem_OpenGL_GLFW::terminateSubsystem()
     {
+        terminateMainWindow();
         terminateGLFW();
+
         Super::terminateSubsystem();
     }
     void RenderSubsystem_OpenGL_GLFW::terminateGLFW()

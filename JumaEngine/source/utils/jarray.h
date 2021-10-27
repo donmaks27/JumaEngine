@@ -78,7 +78,7 @@ namespace jutils
         {
             if (isValidIndex(index))
             {
-                this->erase(this->begin() + index);
+                this->erase(begin() + index);
                 return true;
             }
             return false;

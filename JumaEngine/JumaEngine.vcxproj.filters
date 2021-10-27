@@ -124,15 +124,6 @@
     <ClCompile Include="source\asset\AssetsManager.cpp">
       <Filter>JumaEngine\asset</Filter>
     </ClCompile>
-    <ClCompile Include="source\asset\material\Material.cpp">
-      <Filter>JumaEngine\asset\material</Filter>
-    </ClCompile>
-    <ClCompile Include="source\asset\material\MaterialBase.cpp">
-      <Filter>JumaEngine\asset\material</Filter>
-    </ClCompile>
-    <ClCompile Include="source\asset\material\MaterialInstance.cpp">
-      <Filter>JumaEngine\asset\material</Filter>
-    </ClCompile>
     <ClCompile Include="source\asset\mesh\Mesh.cpp">
       <Filter>JumaEngine\asset\mesh</Filter>
     </ClCompile>
@@ -223,6 +214,21 @@
     <ClCompile Include="source\subsystems\render\OpenGL\Shader_OpenGL.cpp">
       <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
     </ClCompile>
+    <ClCompile Include="source\asset\material\MaterialOld.cpp">
+      <Filter>JumaEngine\asset\material</Filter>
+    </ClCompile>
+    <ClCompile Include="source\asset\material\MaterialBaseOld.cpp">
+      <Filter>JumaEngine\asset\material</Filter>
+    </ClCompile>
+    <ClCompile Include="source\asset\material\MaterialInstanceOld.cpp">
+      <Filter>JumaEngine\asset\material</Filter>
+    </ClCompile>
+    <ClCompile Include="source\subsystems\render\Material.cpp">
+      <Filter>JumaEngine\subsystems\render</Filter>
+    </ClCompile>
+    <ClCompile Include="source\subsystems\render\OpenGL\Material_OpenGL.cpp">
+      <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\common_header.h">
@@ -284,15 +290,6 @@
     </ClInclude>
     <ClInclude Include="source\asset\AssetsManager.h">
       <Filter>JumaEngine\asset</Filter>
-    </ClInclude>
-    <ClInclude Include="source\asset\material\Material.h">
-      <Filter>JumaEngine\asset\material</Filter>
-    </ClInclude>
-    <ClInclude Include="source\asset\material\MaterialBase.h">
-      <Filter>JumaEngine\asset\material</Filter>
-    </ClInclude>
-    <ClInclude Include="source\asset\material\MaterialInstance.h">
-      <Filter>JumaEngine\asset\material</Filter>
     </ClInclude>
     <ClInclude Include="source\asset\mesh\Mesh.h">
       <Filter>JumaEngine\asset\mesh</Filter>
@@ -464,6 +461,27 @@
     </ClInclude>
     <ClInclude Include="source\subsystems\render\ShaderUniform.h">
       <Filter>JumaEngine\subsystems\render</Filter>
+    </ClInclude>
+    <ClInclude Include="source\asset\material\MaterialOld.h">
+      <Filter>JumaEngine\asset\material</Filter>
+    </ClInclude>
+    <ClInclude Include="source\asset\material\MaterialBaseOld.h">
+      <Filter>JumaEngine\asset\material</Filter>
+    </ClInclude>
+    <ClInclude Include="source\asset\material\MaterialInstanceOld.h">
+      <Filter>JumaEngine\asset\material</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\Material.h">
+      <Filter>JumaEngine\subsystems\render</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\OpenGL\Material_OpenGL.h">
+      <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\MaterialUniform.h">
+      <Filter>JumaEngine\subsystems\render</Filter>
+    </ClInclude>
+    <ClInclude Include="source\asset\mesh\vertexTypes\Vertex2D.h">
+      <Filter>JumaEngine\asset\mesh\vertexTypes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

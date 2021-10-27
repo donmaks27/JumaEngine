@@ -3,19 +3,19 @@
 #pragma once
 
 #include "common_header.h"
-#include "MaterialBase.h"
+#include "MaterialBaseOld.h"
 
 namespace JumaEngine
 {
-	class Material final : public MaterialBase
+	class MaterialOld final : public MaterialBaseOld
 	{
-        JUMAENGINE_CLASS_OLD(Material, MaterialBase)
+        JUMAENGINE_CLASS_OLD(MaterialOld, MaterialBaseOld)
 
 		friend AssetsManager;
 		
 	public:
-		Material() = default;
-		virtual ~Material() override;
+		MaterialOld() = default;
+		virtual ~MaterialOld() override;
 
 		template<typename T, typename U = T>
 		bool addMaterialParam(const jstring& name, const U& value)
@@ -45,7 +45,7 @@ namespace JumaEngine
 
 	protected:
 
-		virtual MaterialBase* getBaseMaterial() const override { return nullptr; }
+		virtual MaterialBaseOld* getBaseMaterial() const override { return nullptr; }
 	
 	private:
 		

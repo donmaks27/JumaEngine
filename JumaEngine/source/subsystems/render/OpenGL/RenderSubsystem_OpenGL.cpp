@@ -7,6 +7,9 @@
 #include <GL/glew.h>
 
 #include "utils/jlog.h"
+#include "VertexBuffer_OpenGL.h"
+#include "Shader_OpenGL.h"
+#include "Material_OpenGL.h"
 
 namespace JumaEngine
 {
@@ -39,6 +42,19 @@ namespace JumaEngine
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
         callEngineRender(options);
+    }
+
+    jshared_ptr<VertexBuffer> RenderSubsystem_OpenGL::createVertexBuffer()
+    {
+        return make_jshared_ptr<VertexBuffer_OpenGL>();
+    }
+    jshared_ptr<Shader> RenderSubsystem_OpenGL::createShader()
+    {
+        return make_jshared_ptr<Shader_OpenGL>();
+    }
+    jshared_ptr<Material> RenderSubsystem_OpenGL::createMaterial()
+    {
+        return make_jshared_ptr<Material_OpenGL>();
     }
 }
 

@@ -6,13 +6,6 @@
 
 namespace JumaEngine
 {
-    void RenderSubsystem::terminateSubsystem()
-    {
-        terminateMainWindow();
-
-        Super::terminateSubsystem();
-    }
-
     void RenderSubsystem::createMainWindow()
     {
         if (m_MainWindow == nullptr)

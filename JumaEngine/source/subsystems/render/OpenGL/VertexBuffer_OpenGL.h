@@ -10,7 +10,7 @@
 
 namespace JumaEngine
 {
-    class VertexBuffer_OpenGL : public VertexBuffer
+    class VertexBuffer_OpenGL final : public VertexBuffer
     {
         JUMAENGINE_CLASS(VertexBuffer_OpenGL, VertexBuffer)
 

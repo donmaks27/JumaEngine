@@ -11,7 +11,7 @@ namespace JumaEngine
 {
     class VertexBufferDataBase;
     class VertexBufferBaseOld;
-    class MaterialBase;
+    class MaterialBaseOld;
     class MeshFileImporterBase;
 
     class Mesh : public AssetObject, public IRenderedObject
@@ -25,15 +25,15 @@ namespace JumaEngine
         bool init(const jarray<VertexBufferDataBase*>& meshPartsData);
         bool isInit() const { return !m_VertexBuffers.isEmpty(); }
 
-        asset_ptr<MaterialBase> getMaterial(const uint32 slotIndex) const { return m_Materials.isValidIndex(slotIndex) ? m_Materials[slotIndex] : asset_ptr<MaterialBase>(); }
-        void setMaterial(uint32 slotIndex, const asset_ptr<MaterialBase>& material);
+        asset_ptr<MaterialBaseOld> getMaterial(const uint32 slotIndex) const { return m_Materials.isValidIndex(slotIndex) ? m_Materials[slotIndex] : asset_ptr<MaterialBaseOld>(); }
+        void setMaterial(uint32 slotIndex, const asset_ptr<MaterialBaseOld>& material);
 
         virtual void render(window_id windowID, const RenderParams& renderParams) override;
 
     private:
 
         jarray<VertexBufferBaseOld*> m_VertexBuffers;
-        jarray<asset_ptr<MaterialBase>> m_Materials;
+        jarray<asset_ptr<MaterialBaseOld>> m_Materials;
 
         
         void terminateMesh();

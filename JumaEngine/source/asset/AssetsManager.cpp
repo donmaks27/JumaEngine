@@ -2,8 +2,8 @@
 
 #include "AssetsManager.h"
 #include "AssetObject.h"
-#include "material/Material.h"
-#include "material/MaterialInstance.h"
+#include "material/MaterialOld.h"
+#include "material/MaterialInstanceOld.h"
 #include "mesh/Mesh.h"
 #include "render/RenderManagerBase.h"
 #include "render/shader/ShaderBase.h"
@@ -44,17 +44,17 @@ namespace JumaEngine
 		}
 	}
 
-	asset_ptr<Material> AssetsManager::createMaterial(const jstring& materialName)
+	asset_ptr<MaterialOld> AssetsManager::createMaterial(const jstring& materialName)
 	{
-		const jstring actualName = jstring(JSTR("Material.")) + materialName;
+		const jstring actualName = jstring(JSTR("MaterialOld.")) + materialName;
 		
-        asset_ptr<Material>* existingAsset = m_Materials.find(actualName);
+        asset_ptr<MaterialOld>* existingAsset = m_Materials.find(actualName);
 		if (existingAsset != nullptr)
 		{
 			return *existingAsset;
 		}
 
-        asset_ptr<Material> asset = createAssetObject<Material>();
+        asset_ptr<MaterialOld> asset = createAssetObject<MaterialOld>();
         if (asset != nullptr)
         {
             RenderManagerBase* renderManager = getRenderManager();
@@ -67,28 +67,28 @@ namespace JumaEngine
         }
         return asset;
 	}
-    asset_ptr<MaterialInstance> AssetsManager::createMaterialInstance(const jstring& materialInstanceName, const asset_ptr<MaterialBase>& baseMaterial)
+    asset_ptr<MaterialInstanceOld> AssetsManager::createMaterialInstance(const jstring& materialInstanceName, const asset_ptr<MaterialBaseOld>& baseMaterial)
     {
-		const jstring actuallName = jstring(JSTR("MaterialInstance.")) + materialInstanceName;
+		const jstring actuallName = jstring(JSTR("MaterialInstanceOld.")) + materialInstanceName;
 		
-        asset_ptr<MaterialInstance>* existingAsset = m_MaterialInstances.find(actuallName);
+        asset_ptr<MaterialInstanceOld>* existingAsset = m_MaterialInstances.find(actuallName);
 		if (existingAsset != nullptr)
 		{
 			return *existingAsset;
 		}
 
-        asset_ptr<MaterialInstance> asset = createMaterialInstance(baseMaterial);
+        asset_ptr<MaterialInstanceOld> asset = createMaterialInstance(baseMaterial);
         if (asset != nullptr)
         {
             m_MaterialInstances.set(actuallName, asset);
         }
         return asset;
     }
-    asset_ptr<MaterialInstance> AssetsManager::createMaterialInstance(const asset_ptr<MaterialBase>& baseMaterial)
+    asset_ptr<MaterialInstanceOld> AssetsManager::createMaterialInstance(const asset_ptr<MaterialBaseOld>& baseMaterial)
     {
 		if (baseMaterial != nullptr)
 		{
-			asset_ptr<MaterialInstance> asset = createAssetObject<MaterialInstance>();
+			asset_ptr<MaterialInstanceOld> asset = createAssetObject<MaterialInstanceOld>();
 			if (asset != nullptr)
 			{
 				asset->m_BaseMaterial = baseMaterial;

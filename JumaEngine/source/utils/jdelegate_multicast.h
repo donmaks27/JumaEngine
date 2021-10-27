@@ -24,8 +24,8 @@ namespace jutils
         {
             if ((object != nullptr) && !isBinded(object, function))
             {
-                m_Delegates.add(jdelegate<ArgTypes...>());
-                m_Delegates[m_Delegates.size() - 1].bind(object, function);
+                m_Delegates.addDefault();
+                m_Delegates[m_Delegates.getSize() - 1].bind(object, function);
             }
         }
 
@@ -79,7 +79,7 @@ namespace jutils
         {
             if (object != nullptr)
             {
-                for (int i = 0; i < m_Delegates.size(); i++)
+                for (int i = 0; i < m_Delegates.getSize(); i++)
                 {
                     if (m_Delegates[i].isBinded(object, callback))
                     {

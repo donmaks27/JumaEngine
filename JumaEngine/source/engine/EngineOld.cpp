@@ -8,8 +8,8 @@
 #include "framework/gameObject/EngineWorld.h"
 #include "framework/gameObject/gameComponent/CameraComponent.h"
 #include "framework/gameObject/gameComponent/MeshComponent.h"
-#include "asset/material/Material.h"
-#include "asset/material/MaterialInstance.h"
+#include "asset/material/MaterialOld.h"
+#include "asset/material/MaterialInstanceOld.h"
 #include "asset/mesh/Mesh.h"
 #include "render/RenderManagerImpl.h"
 #include "render/renderTarget/RenderTargetDirectBase.h"
@@ -108,7 +108,7 @@ namespace JumaEngine
     	
         m_World = createObject<EngineWorld>();
 
-        asset_ptr<Material> material = m_AssetsManager->createMaterial("content/shaders/testShaderTexCoords");
+        asset_ptr<MaterialOld> material = m_AssetsManager->createMaterial("content/shaders/testShaderTexCoords");
     	material->addMaterialParam<glm::mat4>("uProjection", glm::mat4(1));
     	material->addMaterialParam<glm::mat4>("uView", glm::mat4(1));
     	material->addMaterialParam<glm::mat4>("uModel", glm::mat4(1));

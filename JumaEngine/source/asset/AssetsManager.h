@@ -10,9 +10,9 @@
 
 namespace JumaEngine
 {
-    class MaterialBase;
-    class Material;
-    class MaterialInstance;
+    class MaterialBaseOld;
+    class MaterialOld;
+    class MaterialInstanceOld;
     class Mesh;
     class TextureBase;
 
@@ -26,9 +26,9 @@ namespace JumaEngine
 
 		void destroyUnusedAssets();
 
-		asset_ptr<Material> createMaterial(const jstring& materialName);
-		asset_ptr<MaterialInstance> createMaterialInstance(const jstring& materialInstanceName, const asset_ptr<MaterialBase>& baseMaterial);
-		asset_ptr<MaterialInstance> createMaterialInstance(const asset_ptr<MaterialBase>& baseMaterial);
+		asset_ptr<MaterialOld> createMaterial(const jstring& materialName);
+		asset_ptr<MaterialInstanceOld> createMaterialInstance(const jstring& materialInstanceName, const asset_ptr<MaterialBaseOld>& baseMaterial);
+		asset_ptr<MaterialInstanceOld> createMaterialInstance(const asset_ptr<MaterialBaseOld>& baseMaterial);
 
         asset_ptr<Mesh> createMesh(const jstring& meshName);
 
@@ -37,8 +37,8 @@ namespace JumaEngine
 	
 	private:
 
-    	jmap<jstring, asset_ptr<Material>> m_Materials;
-        jmap<jstring, asset_ptr<MaterialInstance>> m_MaterialInstances;
+    	jmap<jstring, asset_ptr<MaterialOld>> m_Materials;
+        jmap<jstring, asset_ptr<MaterialInstanceOld>> m_MaterialInstances;
         jmap<jstring, asset_ptr<Mesh>> m_Meshes;
         jmap<jstring, asset_ptr<TextureBase>> m_Textures;
 

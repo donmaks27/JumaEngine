@@ -16,11 +16,12 @@ namespace JumaEngine
     {
         if (isValid())
         {
+            onShaderPreClear();
             clearOpenGL();
         }
     }
 
-    bool Shader_OpenGL::initInternal(const jstring& shaderName, const jarray<ShaderUniform>& uniforms)
+    bool Shader_OpenGL::initInternal(const jstring& shaderName, const jmap<jstring, ShaderUniform>& uniforms)
     {
         jarray<uint32> shaders(3, 0);
         loadAndCompileShader(shaderName + ".vsh", ShaderStage::Vertex, shaders[0]);
@@ -40,7 +41,11 @@ namespace JumaEngine
     bool Shader_OpenGL::loadAndCompileShader(const jstring& shaderFilePath, const ShaderStage shaderType, uint32& outShaderIndex) const
     {
         jarray<jstring> shaderText;
-        if (!loadShaderText(shaderFilePath, shaderText) || !compileShader(shaderText, shaderType, outShaderIndex))
+        if (!loadShaderText(shaderFilePath, shaderText))
+        {
+            return false;
+        }
+        if (!compileShader(shaderText, shaderType, outShaderIndex))
         {
 #if JLOG_ENABLED
             jstring shaderTypeString;
