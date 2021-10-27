@@ -11,7 +11,8 @@ namespace JumaEngine
     enum class ShaderUniformType
     {
         None,
-        Mat4
+        Mat4,
+        Image
     };
 
     struct ShaderUniform

@@ -13,7 +13,7 @@ namespace JumaEngine
 
     class VertexBuffer : public EngineContextObject, public IRenderInterface
     {
-        JUMAENGINE_CLASS(VertexBuffer, EngineContextObject)
+        JUMAENGINE_ABSTRACT_CLASS(VertexBuffer, EngineContextObject)
 
     public:
         VertexBuffer() = default;

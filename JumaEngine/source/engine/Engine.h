@@ -10,6 +10,7 @@
 
 namespace JumaEngine
 {
+    class Image;
     class VertexBuffer;
     class Material;
     class Shader;
@@ -37,6 +38,7 @@ namespace JumaEngine
 
         RenderSubsystem* m_RenderSubsystem = nullptr;
 
+        jshared_ptr<Image> m_Image = nullptr;
         jshared_ptr<Shader> m_Shader = nullptr;
         jshared_ptr<Material> m_Material = nullptr;
         jshared_ptr<VertexBuffer> m_VertexBuffer = nullptr;

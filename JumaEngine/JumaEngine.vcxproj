@@ -123,7 +123,9 @@
     <ClCompile Include="source\render\shader\ShaderBase.cpp" />
     <ClCompile Include="source\render\texture\TextureBase.cpp" />
     <ClCompile Include="source\render\vertexBuffer\VertexBufferBaseOld.cpp" />
+    <ClCompile Include="source\subsystems\render\Image.cpp" />
     <ClCompile Include="source\subsystems\render\Material.cpp" />
+    <ClCompile Include="source\subsystems\render\OpenGL\Image_OpenGL.cpp" />
     <ClCompile Include="source\subsystems\render\OpenGL\Material_OpenGL.cpp" />
     <ClCompile Include="source\subsystems\render\OpenGL\RenderSubsystem_OpenGL.cpp" />
     <ClCompile Include="source\subsystems\render\OpenGL\RenderSubsystem_OpenGL_GLFW.cpp" />
@@ -188,8 +190,11 @@
     <ClInclude Include="source\render\window\WindowDescriptionBaseOld.h" />
     <ClInclude Include="source\render\window\WindowDescriptionGLFWOld.h" />
     <ClInclude Include="source\render\window\window_id.h" />
+    <ClInclude Include="source\subsystems\render\Image.h" />
+    <ClInclude Include="source\subsystems\render\ImageFormat.h" />
     <ClInclude Include="source\subsystems\render\Material.h" />
     <ClInclude Include="source\subsystems\render\MaterialUniform.h" />
+    <ClInclude Include="source\subsystems\render\OpenGL\Image_OpenGL.h" />
     <ClInclude Include="source\subsystems\render\OpenGL\Material_OpenGL.h" />
     <ClInclude Include="source\subsystems\render\OpenGL\RenderSubsystem_OpenGL.h" />
     <ClInclude Include="source\subsystems\render\OpenGL\RenderSubsystem_OpenGL_GLFW.h" />

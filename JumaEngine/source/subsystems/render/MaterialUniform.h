@@ -4,43 +4,55 @@
 
 #include "common_header.h"
 #include "ShaderUniform.h"
-#include "utils/type_checks.h"
 #include <glm/mat4x4.hpp>
+#include "utils/jshared_ptr.h"
 
 namespace JumaEngine
 {
+    class Image;
+
     struct MaterialUniform
     {
         ShaderUniformType type = ShaderUniformType::None;
         void* data = nullptr;
     };
+    template<ShaderUniformType>
+    struct MaterialUniformType {};
 
-    struct MaterialUniform_Mat4 : public MaterialUniform
+    struct MaterialUniform_Mat4 final : public MaterialUniform
     {
         MaterialUniform_Mat4()
         {
             type = ShaderUniformType::Mat4;
         }
 
-        glm::mat4 value = glm::mat4(0);
+        using value_type = glm::mat4;
+        value_type value = glm::mat4(0);
     };
+    template<>
+    struct MaterialUniformType<ShaderUniformType::Mat4> { using struct_type = MaterialUniform_Mat4; };
 
-    template<typename T1>
-    constexpr bool is_shader_uniform_type = std::is_same_v<std::remove_cv_t<T1>, glm::mat4>;
+    struct MaterialUniform_Image final : public MaterialUniform
+    {
+        MaterialUniform_Image()
+        {
+            type = ShaderUniformType::Image;
+        }
+
+        using value_type = jshared_ptr<Image>;
+        value_type value = nullptr;
+    };
+    template<>
+    struct MaterialUniformType<ShaderUniformType::Image> { using struct_type = MaterialUniform_Image; };
 
     namespace MaterialUniformActions
     {
-        template<typename T>
-        inline ShaderUniformType getType() { return ShaderUniformType::None; }
-        template<>
-        inline ShaderUniformType getType<glm::mat4>() { return ShaderUniformType::Mat4; }
-
-        template<typename T>
-        inline ShaderUniformType getType(const T&) { return getType<T>(); }
-
-        inline MaterialUniform* create(const glm::mat4& value)
+        template<ShaderUniformType Type>
+        inline typename MaterialUniformType<Type>::struct_type* create() { return new typename MaterialUniformType<Type>::struct_type(); }
+        template<ShaderUniformType Type>
+        inline MaterialUniform* create(const typename MaterialUniformType<Type>::struct_type::value_type& value)
         {
-            MaterialUniform_Mat4* uniform = new MaterialUniform_Mat4();
+            auto* uniform = create<Type>;
             uniform->value = value;
             return uniform;
         }
@@ -48,40 +60,46 @@ namespace JumaEngine
         {
             switch (type)
             {
-            case ShaderUniformType::Mat4: return create(glm::mat4(0));
+            case ShaderUniformType::Mat4: return create<ShaderUniformType::Mat4>();
+            case ShaderUniformType::Image: return create<ShaderUniformType::Image>();
             default: ;
             }
             return nullptr;
         }
 
-        inline bool get(const MaterialUniform* uniform, glm::mat4& outValue)
+        template<ShaderUniformType Type>
+        inline bool get(const MaterialUniform* uniform, typename MaterialUniformType<Type>::struct_type::value_type& outValue)
         {
-            if ((uniform != nullptr) && (uniform->type == ShaderUniformType::Mat4))
+            if ((uniform != nullptr) && (uniform->type == Type))
             {
-                outValue = ((const MaterialUniform_Mat4*)uniform)->value;
+                outValue = ((const typename MaterialUniformType<Type>::struct_type*)uniform)->value;
                 return true;
             }
             return false;
         }
 
-        inline bool set(MaterialUniform* uniform, const glm::mat4& value)
+        template<ShaderUniformType Type>
+        inline bool set(MaterialUniform* uniform, const typename MaterialUniformType<Type>::struct_type::value_type& value)
         {
-            if ((uniform != nullptr) && (uniform->type == ShaderUniformType::Mat4))
+            if ((uniform != nullptr) && (uniform->type == Type))
             {
-                ((MaterialUniform_Mat4*)uniform)->value = value;
+                ((typename MaterialUniformType<Type>::struct_type*)uniform)->value = value;
                 return true;
             }
             return false;
         }
 
-        inline void clear(MaterialUniform* uniform)
+        inline void terminate(MaterialUniform* uniform)
         {
             if (uniform != nullptr)
             {
                 switch (uniform->type)
                 {
                 case ShaderUniformType::Mat4: 
-                    delete (MaterialUniform_Mat4*)uniform;
+                    delete (MaterialUniformType<ShaderUniformType::Mat4>::struct_type*)uniform;
+                    break;
+                case ShaderUniformType::Image: 
+                    delete (MaterialUniformType<ShaderUniformType::Image>::struct_type*)uniform;
                     break;
 
                 default: 

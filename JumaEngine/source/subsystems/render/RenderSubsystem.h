@@ -10,13 +10,14 @@
 
 namespace JumaEngine
 {
+    class Image;
     class VertexBuffer;
     class Material;
     class Shader;
 
     class RenderSubsystem : public SubsystemBase
     {
-        JUMAENGINE_CLASS(RenderSubsystem, SubsystemBase)
+        JUMAENGINE_ABSTRACT_CLASS(RenderSubsystem, SubsystemBase)
 
     public:
         RenderSubsystem() = default;
@@ -35,6 +36,7 @@ namespace JumaEngine
         virtual jshared_ptr<VertexBuffer> createVertexBuffer() = 0;
         virtual jshared_ptr<Shader> createShader() = 0;
         virtual jshared_ptr<Material> createMaterial() = 0;
+        virtual jshared_ptr<Image> createImage() = 0;
 
     protected:
         

@@ -112,10 +112,21 @@ public:                                                                         
     }                                                                                                               \
 private:
 
-#define JUMAENGINE_BASE_CLASS(ClassName) DECLARE_JUMAENGINE_CLASS_OBJECT(ClassName, EngineObjectClass)
-#define JUMAENGINE_CLASS(ClassName, ParentClassName)                    \
-    DECLARE_JUMAENGINE_CLASS_OBJECT(ClassName, ParentClassName##_Class) \
-    typedef ParentClassName Super;
+#define JUMAENGINE_BASE_CLASS(ClassName) DECLARE_JUMAENGINE_CLASS_OBJECT(ClassName, EngineObjectClass)  \
+    protected: virtual void __internal_engine_class_dummy_function__() const = 0;                       \
+    private:
+
+#define JUMAENGINE_ABSTRACT_CLASS(ClassName, ParentClassName)                               \
+    DECLARE_JUMAENGINE_CLASS_OBJECT(ClassName, ParentClassName##_Class)                     \
+    typedef ParentClassName Super;                                                          \
+    protected: virtual void __internal_engine_class_dummy_function__() const override = 0;  \
+    private:
+
+#define JUMAENGINE_CLASS(ClassName, ParentClassName)                                        \
+    DECLARE_JUMAENGINE_CLASS_OBJECT(ClassName, ParentClassName##_Class)                     \
+    typedef ParentClassName Super;                                                          \
+    protected: virtual void __internal_engine_class_dummy_function__() const override {}    \
+    private:
 
 
 

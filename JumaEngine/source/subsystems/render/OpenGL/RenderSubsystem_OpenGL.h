@@ -12,7 +12,7 @@ namespace JumaEngine
 {
     class RenderSubsystem_OpenGL : public RenderSubsystem
     {
-        JUMAENGINE_CLASS(RenderSubsystem_OpenGL, RenderSubsystem)
+        JUMAENGINE_ABSTRACT_CLASS(RenderSubsystem_OpenGL, RenderSubsystem)
 
     public:
         RenderSubsystem_OpenGL() = default;
@@ -23,6 +23,7 @@ namespace JumaEngine
         virtual jshared_ptr<VertexBuffer> createVertexBuffer() override;
         virtual jshared_ptr<Shader> createShader() override;
         virtual jshared_ptr<Material> createMaterial() override;
+        virtual jshared_ptr<Image> createImage() override;
 
     protected:
 

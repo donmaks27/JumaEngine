@@ -7,9 +7,11 @@
 #include <GL/glew.h>
 
 #include "utils/jlog.h"
+#include "engine/Engine.h"
 #include "VertexBuffer_OpenGL.h"
 #include "Shader_OpenGL.h"
 #include "Material_OpenGL.h"
+#include "Image_OpenGL.h"
 
 namespace JumaEngine
 {
@@ -46,15 +48,23 @@ namespace JumaEngine
 
     jshared_ptr<VertexBuffer> RenderSubsystem_OpenGL::createVertexBuffer()
     {
-        return make_jshared_ptr<VertexBuffer_OpenGL>();
+        Engine* engine = getOwnerEngine();
+        return engine != nullptr ? engine->createObject<VertexBuffer_OpenGL>() : nullptr;
     }
     jshared_ptr<Shader> RenderSubsystem_OpenGL::createShader()
     {
-        return make_jshared_ptr<Shader_OpenGL>();
+        Engine* engine = getOwnerEngine();
+        return engine != nullptr ? engine->createObject<Shader_OpenGL>() : nullptr;
     }
     jshared_ptr<Material> RenderSubsystem_OpenGL::createMaterial()
     {
-        return make_jshared_ptr<Material_OpenGL>();
+        Engine* engine = getOwnerEngine();
+        return engine != nullptr ? engine->createObject<Material_OpenGL>() : nullptr;
+    }
+    jshared_ptr<Image> RenderSubsystem_OpenGL::createImage()
+    {
+        Engine* engine = getOwnerEngine();
+        return engine != nullptr ? engine->createObject<Image_OpenGL>() : nullptr;
     }
 }
 

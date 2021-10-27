@@ -19,7 +19,7 @@ namespace JumaEngine
 
     class Material : public EngineContextObject, public IRenderActivateInterface
     {
-        JUMAENGINE_CLASS(Material, EngineContextObject)
+        JUMAENGINE_ABSTRACT_CLASS(Material, EngineContextObject)
 
     public:
         Material() = default;
@@ -40,35 +40,30 @@ namespace JumaEngine
         const jarray<jstring>& getUniformNames() const { return isMaterialInstance() ? m_BaseMaterial->getUniformNames() : m_UniformNames; }
 
         ShaderUniformType getUniformType(const jstring& name) const;
-        template<typename T, TEMPLATE_ENABLE(is_shader_uniform_type<T>)>
-        bool getUniformValue(const jstring& name, T& outValue) const
+        template<ShaderUniformType Type>
+        bool getUniformValue(const jstring& name, typename MaterialUniformType<Type>::struct_type::value_type& outValue) const
         {
-            const MaterialUniform* uniform = getUniformValue(name);
-            return (uniform != nullptr) && MaterialUniformActions::get(uniform, outValue);
+            return MaterialUniformActions::get<Type>(getUniformValue(name), outValue);
         }
-        template<typename T, TEMPLATE_ENABLE(is_shader_uniform_type<T>)>
-        bool setUniformValue(const jstring& name, const T& value)
+        template<ShaderUniformType Type>
+        bool setUniformValue(const jstring& name, const typename MaterialUniformType<Type>::struct_type::value_type& value)
         {
-            if (isValid() && (getUniformType(name) == MaterialUniformActions::getType<T>()))
+            if (isValid() && (getUniformType(name) == Type))
             {
-                bool result = false;
-                const int64 index = m_UniformNames.indexOf(name);
-                if (index != -1)
+                int64 index = m_UniformNames.indexOf(name);
+                if ((index == -1) && isMaterialInstance())
                 {
-                    result = MaterialUniformActions::set(m_UniformValues[index], value);
-                }
-                else if (isMaterialInstance())
-                {
-                    MaterialUniform* uniform = MaterialUniformActions::create(value);
+                    MaterialUniform* uniform = MaterialUniformActions::create<Type>();
                     if (uniform != nullptr)
                     {
                         m_UniformNames.add(name);
                         m_UniformValues.add(uniform);
-                        result = true;
+                        index = m_UniformValues.getSize() - 1;
                     }
                 }
-                if (result)
+                if (index != -1)
                 {
+                    MaterialUniformActions::set<Type>(m_UniformValues[index], value);
                     onMaterialUniformChanged(name);
                     return true;
                 }

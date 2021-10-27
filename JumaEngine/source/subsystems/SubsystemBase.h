@@ -9,7 +9,7 @@ namespace JumaEngine
 {
     class SubsystemBase : public EngineContextObject
     {
-        JUMAENGINE_CLASS(SubsystemBase, EngineContextObject)
+        JUMAENGINE_ABSTRACT_CLASS(SubsystemBase, EngineContextObject)
 
         friend Engine;
 

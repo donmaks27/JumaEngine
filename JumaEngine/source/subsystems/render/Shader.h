@@ -16,7 +16,7 @@ namespace JumaEngine
 
     class Shader : public EngineContextObject
     {
-        JUMAENGINE_CLASS(Shader, EngineContextObject)
+        JUMAENGINE_ABSTRACT_CLASS(Shader, EngineContextObject)
 
     public:
         Shader() = default;

@@ -25,6 +25,10 @@ namespace JumaEngine
 
         virtual bool initInternal(const jshared_ptr<Shader>& shader) override;
         virtual void clearInternal() override;
+
+    private:
+
+        uint32 m_ActivatedImagesCount = 0;
     };
 }
 

@@ -112,7 +112,7 @@ namespace JumaEngine
     {
         for (const auto& uniform : m_UniformValues)
         {
-            MaterialUniformActions::clear(uniform);
+            MaterialUniformActions::terminate(uniform);
         }
         m_UniformNames.clear();
         m_UniformValues.clear();
