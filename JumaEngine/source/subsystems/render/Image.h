@@ -4,9 +4,10 @@
 
 #include "common_header.h"
 #include "engine/EngineContextObject.h"
-#include "ImageFormat.h"
 
 #include <glm/vec2.hpp>
+
+#include "ImageFormat.h"
 
 namespace JumaEngine
 {

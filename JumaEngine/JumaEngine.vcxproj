@@ -44,6 +44,7 @@
     <Import Project="..\lib\irrXML.props" />
     <Import Project="..\lib\Assimp.props" />
     <Import Project="..\lib\DevIL.props" />
+    <Import Project="..\lib\VMA.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -54,6 +55,7 @@
     <Import Project="..\lib\irrXML.props" />
     <Import Project="..\lib\Assimp.props" />
     <Import Project="..\lib\DevIL.props" />
+    <Import Project="..\lib\VMA.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup />
@@ -134,6 +136,9 @@
     <ClCompile Include="source\subsystems\render\RenderSubsystem.cpp" />
     <ClCompile Include="source\subsystems\render\Shader.cpp" />
     <ClCompile Include="source\subsystems\render\VertexBuffer.cpp" />
+    <ClCompile Include="source\subsystems\render\Vulkan\RenderSubsystem_Vulkan.cpp" />
+    <ClCompile Include="source\subsystems\render\Vulkan\RenderSubsystem_Vulkan_GLFW.cpp" />
+    <ClCompile Include="source\subsystems\render\Vulkan\VulkanQueue.cpp" />
     <ClCompile Include="source\subsystems\SubsystemBase.cpp" />
     <ClCompile Include="source\transform\Rotation.cpp" />
     <ClCompile Include="source\utils\jlog.cpp" />
@@ -160,6 +165,7 @@
     <ClInclude Include="source\asset\texture\TextureFileImporterBase.h" />
     <ClInclude Include="source\asset\texture\TextureFileImporter_DevIL.h" />
     <ClInclude Include="source\common_header.h" />
+    <ClInclude Include="source\enabled_engine_parts.h" />
     <ClInclude Include="source\engine\Engine.h" />
     <ClInclude Include="source\engine\EngineContextObject.h" />
     <ClInclude Include="source\engine\EngineObjectClass.h" />
@@ -200,6 +206,8 @@
     <ClInclude Include="source\subsystems\render\OpenGL\RenderSubsystem_OpenGL_GLFW.h" />
     <ClInclude Include="source\subsystems\render\OpenGL\Shader_OpenGL.h" />
     <ClInclude Include="source\subsystems\render\OpenGL\VertexBuffer_OpenGL.h" />
+    <ClInclude Include="source\subsystems\render\OpenGL\WindowDescription_OpenGL.h" />
+    <ClInclude Include="source\subsystems\render\OpenGL\WindowDescription_OpenGL_GLFW.h" />
     <ClInclude Include="source\subsystems\render\RenderInterface.h" />
     <ClInclude Include="source\subsystems\render\RenderOptions.h" />
     <ClInclude Include="source\subsystems\render\RenderSubsystem.h" />
@@ -207,8 +215,15 @@
     <ClInclude Include="source\subsystems\render\ShaderStage.h" />
     <ClInclude Include="source\subsystems\render\ShaderUniform.h" />
     <ClInclude Include="source\subsystems\render\VertexBuffer.h" />
-    <ClInclude Include="source\subsystems\render\window\WindowDescription.h" />
-    <ClInclude Include="source\subsystems\render\window\WindowDescription_GLFW.h" />
+    <ClInclude Include="source\subsystems\render\Vulkan\RenderSubsystem_Vulkan.h" />
+    <ClInclude Include="source\subsystems\render\Vulkan\RenderSubsystem_Vulkan_GLFW.h" />
+    <ClInclude Include="source\subsystems\render\Vulkan\vma_lib.h" />
+    <ClInclude Include="source\subsystems\render\Vulkan\VulkanContextObject.h" />
+    <ClInclude Include="source\subsystems\render\Vulkan\VulkanQueue.h" />
+    <ClInclude Include="source\subsystems\render\Vulkan\VulkanQueueType.h" />
+    <ClInclude Include="source\subsystems\render\Vulkan\WindowDescription_Vulkan.h" />
+    <ClInclude Include="source\subsystems\render\Vulkan\WindowDescription_Vulkan_GLFW.h" />
+    <ClInclude Include="source\subsystems\render\WindowDescription.h" />
     <ClInclude Include="source\subsystems\SubsystemBase.h" />
     <ClInclude Include="source\transform\Rotation.h" />
     <ClInclude Include="source\transform\Transform.h" />

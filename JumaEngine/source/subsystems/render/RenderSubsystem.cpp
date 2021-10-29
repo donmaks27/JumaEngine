@@ -1,17 +1,17 @@
 ﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
 
 #include "RenderSubsystem.h"
-
 #include "engine/Engine.h"
 
 namespace JumaEngine
 {
-    void RenderSubsystem::createMainWindow()
+    bool RenderSubsystem::createMainWindow()
     {
         if (m_MainWindow == nullptr)
         {
             m_MainWindow = createWindowInternal({ 800, 600 }, JSTR("JumaEngine"));
         }
+        return m_MainWindow != nullptr;
     }
     void RenderSubsystem::terminateMainWindow()
     {

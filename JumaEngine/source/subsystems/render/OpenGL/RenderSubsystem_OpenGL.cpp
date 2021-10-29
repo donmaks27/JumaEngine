@@ -5,7 +5,6 @@
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_OPENGL)
 
 #include <GL/glew.h>
-
 #include "utils/jlog.h"
 #include "engine/Engine.h"
 #include "VertexBuffer_OpenGL.h"
@@ -15,7 +14,7 @@
 
 namespace JumaEngine
 {
-    bool RenderSubsystem_OpenGL::initOpenGL()
+    bool RenderSubsystem_OpenGL::initSubsystemInternal()
     {
         const GLenum glewInitResult = glewInit();
         if (glewInitResult != GLEW_OK)

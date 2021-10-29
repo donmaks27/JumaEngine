@@ -3,9 +3,10 @@
 #pragma once
 
 #include "common_header.h"
-#include "MaterialUniform.h"
-#include "RenderInterface.h"
 #include "engine/EngineContextObject.h"
+#include "RenderInterface.h"
+
+#include "MaterialUniform.h"
 #include "utils/jshared_ptr.h"
 #include "utils/jdelegate_multicast.h"
 #include "utils/jmap.h"

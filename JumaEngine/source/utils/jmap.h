@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "jarray.h"
 #include <map>
+#include "jarray.h"
 
 namespace jutils
 {
@@ -68,8 +68,8 @@ namespace jutils
         template<typename Pred>
         bool containsByPredicate(Pred predicate) const { return findFirstByPredicate(predicate) != nullptr; }
 
-        V& getOrAdd(const K& key) { return this->try_emplace(key).second; }
-        const V& getOrAdd(const K& key) const { return this->try_emplace(key).second; }
+        V& getOrAdd(const K& key) { return this->try_emplace(key).first->second; }
+        const V& getOrAdd(const K& key) const { return this->try_emplace(key).first->second; }
         V& operator[](const K& key) { return getOrAdd(key); }
         const V& operator[](const K& key) const { return getOrAdd(key); }
 
@@ -102,5 +102,7 @@ namespace jutils
 
         const_iterator begin() const { return this->base_class::begin(); }
         const_iterator end() const { return this->base_class::end(); }
+
+        uint64 getSize() const { return this->size(); }
     };
 }

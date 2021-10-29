@@ -7,29 +7,19 @@
 
 #if defined(_DEBUG) || !defined(NDEBUG)
 #define JDEBUG 1
+#else
+#define JDEBUG 0
 #endif
 
 #if JDEBUG && _WIN32
 
 #include <crtdbg.h>
-#define new new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#define debug_new new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#define new debug_new
 
 #endif
 
-
-/**
- * Possible macros:
- *
- * JUMAENGINE_INCLUDE_RENDER_API_OPENGL - can use OpenGL render API
- *
- * JUMAENGINE_INCLUDE_WINDOW_LIB_GLFW - can use GLFW window lib
- *
- * JUMAENGINE_SINGLE_WINDOW - should create only one window
- */
-
-#define JUMAENGINE_INCLUDE_RENDER_API_OPENGL
-#define JUMAENGINE_INCLUDE_WINDOW_LIB_GLFW
-
+#include "enabled_engine_parts.h"
 #define JUMAENGINE_SINGLE_WINDOW
 
 

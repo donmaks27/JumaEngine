@@ -3,6 +3,7 @@
 #pragma once
 
 #include "common_header.h"
+
 #include <mutex>
 
 #define JLOG_ENABLED JDEBUG

@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "utils/int_defines.h"
 #include <vector>
+#include "utils/int_defines.h"
 
 namespace jutils
 {

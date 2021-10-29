@@ -6,7 +6,6 @@
 
 #include <fstream>
 #include <GL/glew.h>
-
 #include "utils/jarray.h"
 #include "utils/jlog.h"
 

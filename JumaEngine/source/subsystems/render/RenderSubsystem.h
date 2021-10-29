@@ -3,9 +3,10 @@
 #pragma once
 
 #include "common_header.h"
-#include "RenderOptions.h"
 #include "subsystems/SubsystemBase.h"
-#include "subsystems/render/window/WindowDescription.h"
+
+#include "RenderOptions.h"
+#include "subsystems/render/WindowDescription.h"
 #include "utils/jshared_ptr.h"
 
 namespace JumaEngine
@@ -42,7 +43,7 @@ namespace JumaEngine
         
         const WindowDescription* getMainWindow() const { return m_MainWindow; }
 
-        void createMainWindow();
+        bool createMainWindow();
         void terminateMainWindow();
 
         virtual WindowDescription* createWindowInternal(const glm::uvec2& size, const jstring& title) = 0;

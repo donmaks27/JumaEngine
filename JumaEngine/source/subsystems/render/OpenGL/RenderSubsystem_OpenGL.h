@@ -27,7 +27,7 @@ namespace JumaEngine
 
     protected:
 
-        bool initOpenGL();
+        virtual bool initSubsystemInternal() override;
     };
 }
 

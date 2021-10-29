@@ -3,6 +3,7 @@
 #pragma once
 
 #include "common_header.h"
+
 #include "RenderOptions.h"
 
 namespace JumaEngine

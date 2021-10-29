@@ -3,15 +3,15 @@
 #pragma once
 
 #include "common_header.h"
+
 #include <glm/vec2.hpp>
 
 namespace JumaEngine
 {
     class WindowDescription
     {
-    protected:
-        WindowDescription() = default;
     public:
+        WindowDescription() = default;
         virtual ~WindowDescription() = default;
 
         jstring title;

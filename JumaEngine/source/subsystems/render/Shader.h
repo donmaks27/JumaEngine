@@ -3,8 +3,9 @@
 #pragma once
 
 #include "common_header.h"
-#include "ShaderUniform.h"
 #include "engine/EngineContextObject.h"
+
+#include "ShaderUniform.h"
 #include "utils/jmap.h"
 #include "utils/jdelegate_multicast.h"
 

@@ -3,8 +3,10 @@
 #pragma once
 
 #include "common_header.h"
-#include "ShaderUniform.h"
+
 #include <glm/mat4x4.hpp>
+
+#include "ShaderUniform.h"
 #include "utils/jshared_ptr.h"
 
 namespace JumaEngine

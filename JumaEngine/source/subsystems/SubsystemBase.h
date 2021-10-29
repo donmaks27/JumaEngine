@@ -18,12 +18,12 @@ namespace JumaEngine
         virtual ~SubsystemBase() override = default;
 
         bool isInit() const { return m_Initialized && !m_Terminated; }
-        void terminate();
+        void clear();
 
     protected:
 
         virtual bool initSubsystemInternal() { return true; }
-        virtual void terminateSubsystem() {}
+        virtual void clearSubsystemInternal() {}
 
     private:
 

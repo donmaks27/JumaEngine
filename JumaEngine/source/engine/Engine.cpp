@@ -1,13 +1,13 @@
 ﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
 
 #include "Engine.h"
-
 #include "asset/mesh/vertexTypes/Vertex2D.h"
 #include "subsystems/render/Image.h"
 #include "subsystems/render/Material.h"
 #include "subsystems/render/Shader.h"
 #include "subsystems/render/VertexBuffer.h"
 #include "subsystems/render/OpenGL/RenderSubsystem_OpenGL_GLFW.h"
+#include "subsystems/render/Vulkan/RenderSubsystem_Vulkan_GLFW.h"
 #include "utils/jlog.h"
 
 namespace JumaEngine
@@ -77,14 +77,14 @@ namespace JumaEngine
     }
     bool Engine::initEngine()
     {
-        m_RenderSubsystem = createObject<RenderSubsystem_OpenGL_GLFW>();
+        m_RenderSubsystem = createObject<RenderSubsystem_Vulkan_GLFW>();
         if (m_RenderSubsystem == nullptr)
         {
             return false;
         }
         m_RenderSubsystem->initSubsystem();
 
-        const uint8 imageData[4] = { 255, 0, 0, 255 };
+        /*const uint8 imageData[4] = { 255, 0, 0, 255 };
         m_Image = m_RenderSubsystem->createImage();
         m_Image->init({ 1, 1 }, ImageFormat::R8G8B8A8, imageData);
 
@@ -109,7 +109,7 @@ namespace JumaEngine
         vertexBufferData->copyFromDefaultVertexBuffer(defaultVertexBufferData);
         m_VertexBuffer = m_RenderSubsystem->createVertexBuffer();
         m_VertexBuffer->init(vertexBufferData);
-        delete vertexBufferData;
+        delete vertexBufferData;*/
 
         return true;
     }
@@ -135,15 +135,15 @@ namespace JumaEngine
         m_Shader.reset();
         m_Image.reset();
 
-        m_RenderSubsystem->terminate();
+        m_RenderSubsystem->clear();
         delete m_RenderSubsystem;
         m_RenderSubsystem = nullptr;
     }
 
     void Engine::render(const RenderOptions& options)
     {
-        m_Material->renderActivate(options);
+        /*m_Material->renderActivate(options);
         m_VertexBuffer->render(options);
-        m_Material->renderDeactivate(options);
+        m_Material->renderDeactivate(options);*/
     }
 }

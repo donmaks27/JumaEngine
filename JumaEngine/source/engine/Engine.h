@@ -23,7 +23,7 @@ namespace JumaEngine
         virtual ~Engine() override = default;
 
         EngineContextObject* createObject(const EngineContextObject::ClassType* objectClass);
-        template<typename T, TEMPLATE_ENABLE(is_base_and_not_same<EngineContextObject, T>)>
+        template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<EngineContextObject, T>)>
         T* createObject() { return EngineContextObject::cast<T>(createObject(T::getClass())); }
 
         bool startEngine();

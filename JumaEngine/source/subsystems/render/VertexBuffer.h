@@ -3,9 +3,10 @@
 #pragma once
 
 #include "common_header.h"
-#include "asset/mesh/VertexBufferDescription.h"
 #include "engine/EngineContextObject.h"
 #include "RenderInterface.h"
+
+#include "asset/mesh/VertexBufferDescription.h"
 
 namespace JumaEngine
 {

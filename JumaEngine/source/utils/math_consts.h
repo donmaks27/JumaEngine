@@ -3,8 +3,9 @@
 #pragma once
 
 #include "common_header.h"
-#include "glm/vec3.hpp"
-#include "glm/ext/scalar_constants.hpp"
+
+#include <glm/vec3.hpp>
+#include <glm/ext/scalar_constants.hpp>
 
 namespace JumaEngine
 {

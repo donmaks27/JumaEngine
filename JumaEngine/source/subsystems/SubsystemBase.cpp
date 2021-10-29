@@ -13,11 +13,11 @@ namespace JumaEngine
         m_Initialized = true;
     }
 
-    void SubsystemBase::terminate()
+    void SubsystemBase::clear()
     {
         if (isInit())
         {
-            terminateSubsystem();
+            clearSubsystemInternal();
             m_Terminated = true;
         }
     }
