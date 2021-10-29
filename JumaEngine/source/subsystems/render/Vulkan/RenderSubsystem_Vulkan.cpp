@@ -10,6 +10,7 @@
 #include "utils/jset.h"
 #include "WindowDescription_Vulkan.h"
 #include "VulkanQueue.h"
+#include "VulkanCommandPool.h"
 
 namespace JumaEngine
 {
@@ -59,7 +60,7 @@ namespace JumaEngine
         {
             return false;
         }
-        if (!pickPhysicalDevice() || !createDevice())
+        if (!pickPhysicalDevice() || !createDevice() || !createCommandPools())
         {
             return false;
         }
@@ -351,6 +352,22 @@ namespace JumaEngine
         }
         return true;
     }
+    bool RenderSubsystem_Vulkan::createCommandPools()
+    {
+        jshared_ptr<VulkanCommandPool> graphicsCommandPool = createVulkanObject<VulkanCommandPool>();
+        jshared_ptr<VulkanCommandPool> transferCommandPool = createVulkanObject<VulkanCommandPool>();
+        if (!graphicsCommandPool->init(VulkanQueueType::Graphics) ||
+            !transferCommandPool->init(VulkanQueueType::Transfer, VK_COMMAND_POOL_CREATE_TRANSIENT_BIT))
+        {
+            JUMA_LOG(error, JSTR("Failed to create command pools"));
+            return false;
+        }
+        m_CommandPools = {
+            { VulkanQueueType::Graphics, graphicsCommandPool },
+            { VulkanQueueType::Transfer, transferCommandPool }
+        };
+        return true;
+    }
 
     void RenderSubsystem_Vulkan::clearVulkan()
     {
@@ -358,6 +375,7 @@ namespace JumaEngine
         {
             if (m_Device != nullptr)
             {
+                m_CommandPools.clear();
                 m_QueueFamilyIndices.clear();
                 m_Queues.clear();
 

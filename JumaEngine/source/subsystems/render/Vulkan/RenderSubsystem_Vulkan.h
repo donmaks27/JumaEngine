@@ -17,6 +17,7 @@
 
 namespace JumaEngine
 {
+    class VulkanCommandPool;
     class VulkanContextObject;
     class VulkanQueue;
 
@@ -28,12 +29,23 @@ namespace JumaEngine
         RenderSubsystem_Vulkan() = default;
         virtual ~RenderSubsystem_Vulkan() override = default;
 
+        virtual void render(const RenderQuery& query) override;
+        
+        template<typename T, TEMPLATE_ENABLE(is_base_and_not_same<VulkanContextObject, T>)>
+        T* createVulkanObject()
+        {
+            T* object = new T();
+            object->m_RenderSubsystem = this;
+            return object;
+        }
+
         VkInstance getVulkanInstance() const { return m_VulkanInstance; }
         VkPhysicalDevice getPhysicalDevice() const { return m_PhysicalDevice; }
         VkDevice getDevice() const { return m_Device; }
         VmaAllocator getAllocator() const { return m_Allocator; }
 
-        virtual void render(const RenderQuery& query) override;
+        uint32 getQueueFamilyIndex(const VulkanQueueType queueType) const { return m_QueueFamilyIndices[queueType]; }
+        const jshared_ptr<VulkanQueue>& getQueue(const VulkanQueueType queueType) const { return m_Queues[m_QueueFamilyIndices[queueType]]; }
 
     protected:
 
@@ -56,15 +68,8 @@ namespace JumaEngine
 
         jmap<VulkanQueueType, uint32> m_QueueFamilyIndices;
         jmap<uint32, jshared_ptr<VulkanQueue>> m_Queues;
+        jmap<VulkanQueueType, jshared_ptr<VulkanCommandPool>> m_CommandPools;
 
-
-        template<typename T, TEMPLATE_ENABLE(is_base_and_not_same<VulkanContextObject, T>)>
-        T* createVulkanObject()
-        {
-            T* object = new T();
-            object->m_RenderSubsystem = this;
-            return object;
-        }
 
         static VKAPI_ATTR VkBool32 VKAPI_CALL Vulkan_DebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, 
             VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData);
@@ -75,6 +80,7 @@ namespace JumaEngine
         bool pickPhysicalDevice();
         static bool getQueueFamilyIndices(VkPhysicalDevice physicalDevice, const WindowDescription* window, jmap<VulkanQueueType, uint32>& outQueueIndices);
         bool createDevice();
+        bool createCommandPools();
 
         void clearVulkan();
     };

@@ -69,9 +69,9 @@ namespace jutils
         bool containsByPredicate(Pred predicate) const { return findFirstByPredicate(predicate) != nullptr; }
 
         V& getOrAdd(const K& key) { return this->try_emplace(key).first->second; }
-        const V& getOrAdd(const K& key) const { return this->try_emplace(key).first->second; }
+
         V& operator[](const K& key) { return getOrAdd(key); }
-        const V& operator[](const K& key) const { return getOrAdd(key); }
+        const V& operator[](const K& key) const { return get(key); }
 
         void set(const K& key, const V& value) { this->insert_or_assign(key, value); }
 
