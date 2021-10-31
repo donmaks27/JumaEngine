@@ -136,11 +136,13 @@
     <ClCompile Include="source\subsystems\render\RenderSubsystem.cpp" />
     <ClCompile Include="source\subsystems\render\Shader.cpp" />
     <ClCompile Include="source\subsystems\render\VertexBuffer.cpp" />
+    <ClCompile Include="source\subsystems\render\Vulkan\Image_Vulkan.cpp" />
     <ClCompile Include="source\subsystems\render\Vulkan\RenderSubsystem_Vulkan.cpp" />
     <ClCompile Include="source\subsystems\render\Vulkan\RenderSubsystem_Vulkan_GLFW.cpp" />
     <ClCompile Include="source\subsystems\render\Vulkan\VulkanCommandBuffer.cpp" />
     <ClCompile Include="source\subsystems\render\Vulkan\VulkanCommandPool.cpp" />
     <ClCompile Include="source\subsystems\render\Vulkan\VulkanQueue.cpp" />
+    <ClCompile Include="source\subsystems\render\Vulkan\VulkanSwapchain.cpp" />
     <ClCompile Include="source\subsystems\SubsystemBase.cpp" />
     <ClCompile Include="source\transform\Rotation.cpp" />
     <ClCompile Include="source\utils\jlog.cpp" />
@@ -217,6 +219,7 @@
     <ClInclude Include="source\subsystems\render\ShaderStage.h" />
     <ClInclude Include="source\subsystems\render\ShaderUniform.h" />
     <ClInclude Include="source\subsystems\render\VertexBuffer.h" />
+    <ClInclude Include="source\subsystems\render\Vulkan\Image_Vulkan.h" />
     <ClInclude Include="source\subsystems\render\Vulkan\RenderSubsystem_Vulkan.h" />
     <ClInclude Include="source\subsystems\render\Vulkan\RenderSubsystem_Vulkan_GLFW.h" />
     <ClInclude Include="source\subsystems\render\Vulkan\vma_lib.h" />
@@ -225,6 +228,7 @@
     <ClInclude Include="source\subsystems\render\Vulkan\VulkanContextObject.h" />
     <ClInclude Include="source\subsystems\render\Vulkan\VulkanQueue.h" />
     <ClInclude Include="source\subsystems\render\Vulkan\VulkanQueueType.h" />
+    <ClInclude Include="source\subsystems\render\Vulkan\VulkanSwapchain.h" />
     <ClInclude Include="source\subsystems\render\Vulkan\WindowDescription_Vulkan.h" />
     <ClInclude Include="source\subsystems\render\Vulkan\WindowDescription_Vulkan_GLFW.h" />
     <ClInclude Include="source\subsystems\render\WindowDescription.h" />

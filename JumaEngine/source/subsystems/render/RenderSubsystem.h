@@ -23,7 +23,8 @@ namespace JumaEngine
     public:
         RenderSubsystem() = default;
         virtual ~RenderSubsystem() override = default;
-
+        
+        const jshared_ptr<WindowDescription>& getMainWindow() const { return m_MainWindow; }
         bool shouldCloseMainWindow() const { return (m_MainWindow != nullptr) && shouldCloseWindowInternal(m_MainWindow); }
 
         glm::uvec2 getMainWindowSize() const { return m_MainWindow != nullptr ? m_MainWindow->size : glm::uvec2(0); }
@@ -41,22 +42,23 @@ namespace JumaEngine
 
     protected:
         
-        const WindowDescription* getMainWindow() const { return m_MainWindow; }
+        template<typename T>
+        static jshared_ptr<T> castWindow(const jshared_ptr<WindowDescription>& window) { return jshared_dynamic_cast<T>(window); }
 
         bool createMainWindow();
         void terminateMainWindow();
 
         virtual WindowDescription* createWindowInternal(const glm::uvec2& size, const jstring& title) = 0;
-        virtual void terminateWindowInternal(WindowDescription* window) = 0;
+        virtual void terminateWindowInternal(const jshared_ptr<WindowDescription>& window) = 0;
 
-        virtual bool shouldCloseWindowInternal(const WindowDescription* window) const = 0;
-        virtual void setWindowSizeInternal(const WindowDescription* window, const glm::uvec2& size) = 0;
-        virtual void setWindowTitleInternal(const WindowDescription* window, const jstring& title) = 0;
+        virtual bool shouldCloseWindowInternal(const jshared_ptr<WindowDescription>& window) const = 0;
+        virtual void setWindowSizeInternal(const jshared_ptr<WindowDescription>& window, const glm::uvec2& size) = 0;
+        virtual void setWindowTitleInternal(const jshared_ptr<WindowDescription>& window, const jstring& title) = 0;
 
         void callEngineRender(const RenderOptions& options) const;
 
     private:
 
-        WindowDescription* m_MainWindow = nullptr;
+        jshared_ptr<WindowDescription> m_MainWindow = nullptr;
     };
 }

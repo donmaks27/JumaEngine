@@ -18,7 +18,6 @@ namespace JumaEngine
         if (m_MainWindow != nullptr)
         {
             terminateWindowInternal(m_MainWindow);
-            delete m_MainWindow;
             m_MainWindow = nullptr;
         }
     }

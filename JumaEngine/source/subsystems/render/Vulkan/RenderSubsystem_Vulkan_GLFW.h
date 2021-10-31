@@ -18,11 +18,6 @@ namespace JumaEngine
         RenderSubsystem_Vulkan_GLFW() = default;
         virtual ~RenderSubsystem_Vulkan_GLFW() override = default;
 
-        virtual jshared_ptr<VertexBuffer> createVertexBuffer() override { return nullptr; }
-        virtual jshared_ptr<Shader> createShader() override { return nullptr; }
-        virtual jshared_ptr<Material> createMaterial() override { return nullptr; }
-        virtual jshared_ptr<Image> createImage() override { return nullptr; }
-
     protected:
 
         virtual bool initSubsystemInternal() override;
@@ -31,11 +26,11 @@ namespace JumaEngine
         virtual jarray<const char*> getRequiredVulkanExtensions() const override;
         
         virtual WindowDescription* createWindowInternal(const glm::uvec2& size, const jstring& title) override;
-        virtual void terminateWindowInternal(WindowDescription* window) override;
+        virtual void terminateWindowInternal(const jshared_ptr<WindowDescription>& window) override;
 
-        virtual bool shouldCloseWindowInternal(const WindowDescription* window) const override;
-        virtual void setWindowSizeInternal(const WindowDescription* window, const glm::uvec2& size) override;
-        virtual void setWindowTitleInternal(const WindowDescription* window, const jstring& title) override;
+        virtual bool shouldCloseWindowInternal(const jshared_ptr<WindowDescription>& window) const override;
+        virtual void setWindowSizeInternal(const jshared_ptr<WindowDescription>& window, const glm::uvec2& size) override;
+        virtual void setWindowTitleInternal(const jshared_ptr<WindowDescription>& window, const jstring& title) override;
         
         virtual void render(const RenderQuery& query) override;
 

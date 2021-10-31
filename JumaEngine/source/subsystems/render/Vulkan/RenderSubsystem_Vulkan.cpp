@@ -11,6 +11,9 @@
 #include "WindowDescription_Vulkan.h"
 #include "VulkanQueue.h"
 #include "VulkanCommandPool.h"
+#include "VulkanSwapchain.h"
+#include "engine/Engine.h"
+#include "Image_Vulkan.h"
 
 namespace JumaEngine
 {
@@ -50,6 +53,7 @@ namespace JumaEngine
     void RenderSubsystem_Vulkan::clearSubsystemInternal()
     {
         clearVulkan();
+        terminateMainWindow();
 
         Super::clearSubsystemInternal();
     }
@@ -64,7 +68,7 @@ namespace JumaEngine
         {
             return false;
         }
-        return true;
+        return createSwapchain();
     }
     bool RenderSubsystem_Vulkan::createVulkanInstance()
     {
@@ -183,7 +187,7 @@ namespace JumaEngine
         jarray<VkPhysicalDevice> devices(deviceCount);
         vkEnumeratePhysicalDevices(m_VulkanInstance, &deviceCount, devices.getData());
 
-        const WindowDescription_Vulkan* window = dynamic_cast<const WindowDescription_Vulkan*>(getMainWindow());
+        const jshared_ptr<WindowDescription_Vulkan> window = castWindow<WindowDescription_Vulkan>(getMainWindow());
         for (const auto& device : devices)
         {
             VkPhysicalDeviceProperties deviceProperties;
@@ -247,9 +251,9 @@ namespace JumaEngine
         }
         return false;
     }
-    bool RenderSubsystem_Vulkan::getQueueFamilyIndices(VkPhysicalDevice physicalDevice, const WindowDescription* window, jmap<VulkanQueueType, uint32>& outQueueIndices)
+    bool RenderSubsystem_Vulkan::getQueueFamilyIndices(VkPhysicalDevice physicalDevice, const jshared_ptr<WindowDescription>& window, jmap<VulkanQueueType, uint32>& outQueueIndices)
     {
-        const WindowDescription_Vulkan* window_Vulkan = window != nullptr ? dynamic_cast<const WindowDescription_Vulkan*>(window) : nullptr;
+        const jshared_ptr<WindowDescription_Vulkan> window_Vulkan = castWindow<WindowDescription_Vulkan>(window);
         if ((window_Vulkan == nullptr) || (window_Vulkan->surface == nullptr))
         {
             return false;
@@ -369,12 +373,20 @@ namespace JumaEngine
         return true;
     }
 
+    bool RenderSubsystem_Vulkan::createSwapchain()
+    {
+        m_Swapchain = createVulkanObject<VulkanSwapchain>();
+        return m_Swapchain->init(getMainWindow());
+    }
+
     void RenderSubsystem_Vulkan::clearVulkan()
     {
         if (m_VulkanInstance != nullptr)
         {
             if (m_Device != nullptr)
             {
+                m_Swapchain.reset();
+
                 m_CommandPools.clear();
                 m_QueueFamilyIndices.clear();
                 m_Queues.clear();
@@ -400,6 +412,29 @@ namespace JumaEngine
 
     void RenderSubsystem_Vulkan::render(const RenderQuery& query)
     {
+    }
+
+    jshared_ptr<VertexBuffer> RenderSubsystem_Vulkan::createVertexBuffer()
+    {
+        return nullptr;
+    }
+    jshared_ptr<Shader> RenderSubsystem_Vulkan::createShader()
+    {
+        return nullptr;
+    }
+    jshared_ptr<Material> RenderSubsystem_Vulkan::createMaterial()
+    {
+        return nullptr;
+    }
+    jshared_ptr<Image> RenderSubsystem_Vulkan::createImage()
+    {
+        Engine* engine = getOwnerEngine();
+        Image_Vulkan* image = engine != nullptr ? engine->createObject<Image_Vulkan>() : nullptr;
+        if (image != nullptr)
+        {
+            image->m_RenderSubsystem = this;
+        }
+        return image;
     }
 }
 

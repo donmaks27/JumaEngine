@@ -17,6 +17,7 @@
 
 namespace JumaEngine
 {
+    class VulkanSwapchain;
     class VulkanCommandPool;
     class VulkanContextObject;
     class VulkanQueue;
@@ -38,6 +39,10 @@ namespace JumaEngine
             object->m_RenderSubsystem = this;
             return object;
         }
+        virtual jshared_ptr<VertexBuffer> createVertexBuffer() override;
+        virtual jshared_ptr<Shader> createShader() override;
+        virtual jshared_ptr<Material> createMaterial() override;
+        virtual jshared_ptr<Image> createImage() override;
 
         VkInstance getVulkanInstance() const { return m_VulkanInstance; }
         VkPhysicalDevice getPhysicalDevice() const { return m_PhysicalDevice; }
@@ -69,6 +74,7 @@ namespace JumaEngine
         jmap<VulkanQueueType, uint32> m_QueueFamilyIndices;
         jmap<uint32, jshared_ptr<VulkanQueue>> m_Queues;
         jmap<VulkanQueueType, jshared_ptr<VulkanCommandPool>> m_CommandPools;
+        jshared_ptr<VulkanSwapchain> m_Swapchain = nullptr;
 
 
         static VKAPI_ATTR VkBool32 VKAPI_CALL Vulkan_DebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, 
@@ -78,9 +84,10 @@ namespace JumaEngine
         bool createVulkanInstance();
 
         bool pickPhysicalDevice();
-        static bool getQueueFamilyIndices(VkPhysicalDevice physicalDevice, const WindowDescription* window, jmap<VulkanQueueType, uint32>& outQueueIndices);
+        static bool getQueueFamilyIndices(VkPhysicalDevice physicalDevice, const jshared_ptr<WindowDescription>& window, jmap<VulkanQueueType, uint32>& outQueueIndices);
         bool createDevice();
         bool createCommandPools();
+        bool createSwapchain();
 
         void clearVulkan();
     };

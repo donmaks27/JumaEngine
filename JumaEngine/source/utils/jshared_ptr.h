@@ -47,6 +47,9 @@ namespace jutils
         {}
     };
 
-    template<class T, class... ArgTypes>
+    template<typename T, typename... ArgTypes>
     jshared_ptr<T> make_jshared_ptr(ArgTypes&&... args) { return std::make_shared<T, ArgTypes...>(args...); }
+
+    template<typename To, typename From>
+    jshared_ptr<To> jshared_dynamic_cast(const jshared_ptr<From>& ptr) { return std::dynamic_pointer_cast<To>(ptr); }
 }

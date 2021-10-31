@@ -10,15 +10,26 @@ namespace JumaEngine
 {
     class RenderSubsystem_Vulkan;
 
-    class VulkanContextObject
+    class VulkanContextObjectBase
     {
         friend RenderSubsystem_Vulkan;
 
     public:
-        VulkanContextObject() = default;
-        virtual ~VulkanContextObject() = default;
+        VulkanContextObjectBase() = default;
+        virtual ~VulkanContextObjectBase() = default;
 
         RenderSubsystem_Vulkan* getRenderSubsystem() const { return m_RenderSubsystem; }
+
+    private:
+
+        RenderSubsystem_Vulkan* m_RenderSubsystem = nullptr;
+    };
+
+    class VulkanContextObject : public VulkanContextObjectBase
+    {
+    public:
+        VulkanContextObject() = default;
+        virtual ~VulkanContextObject() override = default;
 
         bool isValid() const { return m_Initialized; }
         void clear()
@@ -37,8 +48,6 @@ namespace JumaEngine
         virtual void clearInternal() = 0;
 
     private:
-
-        RenderSubsystem_Vulkan* m_RenderSubsystem = nullptr;
 
         bool m_Initialized = false;
     };

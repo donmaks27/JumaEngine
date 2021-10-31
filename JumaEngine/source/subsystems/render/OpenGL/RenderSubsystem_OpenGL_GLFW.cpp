@@ -71,9 +71,9 @@ namespace JumaEngine
         windowDescription->window = window;
         return windowDescription;
     }
-    void RenderSubsystem_OpenGL_GLFW::terminateWindowInternal(WindowDescription* window)
+    void RenderSubsystem_OpenGL_GLFW::terminateWindowInternal(const jshared_ptr<WindowDescription>& window)
     {
-        WindowDescription_OpenGL_GLFW* window_GLFW = window != nullptr ? dynamic_cast<WindowDescription_OpenGL_GLFW*>(window) : nullptr;
+        const jshared_ptr<WindowDescription_OpenGL_GLFW> window_GLFW = castWindow<WindowDescription_OpenGL_GLFW>(window);
         if ((window_GLFW != nullptr) && (window_GLFW->window != nullptr))
         {
             glfwDestroyWindow(window_GLFW->window);
@@ -81,26 +81,26 @@ namespace JumaEngine
         }
     }
     
-    bool RenderSubsystem_OpenGL_GLFW::shouldCloseWindowInternal(const WindowDescription* window) const
+    bool RenderSubsystem_OpenGL_GLFW::shouldCloseWindowInternal(const jshared_ptr<WindowDescription>& window) const
     {
-        const WindowDescription_OpenGL_GLFW* window_GLFW = window != nullptr ? dynamic_cast<const WindowDescription_OpenGL_GLFW*>(window) : nullptr;
+        const jshared_ptr<WindowDescription_OpenGL_GLFW> window_GLFW = castWindow<WindowDescription_OpenGL_GLFW>(window);
         if ((window_GLFW != nullptr) && (window_GLFW->window != nullptr))
         {
             return glfwWindowShouldClose(window_GLFW->window) != GLFW_FALSE;
         }
         return false;
     }
-    void RenderSubsystem_OpenGL_GLFW::setWindowSizeInternal(const WindowDescription* window, const glm::uvec2& size)
+    void RenderSubsystem_OpenGL_GLFW::setWindowSizeInternal(const jshared_ptr<WindowDescription>& window, const glm::uvec2& size)
     {
-        const WindowDescription_OpenGL_GLFW* window_GLFW = window != nullptr ? dynamic_cast<const WindowDescription_OpenGL_GLFW*>(window) : nullptr;
+        const jshared_ptr<WindowDescription_OpenGL_GLFW> window_GLFW = castWindow<WindowDescription_OpenGL_GLFW>(window);
         if ((window_GLFW != nullptr) && (window_GLFW->window != nullptr))
         {
             glfwSetWindowSize(window_GLFW->window, size.x, size.y);
         }
     }
-    void RenderSubsystem_OpenGL_GLFW::setWindowTitleInternal(const WindowDescription* window, const jstring& title)
+    void RenderSubsystem_OpenGL_GLFW::setWindowTitleInternal(const jshared_ptr<WindowDescription>& window, const jstring& title)
     {
-        const WindowDescription_OpenGL_GLFW* window_GLFW = window != nullptr ? dynamic_cast<const WindowDescription_OpenGL_GLFW*>(window) : nullptr;
+        const jshared_ptr<WindowDescription_OpenGL_GLFW> window_GLFW = castWindow<WindowDescription_OpenGL_GLFW>(window);
         if ((window_GLFW != nullptr) && (window_GLFW->window != nullptr))
         {
             glfwSetWindowTitle(window_GLFW->window, *title);
@@ -111,8 +111,7 @@ namespace JumaEngine
     {
         Super::render(query);
 
-        const WindowDescription* window = getMainWindow();
-        const WindowDescription_OpenGL_GLFW* window_GLFW = window != nullptr ? dynamic_cast<const WindowDescription_OpenGL_GLFW*>(window) : nullptr;
+        const jshared_ptr<WindowDescription_OpenGL_GLFW> window_GLFW = castWindow<WindowDescription_OpenGL_GLFW>(getMainWindow());
         if ((window_GLFW != nullptr) && (window_GLFW->window != nullptr))
         {
             glfwSwapBuffers(window_GLFW->window);

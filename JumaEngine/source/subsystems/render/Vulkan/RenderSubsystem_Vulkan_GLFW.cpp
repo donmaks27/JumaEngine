@@ -40,10 +40,9 @@ namespace JumaEngine
 
     void RenderSubsystem_Vulkan_GLFW::clearSubsystemInternal()
     {
-        terminateMainWindow();
-        terminateGLFW();
-
         Super::clearSubsystemInternal();
+
+        terminateGLFW();
     }
     void RenderSubsystem_Vulkan_GLFW::terminateGLFW()
     {
@@ -87,9 +86,9 @@ namespace JumaEngine
         windowDescription->surface = surface;
         return windowDescription;
     }
-    void RenderSubsystem_Vulkan_GLFW::terminateWindowInternal(WindowDescription* window)
+    void RenderSubsystem_Vulkan_GLFW::terminateWindowInternal(const jshared_ptr<WindowDescription>& window)
     {
-        WindowDescription_Vulkan_GLFW* window_GLFW = window != nullptr ? dynamic_cast<WindowDescription_Vulkan_GLFW*>(window) : nullptr;
+        const jshared_ptr<WindowDescription_Vulkan_GLFW> window_GLFW = castWindow<WindowDescription_Vulkan_GLFW>(window);
         if ((window_GLFW != nullptr) && (window_GLFW->window != nullptr))
         {
             if (window_GLFW->surface != nullptr)
@@ -103,26 +102,26 @@ namespace JumaEngine
         }
     }
 
-    bool RenderSubsystem_Vulkan_GLFW::shouldCloseWindowInternal(const WindowDescription* window) const
+    bool RenderSubsystem_Vulkan_GLFW::shouldCloseWindowInternal(const jshared_ptr<WindowDescription>& window) const
     {
-        const WindowDescription_Vulkan_GLFW* window_GLFW = window != nullptr ? dynamic_cast<const WindowDescription_Vulkan_GLFW*>(window) : nullptr;
+        const jshared_ptr<WindowDescription_Vulkan_GLFW> window_GLFW = castWindow<WindowDescription_Vulkan_GLFW>(window);
         if ((window_GLFW != nullptr) && (window_GLFW->window != nullptr))
         {
             return glfwWindowShouldClose(window_GLFW->window) != GLFW_FALSE;
         }
         return false;
     }
-    void RenderSubsystem_Vulkan_GLFW::setWindowSizeInternal(const WindowDescription* window, const glm::uvec2& size)
+    void RenderSubsystem_Vulkan_GLFW::setWindowSizeInternal(const jshared_ptr<WindowDescription>& window, const glm::uvec2& size)
     {
-        const WindowDescription_Vulkan_GLFW* window_GLFW = window != nullptr ? dynamic_cast<const WindowDescription_Vulkan_GLFW*>(window) : nullptr;
+        const jshared_ptr<WindowDescription_Vulkan_GLFW> window_GLFW = castWindow<WindowDescription_Vulkan_GLFW>(window);
         if ((window_GLFW != nullptr) && (window_GLFW->window != nullptr))
         {
             glfwSetWindowSize(window_GLFW->window, size.x, size.y);
         }
     }
-    void RenderSubsystem_Vulkan_GLFW::setWindowTitleInternal(const WindowDescription* window, const jstring& title)
+    void RenderSubsystem_Vulkan_GLFW::setWindowTitleInternal(const jshared_ptr<WindowDescription>& window, const jstring& title)
     {
-        const WindowDescription_Vulkan_GLFW* window_GLFW = window != nullptr ? dynamic_cast<const WindowDescription_Vulkan_GLFW*>(window) : nullptr;
+        const jshared_ptr<WindowDescription_Vulkan_GLFW> window_GLFW = castWindow<WindowDescription_Vulkan_GLFW>(window);
         if ((window_GLFW != nullptr) && (window_GLFW->window != nullptr))
         {
             glfwSetWindowTitle(window_GLFW->window, *title);

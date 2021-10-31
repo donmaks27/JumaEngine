@@ -23,9 +23,18 @@ namespace JumaEngine
         bool init(const glm::uvec2& size, ImageFormat format, const uint8* data);
         void clear();
 
+        const glm::uvec2& getSize() const { return m_Size; }
+        ImageFormat getFormat() const { return m_Format; }
+
     protected:
 
         void markAsInitialized() { m_Initialized = true; }
+        void markAsInitialized(const glm::uvec2& size, const ImageFormat format)
+        {
+            m_Size = size;
+            m_Format = format;
+            markAsInitialized();
+        }
 
         virtual bool initInternal(const glm::uvec2& size, ImageFormat format, const uint8* data) = 0;
 
