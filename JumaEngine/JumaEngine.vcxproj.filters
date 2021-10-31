@@ -256,6 +256,9 @@
     <ClCompile Include="source\subsystems\render\Vulkan\Image_Vulkan.cpp">
       <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
     </ClCompile>
+    <ClCompile Include="source\subsystems\render\Vulkan\VulkanSwapchainFramebuffer.cpp">
+      <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\common_header.h">
@@ -559,6 +562,9 @@
       <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
     </ClInclude>
     <ClInclude Include="source\subsystems\render\Vulkan\Image_Vulkan.h">
+      <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\Vulkan\VulkanSwapchainFramebuffer.h">
       <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
     </ClInclude>
   </ItemGroup>

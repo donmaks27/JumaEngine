@@ -10,8 +10,8 @@ namespace JumaEngine
     {
         None,
         R8G8B8A8,
-        SFLOAT32,
-        SFLOAT32UINT8,
-        UNORM24UINT8
+        DEPTH_SFLOAT32,
+        DEPTH_SFLOAT32_STENCIL_UINT8,
+        DEPTH_UNORM24_STENCIL_UINT8
     };
 }

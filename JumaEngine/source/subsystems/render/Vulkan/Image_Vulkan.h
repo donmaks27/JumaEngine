@@ -29,9 +29,17 @@ namespace JumaEngine
             VkImageUsageFlags usage, VmaMemoryUsage memoryUsage, VkMemoryPropertyFlags properties);
         bool init(const VkImageCreateInfo& imageInfo, const VmaAllocationCreateInfo& allocationInfo);
         
-        bool init(VkImage existingImage, const glm::uvec2& size, VkFormat format, uint32 mipLevels = 1);
+        bool init(VkImage existingImage, const glm::uvec2& size, ImageFormat format, uint32 mipLevels = 1);
 
         bool createImageView(VkImageAspectFlags aspectFlags);
+        
+        static ImageFormat getImageFormatByVulkanFormat(VkFormat format);
+        static VkFormat getVulkanFormatByImageFormat(ImageFormat format);
+
+        VkImage get() const { return m_Image; }
+        VkImageView getImageView() const { return m_ImageView; }
+
+        uint32 getMipLevels() const { return m_MipLevels; }
 
     protected:
 
@@ -45,14 +53,11 @@ namespace JumaEngine
         VmaAllocation m_Allocation = nullptr;
         VkImageView m_ImageView = nullptr;
 
-        uint32_t m_MipLevels = 0;
+        uint32 m_MipLevels = 0;
         VkImageLayout m_ImageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 
 
         void clearImage();
-
-        static ImageFormat getImageFormatByVulkanFormat(VkFormat format);
-        static VkFormat getVulkanFormatByImageFormat(ImageFormat format);
     };
 }
 

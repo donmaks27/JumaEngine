@@ -41,7 +41,7 @@ namespace JumaEngine
         virtual jshared_ptr<Image> createImage() = 0;
 
     protected:
-        
+
         template<typename T>
         static jshared_ptr<T> castWindow(const jshared_ptr<WindowDescription>& window) { return jshared_dynamic_cast<T>(window); }
 

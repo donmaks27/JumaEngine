@@ -62,7 +62,8 @@ namespace JumaEngine
         JUMA_LOG(info, JSTR("Initializing engine..."));
         if (!initEngine())
         {
-            throw std::runtime_error("Failed to initialize Engine!");
+            JUMA_LOG(error, JSTR("Failed to initialize Engine!"));
+            return false;
         }
         JUMA_LOG(correct, JSTR("Engine initialized"));
 
