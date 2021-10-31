@@ -21,6 +21,16 @@ namespace JumaEngine
     class WindowDescription_Vulkan;
     class WindowDescription;
 
+    struct VulkanSwapchainSettings
+    {
+        VkSampleCountFlagBits sampleCount = VK_SAMPLE_COUNT_1_BIT;
+        uint32 imageCount = 0;
+        VkSurfaceFormatKHR surfaceFormat = { VK_FORMAT_R8G8B8_SRGB, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR };
+        VkFormat depthFormat = VK_FORMAT_D32_SFLOAT;
+        glm::uvec2 size = { 0, 0 };
+        VkPresentModeKHR presentMode = VK_PRESENT_MODE_FIFO_KHR;
+    };
+
     class VulkanSwapchain : public VulkanContextObject
     {
     public:
@@ -29,13 +39,15 @@ namespace JumaEngine
 
         bool init(const jshared_ptr<WindowDescription>& window);
 
-        VkFormat getFormat() const { return m_Format; }
-        glm::uvec2 getSize() const { return { m_Size.width, m_Size.height }; }
+        VkFormat getFormat() const { return m_CurrentSettings.surfaceFormat.format; }
+        glm::uvec2 getSize() const { return m_CurrentSettings.size; }
 
         VkSwapchainKHR get() const { return m_Swapchain; }
         const jshared_ptr<Image_Vulkan>& getRenderColorImage() const { return m_RenderImage_Color; }
         const jshared_ptr<Image_Vulkan>& getRenderDepthImage() const { return m_RenderImage_Depth; }
         VkRenderPass getRenderPass() const { return m_RenderPass; }
+
+        void applySettings(bool forceRecreate = false);
 
     protected:
 
@@ -52,19 +64,23 @@ namespace JumaEngine
         jarray<jshared_ptr<VulkanSwapchainFramebuffer>> m_Framebuffers;
 
         VkSampleCountFlagBits m_MaxSampleCount = VK_SAMPLE_COUNT_1_BIT;
-        VkSampleCountFlagBits m_CurrentSampleCount = VK_SAMPLE_COUNT_1_BIT;
-        VkFormat m_Format = VK_FORMAT_R8G8B8_SRGB;
-        VkExtent2D m_Size = { 0, 0 };
+        VulkanSwapchainSettings m_CurrentSettings;
+        VulkanSwapchainSettings m_SettingForApply;
 
 
         VkSampleCountFlagBits getMaxSampleCount() const;
-        WindowDescription_Vulkan* getWindow() const;
+        jshared_ptr<WindowDescription_Vulkan> getWindow() const;
 
         bool createSwapchain();
+        bool createRenderImages();
         bool createRenderPass();
         bool createFramebuffers();
 
         void clearSwapchain();
+
+        void onWindowSizeChanged(const jshared_ptr<WindowDescription>& window);
+
+        bool applySettingsInternal(bool forceRecreate);
     };
 }
 

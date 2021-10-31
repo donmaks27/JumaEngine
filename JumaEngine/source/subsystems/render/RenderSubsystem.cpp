@@ -28,6 +28,7 @@ namespace JumaEngine
         {
             setWindowSizeInternal(m_MainWindow, size);
             m_MainWindow->size = size;
+            m_MainWindow->onSizeChanged.call(m_MainWindow);
         }
     }
     void RenderSubsystem::setMainWindowTitle(const jstring& title)

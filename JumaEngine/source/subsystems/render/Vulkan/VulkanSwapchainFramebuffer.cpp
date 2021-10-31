@@ -21,23 +21,27 @@ namespace JumaEngine
 
     bool VulkanSwapchainFramebuffer::init(VulkanSwapchain* swapchain, VkImage swapchainImage)
     {
-        if (isValid())
-        {
-            JUMA_LOG(warning, JSTR("Framebuffer already initialized"));
-            return false;
-        }
         if ((swapchain == nullptr) || (swapchainImage == nullptr))
         {
             JUMA_LOG(warning, JSTR("Wrong input data"));
             return false;
         }
 
-        m_Image = jshared_dynamic_cast<Image_Vulkan>(getRenderSubsystem()->createImage());
-        m_Image->init(swapchainImage, swapchain->getSize(), Image_Vulkan::getImageFormatByVulkanFormat(swapchain->getFormat()), 1);
-        m_Image->createImageView(VK_IMAGE_ASPECT_COLOR_BIT);
+        if (m_Framebuffer != nullptr)
+        {
+            vkDestroyFramebuffer(getRenderSubsystem()->getDevice(), m_Framebuffer, nullptr);
+            m_Framebuffer = nullptr;
+        }
 
-        const glm::uvec2 swapchainSize = swapchain->getSize();
+        if ((m_Image == nullptr) || (m_Image->get() != swapchainImage))
+        {
+            m_Image = jshared_dynamic_cast<Image_Vulkan>(getRenderSubsystem()->createImage());
+            m_Image->init(swapchainImage, swapchain->getSize(), Image_Vulkan::getImageFormatByVulkanFormat(swapchain->getFormat()), 1);
+            m_Image->createImageView(VK_IMAGE_ASPECT_COLOR_BIT);
+        }
+
         const jarray<VkImageView> attachments = { swapchain->getRenderColorImage()->getImageView(), swapchain->getRenderDepthImage()->getImageView(), m_Image->getImageView() };
+        const glm::uvec2 swapchainSize = swapchain->getSize();
         VkFramebufferCreateInfo framebufferInfo{};
         framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
         framebufferInfo.renderPass = swapchain->getRenderPass();
@@ -62,7 +66,6 @@ namespace JumaEngine
     {
         vkDestroyFramebuffer(getRenderSubsystem()->getDevice(), m_Framebuffer, nullptr);
         m_Image.reset();
-
         m_Framebuffer = nullptr;
         m_ParentSwapchain = nullptr;
     }
