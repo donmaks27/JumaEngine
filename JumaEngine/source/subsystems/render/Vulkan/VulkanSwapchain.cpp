@@ -10,6 +10,10 @@
 #include "Image_Vulkan.h"
 #include "utils/jlog.h"
 #include "VulkanSwapchainFramebuffer.h"
+#include "RenderOptionsData_Vulkan.h"
+#include "VulkanCommandBuffer.h"
+#include "VulkanCommandPool.h"
+#include "VulkanQueue.h"
 
 namespace JumaEngine
 {
@@ -21,14 +25,14 @@ namespace JumaEngine
         }
     }
 
-    bool VulkanSwapchain::init(const jshared_ptr<WindowDescription>& window)
+    bool VulkanSwapchain::init(WindowDescription* window)
     {
         if (isValid() || (window == nullptr))
         {
             return false;
         }
 
-        const jshared_ptr<WindowDescription_Vulkan> window_vulkan = jshared_dynamic_cast<WindowDescription_Vulkan>(window);
+        WindowDescription_Vulkan* window_vulkan = dynamic_cast<WindowDescription_Vulkan*>(window);
         VkPhysicalDevice physicalDevice = getRenderSubsystem()->getPhysicalDevice();
 
         VkSurfaceCapabilitiesKHR capabilities;
@@ -119,14 +123,14 @@ namespace JumaEngine
         if (counts & VK_SAMPLE_COUNT_2_BIT) { return VK_SAMPLE_COUNT_2_BIT; }
         return VK_SAMPLE_COUNT_1_BIT;
     }
-    jshared_ptr<WindowDescription_Vulkan> VulkanSwapchain::getWindow() const
+    WindowDescription_Vulkan* VulkanSwapchain::getWindow() const
     {
-        return jshared_dynamic_cast<WindowDescription_Vulkan>(m_Window);
+        return dynamic_cast<WindowDescription_Vulkan*>(m_Window);
     }
 
     bool VulkanSwapchain::createSwapchain()
     {
-        const jshared_ptr<WindowDescription_Vulkan> window = getWindow();
+        WindowDescription_Vulkan* window = getWindow();
         
         VkSurfaceCapabilitiesKHR capabilities;
         vkGetPhysicalDeviceSurfaceCapabilitiesKHR(getRenderSubsystem()->getPhysicalDevice(), window->surface, &capabilities);
@@ -304,11 +308,64 @@ namespace JumaEngine
             {
                 m_Framebuffers[index] = getRenderSubsystem()->createVulkanObject<VulkanSwapchainFramebuffer>();
             }
+            m_Framebuffers[index]->setCommandBuffer(nullptr);
+            m_Framebuffers[index]->setRenderFinishedFence(nullptr);
             if (!m_Framebuffers[index]->init(this, swapchainImages[index]))
             {
                 return false;
             }
         }
+        return createSyncObjects();
+    }
+    bool VulkanSwapchain::createSyncObjects()
+    {
+        VkDevice device = getRenderSubsystem()->getDevice();
+
+        m_Semaphores_ImageAvailable.resize(m_MaxFramesInFlight);
+        m_Semaphores_RenderFinished.resize(m_MaxFramesInFlight);
+        m_Fences_RenderFinished.resize(m_MaxFramesInFlight);
+
+        VkSemaphoreCreateInfo semaphoreInfo{};
+        semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+        VkFenceCreateInfo fenceInfo{};
+        fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+        fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+        for (uint32 index = 0; index < m_MaxFramesInFlight; ++index)
+        {
+            if (m_Semaphores_ImageAvailable[index] != nullptr)
+            {
+                vkDestroySemaphore(device, m_Semaphores_ImageAvailable[index], nullptr);
+            }
+            if (m_Semaphores_RenderFinished[index] != nullptr)
+            {
+                vkDestroySemaphore(device, m_Semaphores_RenderFinished[index], nullptr);
+            }
+            if (m_Fences_RenderFinished[index] != nullptr)
+            {
+                vkDestroyFence(device, m_Fences_RenderFinished[index], nullptr);
+            }
+
+            VkResult result = vkCreateSemaphore(device, &semaphoreInfo, nullptr, &m_Semaphores_ImageAvailable[index]);
+            if (result != VK_SUCCESS)
+            {
+                JUMA_LOG(error, JSTR("Failed to create semaphore. Code ") + TO_JSTR(result));
+                return false;
+            }
+            result = vkCreateSemaphore(device, &semaphoreInfo, nullptr, &m_Semaphores_RenderFinished[index]);
+            if (result != VK_SUCCESS)
+            {
+                JUMA_LOG(error, JSTR("Failed to create semaphore. Code ") + TO_JSTR(result));
+                return false;
+            }
+            result = vkCreateFence(device, &fenceInfo, nullptr, &m_Fences_RenderFinished[index]);
+            if (result != VK_SUCCESS)
+            {
+                JUMA_LOG(error, JSTR("Failed to create fence. Code ") + TO_JSTR(result));
+                return false;
+            }
+        }
+
+        m_CurrentInFlightFrame = glm::clamp<uint32>(m_CurrentInFlightFrame, 0, m_MaxFramesInFlight - 1);
         return true;
     }
 
@@ -325,6 +382,25 @@ namespace JumaEngine
     void VulkanSwapchain::clearSwapchain()
     {
         VkDevice device = getRenderSubsystem()->getDevice();
+
+        for (uint32 index = 0; index < m_MaxFramesInFlight; ++index)
+        {
+            if (m_Semaphores_ImageAvailable[index] != nullptr)
+            {
+                vkDestroySemaphore(device, m_Semaphores_ImageAvailable[index], nullptr);
+            }
+            if (m_Semaphores_RenderFinished[index] != nullptr)
+            {
+                vkDestroySemaphore(device, m_Semaphores_RenderFinished[index], nullptr);
+            }
+            if (m_Fences_RenderFinished[index] != nullptr)
+            {
+                vkDestroyFence(device, m_Fences_RenderFinished[index], nullptr);
+            }
+        }
+        m_Semaphores_ImageAvailable.clear();
+        m_Semaphores_RenderFinished.clear();
+        m_Fences_RenderFinished.clear();
 
         m_Framebuffers.clear();
 
@@ -344,7 +420,7 @@ namespace JumaEngine
         }
     }
 
-    void VulkanSwapchain::onWindowSizeChanged(const jshared_ptr<WindowDescription>& window)
+    void VulkanSwapchain::onWindowSizeChanged(WindowDescription* window)
     {
         VkSurfaceCapabilitiesKHR capabilities;
         vkGetPhysicalDeviceSurfaceCapabilitiesKHR(getRenderSubsystem()->getPhysicalDevice(), getWindow()->surface, &capabilities);
@@ -359,12 +435,18 @@ namespace JumaEngine
 		        glm::clamp(window->size.y, capabilities.minImageExtent.height, capabilities.maxImageExtent.height)
 	        };
         }
+        m_NeedToRecreate = true;
     }
 
     void VulkanSwapchain::applySettings(const bool forceRecreate)
     {
         if (!isValid())
         {
+            return;
+        }
+        if ((m_SettingForApply.size.x == 0) || (m_SettingForApply.size.y == 0))
+        {
+            m_NeedToRecreate = true;
             return;
         }
         if (!applySettingsInternal(forceRecreate))
@@ -374,6 +456,9 @@ namespace JumaEngine
     }
     bool VulkanSwapchain::applySettingsInternal(const bool forceRecreate)
     {
+        vkDeviceWaitIdle(getRenderSubsystem()->getDevice());
+        m_NeedToRecreate = false;
+
         const bool sizeChanged = forceRecreate || (m_SettingForApply.size != m_CurrentSettings.size);
         const bool imageCountChanged = forceRecreate || (m_SettingForApply.imageCount != m_CurrentSettings.imageCount);
         const bool colorFormatChanged = forceRecreate || (m_SettingForApply.surfaceFormat.format != m_CurrentSettings.surfaceFormat.format) || (m_SettingForApply.surfaceFormat.colorSpace != m_CurrentSettings.surfaceFormat.colorSpace);
@@ -390,7 +475,6 @@ namespace JumaEngine
         {
             vkDestroyRenderPass(getRenderSubsystem()->getDevice(), m_RenderPass, nullptr);
         }
-
         m_CurrentSettings = m_SettingForApply;
         if (shouldRecreateSwapchain && !createSwapchain())
         {
@@ -410,6 +494,144 @@ namespace JumaEngine
         }
 
         return true;
+    }
+
+    bool VulkanSwapchain::startRender(const RenderOptions& options)
+    {
+        if (!isValid() || m_NeedToRecreate)
+        {
+            return false;
+        }
+
+        VkDevice device = getRenderSubsystem()->getDevice();
+
+        uint32 renderImageIndex = 0;
+        vkWaitForFences(device, 1, &m_Fences_RenderFinished[m_CurrentInFlightFrame], VK_TRUE, UINT64_MAX);
+        const VkResult result = vkAcquireNextImageKHR(device, m_Swapchain, UINT64_MAX, m_Semaphores_ImageAvailable[m_CurrentInFlightFrame], nullptr, &renderImageIndex);
+        if ((result != VK_SUCCESS) && (result != VK_SUBOPTIMAL_KHR))
+        {
+            if (result != VK_ERROR_OUT_OF_DATE_KHR)
+            {
+                const jstring message = JSTR("Failed to acquire swapchain image. Code ") + TO_JSTR(result);
+                JUMA_LOG(error, message);
+                throw std::runtime_error(message);
+            }
+
+            m_NeedToRecreate = true;
+            return false;
+        }
+        VkFence fence = m_Framebuffers[renderImageIndex]->getRenderFinishedFence();
+        if (fence != nullptr)
+        {
+            vkWaitForFences(device, 1, &fence, VK_TRUE, UINT64_MAX);
+        }
+
+        const jshared_ptr<VulkanCommandBuffer> commandBuffer = startRenderInternal(renderImageIndex);
+        if (commandBuffer == nullptr)
+        {
+            return false;
+        }
+        m_Framebuffers[renderImageIndex]->setCommandBuffer(commandBuffer);
+        m_Framebuffers[renderImageIndex]->setRenderFinishedFence(m_Fences_RenderFinished[m_CurrentInFlightFrame]);
+        vkResetFences(device, 1, &m_Fences_RenderFinished[m_CurrentInFlightFrame]);
+
+        RenderOptionsData_Vulkan* optionsData = options.getData<RenderOptionsData_Vulkan>();
+        optionsData->swapchainImageIndex = renderImageIndex;
+        return true;
+    }
+    jshared_ptr<VulkanCommandBuffer> VulkanSwapchain::startRenderInternal(const uint32 swapchainImageIndex)
+    {
+        const jshared_ptr<VulkanCommandPool> commandPool = getRenderSubsystem()->getCommandPool(VulkanQueueType::Graphics);
+        jshared_ptr<VulkanCommandBuffer> commandBuffer = commandPool != nullptr ? commandPool->createCommandBuffer(true) : nullptr;
+        if ((commandBuffer == nullptr) || !commandBuffer->isValid())
+        {
+            return nullptr;
+        }
+
+        VkCommandBufferBeginInfo beginInfo{};
+        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+        beginInfo.flags = 0;
+        beginInfo.pInheritanceInfo = nullptr;
+        const VkResult result = vkBeginCommandBuffer(commandBuffer->get(), &beginInfo);
+        if (result != VK_SUCCESS)
+        {
+            const jstring message = JSTR("Failed to begin recording command buffer. Code ") + TO_JSTR(result);
+            JUMA_LOG(error, message);
+            throw std::runtime_error(message);
+        }
+
+        jarray<VkClearValue> clearValues(2);
+        clearValues[0].color = { { 1.0f, 1.0f, 0.0f, 1.0f } };
+        clearValues[1].depthStencil = { 1.0f, 0 };
+        VkRenderPassBeginInfo renderPassInfo{};
+        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+        renderPassInfo.renderPass = m_RenderPass;
+        renderPassInfo.framebuffer = m_Framebuffers[swapchainImageIndex]->get();
+        renderPassInfo.renderArea.offset = { 0, 0 };
+        renderPassInfo.renderArea.extent = { m_CurrentSettings.size.x, m_CurrentSettings.size.y };
+        renderPassInfo.clearValueCount = static_cast<uint32>(clearValues.getSize());
+        renderPassInfo.pClearValues = clearValues.getData();
+        vkCmdBeginRenderPass(commandBuffer->get(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+        return commandBuffer;
+    }
+
+    void VulkanSwapchain::finishRender(const RenderOptions& options)
+    {
+        const uint32 swapchainImageIndex = options.getData<RenderOptionsData_Vulkan>()->swapchainImageIndex;
+        const jshared_ptr<VulkanCommandBuffer>& commandBuffer = m_Framebuffers[swapchainImageIndex]->getCommandBuffer();
+
+        vkCmdEndRenderPass(commandBuffer->get());
+        VkResult result = vkEndCommandBuffer(commandBuffer->get());
+        if (result != VK_SUCCESS) 
+        {
+            const jstring message = JSTR("Failed to record command buffer. Code ") + TO_JSTR(result);
+            JUMA_LOG(error, message);
+            throw std::runtime_error(message);
+        }
+
+        VkCommandBuffer vulkanCommandBuffer = commandBuffer->get();
+        VkSemaphore waitSemaphores[] = { m_Semaphores_ImageAvailable[m_CurrentInFlightFrame] };
+        VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+        VkSemaphore signalSemaphores[] = { m_Semaphores_RenderFinished[m_CurrentInFlightFrame] };
+
+        VkSubmitInfo submitInfo{};
+        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+        submitInfo.waitSemaphoreCount = 1;
+        submitInfo.pWaitSemaphores = waitSemaphores;
+        submitInfo.pWaitDstStageMask = waitStages;
+        submitInfo.commandBufferCount = 1;
+        submitInfo.pCommandBuffers = &vulkanCommandBuffer;
+        submitInfo.signalSemaphoreCount = 1;
+        submitInfo.pSignalSemaphores = signalSemaphores;
+        result = vkQueueSubmit(getRenderSubsystem()->getQueue(VulkanQueueType::Graphics)->get(), 1, &submitInfo, m_Fences_RenderFinished[m_CurrentInFlightFrame]);
+        if (result != VK_SUCCESS)
+        {
+            const jstring message = JSTR("Failed to submit draw command buffer. Code ") + TO_JSTR(result);
+            JUMA_LOG(error, message);
+            throw std::runtime_error(message);
+        }
+
+        VkPresentInfoKHR presentInfo{};
+        presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+        presentInfo.waitSemaphoreCount = 1;
+        presentInfo.pWaitSemaphores = signalSemaphores;
+        presentInfo.swapchainCount = 1;
+        presentInfo.pSwapchains = &m_Swapchain;
+        presentInfo.pImageIndices = &swapchainImageIndex;
+        presentInfo.pResults = nullptr;
+        result = vkQueuePresentKHR(getRenderSubsystem()->getQueue(VulkanQueueType::Present)->get(), &presentInfo);
+        if ((result == VK_ERROR_OUT_OF_DATE_KHR) || (result == VK_SUBOPTIMAL_KHR))
+        {
+            m_NeedToRecreate = true;
+        }
+        else if (result != VK_SUCCESS)
+        {
+            const jstring message = JSTR("Failed to present swapchain image. Code ") + TO_JSTR(result);
+            JUMA_LOG(error, message);
+            throw std::runtime_error(message);
+        }
+
+        m_CurrentInFlightFrame = (m_CurrentInFlightFrame + 1) & m_MaxFramesInFlight;
     }
 }
 

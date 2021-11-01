@@ -18,7 +18,7 @@ namespace JumaEngine
         RenderSubsystem_OpenGL() = default;
         virtual ~RenderSubsystem_OpenGL() override = default;
 
-        virtual void render(const RenderQuery& query) override;
+        virtual void render() override;
 
         virtual jshared_ptr<VertexBuffer> createVertexBuffer() override;
         virtual jshared_ptr<Shader> createShader() override;

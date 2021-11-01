@@ -25,11 +25,11 @@ namespace JumaEngine
         return true;
     }
 
-    void RenderSubsystem_OpenGL::render(const RenderQuery& query)
+    void RenderSubsystem_OpenGL::render()
     {
         RenderOptions options;
-        options.query = query;
-        options.invertFacesOrientation = false;
+        options.data = new RenderOptionsData();
+        options.data->invertFacesOrientation = false;
 
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -43,6 +43,8 @@ namespace JumaEngine
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
         callEngineRender(options);
+
+        delete options.data;
     }
 
     jshared_ptr<VertexBuffer> RenderSubsystem_OpenGL::createVertexBuffer()

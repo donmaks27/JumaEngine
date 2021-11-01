@@ -64,6 +64,9 @@ namespace JumaEngine
 
     void VulkanSwapchainFramebuffer::clearFramebuffer()
     {
+        m_Fence_RenderFinished = nullptr;
+        m_CommandBuffer = nullptr;
+
         vkDestroyFramebuffer(getRenderSubsystem()->getDevice(), m_Framebuffer, nullptr);
         m_Image.reset();
         m_Framebuffer = nullptr;

@@ -124,8 +124,7 @@ namespace JumaEngine
     		const double deltaTime = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(timestamp - lastTimestamp).count()) / 1000000.0;
             lastTimestamp = timestamp;
 
-            RenderQuery query;
-            m_RenderSubsystem->render(query);
+            m_RenderSubsystem->render();
         }
     }
 

@@ -18,7 +18,7 @@ namespace JumaEngine
         RenderSubsystem_OpenGL_GLFW() = default;
         virtual ~RenderSubsystem_OpenGL_GLFW() override = default;
 
-        virtual void render(const RenderQuery& query) override;
+        virtual void render() override;
 
     protected:
 
@@ -26,11 +26,11 @@ namespace JumaEngine
         virtual void clearSubsystemInternal() override;
         
         virtual WindowDescription* createWindowInternal(const glm::uvec2& size, const jstring& title) override;
-        virtual void terminateWindowInternal(const jshared_ptr<WindowDescription>& window) override;
+        virtual void terminateWindowInternal(WindowDescription* window) override;
 
-        virtual bool shouldCloseWindowInternal(const jshared_ptr<WindowDescription>& window) const override;
-        virtual void setWindowSizeInternal(const jshared_ptr<WindowDescription>& window, const glm::uvec2& size) override;
-        virtual void setWindowTitleInternal(const jshared_ptr<WindowDescription>& window, const jstring& title) override;
+        virtual bool shouldCloseWindowInternal(WindowDescription* window) const override;
+        virtual void setWindowSizeInternal(WindowDescription* window, const glm::uvec2& size) override;
+        virtual void setWindowTitleInternal(WindowDescription* window, const jstring& title) override;
 
     private:
 

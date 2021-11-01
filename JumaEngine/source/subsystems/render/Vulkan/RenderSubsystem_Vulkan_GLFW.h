@@ -8,6 +8,8 @@
 
 #include "RenderSubsystem_Vulkan.h"
 
+#include <GLFW/glfw3.h>
+
 namespace JumaEngine
 {
     class RenderSubsystem_Vulkan_GLFW final : public RenderSubsystem_Vulkan
@@ -25,18 +27,21 @@ namespace JumaEngine
         
         virtual jarray<const char*> getRequiredVulkanExtensions() const override;
         
-        virtual WindowDescription* createWindowInternal(const glm::uvec2& size, const jstring& title) override;
-        virtual void terminateWindowInternal(const jshared_ptr<WindowDescription>& window) override;
+        virtual void setWindowSize(WindowDescription* window, const glm::uvec2& size) override;
 
-        virtual bool shouldCloseWindowInternal(const jshared_ptr<WindowDescription>& window) const override;
-        virtual void setWindowSizeInternal(const jshared_ptr<WindowDescription>& window, const glm::uvec2& size) override;
-        virtual void setWindowTitleInternal(const jshared_ptr<WindowDescription>& window, const jstring& title) override;
+        virtual WindowDescription* createWindowInternal(const glm::uvec2& size, const jstring& title) override;
+        virtual void terminateWindowInternal(WindowDescription* window) override;
+
+        virtual bool shouldCloseWindowInternal(WindowDescription* window) const override;
+        virtual void setWindowSizeInternal(WindowDescription* window, const glm::uvec2& size) override;
+        virtual void setWindowTitleInternal(WindowDescription* window, const jstring& title) override;
         
-        virtual void render(const RenderQuery& query) override;
+        virtual void render() override;
 
     private:
 
         static void GLFW_ErrorCallback(int code, const char* errorMessage);
+        static void GLFW_FramebufferResizeCallback(GLFWwindow* window, int width, int height);
 
         void terminateGLFW();
     };

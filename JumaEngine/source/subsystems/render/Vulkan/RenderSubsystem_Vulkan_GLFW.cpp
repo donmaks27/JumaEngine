@@ -4,7 +4,6 @@
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN) && defined(JUMAENGINE_INCLUDE_WINDOW_LIB_GLFW)
 
-#include <GLFW/glfw3.h>
 #include "utils/jlog.h"
 #include "WindowDescription_Vulkan_GLFW.h"
 
@@ -70,6 +69,7 @@ namespace JumaEngine
             JUMA_LOG(warning, JSTR("Failed to create GLFW window"));
             return nullptr;
         }
+        glfwSetFramebufferSizeCallback(window, GLFW_FramebufferResizeCallback);
 
         VkSurfaceKHR surface = nullptr;
         const VkResult result = glfwCreateWindowSurface(getVulkanInstance(), window, nullptr, &surface);
@@ -84,11 +84,12 @@ namespace JumaEngine
         windowDescription->title = title;
         windowDescription->window = window;
         windowDescription->surface = surface;
+        glfwSetWindowUserPointer(window, windowDescription);
         return windowDescription;
     }
-    void RenderSubsystem_Vulkan_GLFW::terminateWindowInternal(const jshared_ptr<WindowDescription>& window)
+    void RenderSubsystem_Vulkan_GLFW::terminateWindowInternal(WindowDescription* window)
     {
-        const jshared_ptr<WindowDescription_Vulkan_GLFW> window_GLFW = castWindow<WindowDescription_Vulkan_GLFW>(window);
+        WindowDescription_Vulkan_GLFW* window_GLFW = castWindow<WindowDescription_Vulkan_GLFW>(window);
         if ((window_GLFW != nullptr) && (window_GLFW->window != nullptr))
         {
             if (window_GLFW->surface != nullptr)
@@ -102,36 +103,49 @@ namespace JumaEngine
         }
     }
 
-    bool RenderSubsystem_Vulkan_GLFW::shouldCloseWindowInternal(const jshared_ptr<WindowDescription>& window) const
+    void RenderSubsystem_Vulkan_GLFW::setWindowSize(WindowDescription* window, const glm::uvec2& size)
     {
-        const jshared_ptr<WindowDescription_Vulkan_GLFW> window_GLFW = castWindow<WindowDescription_Vulkan_GLFW>(window);
+        if (window != nullptr)
+        {
+            setWindowSizeInternal(window, size);
+        }
+    }
+    void RenderSubsystem_Vulkan_GLFW::GLFW_FramebufferResizeCallback(GLFWwindow* window, int width, int height)
+    {
+        WindowDescription* windowDescription = (WindowDescription*)glfwGetWindowUserPointer(window);
+        windowDescription->size = { width, height };
+        windowDescription->onSizeChanged.call(windowDescription);
+    }
+
+    bool RenderSubsystem_Vulkan_GLFW::shouldCloseWindowInternal(WindowDescription* window) const
+    {
+        WindowDescription_Vulkan_GLFW* window_GLFW = castWindow<WindowDescription_Vulkan_GLFW>(window);
         if ((window_GLFW != nullptr) && (window_GLFW->window != nullptr))
         {
             return glfwWindowShouldClose(window_GLFW->window) != GLFW_FALSE;
         }
         return false;
     }
-    void RenderSubsystem_Vulkan_GLFW::setWindowSizeInternal(const jshared_ptr<WindowDescription>& window, const glm::uvec2& size)
+    void RenderSubsystem_Vulkan_GLFW::setWindowSizeInternal(WindowDescription* window, const glm::uvec2& size)
     {
-        const jshared_ptr<WindowDescription_Vulkan_GLFW> window_GLFW = castWindow<WindowDescription_Vulkan_GLFW>(window);
+        WindowDescription_Vulkan_GLFW* window_GLFW = castWindow<WindowDescription_Vulkan_GLFW>(window);
         if ((window_GLFW != nullptr) && (window_GLFW->window != nullptr))
         {
             glfwSetWindowSize(window_GLFW->window, size.x, size.y);
         }
     }
-    void RenderSubsystem_Vulkan_GLFW::setWindowTitleInternal(const jshared_ptr<WindowDescription>& window, const jstring& title)
+    void RenderSubsystem_Vulkan_GLFW::setWindowTitleInternal(WindowDescription* window, const jstring& title)
     {
-        const jshared_ptr<WindowDescription_Vulkan_GLFW> window_GLFW = castWindow<WindowDescription_Vulkan_GLFW>(window);
+        WindowDescription_Vulkan_GLFW* window_GLFW = castWindow<WindowDescription_Vulkan_GLFW>(window);
         if ((window_GLFW != nullptr) && (window_GLFW->window != nullptr))
         {
             glfwSetWindowTitle(window_GLFW->window, *title);
         }
     }
 
-    void RenderSubsystem_Vulkan_GLFW::render(const RenderQuery& query)
+    void RenderSubsystem_Vulkan_GLFW::render()
     {
-        Super::render(query);
-
+        Super::render();
         glfwPollEvents();
     }
 }

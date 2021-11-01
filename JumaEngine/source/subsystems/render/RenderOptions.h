@@ -3,15 +3,21 @@
 #pragma once
 
 #include "common_header.h"
+#include "utils/type_checks.h"
 
 namespace JumaEngine
 {
-    struct RenderQuery {};
+    struct RenderOptionsData
+    {
+        bool invertFacesOrientation = false;
+    };
 
     struct RenderOptions
     {
-        RenderQuery query;
+        RenderOptionsData* data = nullptr;
 
-        bool invertFacesOrientation = false;
+        RenderOptionsData* getData() const { return data; }
+        template<typename T, TEMPLATE_ENABLE(is_base_and_not_same<RenderOptionsData, T>)>
+        T* getData() const { return (T*)data; }
     };
 }

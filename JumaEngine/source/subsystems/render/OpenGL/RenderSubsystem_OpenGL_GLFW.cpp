@@ -71,9 +71,9 @@ namespace JumaEngine
         windowDescription->window = window;
         return windowDescription;
     }
-    void RenderSubsystem_OpenGL_GLFW::terminateWindowInternal(const jshared_ptr<WindowDescription>& window)
+    void RenderSubsystem_OpenGL_GLFW::terminateWindowInternal(WindowDescription* window)
     {
-        const jshared_ptr<WindowDescription_OpenGL_GLFW> window_GLFW = castWindow<WindowDescription_OpenGL_GLFW>(window);
+        WindowDescription_OpenGL_GLFW* window_GLFW = castWindow<WindowDescription_OpenGL_GLFW>(window);
         if ((window_GLFW != nullptr) && (window_GLFW->window != nullptr))
         {
             glfwDestroyWindow(window_GLFW->window);
@@ -81,37 +81,37 @@ namespace JumaEngine
         }
     }
     
-    bool RenderSubsystem_OpenGL_GLFW::shouldCloseWindowInternal(const jshared_ptr<WindowDescription>& window) const
+    bool RenderSubsystem_OpenGL_GLFW::shouldCloseWindowInternal(WindowDescription* window) const
     {
-        const jshared_ptr<WindowDescription_OpenGL_GLFW> window_GLFW = castWindow<WindowDescription_OpenGL_GLFW>(window);
+        WindowDescription_OpenGL_GLFW* window_GLFW = castWindow<WindowDescription_OpenGL_GLFW>(window);
         if ((window_GLFW != nullptr) && (window_GLFW->window != nullptr))
         {
             return glfwWindowShouldClose(window_GLFW->window) != GLFW_FALSE;
         }
         return false;
     }
-    void RenderSubsystem_OpenGL_GLFW::setWindowSizeInternal(const jshared_ptr<WindowDescription>& window, const glm::uvec2& size)
+    void RenderSubsystem_OpenGL_GLFW::setWindowSizeInternal(WindowDescription* window, const glm::uvec2& size)
     {
-        const jshared_ptr<WindowDescription_OpenGL_GLFW> window_GLFW = castWindow<WindowDescription_OpenGL_GLFW>(window);
+        WindowDescription_OpenGL_GLFW* window_GLFW = castWindow<WindowDescription_OpenGL_GLFW>(window);
         if ((window_GLFW != nullptr) && (window_GLFW->window != nullptr))
         {
             glfwSetWindowSize(window_GLFW->window, size.x, size.y);
         }
     }
-    void RenderSubsystem_OpenGL_GLFW::setWindowTitleInternal(const jshared_ptr<WindowDescription>& window, const jstring& title)
+    void RenderSubsystem_OpenGL_GLFW::setWindowTitleInternal(WindowDescription* window, const jstring& title)
     {
-        const jshared_ptr<WindowDescription_OpenGL_GLFW> window_GLFW = castWindow<WindowDescription_OpenGL_GLFW>(window);
+        WindowDescription_OpenGL_GLFW* window_GLFW = castWindow<WindowDescription_OpenGL_GLFW>(window);
         if ((window_GLFW != nullptr) && (window_GLFW->window != nullptr))
         {
             glfwSetWindowTitle(window_GLFW->window, *title);
         }
     }
 
-    void RenderSubsystem_OpenGL_GLFW::render(const RenderQuery& query)
+    void RenderSubsystem_OpenGL_GLFW::render()
     {
-        Super::render(query);
+        Super::render();
 
-        const jshared_ptr<WindowDescription_OpenGL_GLFW> window_GLFW = castWindow<WindowDescription_OpenGL_GLFW>(getMainWindow());
+        WindowDescription_OpenGL_GLFW* window_GLFW = castWindow<WindowDescription_OpenGL_GLFW>(getMainWindow());
         if ((window_GLFW != nullptr) && (window_GLFW->window != nullptr))
         {
             glfwSwapBuffers(window_GLFW->window);

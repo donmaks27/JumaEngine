@@ -567,5 +567,8 @@
     <ClInclude Include="source\subsystems\render\Vulkan\VulkanSwapchainFramebuffer.h">
       <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
     </ClInclude>
+    <ClInclude Include="source\subsystems\render\Vulkan\RenderOptionsData_Vulkan.h">
+      <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

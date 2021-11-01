@@ -113,9 +113,13 @@ namespace JumaEngine
         }
 
         glBindVertexArray(m_VerticesVAO);
-        if (options.invertFacesOrientation)
+        if (options.data->invertFacesOrientation)
         {
             glCullFace(GL_FRONT);
+        }
+        else
+        {
+            glCullFace(GL_BACK);
         }
         if (m_IndicesVBO == 0)
         {

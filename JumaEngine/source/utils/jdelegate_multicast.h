@@ -94,7 +94,8 @@ namespace jutils
 
         void _call(ArgTypes... args)
         {
-            for (auto& delegate : m_Delegates)
+            auto delegatesCopy = m_Delegates;
+            for (auto& delegate : delegatesCopy)
             {
                 delegate._call(args...);
             }

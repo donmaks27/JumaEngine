@@ -18,17 +18,18 @@ namespace JumaEngine
         if (m_MainWindow != nullptr)
         {
             terminateWindowInternal(m_MainWindow);
+            delete m_MainWindow;
             m_MainWindow = nullptr;
         }
     }
 
-    void RenderSubsystem::setMainWindowSize(const glm::uvec2& size)
+    void RenderSubsystem::setWindowSize(WindowDescription* window, const glm::uvec2& size)
     {
-        if (m_MainWindow != nullptr)
+        if (window != nullptr)
         {
-            setWindowSizeInternal(m_MainWindow, size);
-            m_MainWindow->size = size;
-            m_MainWindow->onSizeChanged.call(m_MainWindow);
+            setWindowSizeInternal(window, size);
+            window->size = size;
+            window->onSizeChanged.call(window);
         }
     }
     void RenderSubsystem::setMainWindowTitle(const jstring& title)

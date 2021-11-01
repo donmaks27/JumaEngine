@@ -30,7 +30,7 @@ namespace JumaEngine
         RenderSubsystem_Vulkan() = default;
         virtual ~RenderSubsystem_Vulkan() override = default;
 
-        virtual void render(const RenderQuery& query) override;
+        virtual void render() override;
         
         template<typename T, TEMPLATE_ENABLE(is_base_and_not_same<VulkanContextObject, T>)>
         T* createVulkanObject()
@@ -51,6 +51,7 @@ namespace JumaEngine
 
         uint32 getQueueFamilyIndex(const VulkanQueueType queueType) const { return m_QueueFamilyIndices[queueType]; }
         const jshared_ptr<VulkanQueue>& getQueue(const VulkanQueueType queueType) const { return m_Queues[m_QueueFamilyIndices[queueType]]; }
+        const jshared_ptr<VulkanCommandPool>& getCommandPool(const VulkanQueueType queueType) const { return m_CommandPools[queueType]; }
 
     protected:
 
@@ -84,7 +85,7 @@ namespace JumaEngine
         bool createVulkanInstance();
 
         bool pickPhysicalDevice();
-        static bool getQueueFamilyIndices(VkPhysicalDevice physicalDevice, const jshared_ptr<WindowDescription>& window, jmap<VulkanQueueType, uint32>& outQueueIndices);
+        static bool getQueueFamilyIndices(VkPhysicalDevice physicalDevice, WindowDescription* window, jmap<VulkanQueueType, uint32>& outQueueIndices);
         bool createDevice();
         bool createCommandPools();
         bool createSwapchain();

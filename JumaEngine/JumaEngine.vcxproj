@@ -221,6 +221,7 @@
     <ClInclude Include="source\subsystems\render\ShaderUniform.h" />
     <ClInclude Include="source\subsystems\render\VertexBuffer.h" />
     <ClInclude Include="source\subsystems\render\Vulkan\Image_Vulkan.h" />
+    <ClInclude Include="source\subsystems\render\Vulkan\RenderOptionsData_Vulkan.h" />
     <ClInclude Include="source\subsystems\render\Vulkan\RenderSubsystem_Vulkan.h" />
     <ClInclude Include="source\subsystems\render\Vulkan\RenderSubsystem_Vulkan_GLFW.h" />
     <ClInclude Include="source\subsystems\render\Vulkan\vma_lib.h" />

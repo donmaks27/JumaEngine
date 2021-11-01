@@ -13,7 +13,7 @@ namespace JumaEngine
 {
     class WindowDescription;
 
-    CREATE_JDELEGATE_MULTICAST_TYPE_OneParam(OnWindowDescriptionEvent, const jshared_ptr<WindowDescription>&, window)
+    CREATE_JDELEGATE_MULTICAST_TYPE_OneParam(OnWindowDescriptionEvent, WindowDescription*, window)
 
     class WindowDescription
     {
