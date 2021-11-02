@@ -5,8 +5,8 @@
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
 #include "utils/jlog.h"
-#include "RenderSubsystem_Vulkan.h"
-#include "Image_Vulkan.h"
+#include "subsystems/render/Vulkan/RenderSubsystem_Vulkan.h"
+#include "subsystems/render/Vulkan/Image_Vulkan.h"
 #include "VulkanSwapchain.h"
 
 namespace JumaEngine

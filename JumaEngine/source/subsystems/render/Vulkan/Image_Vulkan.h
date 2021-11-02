@@ -12,7 +12,7 @@
 #include <vulkan/vulkan_core.h>
 #include "vma_lib.h"
 
-#include "VulkanQueueType.h"
+#include "vulkanObjects/VulkanQueueType.h"
 #include "utils/jset.h"
 
 namespace JumaEngine

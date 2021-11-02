@@ -5,12 +5,12 @@
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
 #include <glm/common.hpp>
-#include "RenderSubsystem_Vulkan.h"
-#include "WindowDescription_Vulkan.h"
-#include "Image_Vulkan.h"
+#include "subsystems/render/Vulkan/RenderSubsystem_Vulkan.h"
+#include "subsystems/render/Vulkan/WindowDescription_Vulkan.h"
+#include "subsystems/render/Vulkan/Image_Vulkan.h"
 #include "utils/jlog.h"
 #include "VulkanSwapchainFramebuffer.h"
-#include "RenderOptionsData_Vulkan.h"
+#include "subsystems/render/Vulkan/RenderOptionsData_Vulkan.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanCommandPool.h"
 #include "VulkanQueue.h"
@@ -609,26 +609,19 @@ namespace JumaEngine
             throw std::runtime_error(message);
         }
 
-        VkCommandBuffer vulkanCommandBuffer = commandBuffer->get();
         VkSemaphore waitSemaphores[] = { m_Semaphores_ImageAvailable[m_CurrentInFlightFrame] };
         VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
         VkSemaphore signalSemaphores[] = { m_Semaphores_RenderFinished[m_CurrentInFlightFrame] };
-
         VkSubmitInfo submitInfo{};
         submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
         submitInfo.waitSemaphoreCount = 1;
         submitInfo.pWaitSemaphores = waitSemaphores;
         submitInfo.pWaitDstStageMask = waitStages;
-        submitInfo.commandBufferCount = 1;
-        submitInfo.pCommandBuffers = &vulkanCommandBuffer;
         submitInfo.signalSemaphoreCount = 1;
         submitInfo.pSignalSemaphores = signalSemaphores;
-        result = vkQueueSubmit(getRenderSubsystem()->getQueue(VulkanQueueType::Graphics)->get(), 1, &submitInfo, m_Fences_RenderFinished[m_CurrentInFlightFrame]);
-        if (result != VK_SUCCESS)
+        if (!commandBuffer->submit(submitInfo, m_Fences_RenderFinished[m_CurrentInFlightFrame], false))
         {
-            const jstring message = JSTR("Failed to submit draw command buffer. Code ") + TO_JSTR(result);
-            JUMA_LOG(error, message);
-            throw std::runtime_error(message);
+            throw std::runtime_error(JSTR("Failed to submit draw command buffer"));
         }
 
         VkPresentInfoKHR presentInfo{};

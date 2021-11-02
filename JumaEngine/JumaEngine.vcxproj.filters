@@ -82,6 +82,9 @@
     <Filter Include="JumaEngine\subsystems\render\Vulkan">
       <UniqueIdentifier>{f10c22eb-453f-49f7-b72c-117d663b3d00}</UniqueIdentifier>
     </Filter>
+    <Filter Include="JumaEngine\subsystems\render\Vulkan\vulkanObjects">
+      <UniqueIdentifier>{37b06750-e10c-49d8-a59e-f0ae75d4fbf4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -241,23 +244,26 @@
     <ClCompile Include="source\subsystems\render\Vulkan\RenderSubsystem_Vulkan_GLFW.cpp">
       <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="source\subsystems\render\Vulkan\VulkanQueue.cpp">
-      <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
-    </ClCompile>
-    <ClCompile Include="source\subsystems\render\Vulkan\VulkanCommandPool.cpp">
-      <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
-    </ClCompile>
-    <ClCompile Include="source\subsystems\render\Vulkan\VulkanCommandBuffer.cpp">
-      <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
-    </ClCompile>
-    <ClCompile Include="source\subsystems\render\Vulkan\VulkanSwapchain.cpp">
-      <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
-    </ClCompile>
     <ClCompile Include="source\subsystems\render\Vulkan\Image_Vulkan.cpp">
       <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="source\subsystems\render\Vulkan\VulkanSwapchainFramebuffer.cpp">
-      <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
+    <ClCompile Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanBuffer.cpp">
+      <Filter>JumaEngine\subsystems\render\Vulkan\vulkanObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanCommandBuffer.cpp">
+      <Filter>JumaEngine\subsystems\render\Vulkan\vulkanObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanCommandPool.cpp">
+      <Filter>JumaEngine\subsystems\render\Vulkan\vulkanObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanQueue.cpp">
+      <Filter>JumaEngine\subsystems\render\Vulkan\vulkanObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanSwapchain.cpp">
+      <Filter>JumaEngine\subsystems\render\Vulkan\vulkanObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanSwapchainFramebuffer.cpp">
+      <Filter>JumaEngine\subsystems\render\Vulkan\vulkanObjects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -522,9 +528,6 @@
     <ClInclude Include="source\subsystems\render\Vulkan\RenderSubsystem_Vulkan_GLFW.h">
       <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="source\subsystems\render\Vulkan\VulkanQueueType.h">
-      <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
-    </ClInclude>
     <ClInclude Include="source\subsystems\render\WindowDescription.h">
       <Filter>JumaEngine\subsystems\render</Filter>
     </ClInclude>
@@ -543,32 +546,38 @@
     <ClInclude Include="source\subsystems\render\Vulkan\VulkanContextObject.h">
       <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="source\subsystems\render\Vulkan\VulkanQueue.h">
-      <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
-    </ClInclude>
     <ClInclude Include="source\enabled_engine_parts.h">
       <Filter>JumaEngine</Filter>
     </ClInclude>
     <ClInclude Include="source\subsystems\render\Vulkan\vma_lib.h">
       <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="source\subsystems\render\Vulkan\VulkanCommandPool.h">
-      <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
-    </ClInclude>
-    <ClInclude Include="source\subsystems\render\Vulkan\VulkanCommandBuffer.h">
-      <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
-    </ClInclude>
-    <ClInclude Include="source\subsystems\render\Vulkan\VulkanSwapchain.h">
-      <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
-    </ClInclude>
     <ClInclude Include="source\subsystems\render\Vulkan\Image_Vulkan.h">
-      <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
-    </ClInclude>
-    <ClInclude Include="source\subsystems\render\Vulkan\VulkanSwapchainFramebuffer.h">
       <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
     </ClInclude>
     <ClInclude Include="source\subsystems\render\Vulkan\RenderOptionsData_Vulkan.h">
       <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanBuffer.h">
+      <Filter>JumaEngine\subsystems\render\Vulkan\vulkanObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanCommandBuffer.h">
+      <Filter>JumaEngine\subsystems\render\Vulkan\vulkanObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanCommandPool.h">
+      <Filter>JumaEngine\subsystems\render\Vulkan\vulkanObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanQueue.h">
+      <Filter>JumaEngine\subsystems\render\Vulkan\vulkanObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanQueueType.h">
+      <Filter>JumaEngine\subsystems\render\Vulkan\vulkanObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanSwapchain.h">
+      <Filter>JumaEngine\subsystems\render\Vulkan\vulkanObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanSwapchainFramebuffer.h">
+      <Filter>JumaEngine\subsystems\render\Vulkan\vulkanObjects</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

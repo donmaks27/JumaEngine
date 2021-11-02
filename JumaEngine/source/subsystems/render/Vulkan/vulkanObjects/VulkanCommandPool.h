@@ -6,7 +6,7 @@
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
-#include "VulkanContextObject.h"
+#include "subsystems/render/Vulkan/VulkanContextObject.h"
 
 #include <vulkan/vulkan_core.h>
 

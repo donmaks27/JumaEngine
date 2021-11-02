@@ -13,7 +13,7 @@
 
 #include "utils/jarray.h"
 #include "utils/jmap.h"
-#include "VulkanQueueType.h"
+#include "vulkanObjects/VulkanQueueType.h"
 
 namespace JumaEngine
 {
