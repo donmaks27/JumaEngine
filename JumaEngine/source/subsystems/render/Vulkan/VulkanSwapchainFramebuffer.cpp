@@ -40,7 +40,17 @@ namespace JumaEngine
             m_Image->createImageView(VK_IMAGE_ASPECT_COLOR_BIT);
         }
 
-        const jarray<VkImageView> attachments = { swapchain->getRenderColorImage()->getImageView(), swapchain->getRenderDepthImage()->getImageView(), m_Image->getImageView() };
+        const bool multisampleEnabled = swapchain->getSampleCount() != VK_SAMPLE_COUNT_1_BIT;
+        jarray<VkImageView> attachments;
+        if (multisampleEnabled)
+        {
+            attachments = { swapchain->getRenderColorImage()->getImageView(), swapchain->getRenderDepthImage()->getImageView(), m_Image->getImageView() };
+        }
+        else
+        {
+            attachments = { m_Image->getImageView(), swapchain->getRenderDepthImage()->getImageView() };
+        }
+
         const glm::uvec2 swapchainSize = swapchain->getSize();
         VkFramebufferCreateInfo framebufferInfo{};
         framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;

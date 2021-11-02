@@ -41,6 +41,7 @@ namespace JumaEngine
 
         bool init(WindowDescription* window);
 
+        VkSampleCountFlagBits getSampleCount() const { return m_CurrentSettings.sampleCount; }
         VkFormat getFormat() const { return m_CurrentSettings.surfaceFormat.format; }
         glm::uvec2 getSize() const { return m_CurrentSettings.size; }
 
@@ -94,9 +95,10 @@ namespace JumaEngine
 
         void onWindowSizeChanged(WindowDescription* window);
 
+        void markAsNeededToRecreate();
         bool applySettingsInternal(bool forceRecreate);
 
-        jshared_ptr<VulkanCommandBuffer> startRenderInternal(uint32 swapchainImageIndex);
+        jshared_ptr<VulkanCommandBuffer> createRenderCommandBuffer(uint32 swapchainImageIndex);
     };
 }
 

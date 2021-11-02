@@ -225,7 +225,10 @@ namespace JumaEngine
     }
     bool VulkanSwapchain::createRenderPass()
     {
-        VkAttachmentDescription colorAttachment{};
+        const bool multisampleEnabled = m_CurrentSettings.sampleCount != VK_SAMPLE_COUNT_1_BIT;
+
+        jarray<VkAttachmentDescription> attachments;
+        VkAttachmentDescription& colorAttachment = attachments.addDefault();
         colorAttachment.format = m_CurrentSettings.surfaceFormat.format;
         colorAttachment.samples = m_CurrentSettings.sampleCount;
         colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
@@ -233,8 +236,8 @@ namespace JumaEngine
         colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
         colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
         colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        colorAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-        VkAttachmentDescription depthAttachment{};
+        colorAttachment.finalLayout = multisampleEnabled ? VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL : VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+        VkAttachmentDescription& depthAttachment = attachments.addDefault();
         depthAttachment.format = Image_Vulkan::getVulkanFormatByImageFormat(m_RenderImage_Depth->getFormat());
         depthAttachment.samples = m_CurrentSettings.sampleCount;
         depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
@@ -243,32 +246,42 @@ namespace JumaEngine
         depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
         depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
         depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-        VkAttachmentDescription colorAttachmentResolve{};
-        colorAttachmentResolve.format = m_CurrentSettings.surfaceFormat.format;
-        colorAttachmentResolve.samples = VK_SAMPLE_COUNT_1_BIT;
-        colorAttachmentResolve.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-        colorAttachmentResolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-        colorAttachmentResolve.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-        colorAttachmentResolve.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-        colorAttachmentResolve.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        colorAttachmentResolve.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-        jarray<VkAttachmentDescription> attachments = { colorAttachment, depthAttachment, colorAttachmentResolve };
+        if (multisampleEnabled)
+        {
+            VkAttachmentDescription& colorAttachmentResolve = attachments.addDefault();
+            colorAttachmentResolve.format = m_CurrentSettings.surfaceFormat.format;
+            colorAttachmentResolve.samples = VK_SAMPLE_COUNT_1_BIT;
+            colorAttachmentResolve.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+            colorAttachmentResolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+            colorAttachmentResolve.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+            colorAttachmentResolve.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+            colorAttachmentResolve.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+            colorAttachmentResolve.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+        }
 
-        VkAttachmentReference colorAttachmentRef{};
+        jarray<VkAttachmentReference> attachmentRefs;
+        VkAttachmentReference& colorAttachmentRef = attachmentRefs.addDefault();
         colorAttachmentRef.attachment = 0;
         colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-        VkAttachmentReference depthAttachmentRef{};
+        VkAttachmentReference& depthAttachmentRef = attachmentRefs.addDefault();
         depthAttachmentRef.attachment = 1;
         depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-        VkAttachmentReference colorAttachmentResolveRef{};
-        colorAttachmentResolveRef.attachment = 2;
-        colorAttachmentResolveRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+        if (multisampleEnabled)
+        {
+            VkAttachmentReference& colorAttachmentResolveRef = attachmentRefs.addDefault();
+            colorAttachmentResolveRef.attachment = 2;
+            colorAttachmentResolveRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+        }
+
         VkSubpassDescription subpass{};
         subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
         subpass.colorAttachmentCount = 1;
-        subpass.pColorAttachments = &colorAttachmentRef;
-        subpass.pDepthStencilAttachment = &depthAttachmentRef;
-        subpass.pResolveAttachments = &colorAttachmentResolveRef;
+        subpass.pColorAttachments = &attachmentRefs[0];
+        subpass.pDepthStencilAttachment = &attachmentRefs[1];
+        if (multisampleEnabled)
+        {
+            subpass.pResolveAttachments = &attachmentRefs[2];
+        }
 
         VkSubpassDependency dependency{};
         dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
@@ -435,9 +448,16 @@ namespace JumaEngine
 		        glm::clamp(window->size.y, capabilities.minImageExtent.height, capabilities.maxImageExtent.height)
 	        };
         }
-        m_NeedToRecreate = true;
+        markAsNeededToRecreate();
     }
 
+    void VulkanSwapchain::markAsNeededToRecreate()
+    {
+        if (isValid())
+        {
+            m_NeedToRecreate = true;
+        }
+    }
     void VulkanSwapchain::applySettings(const bool forceRecreate)
     {
         if (!isValid())
@@ -446,12 +466,12 @@ namespace JumaEngine
         }
         if ((m_SettingForApply.size.x == 0) || (m_SettingForApply.size.y == 0))
         {
-            m_NeedToRecreate = true;
+            markAsNeededToRecreate();
             return;
         }
         if (!applySettingsInternal(forceRecreate))
         {
-            clear();
+            clearSwapchain();
         }
     }
     bool VulkanSwapchain::applySettingsInternal(const bool forceRecreate)
@@ -517,7 +537,7 @@ namespace JumaEngine
                 throw std::runtime_error(message);
             }
 
-            m_NeedToRecreate = true;
+            markAsNeededToRecreate();
             return false;
         }
         VkFence fence = m_Framebuffers[renderImageIndex]->getRenderFinishedFence();
@@ -526,7 +546,7 @@ namespace JumaEngine
             vkWaitForFences(device, 1, &fence, VK_TRUE, UINT64_MAX);
         }
 
-        const jshared_ptr<VulkanCommandBuffer> commandBuffer = startRenderInternal(renderImageIndex);
+        const jshared_ptr<VulkanCommandBuffer> commandBuffer = createRenderCommandBuffer(renderImageIndex);
         if (commandBuffer == nullptr)
         {
             return false;
@@ -539,7 +559,7 @@ namespace JumaEngine
         optionsData->swapchainImageIndex = renderImageIndex;
         return true;
     }
-    jshared_ptr<VulkanCommandBuffer> VulkanSwapchain::startRenderInternal(const uint32 swapchainImageIndex)
+    jshared_ptr<VulkanCommandBuffer> VulkanSwapchain::createRenderCommandBuffer(const uint32 swapchainImageIndex)
     {
         const jshared_ptr<VulkanCommandPool> commandPool = getRenderSubsystem()->getCommandPool(VulkanQueueType::Graphics);
         jshared_ptr<VulkanCommandBuffer> commandBuffer = commandPool != nullptr ? commandPool->createCommandBuffer(true) : nullptr;
@@ -622,7 +642,7 @@ namespace JumaEngine
         result = vkQueuePresentKHR(getRenderSubsystem()->getQueue(VulkanQueueType::Present)->get(), &presentInfo);
         if ((result == VK_ERROR_OUT_OF_DATE_KHR) || (result == VK_SUBOPTIMAL_KHR))
         {
-            m_NeedToRecreate = true;
+            markAsNeededToRecreate();
         }
         else if (result != VK_SUCCESS)
         {
