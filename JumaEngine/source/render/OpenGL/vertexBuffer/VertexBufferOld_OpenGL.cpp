@@ -168,20 +168,33 @@ namespace JumaEngine
             }
 
             GLenum componentType = 0;
+            uint32 componentSize = 0;
             switch (componentDescriprion.componentType)
             {
             case VertexComponentType::Float: 
                 componentType = GL_FLOAT;
+                componentSize = 1;
+                break;
+            case VertexComponentType::Vec2: 
+                componentType = GL_FLOAT;
+                componentSize = 2;
+                break;
+            case VertexComponentType::Vec3: 
+                componentType = GL_FLOAT;
+                componentSize = 3;
+                break;
+            case VertexComponentType::Vec4: 
+                componentType = GL_FLOAT;
+                componentSize = 4;
                 break;
 
-            case VertexComponentType::None:
             default:
                 continue;
             }
 
             glVertexAttribPointer(
                 componentDescriprion.componentID, 
-                componentDescriprion.componentSize, 
+                componentSize, 
                 componentType, 
                 GL_FALSE, 
                 bufferDescription.vertexSize, 

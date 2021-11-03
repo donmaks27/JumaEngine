@@ -21,7 +21,7 @@ namespace JumaEngine
             Super::fillVertexBufferDescription(description);
 
             description.vertexComponents = {
-                {0, VertexComponentType::Float, 3, offsetof(Vertex3D, position)}
+                {0, VertexComponentType::Vec3, offsetof(Vertex3D, position)}
             };
         }
 

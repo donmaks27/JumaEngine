@@ -28,14 +28,13 @@ namespace JumaEngine
 
     protected:
 
-        VertexBufferDescription m_Description = VertexBufferDescription();
-
-
         virtual bool initInternal(const VertexBufferDataBase* data) = 0;
         virtual void clearInternal() = 0;
 
     private:
 
         bool m_Initialized = false;
+
+        VertexBufferDescription m_Description = VertexBufferDescription();
     };
 }

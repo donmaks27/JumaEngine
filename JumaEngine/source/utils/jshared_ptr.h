@@ -3,6 +3,7 @@
 #pragma once
 
 #include <memory>
+#include "type_checks.h"
 
 namespace jutils
 {
@@ -21,9 +22,13 @@ namespace jutils
         jshared_ptr(T* ptr)
             : base_class(ptr)
         {}
-        template<typename U, std::enable_if_t<std::_SP_pointer_compatible<U, T>::value, int> = 0>
+        template<typename U, TEMPLATE_ENABLE(std::_SP_pointer_compatible<U, T>::value)>
         jshared_ptr(const std::shared_ptr<U>& ptr) noexcept
             : base_class(ptr)
+        {}
+        template<typename U, TEMPLATE_ENABLE(std::_SP_pointer_compatible<U, T>::value)>
+        jshared_ptr(std::shared_ptr<U>&& ptr) noexcept
+            : base_class(std::move(ptr))
         {}
     };
 

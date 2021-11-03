@@ -557,6 +557,7 @@ namespace JumaEngine
 
         RenderOptionsData_Vulkan* optionsData = options.getData<RenderOptionsData_Vulkan>();
         optionsData->swapchainImageIndex = renderImageIndex;
+        optionsData->commandBuffer = commandBuffer;
         return true;
     }
     jshared_ptr<VulkanCommandBuffer> VulkanSwapchain::createRenderCommandBuffer(const uint32 swapchainImageIndex)

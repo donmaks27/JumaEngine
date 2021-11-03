@@ -23,9 +23,9 @@ namespace JumaEngine
             Super::fillVertexBufferDescription(description);
 
             description.vertexComponents = {
-                { 0, VertexComponentType::Float, 3, offsetof(Vertex3D_Normal_TexCoord, position) },
-                { 1, VertexComponentType::Float, 3, offsetof(Vertex3D_Normal_TexCoord, normal) },
-                { 2, VertexComponentType::Float, 2, offsetof(Vertex3D_Normal_TexCoord, textureCoords) }
+                { 0, VertexComponentType::Vec3, offsetof(Vertex3D_Normal_TexCoord, position) },
+                { 1, VertexComponentType::Vec3, offsetof(Vertex3D_Normal_TexCoord, normal) },
+                { 2, VertexComponentType::Vec2, offsetof(Vertex3D_Normal_TexCoord, textureCoords) }
             };
         }
 

@@ -139,6 +139,7 @@
     <ClCompile Include="source\subsystems\render\Vulkan\Image_Vulkan.cpp" />
     <ClCompile Include="source\subsystems\render\Vulkan\RenderSubsystem_Vulkan.cpp" />
     <ClCompile Include="source\subsystems\render\Vulkan\RenderSubsystem_Vulkan_GLFW.cpp" />
+    <ClCompile Include="source\subsystems\render\Vulkan\VertexBuffer_Vulkan.cpp" />
     <ClCompile Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanBuffer.cpp" />
     <ClCompile Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanCommandBuffer.cpp" />
     <ClCompile Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanCommandPool.cpp" />
@@ -225,6 +226,7 @@
     <ClInclude Include="source\subsystems\render\Vulkan\RenderOptionsData_Vulkan.h" />
     <ClInclude Include="source\subsystems\render\Vulkan\RenderSubsystem_Vulkan.h" />
     <ClInclude Include="source\subsystems\render\Vulkan\RenderSubsystem_Vulkan_GLFW.h" />
+    <ClInclude Include="source\subsystems\render\Vulkan\VertexBuffer_Vulkan.h" />
     <ClInclude Include="source\subsystems\render\Vulkan\vma_lib.h" />
     <ClInclude Include="source\subsystems\render\Vulkan\VulkanContextObject.h" />
     <ClInclude Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanBuffer.h" />

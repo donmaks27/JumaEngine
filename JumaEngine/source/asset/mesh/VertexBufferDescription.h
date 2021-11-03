@@ -10,17 +10,19 @@ namespace JumaEngine
     enum class VertexComponentType
     {
         None,
-        Float
+        Float,
+        Vec2,
+        Vec3,
+        Vec4
     };
 
     struct VertexComponentDescription
     {
         int32 componentID = -1;
         VertexComponentType componentType = VertexComponentType::None;
-        uint32 componentSize = 0;
         size_t componentOffset = 0;
 
-        bool isValid() const { return (componentID >= 0) && (componentType != VertexComponentType::None) && (componentSize > 0); }
+        bool isValid() const { return (componentID >= 0) && (componentType != VertexComponentType::None); }
     };
 
     struct VertexBufferDescription

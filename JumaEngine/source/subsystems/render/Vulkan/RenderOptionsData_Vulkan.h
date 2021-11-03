@@ -10,9 +10,12 @@
 
 namespace JumaEngine
 {
+    class VulkanCommandBuffer;
+
     struct RenderOptionsData_Vulkan : public RenderOptionsData
     {
         uint32 swapchainImageIndex = 0;
+        jshared_ptr<VulkanCommandBuffer> commandBuffer = nullptr;
     };
 }
 
