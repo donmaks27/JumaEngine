@@ -23,7 +23,7 @@ namespace JumaEngine
         VulkanBuffer() = default;
         virtual ~VulkanBuffer() override;
 
-        bool init(VkDeviceSize size, VkBufferUsageFlags usage, const jset<VulkanQueueType>& queues, VmaMemoryUsage memoryUsage, 
+        bool init(uint64 size, VkBufferUsageFlags usage, const jset<VulkanQueueType>& queues, VmaMemoryUsage memoryUsage, 
             VkMemoryPropertyFlags memoryProperties);
         bool init(const VkBufferCreateInfo& bufferInfo, const VmaAllocationCreateInfo& allocationInfo);
 
@@ -34,6 +34,8 @@ namespace JumaEngine
         bool setData(const void* data, uint64 dataSize);
 
         bool copyTo(const jshared_ptr<VulkanBuffer>& dstBuffer) const;
+
+        bool initGPUBuffer(const void* data, uint64 dataSize, const jset<VulkanQueueType>& queues, VkBufferUsageFlags usage);
 
     protected:
 
@@ -47,6 +49,8 @@ namespace JumaEngine
 
 
         void clearBuffer();
+
+        bool copyTo(const VulkanBuffer* dstBuffer) const;
     };
 }
 

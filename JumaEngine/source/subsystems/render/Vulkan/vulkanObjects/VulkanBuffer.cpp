@@ -17,7 +17,7 @@ namespace JumaEngine
         clearBuffer();
     }
 
-    bool VulkanBuffer::init(VkDeviceSize size, VkBufferUsageFlags usage, const jset<VulkanQueueType>& queues, VmaMemoryUsage memoryUsage,
+    bool VulkanBuffer::init(uint64 size, VkBufferUsageFlags usage, const jset<VulkanQueueType>& queues, VmaMemoryUsage memoryUsage,
         VkMemoryPropertyFlags memoryProperties)
     {
         if (isValid())
@@ -105,7 +105,10 @@ namespace JumaEngine
         {
             return false;
         }
-
+        return copyTo(dstBuffer.get());
+    }
+    bool VulkanBuffer::copyTo(const VulkanBuffer* dstBuffer) const
+    {
         const jshared_ptr<VulkanCommandPool> commandPool = getRenderSubsystem()->getCommandPool(VulkanQueueType::Transfer);
         const jshared_ptr<VulkanCommandBuffer> commandBuffer = commandPool != nullptr ? commandPool->createCommandBuffer(true) : nullptr;
         if ((commandBuffer == nullptr) || !commandBuffer->isValid())
@@ -127,6 +130,44 @@ namespace JumaEngine
         vkEndCommandBuffer(commandBuffer->get());
 
         return commandBuffer->submit(true);
+    }
+
+    bool VulkanBuffer::initGPUBuffer(const void* data, const uint64 dataSize, const jset<VulkanQueueType>& queues, const VkBufferUsageFlags usage)
+    {
+        if (isValid())
+        {
+            JUMA_LOG(warning, JSTR("Buffer already initialized."));
+            return false;
+        }
+        if ((data == nullptr) || (dataSize == 0))
+        {
+            JUMA_LOG(warning, JSTR("Wrong input data"));
+            return false;
+        }
+
+        jshared_ptr<VulkanBuffer> stagingBuffer = getRenderSubsystem()->createVulkanObject<VulkanBuffer>();
+        stagingBuffer->init(dataSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, {}, VMA_MEMORY_USAGE_CPU_TO_GPU, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+        if (!stagingBuffer->isValid() || !stagingBuffer->setData(data, dataSize))
+        {
+            return false;
+        }
+
+        if ((queues.getSize() == 0) || queues.contains(VulkanQueueType::Transfer))
+        {
+            init(dataSize, usage | VK_BUFFER_USAGE_TRANSFER_DST_BIT, queues, VMA_MEMORY_USAGE_GPU_ONLY, 0);
+        }
+        else
+        {
+            jset<VulkanQueueType> queueTypes = queues;
+            queueTypes.add(VulkanQueueType::Transfer);
+            init(dataSize, usage | VK_BUFFER_USAGE_TRANSFER_DST_BIT, queueTypes, VMA_MEMORY_USAGE_GPU_ONLY, 0);
+        }
+        if (!isValid() || !stagingBuffer->copyTo(this))
+        {
+            clear();
+            return false;
+        }
+        return true;
     }
 }
 
