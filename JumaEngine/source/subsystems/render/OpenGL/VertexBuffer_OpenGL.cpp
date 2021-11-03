@@ -119,7 +119,7 @@ namespace JumaEngine
         }
     }
 
-    void VertexBuffer_OpenGL::render(const RenderOptions& options)
+    void VertexBuffer_OpenGL::render() const
     {
         if (!isValid())
         {
@@ -129,14 +129,6 @@ namespace JumaEngine
         const VertexBufferDescription& bufferDescription = getVertexBufferDescription();
 
         glBindVertexArray(m_VerticesVAO);
-        if (options.data->invertFacesOrientation)
-        {
-            glCullFace(GL_FRONT);
-        }
-        else
-        {
-            glCullFace(GL_BACK);
-        }
         if (m_IndicesVBO == 0)
         {
             glDrawArrays(GL_TRIANGLES, 0, bufferDescription.verticesCount);

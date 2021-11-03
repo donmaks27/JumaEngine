@@ -27,7 +27,7 @@ namespace JumaEngine
     {
     }
 
-    bool Material_OpenGL::renderActivate(const RenderOptions& options)
+    bool Material_OpenGL::activate()
     {
         if (!isValid())
         {
@@ -76,7 +76,7 @@ namespace JumaEngine
         }
         return true;
     }
-    void Material_OpenGL::renderDeactivate(const RenderOptions& options)
+    void Material_OpenGL::deactivate()
     {
         while (m_ActivatedImagesCount > 0)
         {

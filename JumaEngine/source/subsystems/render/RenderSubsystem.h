@@ -10,6 +10,7 @@
 
 namespace JumaEngine
 {
+    class Mesh;
     class Image;
     class VertexBuffer;
     class Material;
@@ -38,6 +39,7 @@ namespace JumaEngine
         virtual jshared_ptr<Shader> createShader() = 0;
         virtual jshared_ptr<Material> createMaterial() = 0;
         virtual jshared_ptr<Image> createImage() = 0;
+        virtual jshared_ptr<Mesh> createMesh() = 0;
 
     protected:
 

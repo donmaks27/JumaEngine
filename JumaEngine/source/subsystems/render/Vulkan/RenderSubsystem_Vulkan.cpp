@@ -448,12 +448,11 @@ namespace JumaEngine
     jshared_ptr<Image> RenderSubsystem_Vulkan::createImage()
     {
         Engine* engine = getOwnerEngine();
-        Image_Vulkan* image = engine != nullptr ? engine->createObject<Image_Vulkan>() : nullptr;
-        if (image != nullptr)
-        {
-            image->m_RenderSubsystem = this;
-        }
-        return image;
+        return registerVulkanObject(engine != nullptr ? engine->createObject<Image_Vulkan>() : nullptr);
+    }
+    jshared_ptr<Mesh> RenderSubsystem_Vulkan::createMesh()
+    {
+        return nullptr;
     }
 }
 

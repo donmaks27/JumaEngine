@@ -96,7 +96,7 @@
     <ClCompile Include="source\asset\material\MaterialOld.cpp" />
     <ClCompile Include="source\asset\material\MaterialBaseOld.cpp" />
     <ClCompile Include="source\asset\material\MaterialInstanceOld.cpp" />
-    <ClCompile Include="source\asset\mesh\Mesh.cpp" />
+    <ClCompile Include="source\asset\mesh\MeshOld.cpp" />
     <ClCompile Include="source\asset\mesh\MeshFileImporterBase.cpp" />
     <ClCompile Include="source\asset\mesh\MeshFileImporter_Assimp.cpp" />
     <ClCompile Include="source\asset\texture\TextureFileImporterBase.cpp" />
@@ -127,8 +127,10 @@
     <ClCompile Include="source\render\vertexBuffer\VertexBufferBaseOld.cpp" />
     <ClCompile Include="source\subsystems\render\Image.cpp" />
     <ClCompile Include="source\subsystems\render\Material.cpp" />
+    <ClCompile Include="source\subsystems\render\Mesh.cpp" />
     <ClCompile Include="source\subsystems\render\OpenGL\Image_OpenGL.cpp" />
     <ClCompile Include="source\subsystems\render\OpenGL\Material_OpenGL.cpp" />
+    <ClCompile Include="source\subsystems\render\OpenGL\Mesh_OpenGL.cpp" />
     <ClCompile Include="source\subsystems\render\OpenGL\RenderSubsystem_OpenGL.cpp" />
     <ClCompile Include="source\subsystems\render\OpenGL\RenderSubsystem_OpenGL_GLFW.cpp" />
     <ClCompile Include="source\subsystems\render\OpenGL\Shader_OpenGL.cpp" />
@@ -159,7 +161,7 @@
     <ClInclude Include="source\asset\material\MaterialBaseOld.h" />
     <ClInclude Include="source\asset\material\MaterialInstanceOld.h" />
     <ClInclude Include="source\asset\mesh\DefaultVertexBuffer.h" />
-    <ClInclude Include="source\asset\mesh\Mesh.h" />
+    <ClInclude Include="source\asset\mesh\MeshOld.h" />
     <ClInclude Include="source\asset\mesh\MeshFileImporterBase.h" />
     <ClInclude Include="source\asset\mesh\MeshFileImporter_Assimp.h" />
     <ClInclude Include="source\asset\mesh\MeshFileImporterData.h" />
@@ -207,8 +209,10 @@
     <ClInclude Include="source\subsystems\render\ImageFormat.h" />
     <ClInclude Include="source\subsystems\render\Material.h" />
     <ClInclude Include="source\subsystems\render\MaterialUniform.h" />
+    <ClInclude Include="source\subsystems\render\Mesh.h" />
     <ClInclude Include="source\subsystems\render\OpenGL\Image_OpenGL.h" />
     <ClInclude Include="source\subsystems\render\OpenGL\Material_OpenGL.h" />
+    <ClInclude Include="source\subsystems\render\OpenGL\Mesh_OpenGL.h" />
     <ClInclude Include="source\subsystems\render\OpenGL\RenderSubsystem_OpenGL.h" />
     <ClInclude Include="source\subsystems\render\OpenGL\RenderSubsystem_OpenGL_GLFW.h" />
     <ClInclude Include="source\subsystems\render\OpenGL\Shader_OpenGL.h" />

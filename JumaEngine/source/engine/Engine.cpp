@@ -4,6 +4,7 @@
 #include "asset/mesh/vertexTypes/Vertex2D.h"
 #include "subsystems/render/Image.h"
 #include "subsystems/render/Material.h"
+#include "subsystems/render/Mesh.h"
 #include "subsystems/render/Shader.h"
 #include "subsystems/render/VertexBuffer.h"
 #include "subsystems/render/OpenGL/RenderSubsystem_OpenGL_GLFW.h"
@@ -78,24 +79,24 @@ namespace JumaEngine
     }
     bool Engine::initEngine()
     {
-        m_RenderSubsystem = createObject<RenderSubsystem_Vulkan_GLFW>();
+        m_RenderSubsystem = createObject<RenderSubsystem_OpenGL_GLFW>();
         if (m_RenderSubsystem == nullptr)
         {
             return false;
         }
         m_RenderSubsystem->initSubsystem();
 
-        /*const uint8 imageData[4] = { 255, 0, 0, 255 };
-        m_Image = m_RenderSubsystem->createImage();
-        m_Image->init({ 1, 1 }, ImageFormat::R8G8B8A8, imageData);
+        const uint8 imageData[4] = { 255, 0, 0, 255 };
+        jshared_ptr<Image> image = m_RenderSubsystem->createImage();
+        image->init({ 1, 1 }, ImageFormat::R8G8B8A8, imageData);
 
-        m_Shader = m_RenderSubsystem->createShader();
-        m_Shader->init(JSTR("content/shaders/ui_texture"), {
+        jshared_ptr<Shader> shader = m_RenderSubsystem->createShader();
+        shader->init(JSTR("content/shaders/ui_texture"), {
             { JSTR("uTexture"), { 0, ShaderUniformType::Image, { ShaderStage::Fragment } } }
         });
-        m_Material = m_RenderSubsystem->createMaterial();
-        m_Material->init(m_Shader);
-        m_Material->setUniformValue<ShaderUniformType::Image>(JSTR("uTexture"), m_Image);
+        jshared_ptr<Material> material = m_RenderSubsystem->createMaterial();
+        material->init(shader);
+        material->setUniformValue<ShaderUniformType::Image>(JSTR("uTexture"), image);
 
         DefaultVertexBuffer defaultVertexBufferData;
         defaultVertexBufferData.vertices = {
@@ -106,11 +107,13 @@ namespace JumaEngine
             { { 0.5f, 0.0f, 0.0f } },
             { { 0.5f, 0.5f, 0.0f } }
         };
-        VertexBufferDataBase* vertexBufferData = new VertexBufferData_Vertex2D();
-        vertexBufferData->copyFromDefaultVertexBuffer(defaultVertexBufferData);
-        m_VertexBuffer = m_RenderSubsystem->createVertexBuffer();
-        m_VertexBuffer->init(vertexBufferData);
-        delete vertexBufferData;*/
+        VertexBufferData_Vertex2D vertexBufferData;
+        vertexBufferData.copyFromDefaultVertexBuffer(defaultVertexBufferData);
+        jshared_ptr<VertexBuffer> vertexBuffer = m_RenderSubsystem->createVertexBuffer();
+        vertexBuffer->init(&vertexBufferData);
+
+        m_Mesh = m_RenderSubsystem->createMesh();
+        m_Mesh->init(vertexBuffer, material);
 
         return true;
     }
@@ -130,10 +133,7 @@ namespace JumaEngine
 
     void Engine::terminate()
     {
-        m_VertexBuffer.reset();
-        m_Material.reset();
-        m_Shader.reset();
-        m_Image.reset();
+        m_Mesh.reset();
 
         m_RenderSubsystem->clear();
         delete m_RenderSubsystem;
@@ -142,8 +142,6 @@ namespace JumaEngine
 
     void Engine::render(const RenderOptions& options)
     {
-        /*m_Material->renderActivate(options);
-        m_VertexBuffer->render(options);
-        m_Material->renderDeactivate(options);*/
+        m_Mesh->render(options);
     }
 }

@@ -18,16 +18,4 @@ namespace JumaEngine
 
         virtual void render(const RenderOptions& options) {}
     };
-    
-    class IRenderActivateInterface
-    {
-    protected:
-        IRenderActivateInterface() = default;
-        virtual ~IRenderActivateInterface() = default;
-
-    public:
-
-        virtual bool renderActivate(const RenderOptions& options) { return true; }
-        virtual void renderDeactivate(const RenderOptions& options) {}
-    };
 }

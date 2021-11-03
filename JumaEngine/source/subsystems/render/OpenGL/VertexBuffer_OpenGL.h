@@ -18,7 +18,7 @@ namespace JumaEngine
         VertexBuffer_OpenGL() = default;
         virtual ~VertexBuffer_OpenGL() override;
         
-        virtual void render(const RenderOptions& options) override;
+        void render() const;
 
     protected:
 

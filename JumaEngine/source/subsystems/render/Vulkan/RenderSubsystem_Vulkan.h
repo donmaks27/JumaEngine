@@ -14,12 +14,12 @@
 #include "utils/jarray.h"
 #include "utils/jmap.h"
 #include "vulkanObjects/VulkanQueueType.h"
+#include "VulkanContextObject.h"
 
 namespace JumaEngine
 {
     class VulkanSwapchain;
     class VulkanCommandPool;
-    class VulkanContextObject;
     class VulkanQueue;
 
     class RenderSubsystem_Vulkan : public RenderSubsystem
@@ -32,17 +32,13 @@ namespace JumaEngine
 
         virtual void render() override;
         
-        template<typename T, TEMPLATE_ENABLE(is_base_and_not_same<VulkanContextObject, T>)>
-        T* createVulkanObject()
-        {
-            T* object = new T();
-            object->m_RenderSubsystem = this;
-            return object;
-        }
+        template<typename T, TEMPLATE_ENABLE(is_base_and_not_same<VulkanContextObjectBase, T>)>
+        T* createVulkanObject() { return registerVulkanObject(new T()); }
         virtual jshared_ptr<VertexBuffer> createVertexBuffer() override;
         virtual jshared_ptr<Shader> createShader() override;
         virtual jshared_ptr<Material> createMaterial() override;
         virtual jshared_ptr<Image> createImage() override;
+        virtual jshared_ptr<Mesh> createMesh() override;
 
         VkInstance getVulkanInstance() const { return m_VulkanInstance; }
         VkPhysicalDevice getPhysicalDevice() const { return m_PhysicalDevice; }
@@ -91,6 +87,16 @@ namespace JumaEngine
         bool createSwapchain();
 
         void clearVulkan();
+
+        template<typename T, TEMPLATE_ENABLE(is_base_and_not_same<VulkanContextObjectBase, T>)>
+        T* registerVulkanObject(T* vulkanContextObject)
+        {
+            if (vulkanContextObject != nullptr)
+            {
+                vulkanContextObject->m_RenderSubsystem = this;
+            }
+            return vulkanContextObject;
+        }
     };
 }
 

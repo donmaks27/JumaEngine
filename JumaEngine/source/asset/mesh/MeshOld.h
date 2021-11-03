@@ -14,13 +14,13 @@ namespace JumaEngine
     class MaterialBaseOld;
     class MeshFileImporterBase;
 
-    class Mesh : public AssetObject, public IRenderedObject
+    class MeshOld : public AssetObject, public IRenderedObject
     {
-        JUMAENGINE_CLASS_OLD(Mesh, AssetObject)
+        JUMAENGINE_CLASS_OLD(MeshOld, AssetObject)
 
     public:
-        Mesh() = default;
-        virtual ~Mesh() override;
+        MeshOld() = default;
+        virtual ~MeshOld() override;
         
         bool init(const jarray<VertexBufferDataBase*>& meshPartsData);
         bool isInit() const { return !m_VertexBuffers.isEmpty(); }

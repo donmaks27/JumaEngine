@@ -10,10 +10,7 @@
 
 namespace JumaEngine
 {
-    class Image;
-    class VertexBuffer;
-    class Material;
-    class Shader;
+    class Mesh;
     class RenderSubsystem;
 
     class Engine final : public IRenderInterface
@@ -38,10 +35,7 @@ namespace JumaEngine
 
         RenderSubsystem* m_RenderSubsystem = nullptr;
 
-        jshared_ptr<Image> m_Image = nullptr;
-        jshared_ptr<Shader> m_Shader = nullptr;
-        jshared_ptr<Material> m_Material = nullptr;
-        jshared_ptr<VertexBuffer> m_VertexBuffer = nullptr;
+        jshared_ptr<Mesh> m_Mesh = nullptr;
 
 
         void registerEngineObject(EngineContextObject* object);

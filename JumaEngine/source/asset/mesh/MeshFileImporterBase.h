@@ -4,7 +4,7 @@
 
 #include "common_header.h"
 #include "MeshFileImporterData.h"
-#include "Mesh.h"
+#include "MeshOld.h"
 #include "VertexBufferData.h"
 #include "engine/EngineContextObject.h"
 
@@ -25,7 +25,7 @@ namespace JumaEngine
 
         const MeshFileImporterData& getData() const { return m_Data; }
         template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<VertexBufferDataBase, T>)>
-        bool copyMeshData(const asset_ptr<Mesh>& outMesh, const jstring& meshName) const
+        bool copyMeshData(const asset_ptr<MeshOld>& outMesh, const jstring& meshName) const
         {
             if ((outMesh == nullptr) || outMesh->isInit())
             {

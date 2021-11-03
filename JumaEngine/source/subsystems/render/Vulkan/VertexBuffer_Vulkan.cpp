@@ -109,27 +109,27 @@ namespace JumaEngine
         m_IndexBuffer.reset();
     }
 
-    void VertexBuffer_Vulkan::render(const RenderOptions& options)
+    void VertexBuffer_Vulkan::render(const jshared_ptr<VulkanCommandBuffer>& commandBuffer)
     {
-        if (!isValid())
+        if (!isValid() || (commandBuffer == nullptr) || !commandBuffer->isValid())
         {
             return;
         }
 
         const VertexBufferDescription& bufferDescription = getVertexBufferDescription();
-        VkCommandBuffer commandBuffer = options.getData<RenderOptionsData_Vulkan>()->commandBuffer->get();
+        VkCommandBuffer vulkanCommandBuffer = commandBuffer->get();
 
         VkDeviceSize offsets[] = { 0 };
         VkBuffer vertexBuffer = m_VertexBuffer->get();
-        vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertexBuffer, offsets);
-        if (bufferDescription.indicesCount == 0)
+        vkCmdBindVertexBuffers(vulkanCommandBuffer, 0, 1, &vertexBuffer, offsets);
+        if (m_IndexBuffer != nullptr)
         {
-            vkCmdDraw(commandBuffer, bufferDescription.verticesCount, 1, 0, 0);
+            vkCmdDraw(vulkanCommandBuffer, bufferDescription.verticesCount, 1, 0, 0);
         }
         else
         {
-            vkCmdBindIndexBuffer(commandBuffer, m_IndexBuffer->get(), 0, VK_INDEX_TYPE_UINT32);
-            vkCmdDrawIndexed(commandBuffer, bufferDescription.indicesCount, 1, 0, 0, 0);
+            vkCmdBindIndexBuffer(vulkanCommandBuffer, m_IndexBuffer->get(), 0, VK_INDEX_TYPE_UINT32);
+            vkCmdDrawIndexed(vulkanCommandBuffer, bufferDescription.indicesCount, 1, 0, 0, 0);
         }
     }
 }

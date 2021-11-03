@@ -4,7 +4,7 @@
 #include "AssetObject.h"
 #include "material/MaterialOld.h"
 #include "material/MaterialInstanceOld.h"
-#include "mesh/Mesh.h"
+#include "mesh/MeshOld.h"
 #include "render/RenderManagerBase.h"
 #include "render/shader/ShaderBase.h"
 #include "render/texture/TextureBase.h"
@@ -98,17 +98,17 @@ namespace JumaEngine
 		return nullptr;
     }
 
-    asset_ptr<Mesh> AssetsManager::createMesh(const jstring& meshName)
+    asset_ptr<MeshOld> AssetsManager::createMesh(const jstring& meshName)
     {
-        const jstring actuallName = jstring(JSTR("Mesh.")) + meshName;
+        const jstring actuallName = jstring(JSTR("MeshOld.")) + meshName;
 		
-        asset_ptr<Mesh>* existingAsset = m_Meshes.find(actuallName);
+        asset_ptr<MeshOld>* existingAsset = m_Meshes.find(actuallName);
 		if (existingAsset != nullptr)
 		{
 			return *existingAsset;
 		}
 
-        asset_ptr<Mesh> asset = createAssetObject<Mesh>();
+        asset_ptr<MeshOld> asset = createAssetObject<MeshOld>();
         if (asset != nullptr)
         {
             m_Meshes.set(actuallName, asset);

@@ -4,7 +4,6 @@
 
 #include "common_header.h"
 #include "engine/EngineContextObject.h"
-#include "RenderInterface.h"
 
 #include "MaterialUniform.h"
 #include "utils/jshared_ptr.h"
@@ -18,7 +17,7 @@ namespace JumaEngine
 
     CREATE_JDELEGATE_MULTICAST_TYPE_OneParam(OnMaterialEvent, Material*, material)
 
-    class Material : public EngineContextObject, public IRenderActivateInterface
+    class Material : public EngineContextObject
     {
         JUMAENGINE_ABSTRACT_CLASS(Material, EngineContextObject)
 

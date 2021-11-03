@@ -3,12 +3,12 @@
 #include "MeshComponent.h"
 #include "CameraComponent.h"
 #include "asset/material/MaterialBaseOld.h"
-#include "asset/mesh/Mesh.h"
+#include "asset/mesh/MeshOld.h"
 #include "utils/system_functions.h"
 
 namespace JumaEngine
 {
-    void MeshComponent::setMesh(const asset_ptr<Mesh>& mesh)
+    void MeshComponent::setMesh(const asset_ptr<MeshOld>& mesh)
     {
         m_Mesh = mesh;
     }

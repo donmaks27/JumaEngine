@@ -13,7 +13,7 @@ namespace JumaEngine
     class MaterialBaseOld;
     class MaterialOld;
     class MaterialInstanceOld;
-    class Mesh;
+    class MeshOld;
     class TextureBase;
 
     class AssetsManager final : public EngineContextObjectOld
@@ -30,7 +30,7 @@ namespace JumaEngine
 		asset_ptr<MaterialInstanceOld> createMaterialInstance(const jstring& materialInstanceName, const asset_ptr<MaterialBaseOld>& baseMaterial);
 		asset_ptr<MaterialInstanceOld> createMaterialInstance(const asset_ptr<MaterialBaseOld>& baseMaterial);
 
-        asset_ptr<Mesh> createMesh(const jstring& meshName);
+        asset_ptr<MeshOld> createMesh(const jstring& meshName);
 
         asset_ptr<TextureBase> createTexture(const jstring& textureName);
         asset_ptr<TextureBase> createTexture();
@@ -39,7 +39,7 @@ namespace JumaEngine
 
     	jmap<jstring, asset_ptr<MaterialOld>> m_Materials;
         jmap<jstring, asset_ptr<MaterialInstanceOld>> m_MaterialInstances;
-        jmap<jstring, asset_ptr<Mesh>> m_Meshes;
+        jmap<jstring, asset_ptr<MeshOld>> m_Meshes;
         jmap<jstring, asset_ptr<TextureBase>> m_Textures;
 
 

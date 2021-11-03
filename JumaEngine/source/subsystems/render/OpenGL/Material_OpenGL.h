@@ -18,8 +18,8 @@ namespace JumaEngine
         Material_OpenGL() = default;
         virtual ~Material_OpenGL() override;
         
-        virtual bool renderActivate(const RenderOptions& options) override;
-        virtual void renderDeactivate(const RenderOptions& options) override;
+        bool activate();
+        void deactivate();
 
     protected:
 

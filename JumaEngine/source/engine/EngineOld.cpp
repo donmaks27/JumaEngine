@@ -10,7 +10,7 @@
 #include "framework/gameObject/gameComponent/MeshComponent.h"
 #include "asset/material/MaterialOld.h"
 #include "asset/material/MaterialInstanceOld.h"
-#include "asset/mesh/Mesh.h"
+#include "asset/mesh/MeshOld.h"
 #include "render/RenderManagerImpl.h"
 #include "render/renderTarget/RenderTargetDirectBase.h"
 #include "asset/mesh/MeshFileImporterBase.h"
@@ -119,7 +119,7 @@ namespace JumaEngine
     	material->finishInitialization();
 
         m_MeshFileImporter->importFile("content/SM_Cube.fbx");
-        asset_ptr<Mesh> mesh = m_AssetsManager->createMesh(JSTR("Cube"));
+        asset_ptr<MeshOld> mesh = m_AssetsManager->createMesh(JSTR("Cube"));
         m_MeshFileImporter->copyMeshData<VertexBufferData_Vertex3D_Normal_TexCoord>(mesh, JSTR("Cube"));
         mesh->setMaterial(0, m_AssetsManager->createMaterialInstance(material));
 

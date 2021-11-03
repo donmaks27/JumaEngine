@@ -15,6 +15,7 @@
 
 namespace JumaEngine
 {
+    class VulkanCommandBuffer;
     class VulkanBuffer;
 
     class VertexBuffer_Vulkan final : public VertexBuffer, public VulkanContextObjectBase
@@ -25,12 +26,12 @@ namespace JumaEngine
         VertexBuffer_Vulkan() = default;
         virtual ~VertexBuffer_Vulkan() override;
 
-        void render(const RenderOptions& options) override;
+        void render(const jshared_ptr<VulkanCommandBuffer>& commandBuffer);
 
     protected:
 
-        bool initInternal(const VertexBufferDataBase* data) override;
-        void clearInternal() override;
+        virtual bool initInternal(const VertexBufferDataBase* data) override;
+        virtual void clearInternal() override;
 
     private:
 
