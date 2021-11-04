@@ -15,6 +15,7 @@
 #include "engine/Engine.h"
 #include "Image_Vulkan.h"
 #include "RenderOptionsData_Vulkan.h"
+#include "Shader_Vulkan.h"
 
 namespace JumaEngine
 {
@@ -439,7 +440,8 @@ namespace JumaEngine
     }
     jshared_ptr<Shader> RenderSubsystem_Vulkan::createShader()
     {
-        return nullptr;
+        Engine* engine = getOwnerEngine();
+        return registerVulkanObject(engine != nullptr ? engine->createObject<Shader_Vulkan>() : nullptr);
     }
     jshared_ptr<Material> RenderSubsystem_Vulkan::createMaterial()
     {

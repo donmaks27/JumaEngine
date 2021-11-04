@@ -22,9 +22,10 @@ namespace JumaEngine
             description.indicesCount = static_cast<uint32>(vertexIndices.getSize());
         }
 
+        void setVertexIndices(const jarray<uint32>& data) { vertexIndices = data; }
         virtual void copyFromDefaultVertexBuffer(const DefaultVertexBuffer& buffer)
         {
-            vertexIndices = buffer.vertexIndices;
+            setVertexIndices(buffer.vertexIndices);
         }
 
     protected:
@@ -47,6 +48,7 @@ namespace JumaEngine
             description.vertexSize = sizeof(T);
         }
 
+        void setVertices(const jarray<T>& data) { vertices = data; }
         virtual void copyFromDefaultVertexBuffer(const DefaultVertexBuffer& buffer) override final
         {
             VertexBufferDataBase::copyFromDefaultVertexBuffer(buffer);

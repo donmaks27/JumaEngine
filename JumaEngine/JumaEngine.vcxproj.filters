@@ -274,6 +274,9 @@
     <ClCompile Include="source\subsystems\render\OpenGL\Mesh_OpenGL.cpp">
       <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
     </ClCompile>
+    <ClCompile Include="source\subsystems\render\Vulkan\Shader_Vulkan.cpp">
+      <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\common_header.h">
@@ -596,6 +599,9 @@
     </ClInclude>
     <ClInclude Include="source\subsystems\render\OpenGL\Mesh_OpenGL.h">
       <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\Vulkan\Shader_Vulkan.h">
+      <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

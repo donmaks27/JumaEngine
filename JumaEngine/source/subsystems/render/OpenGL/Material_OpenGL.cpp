@@ -64,9 +64,8 @@ namespace JumaEngine
                     const Image_OpenGL* image = cast<Image_OpenGL>(value.get());
                     if (image != nullptr)
                     {
-                        image->activate(m_ActivatedImagesCount);
-                        glUniform1i(location, m_ActivatedImagesCount);
-                        ++m_ActivatedImagesCount;
+                        image->activate(location);
+                        m_ActivatedImagesCount = glm::max(m_ActivatedImagesCount, location + 1);
                     }
                 }
                 break;

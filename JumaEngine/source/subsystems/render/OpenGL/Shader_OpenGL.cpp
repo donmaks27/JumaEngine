@@ -23,9 +23,9 @@ namespace JumaEngine
     bool Shader_OpenGL::initInternal(const jstring& shaderName, const jmap<jstring, ShaderUniform>& uniforms)
     {
         jarray<uint32> shaders(3, 0);
-        loadAndCompileShader(shaderName + ".vsh", ShaderStage::Vertex, shaders[0]);
-        loadAndCompileShader(shaderName + ".gsh", ShaderStage::Geometry, shaders[1]);
-        loadAndCompileShader(shaderName + ".fsh", ShaderStage::Fragment, shaders[2]);
+        loadAndCompileShader(shaderName + ".vert", ShaderStage::Vertex, shaders[0]);
+        loadAndCompileShader(shaderName + ".geom", ShaderStage::Geometry, shaders[1]);
+        loadAndCompileShader(shaderName + ".frag", ShaderStage::Fragment, shaders[2]);
         const bool result = compileShaderProgram(shaders, m_ShaderProgramIndex);
         for (const auto& shader : shaders)
         {
