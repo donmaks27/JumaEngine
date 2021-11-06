@@ -10,7 +10,7 @@
 
 namespace JumaEngine
 {
-    class Mesh;
+    class RenderPrimitive;
     class RenderSubsystem;
 
     class Engine final : public IRenderInterface
@@ -35,7 +35,7 @@ namespace JumaEngine
 
         RenderSubsystem* m_RenderSubsystem = nullptr;
 
-        jshared_ptr<Mesh> m_Mesh = nullptr;
+        jshared_ptr<RenderPrimitive> m_RenderPrimitive = nullptr;
 
 
         void registerEngineObject(EngineContextObject* object);

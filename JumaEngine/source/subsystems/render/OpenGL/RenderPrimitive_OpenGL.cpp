@@ -1,6 +1,6 @@
 ﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
 
-#include "Mesh_OpenGL.h"
+#include "RenderPrimitive_OpenGL.h"
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_OPENGL)
 
@@ -11,7 +11,7 @@
 
 namespace JumaEngine
 {
-    void Mesh_OpenGL::render(const RenderOptions& options)
+    void RenderPrimitive_OpenGL::render(const RenderOptions& options)
     {
         if (!isValid())
         {

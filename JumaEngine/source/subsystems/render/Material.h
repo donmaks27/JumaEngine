@@ -50,28 +50,36 @@ namespace JumaEngine
         {
             if (isValid() && (getUniformType(name) == Type))
             {
-                int64 index = m_UniformNames.indexOf(name);
-                if ((index == -1) && isMaterialInstance())
-                {
-                    MaterialUniform* uniform = MaterialUniformActions::create<Type>();
-                    if (uniform != nullptr)
-                    {
-                        m_UniformNames.add(name);
-                        m_UniformValues.add(uniform);
-                        index = m_UniformValues.getSize() - 1;
-                    }
-                }
+                const int64 index = m_UniformNames.indexOf(name);
                 if (index != -1)
                 {
-                    MaterialUniformActions::set<Type>(m_UniformValues[index], value);
-                    onMaterialUniformChanged(name);
-                    return true;
+                    if (!MaterialUniformActions::set<Type>(m_UniformValues[index], value))
+                    {
+                        return false;
+                    }
                 }
+                else
+                {
+                    MaterialUniform* uniform = MaterialUniformActions::create<Type>(value);
+                    if (uniform == nullptr)
+                    {
+                        return false;
+                    }
+
+                    m_UniformNames.add(name);
+                    m_UniformValues.add(uniform);
+                }
+                onMaterialUniformChanged(name);
+                return true;
             }
             return false;
         }
 
     protected:
+
+        jarray<jstring> m_UniformNames;
+        jarray<MaterialUniform*> m_UniformValues;
+
 
         virtual bool initInternal(const jshared_ptr<Shader>& shader) = 0;
         virtual void clearInternal() = 0;
@@ -87,9 +95,6 @@ namespace JumaEngine
 
         jshared_ptr<Shader> m_BaseShader = nullptr;
         jshared_ptr<Material> m_BaseMaterial = nullptr;
-
-        jarray<jstring> m_UniformNames;
-        jarray<MaterialUniform*> m_UniformValues;
 
 
         void initUniformValues(const jshared_ptr<Shader>& shader);

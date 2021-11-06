@@ -127,10 +127,10 @@
     <ClCompile Include="source\render\vertexBuffer\VertexBufferBaseOld.cpp" />
     <ClCompile Include="source\subsystems\render\Image.cpp" />
     <ClCompile Include="source\subsystems\render\Material.cpp" />
-    <ClCompile Include="source\subsystems\render\Mesh.cpp" />
+    <ClCompile Include="source\subsystems\render\RenderPrimitive.cpp" />
     <ClCompile Include="source\subsystems\render\OpenGL\Image_OpenGL.cpp" />
     <ClCompile Include="source\subsystems\render\OpenGL\Material_OpenGL.cpp" />
-    <ClCompile Include="source\subsystems\render\OpenGL\Mesh_OpenGL.cpp" />
+    <ClCompile Include="source\subsystems\render\OpenGL\RenderPrimitive_OpenGL.cpp" />
     <ClCompile Include="source\subsystems\render\OpenGL\RenderSubsystem_OpenGL.cpp" />
     <ClCompile Include="source\subsystems\render\OpenGL\RenderSubsystem_OpenGL_GLFW.cpp" />
     <ClCompile Include="source\subsystems\render\OpenGL\Shader_OpenGL.cpp" />
@@ -139,6 +139,8 @@
     <ClCompile Include="source\subsystems\render\Shader.cpp" />
     <ClCompile Include="source\subsystems\render\VertexBuffer.cpp" />
     <ClCompile Include="source\subsystems\render\Vulkan\Image_Vulkan.cpp" />
+    <ClCompile Include="source\subsystems\render\Vulkan\Material_Vulkan.cpp" />
+    <ClCompile Include="source\subsystems\render\Vulkan\RenderPrimitive_Vulkan.cpp" />
     <ClCompile Include="source\subsystems\render\Vulkan\RenderSubsystem_Vulkan.cpp" />
     <ClCompile Include="source\subsystems\render\Vulkan\RenderSubsystem_Vulkan_GLFW.cpp" />
     <ClCompile Include="source\subsystems\render\Vulkan\Shader_Vulkan.cpp" />
@@ -210,10 +212,10 @@
     <ClInclude Include="source\subsystems\render\ImageFormat.h" />
     <ClInclude Include="source\subsystems\render\Material.h" />
     <ClInclude Include="source\subsystems\render\MaterialUniform.h" />
-    <ClInclude Include="source\subsystems\render\Mesh.h" />
+    <ClInclude Include="source\subsystems\render\RenderPrimitive.h" />
     <ClInclude Include="source\subsystems\render\OpenGL\Image_OpenGL.h" />
     <ClInclude Include="source\subsystems\render\OpenGL\Material_OpenGL.h" />
-    <ClInclude Include="source\subsystems\render\OpenGL\Mesh_OpenGL.h" />
+    <ClInclude Include="source\subsystems\render\OpenGL\RenderPrimitive_OpenGL.h" />
     <ClInclude Include="source\subsystems\render\OpenGL\RenderSubsystem_OpenGL.h" />
     <ClInclude Include="source\subsystems\render\OpenGL\RenderSubsystem_OpenGL_GLFW.h" />
     <ClInclude Include="source\subsystems\render\OpenGL\Shader_OpenGL.h" />
@@ -228,7 +230,9 @@
     <ClInclude Include="source\subsystems\render\ShaderUniform.h" />
     <ClInclude Include="source\subsystems\render\VertexBuffer.h" />
     <ClInclude Include="source\subsystems\render\Vulkan\Image_Vulkan.h" />
+    <ClInclude Include="source\subsystems\render\Vulkan\Material_Vulkan.h" />
     <ClInclude Include="source\subsystems\render\Vulkan\RenderOptionsData_Vulkan.h" />
+    <ClInclude Include="source\subsystems\render\Vulkan\RenderPrimitive_Vulkan.h" />
     <ClInclude Include="source\subsystems\render\Vulkan\RenderSubsystem_Vulkan.h" />
     <ClInclude Include="source\subsystems\render\Vulkan\RenderSubsystem_Vulkan_GLFW.h" />
     <ClInclude Include="source\subsystems\render\Vulkan\Shader_Vulkan.h" />

@@ -54,7 +54,7 @@ namespace JumaEngine
 
         uint32 glfwExtensionCount = 0;
         const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-        for (uint32 index = 0; index < glfwExtensionCount; ++index)
+        for (uint32 index = 0; index < glfwExtensionCount; index++)
         {
             result.add(glfwExtensions[index]);
         }

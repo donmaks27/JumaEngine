@@ -13,6 +13,7 @@
 
 #include "utils/jshared_ptr.h"
 #include "utils/jarray.h"
+#include "utils/jdelegate_multicast.h"
 #include "subsystems/render/RenderOptions.h"
 
 namespace JumaEngine
@@ -22,6 +23,7 @@ namespace JumaEngine
     class Image_Vulkan;
     class WindowDescription_Vulkan;
     class WindowDescription;
+    class VulkanSwapchain;
 
     struct VulkanSwapchainSettings
     {
@@ -33,17 +35,23 @@ namespace JumaEngine
         VkPresentModeKHR presentMode = VK_PRESENT_MODE_FIFO_KHR;
     };
 
+    CREATE_JDELEGATE_MULTICAST_TYPE_OneParam(OnVulkanSwapchainEvent, VulkanSwapchain*, swapchain)
+
     class VulkanSwapchain : public VulkanContextObject
     {
     public:
         VulkanSwapchain() = default;
         virtual ~VulkanSwapchain() override;
 
+        OnVulkanSwapchainEvent onRenderPassChanged;
+
+
         bool init(WindowDescription* window);
 
         VkSampleCountFlagBits getSampleCount() const { return m_CurrentSettings.sampleCount; }
         VkFormat getFormat() const { return m_CurrentSettings.surfaceFormat.format; }
         glm::uvec2 getSize() const { return m_CurrentSettings.size; }
+        uint32 getImageCount() const { return m_CurrentSettings.imageCount; }
 
         VkSwapchainKHR get() const { return m_Swapchain; }
         const jshared_ptr<Image_Vulkan>& getRenderColorImage() const { return m_RenderImage_Color; }
@@ -62,7 +70,7 @@ namespace JumaEngine
 
     private:
 
-        WindowDescription* m_Window;
+        WindowDescription* m_Window = nullptr;
 
         VkSwapchainKHR m_Swapchain = nullptr;
         jshared_ptr<Image_Vulkan> m_RenderImage_Color = nullptr;

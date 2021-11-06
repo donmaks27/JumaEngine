@@ -16,6 +16,9 @@
 #include "Image_Vulkan.h"
 #include "RenderOptionsData_Vulkan.h"
 #include "Shader_Vulkan.h"
+#include "Material_Vulkan.h"
+#include "RenderPrimitive_Vulkan.h"
+#include "VertexBuffer_Vulkan.h"
 
 namespace JumaEngine
 {
@@ -213,7 +216,7 @@ namespace JumaEngine
             jarray<const char*> extensions = m_VulkanDeviceExtensions;
             for (const auto& extension : availableExtensions)
             {
-                for (uint32 index = 0; index < extensions.getSize(); ++index)
+                for (uint32 index = 0; index < extensions.getSize(); index++)
                 {
                     if (strcmp(extensions[index], extension.extensionName) == 0)
                     {
@@ -267,7 +270,7 @@ namespace JumaEngine
         vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, queueFamilies.data());
 
         jmap<VulkanQueueType, uint32> indices;
-        for (uint32_t queueFamilyIndex = 0; queueFamilyIndex < queueFamilyCount; ++queueFamilyIndex)
+        for (uint32_t queueFamilyIndex = 0; queueFamilyIndex < queueFamilyCount; queueFamilyIndex++)
         {
             const VkQueueFamilyProperties& properties = queueFamilies[queueFamilyIndex];
             if (!indices.contains(VulkanQueueType::Graphics) && (properties.queueFlags & VK_QUEUE_GRAPHICS_BIT))
@@ -434,9 +437,15 @@ namespace JumaEngine
         delete options.getData<RenderOptionsData_Vulkan>();
     }
 
+    void RenderSubsystem_Vulkan::onEnginePreTerminate()
+    {
+        vkQueueWaitIdle(getQueue(VulkanQueueType::Graphics)->get());
+    }
+
     jshared_ptr<VertexBuffer> RenderSubsystem_Vulkan::createVertexBuffer()
     {
-        return nullptr;
+        Engine* engine = getOwnerEngine();
+        return registerVulkanObject(engine != nullptr ? engine->createObject<VertexBuffer_Vulkan>() : nullptr);
     }
     jshared_ptr<Shader> RenderSubsystem_Vulkan::createShader()
     {
@@ -445,16 +454,18 @@ namespace JumaEngine
     }
     jshared_ptr<Material> RenderSubsystem_Vulkan::createMaterial()
     {
-        return nullptr;
+        Engine* engine = getOwnerEngine();
+        return registerVulkanObject(engine != nullptr ? engine->createObject<Material_Vulkan>() : nullptr);
     }
     jshared_ptr<Image> RenderSubsystem_Vulkan::createImage()
     {
         Engine* engine = getOwnerEngine();
         return registerVulkanObject(engine != nullptr ? engine->createObject<Image_Vulkan>() : nullptr);
     }
-    jshared_ptr<Mesh> RenderSubsystem_Vulkan::createMesh()
+    jshared_ptr<RenderPrimitive> RenderSubsystem_Vulkan::createRenderPrimitive()
     {
-        return nullptr;
+        Engine* engine = getOwnerEngine();
+        return registerVulkanObject(engine != nullptr ? engine->createObject<RenderPrimitive_Vulkan>() : nullptr);
     }
 }
 

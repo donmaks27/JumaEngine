@@ -109,20 +109,21 @@ namespace JumaEngine
         m_IndexBuffer.reset();
     }
 
-    void VertexBuffer_Vulkan::render(const jshared_ptr<VulkanCommandBuffer>& commandBuffer)
+    void VertexBuffer_Vulkan::render(const RenderOptionsData_Vulkan& data)
     {
-        if (!isValid() || (commandBuffer == nullptr) || !commandBuffer->isValid())
+        if (!isValid())
         {
             return;
         }
 
-        const VertexBufferDescription& bufferDescription = getVertexBufferDescription();
-        VkCommandBuffer vulkanCommandBuffer = commandBuffer->get();
+        VkCommandBuffer vulkanCommandBuffer = data.commandBuffer->get();
 
         VkDeviceSize offsets[] = { 0 };
         VkBuffer vertexBuffer = m_VertexBuffer->get();
         vkCmdBindVertexBuffers(vulkanCommandBuffer, 0, 1, &vertexBuffer, offsets);
-        if (m_IndexBuffer != nullptr)
+
+        const VertexBufferDescription& bufferDescription = getVertexBufferDescription();
+        if (m_IndexBuffer == nullptr)
         {
             vkCmdDraw(vulkanCommandBuffer, bufferDescription.verticesCount, 1, 0, 0);
         }

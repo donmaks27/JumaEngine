@@ -54,7 +54,7 @@ namespace JumaEngine
         template<ShaderUniformType Type>
         inline MaterialUniform* create(const typename MaterialUniformType<Type>::struct_type::value_type& value)
         {
-            auto* uniform = create<Type>;
+            auto* uniform = create<Type>();
             uniform->value = value;
             return uniform;
         }
@@ -74,7 +74,7 @@ namespace JumaEngine
         {
             if ((uniform != nullptr) && (uniform->type == Type))
             {
-                outValue = ((const typename MaterialUniformType<Type>::struct_type*)uniform)->value;
+                outValue = static_cast<const typename MaterialUniformType<Type>::struct_type*>(uniform)->value;
                 return true;
             }
             return false;
@@ -85,8 +85,12 @@ namespace JumaEngine
         {
             if ((uniform != nullptr) && (uniform->type == Type))
             {
-                ((typename MaterialUniformType<Type>::struct_type*)uniform)->value = value;
-                return true;
+                auto& uniformValue = static_cast<typename MaterialUniformType<Type>::struct_type*>(uniform)->value;
+                if (uniformValue != value)
+                {
+                    uniformValue = value;
+                    return true;
+                }
             }
             return false;
         }
@@ -98,10 +102,10 @@ namespace JumaEngine
                 switch (uniform->type)
                 {
                 case ShaderUniformType::Mat4: 
-                    delete (MaterialUniformType<ShaderUniformType::Mat4>::struct_type*)uniform;
+                    delete static_cast<MaterialUniformType<ShaderUniformType::Mat4>::struct_type*>(uniform);
                     break;
                 case ShaderUniformType::Image: 
-                    delete (MaterialUniformType<ShaderUniformType::Image>::struct_type*)uniform;
+                    delete static_cast<MaterialUniformType<ShaderUniformType::Image>::struct_type*>(uniform);
                     break;
 
                 default: 

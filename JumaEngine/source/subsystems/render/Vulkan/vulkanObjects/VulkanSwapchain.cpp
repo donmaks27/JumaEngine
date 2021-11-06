@@ -315,7 +315,7 @@ namespace JumaEngine
 	    vkGetSwapchainImagesKHR(getRenderSubsystem()->getDevice(), m_Swapchain, &swapchainImageCount, swapchainImages.getData());
 
         m_Framebuffers.resize(swapchainImageCount);
-        for (uint32 index = 0; index < m_Framebuffers.getSize(); ++index)
+        for (uint32 index = 0; index < m_Framebuffers.getSize(); index++)
         {
             if (m_Framebuffers[index] == nullptr)
             {
@@ -343,7 +343,7 @@ namespace JumaEngine
         VkFenceCreateInfo fenceInfo{};
         fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
         fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
-        for (uint32 index = 0; index < m_MaxFramesInFlight; ++index)
+        for (uint32 index = 0; index < m_MaxFramesInFlight; index++)
         {
             if (m_Semaphores_ImageAvailable[index] != nullptr)
             {
@@ -396,7 +396,7 @@ namespace JumaEngine
     {
         VkDevice device = getRenderSubsystem()->getDevice();
 
-        for (uint32 index = 0; index < m_MaxFramesInFlight; ++index)
+        for (uint32 index = 0; index < m_MaxFramesInFlight; index++)
         {
             if (m_Semaphores_ImageAvailable[index] != nullptr)
             {
@@ -421,6 +421,8 @@ namespace JumaEngine
         {
             vkDestroyRenderPass(device, m_RenderPass, nullptr);
             m_RenderPass = nullptr;
+
+            onRenderPassChanged.call(this);
         }
 
         m_RenderImage_Depth.reset();
@@ -513,6 +515,10 @@ namespace JumaEngine
             return false;
         }
 
+        if (shouldRecreateRenderPass)
+        {
+            onRenderPassChanged.call(this);
+        }
         return true;
     }
 
@@ -582,7 +588,7 @@ namespace JumaEngine
         }
 
         jarray<VkClearValue> clearValues(2);
-        clearValues[0].color = { { 1.0f, 1.0f, 0.0f, 1.0f } };
+        clearValues[0].color = { { 1.0f, 1.0f, 1.0f, 1.0f } };
         clearValues[1].depthStencil = { 1.0f, 0 };
         VkRenderPassBeginInfo renderPassInfo{};
         renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -645,7 +651,7 @@ namespace JumaEngine
             throw std::runtime_error(message);
         }
 
-        m_CurrentInFlightFrame = (m_CurrentInFlightFrame + 1) & m_MaxFramesInFlight;
+        m_CurrentInFlightFrame = (m_CurrentInFlightFrame + 1) % m_MaxFramesInFlight;
     }
 }
 

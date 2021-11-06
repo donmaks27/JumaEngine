@@ -21,12 +21,15 @@ namespace JumaEngine
         Shader_Vulkan() = default;
         virtual ~Shader_Vulkan() override;
 
-        jarray<VkPipelineShaderStageCreateInfo> createPipelineStagesInfo() const;
+        VkDescriptorSetLayout getDescriptorSetLayout() const { return m_DescriptorSetLayout; }
+        VkPipelineLayout getPipelineLayout() const { return m_PipelineLayout; }
+
+        jarray<VkPipelineShaderStageCreateInfo> createPipelineStageInfos() const;
 
     protected:
 
-        bool initInternal(const jstring& shaderName, const jmap<jstring, ShaderUniform>& uniforms) override;
-        void clearInternal() override { clearVulkanData(); }
+        virtual bool initInternal(const jstring& shaderName, const jmap<jstring, ShaderUniform>& uniforms) override;
+        virtual void clearInternal() override { clearVulkanData(); }
 
     private:
 

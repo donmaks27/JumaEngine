@@ -30,16 +30,6 @@ namespace JumaEngine
         RenderSubsystem_Vulkan() = default;
         virtual ~RenderSubsystem_Vulkan() override = default;
 
-        virtual void render() override;
-        
-        template<typename T, TEMPLATE_ENABLE(is_base_and_not_same<VulkanContextObjectBase, T>)>
-        T* createVulkanObject() { return registerVulkanObject(new T()); }
-        virtual jshared_ptr<VertexBuffer> createVertexBuffer() override;
-        virtual jshared_ptr<Shader> createShader() override;
-        virtual jshared_ptr<Material> createMaterial() override;
-        virtual jshared_ptr<Image> createImage() override;
-        virtual jshared_ptr<Mesh> createMesh() override;
-
         VkInstance getVulkanInstance() const { return m_VulkanInstance; }
         VkPhysicalDevice getPhysicalDevice() const { return m_PhysicalDevice; }
         VkDevice getDevice() const { return m_Device; }
@@ -48,7 +38,20 @@ namespace JumaEngine
         uint32 getQueueFamilyIndex(const VulkanQueueType queueType) const { return m_QueueFamilyIndices[queueType]; }
         const jshared_ptr<VulkanQueue>& getQueue(const VulkanQueueType queueType) const { return m_Queues[m_QueueFamilyIndices[queueType]]; }
         const jshared_ptr<VulkanCommandPool>& getCommandPool(const VulkanQueueType queueType) const { return m_CommandPools[queueType]; }
+        const jshared_ptr<VulkanSwapchain>& getSwapchain() const { return m_Swapchain; }
 
+        virtual void render() override;
+
+        virtual void onEnginePreTerminate() override;
+
+        template<typename T, TEMPLATE_ENABLE(is_base_and_not_same<VulkanContextObjectBase, T>)>
+        T* createVulkanObject() { return registerVulkanObject(new T()); }
+        virtual jshared_ptr<VertexBuffer> createVertexBuffer() override;
+        virtual jshared_ptr<Shader> createShader() override;
+        virtual jshared_ptr<Material> createMaterial() override;
+        virtual jshared_ptr<Image> createImage() override;
+        virtual jshared_ptr<RenderPrimitive> createRenderPrimitive() override;
+        
     protected:
 
         virtual bool initSubsystemInternal() override;

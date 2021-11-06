@@ -13,16 +13,16 @@ namespace JumaEngine
     class VertexBuffer;
     class Material;
 
-    class Mesh : public EngineContextObject, public IRenderInterface
+    class RenderPrimitive : public EngineContextObject, public IRenderInterface
     {
-        JUMAENGINE_ABSTRACT_CLASS(Mesh, EngineContextObject)
+        JUMAENGINE_ABSTRACT_CLASS(RenderPrimitive, EngineContextObject)
 
     public:
-        Mesh() = default;
-        virtual ~Mesh() override = default;
+        RenderPrimitive() = default;
+        virtual ~RenderPrimitive() override = default;
 
         bool init(const jshared_ptr<VertexBuffer>& vertexBuffer, const jshared_ptr<Material>& material);
-        bool isValid() const { return m_VertexBuffer != nullptr; }
+        bool isValid() const { return m_Initialized; }
         void clear();
 
         const jshared_ptr<VertexBuffer>& getVertexBuffer() const { return m_VertexBuffer; }
@@ -35,6 +35,7 @@ namespace JumaEngine
 
     private:
 
+        bool m_Initialized = false;
         jshared_ptr<VertexBuffer> m_VertexBuffer;
         jshared_ptr<Material> m_Material;
     };

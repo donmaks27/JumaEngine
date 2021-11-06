@@ -24,7 +24,7 @@ namespace JumaEngine
         virtual jshared_ptr<Shader> createShader() override;
         virtual jshared_ptr<Material> createMaterial() override;
         virtual jshared_ptr<Image> createImage() override;
-        virtual jshared_ptr<Mesh> createMesh() override;
+        virtual jshared_ptr<RenderPrimitive> createRenderPrimitive() override;
 
     protected:
 

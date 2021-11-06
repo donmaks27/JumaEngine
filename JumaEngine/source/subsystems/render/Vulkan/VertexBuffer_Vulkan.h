@@ -15,6 +15,7 @@
 
 namespace JumaEngine
 {
+    struct RenderOptionsData_Vulkan;
     class VulkanCommandBuffer;
     class VulkanBuffer;
 
@@ -26,7 +27,10 @@ namespace JumaEngine
         VertexBuffer_Vulkan() = default;
         virtual ~VertexBuffer_Vulkan() override;
 
-        void render(const jshared_ptr<VulkanCommandBuffer>& commandBuffer);
+        void render(const RenderOptionsData_Vulkan& data);
+
+        const jarray<VkVertexInputBindingDescription>& getBindingDescriptions() const { return m_BindingDescriptions; }
+        const jarray<VkVertexInputAttributeDescription>& getAttributeDescriptions() const { return m_AttributeDescriptions; }
 
     protected:
 

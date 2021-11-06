@@ -34,14 +34,15 @@ namespace JumaEngine
             return false;
         }
 
+        m_BaseShader = shader;
         initUniformValues(shader);
         if (!initInternal(shader))
         {
             clearUniformValues();
+            m_BaseShader = nullptr;
             return false;
         }
 
-        m_BaseShader = shader;
         m_BaseShader->onPreClear.bind(this, &Material::onBaseShaderPreClear);
         return true;
     }
@@ -132,17 +133,14 @@ namespace JumaEngine
     }
     MaterialUniform* Material::getUniformValue(const jstring& name) const
     {
-        if (isValid())
+        const int64 index = m_UniformNames.indexOf(name);
+        if (index != -1)
         {
-            const int64 index = m_UniformNames.indexOf(name);
-            if (index != -1)
-            {
-                return m_UniformValues[index];
-            }
-            if (isMaterialInstance() && getUniformNames().contains(name))
-            {
-                return m_BaseMaterial->getUniformValue(name);
-            }
+            return m_UniformValues[index];
+        }
+        if (isMaterialInstance() && getUniformNames().contains(name))
+        {
+            return m_BaseMaterial->getUniformValue(name);
         }
         return nullptr;
     }

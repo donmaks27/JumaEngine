@@ -44,7 +44,7 @@ namespace jutils
         {
             if (!isEmpty())
             {
-                for (uint32 index = 0; index < getSize(); ++index)
+                for (uint32 index = 0; index < getSize(); index++)
                 {
                     if (get(index) == value)
                     {
@@ -91,12 +91,12 @@ namespace jutils
             {
                 if (get(index) == value)
                 {
-                    ++count;
+                    count++;
                     removeAt(index);
                 }
                 else
                 {
-                    ++index;
+                    index++;
                 }
             }
             return count;
@@ -111,5 +111,7 @@ namespace jutils
 
         const_iterator begin() const noexcept { return this->base_class::begin(); }
         const_iterator end() const noexcept { return this->base_class::end(); }
+
+        void reserve(const uint64 size) { this->base_class::reserve(size); }
     };
 }

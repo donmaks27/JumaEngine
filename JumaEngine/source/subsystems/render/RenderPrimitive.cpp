@@ -1,15 +1,15 @@
 ﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
 
-#include "Mesh.h"
+#include "RenderPrimitive.h"
 #include "utils/jlog.h"
 
 namespace JumaEngine
 {
-    bool Mesh::init(const jshared_ptr<VertexBuffer>& vertexBuffer, const jshared_ptr<Material>& material)
+    bool RenderPrimitive::init(const jshared_ptr<VertexBuffer>& vertexBuffer, const jshared_ptr<Material>& material)
     {
         if (isValid())
         {
-            JUMA_LOG(warning, JSTR("Mesh already initialized"));
+            JUMA_LOG(warning, JSTR("RenderPrimitive already initialized"));
             return false;
         }
         if (!initInternal(vertexBuffer, material))
@@ -19,10 +19,11 @@ namespace JumaEngine
 
         m_VertexBuffer = vertexBuffer;
         m_Material = material;
+        m_Initialized = true;
         return true;
     }
 
-    void Mesh::clear()
+    void RenderPrimitive::clear()
     {
         if (isValid())
         {
@@ -30,6 +31,7 @@ namespace JumaEngine
 
             m_VertexBuffer.reset();
             m_Material.reset();
+            m_Initialized = false;
         }
     }
 }

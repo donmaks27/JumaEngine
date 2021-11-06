@@ -11,7 +11,7 @@
 #include "Shader_OpenGL.h"
 #include "Material_OpenGL.h"
 #include "Image_OpenGL.h"
-#include "Mesh_OpenGL.h"
+#include "RenderPrimitive_OpenGL.h"
 
 namespace JumaEngine
 {
@@ -68,10 +68,10 @@ namespace JumaEngine
         Engine* engine = getOwnerEngine();
         return engine != nullptr ? engine->createObject<Image_OpenGL>() : nullptr;
     }
-    jshared_ptr<Mesh> RenderSubsystem_OpenGL::createMesh()
+    jshared_ptr<RenderPrimitive> RenderSubsystem_OpenGL::createRenderPrimitive()
     {
         Engine* engine = getOwnerEngine();
-        return engine != nullptr ? engine->createObject<Mesh_OpenGL>() : nullptr;
+        return engine != nullptr ? engine->createObject<RenderPrimitive_OpenGL>() : nullptr;
     }
 }
 

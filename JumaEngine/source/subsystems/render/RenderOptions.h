@@ -18,6 +18,6 @@ namespace JumaEngine
 
         RenderOptionsData* getData() const { return data; }
         template<typename T, TEMPLATE_ENABLE(is_base_and_not_same<RenderOptionsData, T>)>
-        T* getData() const { return (T*)data; }
+        T* getData() const { return static_cast<T*>(data); }
     };
 }

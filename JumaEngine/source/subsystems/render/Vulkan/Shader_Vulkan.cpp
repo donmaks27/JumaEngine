@@ -142,6 +142,10 @@ namespace JumaEngine
 
         if (m_DescriptorSetLayout != nullptr)
         {
+            if (m_PipelineLayout != nullptr)
+            {
+                vkDestroyPipelineLayout(device, m_PipelineLayout, nullptr);
+            }
             vkDestroyDescriptorSetLayout(device, m_DescriptorSetLayout, nullptr);
         }
         for (const auto& shaderModule : m_ShaderModules)
@@ -150,7 +154,7 @@ namespace JumaEngine
         }
     }
 
-    jarray<VkPipelineShaderStageCreateInfo> Shader_Vulkan::createPipelineStagesInfo() const
+    jarray<VkPipelineShaderStageCreateInfo> Shader_Vulkan::createPipelineStageInfos() const
     {
         if (!isValid())
         {

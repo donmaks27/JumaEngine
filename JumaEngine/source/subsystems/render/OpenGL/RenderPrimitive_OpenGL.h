@@ -6,17 +6,17 @@
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_OPENGL)
 
-#include "subsystems/render/Mesh.h"
+#include "subsystems/render/RenderPrimitive.h"
 
 namespace JumaEngine
 {
-    class Mesh_OpenGL final : public Mesh
+    class RenderPrimitive_OpenGL final : public RenderPrimitive
     {
-        JUMAENGINE_CLASS(Mesh_OpenGL, Mesh)
+        JUMAENGINE_CLASS(RenderPrimitive_OpenGL, RenderPrimitive)
 
     public:
-        Mesh_OpenGL() = default;
-        virtual ~Mesh_OpenGL() override = default;
+        RenderPrimitive_OpenGL() = default;
+        virtual ~RenderPrimitive_OpenGL() override = default;
 
         virtual void render(const RenderOptions& options) override;
 
