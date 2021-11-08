@@ -222,8 +222,8 @@ namespace JumaEngine
                         }
                         VkDescriptorImageInfo& imageInfo = imageInfos.addDefault();
                         imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-                        imageInfo.imageView = imageVulkan != nullptr ? imageVulkan->getImageView() : nullptr;
-                        //imageInfo.sampler = imageVulkan != nullptr ? imageVulkan->getSampler() : nullptr;
+                        imageInfo.imageView = imageVulkan->getImageView();
+                        imageInfo.sampler = imageVulkan->getSampler();
 
                         descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
                         descriptorWrite.descriptorCount = 1;
@@ -361,7 +361,7 @@ namespace JumaEngine
                         VkDescriptorImageInfo imageInfo{};
                         imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
                         imageInfo.imageView = imageVulkan->getImageView();
-                        //imageInfo.sampler = imageVulkan->getSampler();
+                        imageInfo.sampler = imageVulkan->getSampler();
 
                         VkWriteDescriptorSet descriptorWrite{};
                         descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;

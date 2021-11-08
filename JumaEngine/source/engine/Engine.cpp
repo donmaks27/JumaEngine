@@ -87,18 +87,18 @@ namespace JumaEngine
         }
         m_RenderSubsystem->initSubsystem();
 
-        /*const uint8 imageData[4] = { 255, 0, 0, 255 };
+        const uint8 imageData[4] = { 255, 0, 0, 0 };
         jshared_ptr<Image> image = m_RenderSubsystem->createImage();
-        image->init({ 1, 1 }, ImageFormat::R8G8B8A8, imageData);*/
+        image->init({ 1, 1 }, ImageFormat::R8G8B8A8, imageData);
 
         jshared_ptr<Shader> shader = m_RenderSubsystem->createShader();
-        shader->init(JSTR("content/shaders/ui"));
-        /*shader->init(JSTR("content/shaders/ui_texture"), {
+        //shader->init(JSTR("content/shaders/ui"));
+        shader->init(JSTR("content/shaders/ui_texture"), {
             { JSTR("uTexture"), { 0, ShaderUniformType::Image, { ShaderStage::Fragment } } }
-        });*/
+        });
         jshared_ptr<Material> material = m_RenderSubsystem->createMaterial();
         material->init(shader);
-        //material->setUniformValue<ShaderUniformType::Image>(JSTR("uTexture"), image);
+        material->setUniformValue<ShaderUniformType::Image>(JSTR("uTexture"), image);
 
         DefaultVertexBuffer defaultVertexBufferData;
         defaultVertexBufferData.vertices = {

@@ -14,9 +14,12 @@
 
 #include "vulkanObjects/VulkanQueueType.h"
 #include "utils/jset.h"
+#include "utils/jshared_ptr.h"
 
 namespace JumaEngine
 {
+    class VulkanBuffer;
+
     class Image_Vulkan final : public Image, public VulkanContextObjectBase
     {
         JUMAENGINE_CLASS(Image_Vulkan, Image)
@@ -38,6 +41,7 @@ namespace JumaEngine
 
         VkImage get() const { return m_Image; }
         VkImageView getImageView() const { return m_ImageView; }
+        VkSampler getSampler() const { return m_Sampler; }
 
         uint32 getMipLevels() const { return m_MipLevels; }
 
@@ -52,10 +56,18 @@ namespace JumaEngine
         VkImage m_Image = nullptr;
         VmaAllocation m_Allocation = nullptr;
         VkImageView m_ImageView = nullptr;
+        VkSampler m_Sampler = nullptr;
 
         uint32 m_MipLevels = 0;
         VkImageLayout m_ImageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 
+
+        bool changeImageLayout(VkImageLayout newLayout);
+        bool copyDataToImage(const glm::uvec2& size, ImageFormat format, const uint8* data);
+        bool generateMipmaps(const glm::uvec2& size, ImageFormat format, VkImageLayout newLayout);
+
+        bool createImageView(ImageFormat format, VkImageAspectFlags aspectFlags);
+        bool createSampler();
 
         void clearImage();
     };

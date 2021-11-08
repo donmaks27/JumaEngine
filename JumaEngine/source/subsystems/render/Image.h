@@ -26,6 +26,8 @@ namespace JumaEngine
         const glm::uvec2& getSize() const { return m_Size; }
         ImageFormat getFormat() const { return m_Format; }
 
+        static uint32 getPixelSize(ImageFormat format);
+
     protected:
 
         void markAsInitialized() { m_Initialized = true; }

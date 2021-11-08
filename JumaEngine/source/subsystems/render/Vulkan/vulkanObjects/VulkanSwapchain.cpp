@@ -396,19 +396,25 @@ namespace JumaEngine
     {
         VkDevice device = getRenderSubsystem()->getDevice();
 
-        for (uint32 index = 0; index < m_MaxFramesInFlight; index++)
+        for (const auto& semaphore : m_Semaphores_ImageAvailable)
         {
-            if (m_Semaphores_ImageAvailable[index] != nullptr)
+            if (semaphore != nullptr)
             {
-                vkDestroySemaphore(device, m_Semaphores_ImageAvailable[index], nullptr);
+                vkDestroySemaphore(device, semaphore, nullptr);
             }
-            if (m_Semaphores_RenderFinished[index] != nullptr)
+        }
+        for (const auto& semaphore : m_Semaphores_RenderFinished)
+        {
+            if (semaphore != nullptr)
             {
-                vkDestroySemaphore(device, m_Semaphores_RenderFinished[index], nullptr);
+                vkDestroySemaphore(device, semaphore, nullptr);
             }
-            if (m_Fences_RenderFinished[index] != nullptr)
+        }
+        for (const auto& fence : m_Fences_RenderFinished)
+        {
+            if (fence != nullptr)
             {
-                vkDestroyFence(device, m_Fences_RenderFinished[index], nullptr);
+                vkDestroyFence(device, fence, nullptr);
             }
         }
         m_Semaphores_ImageAvailable.clear();
