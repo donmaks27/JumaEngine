@@ -41,13 +41,13 @@ namespace JumaEngine
     {
         switch (format)
         {
-        case ImageFormat::R8G8B8A8:
-        case ImageFormat::B8G8R8A8:
-        case ImageFormat::DEPTH_SFLOAT32:
-        case ImageFormat::DEPTH_UNORM24_STENCIL_UINT8:
+        case ImageFormat::RGBA:
+        case ImageFormat::BGRA:
+        case ImageFormat::SFLOAT32:
+        case ImageFormat::UNORM24_UINT8:
             return 4;
 
-        case ImageFormat::DEPTH_SFLOAT32_STENCIL_UINT8: 
+        case ImageFormat::SFLOAT32_UINT8: 
             return 5;
 
         default: ;

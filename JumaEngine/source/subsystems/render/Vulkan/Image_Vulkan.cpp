@@ -476,11 +476,11 @@ namespace JumaEngine
     {
         switch (format)
         {
-        case VK_FORMAT_R8G8B8A8_SRGB: return ImageFormat::R8G8B8A8;
-        case VK_FORMAT_B8G8R8A8_SRGB: return ImageFormat::B8G8R8A8;
-        case VK_FORMAT_D32_SFLOAT: return ImageFormat::DEPTH_SFLOAT32;
-        case VK_FORMAT_D32_SFLOAT_S8_UINT: return ImageFormat::DEPTH_SFLOAT32_STENCIL_UINT8;
-        case VK_FORMAT_D24_UNORM_S8_UINT: return ImageFormat::DEPTH_UNORM24_STENCIL_UINT8;
+        case VK_FORMAT_R8G8B8A8_SRGB: return ImageFormat::RGBA;
+        case VK_FORMAT_B8G8R8A8_SRGB: return ImageFormat::BGRA;
+        case VK_FORMAT_D32_SFLOAT: return ImageFormat::SFLOAT32;
+        case VK_FORMAT_D32_SFLOAT_S8_UINT: return ImageFormat::SFLOAT32_UINT8;
+        case VK_FORMAT_D24_UNORM_S8_UINT: return ImageFormat::UNORM24_UINT8;
         default: ;
         }
         return ImageFormat::None;
@@ -489,11 +489,11 @@ namespace JumaEngine
     {
         switch (format)
         {
-        case ImageFormat::R8G8B8A8: return VK_FORMAT_R8G8B8A8_SRGB;
-        case ImageFormat::B8G8R8A8: return VK_FORMAT_B8G8R8A8_SRGB;
-        case ImageFormat::DEPTH_SFLOAT32: return VK_FORMAT_D32_SFLOAT;
-        case ImageFormat::DEPTH_SFLOAT32_STENCIL_UINT8: return VK_FORMAT_D32_SFLOAT_S8_UINT;
-        case ImageFormat::DEPTH_UNORM24_STENCIL_UINT8: return VK_FORMAT_D24_UNORM_S8_UINT;
+        case ImageFormat::RGBA: return VK_FORMAT_R8G8B8A8_SRGB;
+        case ImageFormat::BGRA: return VK_FORMAT_B8G8R8A8_SRGB;
+        case ImageFormat::SFLOAT32: return VK_FORMAT_D32_SFLOAT;
+        case ImageFormat::SFLOAT32_UINT8: return VK_FORMAT_D32_SFLOAT_S8_UINT;
+        case ImageFormat::UNORM24_UINT8: return VK_FORMAT_D24_UNORM_S8_UINT;
         default: ;
         }
         return VK_FORMAT_UNDEFINED;

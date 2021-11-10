@@ -4,11 +4,12 @@
 
 #include <vector>
 #include "utils/int_defines.h"
+#include "utils/math.h"
 
 namespace jutils
 {
-    template<typename T>
-    class jarray : std::vector<T>
+    template<typename T, typename Allocator = std::allocator<T>>
+    class jarray : std::vector<T, Allocator>
     {
     public:
         using base_class = std::vector<T>;
@@ -18,33 +19,66 @@ namespace jutils
         jarray()
             : base_class()
         {}
-        explicit jarray(const size_t size)
-            : base_class(size)
+        explicit jarray(const int32 size)
+            : base_class(math::max(size, 0))
         {}
-        explicit jarray(const size_t size, const T& defaultValue)
+        explicit jarray(const int32 size, const T& defaultValue)
             : base_class(size, defaultValue)
         {}
         jarray(std::initializer_list<T> list)
             : base_class(list)
         {}
-        jarray(const base_class& vector)
-            : base_class(vector)
+        jarray(const jarray& value)
+            : base_class(value)
+        {}
+        jarray(jarray&& value) noexcept
+            : base_class(std::move(value))
         {}
 
-        int64 getSize() const { return this->size(); }
-        bool isValidIndex(const int64 index) const { return (index >= 0) && (index < getSize()); }
+        jarray& operator=(jarray&& value) noexcept
+        {
+            this->base_class::operator=(value);
+            return *this;
+        }
+        jarray& operator=(const jarray& value)
+        {
+            this->base_class::operator=(value);
+            return *this;
+        }
+        jarray& operator=(std::initializer_list<T> list)
+        {
+            this->base_class::operator=(list);
+            return *this;
+        }
+
+        int32 getSize() const { return static_cast<int32>(this->size()); }
+        bool isValidIndex(const int32 index) const { return (index >= 0) && (index < getSize()); }
         bool isEmpty() const { return this->empty(); }
 
-        T& get(const int64 index) { return this->at(index); }
-        const T& get(const int64 index) const { return this->at(index); }
-        T& operator[](const int64 index) { return get(index); }
-        const T& operator[](const int64 index) const { return get(index); }
+        T& get(const int32 index)
+        {
+            if (!isValidIndex(index))
+            {
+                throw std::out_of_range("invalid jarray<T> index");
+            }
+            return this->getData()[index];
+        }
+        const T& get(const int32 index) const
+        {
+            if (!isValidIndex(index))
+            {
+                throw std::out_of_range("invalid jarray<T> index");
+            }
+            return this->getData()[index];
+        }
+        T& operator[](const int32 index) { return get(index); }
+        const T& operator[](const int32 index) const { return get(index); }
 
-        int64 indexOf(const T& value) const
+        int32 indexOf(const T& value) const
         {
             if (!isEmpty())
             {
-                for (uint32 index = 0; index < getSize(); index++)
+                for (int32 index = 0; index < getSize(); index++)
                 {
                     if (get(index) == value)
                     {
@@ -56,25 +90,24 @@ namespace jutils
         }
         bool contains(const T& value) const { return indexOf(value) != -1; }
 
-        T& add(const T& value)
-        {
-            this->emplace_back(value);
-            return get(getSize() - 1);
-        }
-        T& addDefault() { return this->emplace_back(); }
+        T& add(const T& value) { return this->emplace_back(value); }
+        T& add(T&& value) { return this->emplace_back(std::move(value)); }
+        T& addDefault() { return add(T()); }
         T& addUnique(const T& value)
         {
-            const int64 index = indexOf(value);
-            if (index == -1)
-            {
-                return add(value);
-            }
-            return get(index);
+            const int32 index = indexOf(value);
+            return index == -1 ? add(value) : get(index);
         }
+        T& addUnique(T&& value)
+        {
+            const int32 index = indexOf(value);
+            return index == -1 ? add(value) : get(index);
+        }
+        
+        void reserve(const int32 size) { this->base_class::reserve(size); }
+        void resize(const int32 size) { this->base_class::resize(math::max(0, size)); }
 
-        void resize(const int64 size) { this->base_class::resize(size > 0 ? size : 0); }
-
-        bool removeAt(const int64 index)
+        bool removeAt(const int32 index)
         {
             if (isValidIndex(index))
             {
@@ -101,7 +134,10 @@ namespace jutils
             }
             return count;
         }
-        void clear() { return this->base_class::clear(); }
+        void clear()
+        {
+            return this->base_class::clear();
+        }
 
         T* getData() noexcept { return this->data(); }
         const T* getData() const noexcept { return this->data(); }
@@ -111,7 +147,5 @@ namespace jutils
 
         const_iterator begin() const noexcept { return this->base_class::begin(); }
         const_iterator end() const noexcept { return this->base_class::end(); }
-
-        void reserve(const uint64 size) { this->base_class::reserve(size); }
     };
 }

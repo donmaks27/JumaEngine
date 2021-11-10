@@ -50,7 +50,7 @@ namespace JumaEngine
 
     void MeshOld::setMaterial(const uint32 slotIndex, const asset_ptr<MaterialBaseOld>& material)
     {
-        if (m_Materials.getSize() > slotIndex)
+        if (static_cast<uint32>(m_Materials.getSize()) > slotIndex)
         {
             m_Materials[slotIndex] = material;
         }
@@ -58,7 +58,7 @@ namespace JumaEngine
 
     void MeshOld::render(const window_id windowID, const RenderParams& renderParams)
     {
-        for (uint32 index = 0; index < m_VertexBuffers.getSize(); index++)
+        for (uint32 index = 0; index < static_cast<uint32>(m_VertexBuffers.getSize()); index++)
         {
             VertexBufferBaseOld*& vertexBuffer = m_VertexBuffers[index];
             MaterialBaseOld* material = m_Materials[index].get();

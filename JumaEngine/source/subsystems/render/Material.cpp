@@ -133,7 +133,7 @@ namespace JumaEngine
     }
     MaterialUniform* Material::getUniformValue(const jstring& name) const
     {
-        const int64 index = m_UniformNames.indexOf(name);
+        const int32 index = m_UniformNames.indexOf(name);
         if (index != -1)
         {
             return m_UniformValues[index];

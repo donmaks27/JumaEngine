@@ -55,7 +55,7 @@ namespace JumaEngine
         bindingDescription.binding = 0;
         bindingDescription.stride = bufferDescription.vertexSize;
         bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-        for (uint32 vertexComponentIndex = 0; vertexComponentIndex < bufferDescription.vertexComponents.getSize(); vertexComponentIndex++)
+        for (int32 vertexComponentIndex = 0; vertexComponentIndex < bufferDescription.vertexComponents.getSize(); vertexComponentIndex++)
         {
             const VertexComponentDescription& componentDescriprion = bufferDescription.vertexComponents[vertexComponentIndex];
             if (!componentDescriprion.isValid())

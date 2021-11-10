@@ -216,7 +216,7 @@ namespace JumaEngine
             jarray<const char*> extensions = m_VulkanDeviceExtensions;
             for (const auto& extension : availableExtensions)
             {
-                for (uint32 index = 0; index < extensions.getSize(); index++)
+                for (int32 index = 0; index < extensions.getSize(); index++)
                 {
                     if (strcmp(extensions[index], extension.extensionName) == 0)
                     {

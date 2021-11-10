@@ -54,7 +54,7 @@ namespace JumaEngine
             VertexBufferDataBase::copyFromDefaultVertexBuffer(buffer);
 
             vertices.resize(buffer.vertices.getSize());
-            for (uint32 index = 0; index < vertices.getSize(); ++index)
+            for (int32 index = 0; index < vertices.getSize(); ++index)
             {
                 copyFromDefaultVertex(index, buffer.vertices[index]);
             }

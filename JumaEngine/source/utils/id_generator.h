@@ -18,7 +18,7 @@ namespace jutils
         {
             if (!m_UnusedIDs.isEmpty())
             {
-                const int64 index = m_UnusedIDs.getSize() - 1;
+                const int32 index = m_UnusedIDs.getSize() - 1;
                 T id = m_UnusedIDs[index];
                 m_UnusedIDs.removeAt(index);
                 return id;

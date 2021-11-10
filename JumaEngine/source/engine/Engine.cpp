@@ -89,7 +89,7 @@ namespace JumaEngine
 
         const uint8 imageData[4] = { 255, 0, 0, 0 };
         jshared_ptr<Image> image = m_RenderSubsystem->createImage();
-        image->init({ 1, 1 }, ImageFormat::R8G8B8A8, imageData);
+        image->init({ 1, 1 }, ImageFormat::RGBA, imageData);
 
         jshared_ptr<Shader> shader = m_RenderSubsystem->createShader();
         //shader->init(JSTR("content/shaders/ui"));

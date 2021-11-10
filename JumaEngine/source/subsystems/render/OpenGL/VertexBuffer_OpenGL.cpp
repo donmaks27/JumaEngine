@@ -47,7 +47,7 @@ namespace JumaEngine
         glGenVertexArrays(1, &m_VerticesVAO);
         glBindVertexArray(m_VerticesVAO);
 
-        for (uint32 vertexComponentIndex = 0; vertexComponentIndex < bufferDescription.vertexComponents.getSize(); vertexComponentIndex++)
+        for (int32 vertexComponentIndex = 0; vertexComponentIndex < bufferDescription.vertexComponents.getSize(); vertexComponentIndex++)
         {
             const VertexComponentDescription& componentDescriprion = bufferDescription.vertexComponents[vertexComponentIndex];
             if (!componentDescriprion.isValid())

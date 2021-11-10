@@ -264,6 +264,7 @@
     <ClInclude Include="source\utils\jstring.h" />
     <ClInclude Include="source\utils\jlog.h" />
     <ClInclude Include="source\utils\jmap_auto_id.h" />
+    <ClInclude Include="source\utils\math.h" />
     <ClInclude Include="source\utils\math_consts.h" />
     <ClInclude Include="source\utils\math_functions.h" />
     <ClInclude Include="source\utils\system_functions.h" />

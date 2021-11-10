@@ -103,6 +103,6 @@ namespace jutils
         const_iterator begin() const { return this->base_class::begin(); }
         const_iterator end() const { return this->base_class::end(); }
 
-        uint64 getSize() const { return this->size(); }
+        int32 getSize() const { return static_cast<int32>(this->size()); }
     };
 }

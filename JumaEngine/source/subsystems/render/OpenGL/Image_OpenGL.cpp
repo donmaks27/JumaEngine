@@ -20,8 +20,8 @@ namespace JumaEngine
     {
         switch (format)
         {
-        case ImageFormat::R8G8B8A8: return GL_RGBA;
-        case ImageFormat::B8G8R8A8: return GL_BGRA;
+        case ImageFormat::RGBA: return GL_RGBA;
+        case ImageFormat::BGRA: return GL_BGRA;
         default: ;
         }
         return 0;

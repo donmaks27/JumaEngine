@@ -45,7 +45,7 @@ namespace JumaEngine
         }
 
         const size_t fileSize = file.tellg();
-        jarray<char> data(fileSize);
+        jarray<char> data(static_cast<int32>(fileSize));
         file.seekg(0);
         file.read(data.getData(), fileSize);
         file.close();

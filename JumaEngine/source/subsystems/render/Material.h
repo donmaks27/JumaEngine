@@ -50,7 +50,7 @@ namespace JumaEngine
         {
             if (isValid() && (getUniformType(name) == Type))
             {
-                const int64 index = m_UniformNames.indexOf(name);
+                const int32 index = m_UniformNames.indexOf(name);
                 if (index != -1)
                 {
                     if (!MaterialUniformActions::set<Type>(m_UniformValues[index], value))

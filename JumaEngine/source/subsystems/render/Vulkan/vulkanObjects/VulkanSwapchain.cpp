@@ -315,7 +315,7 @@ namespace JumaEngine
 	    vkGetSwapchainImagesKHR(getRenderSubsystem()->getDevice(), m_Swapchain, &swapchainImageCount, swapchainImages.getData());
 
         m_Framebuffers.resize(swapchainImageCount);
-        for (uint32 index = 0; index < m_Framebuffers.getSize(); index++)
+        for (int32 index = 0; index < m_Framebuffers.getSize(); index++)
         {
             if (m_Framebuffers[index] == nullptr)
             {

@@ -176,7 +176,7 @@ namespace JumaEngine
         jarray<VkDescriptorImageInfo> imageInfos;
         jarray<VkWriteDescriptorSet> descriptorWrites;
         const jmap<jstring, ShaderUniform>& uniforms = shader->getUniforms();
-        for (uint32_t descriptorSetIndex = 0; descriptorSetIndex < m_DescriptorSets.getSize(); descriptorSetIndex++)
+        for (int32 descriptorSetIndex = 0; descriptorSetIndex < m_DescriptorSets.getSize(); descriptorSetIndex++)
         {
             bufferInfos.reserve(uniforms.getSize());
             imageInfos.reserve(uniforms.getSize());
@@ -325,7 +325,7 @@ namespace JumaEngine
             return false;
         }
 
-        for (uint32 uniformIndex = 0; uniformIndex < m_UniformValues.getSize(); uniformIndex++)
+        for (int32 uniformIndex = 0; uniformIndex < m_UniformValues.getSize(); uniformIndex++)
         {
             MaterialUniform* const& uniform = m_UniformValues[uniformIndex];
             switch (uniform->type)
