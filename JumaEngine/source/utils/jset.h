@@ -3,32 +3,71 @@
 #pragma once
 
 #include <set>
+#include "int_defines.h"
 
 namespace jutils
 {
-    template<typename T>
-    class jset : std::set<T>
+    template<typename T, typename Allocator = std::allocator<T>>
+    class jset : std::set<T, std::less<>, Allocator>
     {
+        using base_class = std::set<T, std::less<>, Allocator>;
+
     public:
-        using base_class = std::set<T>;
+
+        using type = T;
+        using allocator_type = Allocator;
         using iterator = typename base_class::iterator;
         using const_iterator = typename base_class::const_iterator;
 
         jset()
             : base_class()
         {}
-        jset(std::initializer_list<T> list)
-            : base_class(list)
+        explicit jset(const allocator_type& alloc)
+            : base_class(alloc)
         {}
-        jset(const base_class& s)
-            : base_class(s)
+        jset(std::initializer_list<type> list, const allocator_type& alloc = allocator_type())
+            : base_class(list, alloc)
+        {}
+        jset(const jset& value)
+            : base_class(value)
+        {}
+        jset(const jset& value, const allocator_type& alloc)
+            : base_class(value, alloc)
+        {}
+        jset(jset&& value) noexcept
+            : base_class(std::move(value))
+        {}
+        jset(jset&& value, const allocator_type& alloc)
+            : base_class(std::move(value), alloc)
         {}
 
-        void add(const T& value) { this->emplace(value); }
+        jset& operator=(const jset& value)
+        {
+            this->base_class::operator=(value);
+            return *this;
+        }
+        jset& operator=(jset&& value) noexcept
+        {
+            this->base_class::operator=(std::move(value));
+            return *this;
+        }
+        jset& operator=(std::initializer_list<type> list)
+        {
+            this->base_class::operator=(list);
+            return *this;
+        }
 
-        bool contains(const T& value) const { return this->find(value) != end(); }
+        int32 getSize() const { return static_cast<int32>(this->size()); }
 
-        void remove(const T& value) { this->erase(value); }
+        bool contains(const type& value) const { return this->find(value) != end(); }
+
+        template<typename... Args>
+        const type& put(Args&&... args) { return *this->emplace(std::forward<Args>(args)...).first; }
+
+        const type& add(const type& value) { return put(value); }
+        const type& add(type&& value) { return put(std::move(value)); }
+
+        void remove(const type& value) { this->erase(value); }
         void clear() { return this->base_class::clear(); }
 
         iterator begin() { return this->base_class::begin(); }
@@ -36,7 +75,5 @@ namespace jutils
 
         const_iterator begin() const { return this->base_class::begin(); }
         const_iterator end() const { return this->base_class::end(); }
-
-        uint64 getSize() const { return this->size(); }
     };
 }

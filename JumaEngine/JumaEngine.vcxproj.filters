@@ -615,7 +615,7 @@
     <ClInclude Include="source\subsystems\render\Vulkan\RenderPrimitive_Vulkan.h">
       <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="source\utils\math.h">
+    <ClInclude Include="source\utils\jmath.h">
       <Filter>JumaEngine\utils</Filter>
     </ClInclude>
   </ItemGroup>

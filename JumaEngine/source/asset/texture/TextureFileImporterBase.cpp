@@ -6,7 +6,7 @@ namespace JumaEngine
 {
     bool TextureFileImporterBase::importFile(const asset_ptr<TextureBase>& outTexture, const jstring& filePath)
     {
-        if ((outTexture == nullptr) || outTexture->isInit() || filePath.empty())
+        if ((outTexture == nullptr) || outTexture->isInit() || filePath.isEmpty())
         {
             return false;
         }

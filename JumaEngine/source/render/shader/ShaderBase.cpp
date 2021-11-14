@@ -12,7 +12,7 @@ namespace JumaEngine
             JUMA_LOG(warning, JSTR("Shader already loaded."));
             return false;
         }
-        if (shaderName.empty())
+        if (shaderName.isEmpty())
         {
             JUMA_LOG(warning, JSTR("Empty shader name."));
             return false;

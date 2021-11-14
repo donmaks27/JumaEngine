@@ -17,7 +17,7 @@ namespace JumaEngine
     {
         const ILuint imageIndex = ilGenImage();
         ilBindImage(imageIndex);
-        if (ilLoadImage(filePath.c_str()) == IL_FALSE)
+        if (ilLoadImage(*filePath) == IL_FALSE)
         {
 #if JLOG_ENABLED
             const ILenum errorCode = ilGetError();

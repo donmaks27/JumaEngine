@@ -63,7 +63,7 @@ namespace JumaEngine
 
     WindowDescription* RenderSubsystem_Vulkan_GLFW::createWindowInternal(const glm::uvec2& size, const jstring& title)
     {
-        GLFWwindow* window = glfwCreateWindow(size.x, size.y, title.c_str(), nullptr, nullptr);
+        GLFWwindow* window = glfwCreateWindow(size.x, size.y, *title, nullptr, nullptr);
         if (window == nullptr)
         {
             JUMA_LOG(warning, JSTR("Failed to create GLFW window"));

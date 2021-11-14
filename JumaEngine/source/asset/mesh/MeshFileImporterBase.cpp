@@ -10,7 +10,7 @@ namespace JumaEngine
         {
             clear();
             m_LoadedMeshFilePath = filePath;
-            if (!m_LoadedMeshFilePath.empty())
+            if (!m_LoadedMeshFilePath.isEmpty())
             {
                 importMeshFileInternal();
             }

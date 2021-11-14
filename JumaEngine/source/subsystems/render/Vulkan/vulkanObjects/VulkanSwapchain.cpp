@@ -546,7 +546,7 @@ namespace JumaEngine
             {
                 const jstring message = JSTR("Failed to acquire swapchain image. Code ") + TO_JSTR(result);
                 JUMA_LOG(error, message);
-                throw std::runtime_error(message);
+                throw std::runtime_error(*message);
             }
 
             markAsNeededToRecreate();
@@ -590,7 +590,7 @@ namespace JumaEngine
         {
             const jstring message = JSTR("Failed to begin recording command buffer. Code ") + TO_JSTR(result);
             JUMA_LOG(error, message);
-            throw std::runtime_error(message);
+            throw std::runtime_error(*message);
         }
 
         jarray<VkClearValue> clearValues(2);
@@ -619,7 +619,7 @@ namespace JumaEngine
         {
             const jstring message = JSTR("Failed to record command buffer. Code ") + TO_JSTR(result);
             JUMA_LOG(error, message);
-            throw std::runtime_error(message);
+            throw std::runtime_error(*message);
         }
 
         VkSemaphore waitSemaphores[] = { m_Semaphores_ImageAvailable[m_CurrentInFlightFrame] };
@@ -654,7 +654,7 @@ namespace JumaEngine
         {
             const jstring message = JSTR("Failed to present swapchain image. Code ") + TO_JSTR(result);
             JUMA_LOG(error, message);
-            throw std::runtime_error(message);
+            throw std::runtime_error(*message);
         }
 
         m_CurrentInFlightFrame = (m_CurrentInFlightFrame + 1) % m_MaxFramesInFlight;

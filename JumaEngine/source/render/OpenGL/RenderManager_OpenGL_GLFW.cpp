@@ -59,7 +59,7 @@ namespace JumaEngine
     
     WindowDescriptionBaseOld* RenderManager_OpenGL_GLFW::createWindowInternal(const glm::uvec2& size, const jstring& title)
     {
-        GLFWwindow* window = glfwCreateWindow(size.x, size.y, title.c_str(), nullptr, getWindowGLFW(getMainWindowID()));
+        GLFWwindow* window = glfwCreateWindow(size.x, size.y, *title, nullptr, getWindowGLFW(getMainWindowID()));
         if (window == nullptr)
         {
             JUMA_LOG(warning, JSTR("Fail to create GLFW window."));
@@ -126,7 +126,7 @@ namespace JumaEngine
         GLFWwindow* window = getWindowGLFW(windowID);
         if (window != nullptr)
         {
-            glfwSetWindowTitle(window, title.c_str());
+            glfwSetWindowTitle(window, *title);
             return true;
         }
         return false;

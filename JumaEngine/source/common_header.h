@@ -26,6 +26,12 @@
 #include "utils/int_defines.h"
 #include "utils/jstring.h"
 
+#if !JDEBUG
+#define JUTILS_LOG_DISABLED
+#endif
+#define JUMA_LOG(type, message) JUTILS_LOG_WRITE(type, message)
+#define JUMA_LOG_EMPTY(type) JUTILS_LOG_WRITE_EMPTY(type)
+
 namespace JumaEngine
 {
     using namespace jutils;

@@ -38,7 +38,7 @@ namespace JumaEngine
     }
     void Shader_Vulkan::createShaderModule(const jstring& fileName, const ShaderStage stage)
     {
-        std::ifstream file(fileName, std::ios::ate | std::ios::binary);
+        std::ifstream file(*fileName, std::ios::ate | std::ios::binary);
         if (!file.is_open())
         {
             return;

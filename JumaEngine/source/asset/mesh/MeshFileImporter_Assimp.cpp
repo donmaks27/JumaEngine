@@ -84,7 +84,7 @@ namespace JumaEngine
         importer.SetPropertyInteger(AI_CONFIG_PP_RVC_FLAGS, aiComponent_COLORS | aiComponent_LIGHTS | aiComponent_CAMERAS);
 
         const aiScene* scene = importer.ReadFile(
-            m_LoadedMeshFilePath, 
+            *m_LoadedMeshFilePath, 
             aiProcess_Triangulate | aiProcess_RemoveComponent | aiProcess_GenNormals | aiProcess_GenUVCoords | aiProcess_OptimizeMeshes | aiProcess_OptimizeGraph
         );
         if (scene != nullptr)

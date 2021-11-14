@@ -63,7 +63,7 @@ namespace JumaEngine
     }
     bool Shader_OpenGL::loadShaderText(const jstring& shaderFilePath, jarray<jstring>& outShaderText) const
     {
-        std::ifstream file(shaderFilePath);
+        std::ifstream file(*shaderFilePath);
         if (!file.is_open())
         {
             return false;
@@ -104,8 +104,8 @@ namespace JumaEngine
         for (int32 lineIndex = 0; lineIndex < linesCount; lineIndex++)
         {
             const jstring& line = shaderText[lineIndex];
-            shader[lineIndex] = line.c_str();
-            shaderLineLength[lineIndex] = static_cast<int32>(line.size());
+            shader[lineIndex] = *line;
+            shaderLineLength[lineIndex] = line.getSize();
         }
         glShaderSource(shaderIndex, linesCount, shader.getData(), shaderLineLength.getData());
         shader.clear();
