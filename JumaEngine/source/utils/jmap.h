@@ -3,6 +3,7 @@
 #pragma once
 
 #include <map>
+
 #include "jarray.h"
 
 namespace jutils
@@ -42,6 +43,11 @@ namespace jutils
             : base_class(std::move(value), alloc)
         {}
 
+        jmap& operator=(std::initializer_list<std::pair<const key_type, value_type>> initializer)
+        {
+            this->base_class::operator=(initializer);
+            return *this;
+        }
         jmap& operator=(const jmap& value)
         {
             this->base_class::operator=(value);
@@ -52,13 +58,8 @@ namespace jutils
             this->base_class::operator=(std::move(value));
             return *this;
         }
-        jmap& operator=(std::initializer_list<std::pair<const key_type, value_type>> initializer)
-        {
-            this->base_class::operator=(initializer);
-            return *this;
-        }
 
-        int32 getSize() const { return static_cast<int32>(this->size()); }
+        int32 getSize() const { return static_cast<int32>(this->base_class::size()); }
 
         value_type* find(const key_type& key)
         {
@@ -101,18 +102,18 @@ namespace jutils
         bool containsByPredicate(Pred predicate) const { return findFirstByPredicate(predicate) != nullptr; }
 
         template<typename... Args>
-        value_type& assign(const key_type& key, Args&&... args) { return this->insert_or_assign(key, value_type(std::forward<Args>(args)...)).first->second; }
+        value_type& assign(const key_type& key, Args&&... args) { return this->base_class::insert_or_assign(key, value_type(std::forward<Args>(args)...)).first->second; }
         template<typename... Args>
-        value_type& assign(key_type&& key, Args&&... args) { return this->insert_or_assign(std::move(key), value_type(std::forward<Args>(args)...)).first->second; }
+        value_type& assign(key_type&& key, Args&&... args) { return this->base_class::insert_or_assign(std::move(key), value_type(std::forward<Args>(args)...)).first->second; }
 
         value_type& set(const key_type& key, const value_type& value) { return assign(key, value); }
-        value_type& set(const key_type& key, value_type&& value) { return this->insert_or_assign(key, std::move(value)).first->second; }
+        value_type& set(const key_type& key, value_type&& value) { return this->base_class::insert_or_assign(key, std::move(value)).first->second; }
         value_type& set(key_type&& key, const value_type& value) { return assign(std::move(key), value); }
-        value_type& set(key_type&& key, value_type&& value) { return this->insert_or_assign(std::move(key), std::move(value)).first->second; }
+        value_type& set(key_type&& key, value_type&& value) { return this->base_class::insert_or_assign(std::move(key), std::move(value)).first->second; }
 
         value_type& get(const key_type& key) { return this->base_class::find(key)->second; }
         const value_type& get(const key_type& key) const { return this->base_class::find(key)->second; }
-        value_type& getOrAdd(const key_type& key) { return this->try_emplace(key).first->second; }
+        value_type& getOrAdd(const key_type& key) { return this->base_class::try_emplace(key).first->second; }
 
         value_type& operator[](const key_type& key) { return getOrAdd(key); }
         const value_type& operator[](const key_type& key) const { return get(key); }

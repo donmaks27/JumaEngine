@@ -2,9 +2,11 @@
 
 #pragma once
 
-#include "jstring.h"
+/**
+ * #define JUTILS_LOG_DISABLED - disable all logs
+ */
 
-//#define JUTILS_LOG_DISABLED
+#include "jstring.h"
 
 namespace jutils
 {

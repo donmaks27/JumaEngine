@@ -99,7 +99,7 @@ namespace jutils
         bool isValidIndex(const int32 index) const { return (index >= 0) && (index < getSize()); }
         bool isEmpty() const { return this->base_class::empty(); }
 
-        const type* getString() const noexcept { return this->c_str(); }
+        const type* getString() const noexcept { return this->base_class::c_str(); }
         const type* operator*() const noexcept { return getString(); }
 
         type& get(const int32 index)

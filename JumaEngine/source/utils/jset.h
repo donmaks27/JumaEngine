@@ -3,6 +3,7 @@
 #pragma once
 
 #include <set>
+
 #include "int_defines.h"
 
 namespace jutils
@@ -41,6 +42,11 @@ namespace jutils
             : base_class(std::move(value), alloc)
         {}
 
+        jset& operator=(std::initializer_list<type> list)
+        {
+            this->base_class::operator=(list);
+            return *this;
+        }
         jset& operator=(const jset& value)
         {
             this->base_class::operator=(value);
@@ -51,23 +57,18 @@ namespace jutils
             this->base_class::operator=(std::move(value));
             return *this;
         }
-        jset& operator=(std::initializer_list<type> list)
-        {
-            this->base_class::operator=(list);
-            return *this;
-        }
 
-        int32 getSize() const { return static_cast<int32>(this->size()); }
+        int32 getSize() const { return static_cast<int32>(this->base_class::size()); }
 
-        bool contains(const type& value) const { return this->find(value) != end(); }
+        bool contains(const type& value) const { return this->base_class::find(value) != end(); }
 
         template<typename... Args>
-        const type& put(Args&&... args) { return *this->emplace(std::forward<Args>(args)...).first; }
+        const type& put(Args&&... args) { return *this->base_class::emplace(std::forward<Args>(args)...).first; }
 
         const type& add(const type& value) { return put(value); }
         const type& add(type&& value) { return put(std::move(value)); }
 
-        void remove(const type& value) { this->erase(value); }
+        void remove(const type& value) { this->base_class::erase(value); }
         void clear() { return this->base_class::clear(); }
 
         iterator begin() { return this->base_class::begin(); }

@@ -17,7 +17,7 @@ namespace JumaEngine
     class VulkanCommandBuffer;
     class VulkanCommandPool;
 
-    CREATE_JDELEGATE_MULTICAST_TYPE_OneParam(OnVulkanCommandBufferEvent, VulkanCommandBuffer*, buffer)
+    CREATE_JUTILS_MULTICAST_DELEGATE_OneParam(OnVulkanCommandBufferEvent, VulkanCommandBuffer*, buffer);
 
     class VulkanCommandBuffer : public VulkanContextObject
     {

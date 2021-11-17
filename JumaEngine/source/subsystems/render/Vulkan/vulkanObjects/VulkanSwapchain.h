@@ -35,7 +35,7 @@ namespace JumaEngine
         VkPresentModeKHR presentMode = VK_PRESENT_MODE_FIFO_KHR;
     };
 
-    CREATE_JDELEGATE_MULTICAST_TYPE_OneParam(OnVulkanSwapchainEvent, VulkanSwapchain*, swapchain)
+    CREATE_JUTILS_MULTICAST_DELEGATE_OneParam(OnVulkanSwapchainEvent, VulkanSwapchain*, swapchain);
 
     class VulkanSwapchain : public VulkanContextObject
     {

@@ -13,7 +13,7 @@ namespace JumaEngine
 {
     class Shader;
 
-    CREATE_JDELEGATE_MULTICAST_TYPE_OneParam(OnShaderEvent, Shader*, shader)
+    CREATE_JUTILS_MULTICAST_DELEGATE_OneParam(OnShaderEvent, Shader*, shader);
 
     class Shader : public EngineContextObject
     {

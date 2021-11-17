@@ -13,7 +13,7 @@ namespace JumaEngine
 {
     class WindowDescription;
 
-    CREATE_JDELEGATE_MULTICAST_TYPE_OneParam(OnWindowDescriptionEvent, WindowDescription*, window)
+    CREATE_JUTILS_MULTICAST_DELEGATE_OneParam(OnWindowDescriptionEvent, WindowDescription*, window);
 
     class WindowDescription
     {

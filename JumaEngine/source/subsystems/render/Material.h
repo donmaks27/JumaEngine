@@ -15,7 +15,7 @@ namespace JumaEngine
     class Shader;
     class Material;
 
-    CREATE_JDELEGATE_MULTICAST_TYPE_OneParam(OnMaterialEvent, Material*, material)
+    CREATE_JUTILS_MULTICAST_DELEGATE_OneParam(OnMaterialEvent, Material*, material);
 
     class Material : public EngineContextObject
     {

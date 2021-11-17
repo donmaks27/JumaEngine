@@ -6,15 +6,15 @@
 #define GLM_FORCE_XYZW_ONLY
 
 #if defined(_DEBUG) || !defined(NDEBUG)
-#define JDEBUG 1
+    #define JDEBUG 1
 #else
-#define JDEBUG 0
+    #define JDEBUG 0
 #endif
 
 #if JDEBUG && _WIN32
 
 #include <crtdbg.h>
-#define debug_new new(_NORMAL_BLOCK, __FILE__, __LINE__)
+    #define debug_new new(_NORMAL_BLOCK, __FILE__, __LINE__)
 #define new debug_new
 
 #endif
@@ -24,13 +24,15 @@
 
 
 #include "utils/int_defines.h"
-#include "utils/jstring.h"
 
 #if !JDEBUG
-#define JUTILS_LOG_DISABLED
+    #define JUTILS_LOG_DISABLED
 #endif
+
+#include "utils/jlog.h"
 #define JUMA_LOG(type, message) JUTILS_LOG_WRITE(type, message)
-#define JUMA_LOG_EMPTY(type) JUTILS_LOG_WRITE_EMPTY(type)
+#define JUMA_LOG_CUSTOM(type, message) JUTILS_LOG_WRITE_CUSTOM(type, message)
+#define JUMA_LOG_EMPTY(type, message) JUTILS_LOG_WRITE_EMPTY(type, message)
 
 namespace JumaEngine
 {
