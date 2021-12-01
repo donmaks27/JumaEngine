@@ -7,6 +7,7 @@
 
 #include "RenderOptions.h"
 #include "subsystems/render/WindowDescription.h"
+#include "utils/jshared_ptr.h"
 
 namespace JumaEngine
 {
@@ -27,8 +28,8 @@ namespace JumaEngine
         WindowDescription* getMainWindow() const { return m_MainWindow; }
         bool shouldCloseMainWindow() const { return (m_MainWindow != nullptr) && shouldCloseWindowInternal(m_MainWindow); }
 
-        glm::uvec2 getMainWindowSize() const { return m_MainWindow != nullptr ? m_MainWindow->size : glm::uvec2(0); }
-        void setMainWindowSize(const glm::uvec2& size) { setWindowSize(getMainWindow(), size); }
+        math::uvector2 getMainWindowSize() const { return m_MainWindow != nullptr ? m_MainWindow->size : math::uvector2(0); }
+        void setMainWindowSize(const math::uvector2& size) { setWindowSize(getMainWindow(), size); }
 
         jstring getMainWindowTitle() const { return m_MainWindow != nullptr ? m_MainWindow->title : JSTR(""); }
         void setMainWindowTitle(const jstring& title);
@@ -51,13 +52,13 @@ namespace JumaEngine
         bool createMainWindow();
         void terminateMainWindow();
 
-        virtual void setWindowSize(WindowDescription* window, const glm::uvec2& size);
+        virtual void setWindowSize(WindowDescription* window, const math::uvector2& size);
 
-        virtual WindowDescription* createWindowInternal(const glm::uvec2& size, const jstring& title) = 0;
+        virtual WindowDescription* createWindowInternal(const math::uvector2& size, const jstring& title) = 0;
         virtual void terminateWindowInternal(WindowDescription* window) = 0;
 
         virtual bool shouldCloseWindowInternal(WindowDescription* window) const = 0;
-        virtual void setWindowSizeInternal(WindowDescription* window, const glm::uvec2& size) = 0;
+        virtual void setWindowSizeInternal(WindowDescription* window, const math::uvector2& size) = 0;
         virtual void setWindowTitleInternal(WindowDescription* window, const jstring& title) = 0;
 
         void callEngineRender(const RenderOptions& options) const;

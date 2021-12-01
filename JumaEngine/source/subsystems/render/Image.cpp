@@ -5,7 +5,7 @@
 
 namespace JumaEngine
 {
-    bool Image::init(const glm::uvec2& size, const ImageFormat format, const uint8* data)
+    bool Image::init(const math::uvector2& size, const ImageFormat format, const uint8* data)
     {
         if (isValid())
         {
@@ -31,7 +31,7 @@ namespace JumaEngine
         if (isValid())
         {
             clearInternal();
-            m_Size = glm::uvec2(0);
+            m_Size = math::uvector2(0);
             m_Format = ImageFormat::None;
             m_Initialized = false;
         }

@@ -51,7 +51,7 @@ namespace JumaEngine
             attachments = { m_Image->getImageView(), swapchain->getRenderDepthImage()->getImageView() };
         }
 
-        const glm::uvec2 swapchainSize = swapchain->getSize();
+        const math::uvector2 swapchainSize = swapchain->getSize();
         VkFramebufferCreateInfo framebufferInfo{};
         framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
         framebufferInfo.renderPass = swapchain->getRenderPass();

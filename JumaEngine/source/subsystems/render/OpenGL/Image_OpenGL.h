@@ -23,7 +23,7 @@ namespace JumaEngine
 
     protected:
 
-        virtual bool initInternal(const glm::uvec2& size, ImageFormat format, const uint8* data) override;
+        virtual bool initInternal(const math::uvector2& size, ImageFormat format, const uint8* data) override;
         virtual void clearInternal() override;
 
     private:

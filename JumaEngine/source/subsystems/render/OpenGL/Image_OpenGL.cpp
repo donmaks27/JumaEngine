@@ -27,7 +27,7 @@ namespace JumaEngine
         return 0;
     }
 
-    bool Image_OpenGL::initInternal(const glm::uvec2& size, const ImageFormat format, const uint8* data)
+    bool Image_OpenGL::initInternal(const math::uvector2& size, const ImageFormat format, const uint8* data)
     {
         const GLenum glFormat = imageFormatToGLFormat(format);
         if (glFormat == 0)

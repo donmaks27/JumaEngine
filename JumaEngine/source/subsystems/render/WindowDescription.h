@@ -4,10 +4,8 @@
 
 #include "common_header.h"
 
-#include <glm/vec2.hpp>
-
 #include "utils/jdelegate_multicast.h"
-#include "utils/jshared_ptr.h"
+#include "utils/math/vector2.h"
 
 namespace JumaEngine
 {
@@ -25,6 +23,6 @@ namespace JumaEngine
 
 
         jstring title;
-        glm::uvec2 size = { 0, 0 };
+        math::uvector2 size = { 0, 0 };
     };
 }

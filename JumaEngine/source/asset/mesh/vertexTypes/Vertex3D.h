@@ -9,7 +9,7 @@ namespace JumaEngine
 {
     struct Vertex3D
     {
-        glm::vec3 position;
+        math::vector3 position;
     };
 
     class VertexBufferData_Vertex3D final : public VertexBufferData<Vertex3D>

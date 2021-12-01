@@ -9,9 +9,9 @@ namespace JumaEngine
 {
     struct Vertex3D_Normal_TexCoord
     {
-        glm::vec3 position;
-        glm::vec3 normal;
-        glm::vec2 textureCoords;
+        math::vector3 position;
+        math::vector3 normal;
+        math::vector2 textureCoords;
     };
 
     class VertexBufferData_Vertex3D_Normal_TexCoord final : public VertexBufferData<Vertex3D_Normal_TexCoord>

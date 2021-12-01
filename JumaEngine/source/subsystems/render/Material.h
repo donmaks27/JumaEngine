@@ -8,7 +8,6 @@
 #include "MaterialUniform.h"
 #include "utils/jshared_ptr.h"
 #include "utils/jdelegate_multicast.h"
-#include "utils/jmap.h"
 
 namespace JumaEngine
 {

@@ -4,7 +4,6 @@
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
-#include <glm/common.hpp>
 #include "utils/jlog.h"
 #include "RenderSubsystem_Vulkan.h"
 #include "vulkanObjects/VulkanBuffer.h"
@@ -21,7 +20,7 @@ namespace JumaEngine
         }
     }
 
-    bool Image_Vulkan::init(const glm::uvec2& size, const uint32 mipLevels, const VkSampleCountFlagBits numSamples, const VkFormat format, 
+    bool Image_Vulkan::init(const math::uvector2& size, const uint32 mipLevels, const VkSampleCountFlagBits numSamples, const VkFormat format, 
         const jset<VulkanQueueType>& queues, const VkImageUsageFlags usage, const VmaMemoryUsage memoryUsage, const VkMemoryPropertyFlags properties)
     {
         jarray<uint32> uniqueQueueFamilies;
@@ -84,7 +83,7 @@ namespace JumaEngine
         return true;
     }
 
-    bool Image_Vulkan::init(VkImage existingImage, const glm::uvec2& size, const ImageFormat format, const uint32 mipLevels)
+    bool Image_Vulkan::init(VkImage existingImage, const math::uvector2& size, const ImageFormat format, const uint32 mipLevels)
     {
         if (isValid())
         {
@@ -103,9 +102,9 @@ namespace JumaEngine
         return true;
     }
 
-    bool Image_Vulkan::initInternal(const glm::uvec2& size, const ImageFormat format, const uint8* data)
+    bool Image_Vulkan::initInternal(const math::uvector2& size, const ImageFormat format, const uint8* data)
     {
-        m_MipLevels = static_cast<uint32>(std::floor(std::log2(glm::max(size.x, size.y)))) + 1;
+        m_MipLevels = static_cast<uint32>(std::floor(std::log2(math::max(size.x, size.y)))) + 1;
         m_ImageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
         const uint32 queueFamilyIndices[2] = {
             getRenderSubsystem()->getQueueFamilyIndex(VulkanQueueType::Graphics),
@@ -225,7 +224,7 @@ namespace JumaEngine
         m_ImageLayout = newLayout;
         return true;
     }
-    bool Image_Vulkan::copyDataToImage(const glm::uvec2& size, const ImageFormat format, const uint8* data)
+    bool Image_Vulkan::copyDataToImage(const math::uvector2& size, const ImageFormat format, const uint8* data)
     {
         if (!changeImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL))
         {
@@ -270,7 +269,7 @@ namespace JumaEngine
         commandBuffer->submit(true);
         return true;
     }
-    bool Image_Vulkan::generateMipmaps(const glm::uvec2& size, const ImageFormat format, const VkImageLayout newLayout)
+    bool Image_Vulkan::generateMipmaps(const math::uvector2& size, const ImageFormat format, const VkImageLayout newLayout)
     {
         VkFormatProperties formatProperties;
         vkGetPhysicalDeviceFormatProperties(getRenderSubsystem()->getPhysicalDevice(), getVulkanFormatByImageFormat(format), &formatProperties);
@@ -301,7 +300,7 @@ namespace JumaEngine
         imageBarrier.subresourceRange.layerCount = 1;
         imageBarrier.subresourceRange.levelCount = 1;
 
-        glm::uvec2 mipmapSize = size;
+        math::uvector2 mipmapSize = size;
         for (uint32 mipLevel = 1; mipLevel < m_MipLevels; mipLevel++)
         {
             imageBarrier.subresourceRange.baseMipLevel = mipLevel - 1;

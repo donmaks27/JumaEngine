@@ -52,7 +52,7 @@ namespace JumaEngine
             {
             case ShaderUniformType::Mat4:
                 {
-                    glm::mat4 value;
+                    math::matrix4 value;
                     getUniformValue<ShaderUniformType::Mat4>(name, value);
                     glUniformMatrix4fv(location, 1, GL_FALSE, &value[0][0]);
                 }
@@ -65,7 +65,7 @@ namespace JumaEngine
                     if (image != nullptr)
                     {
                         image->activate(location);
-                        m_ActivatedImagesCount = glm::max(m_ActivatedImagesCount, location + 1);
+                        m_ActivatedImagesCount = math::max(m_ActivatedImagesCount, location + 1);
                     }
                 }
                 break;

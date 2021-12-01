@@ -9,11 +9,11 @@
 #include "subsystems/render/Vulkan/VulkanContextObject.h"
 
 #include <vulkan/vulkan_core.h>
-#include <glm/vec2.hpp>
 
 #include "utils/jshared_ptr.h"
 #include "utils/jarray.h"
 #include "utils/jdelegate_multicast.h"
+#include "utils/math/vector2.h"
 #include "subsystems/render/RenderOptions.h"
 
 namespace JumaEngine
@@ -31,7 +31,7 @@ namespace JumaEngine
         uint32 imageCount = 0;
         VkSurfaceFormatKHR surfaceFormat = { VK_FORMAT_R8G8B8_SRGB, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR };
         VkFormat depthFormat = VK_FORMAT_D32_SFLOAT;
-        glm::uvec2 size = { 0, 0 };
+        math::uvector2 size = { 0, 0 };
         VkPresentModeKHR presentMode = VK_PRESENT_MODE_FIFO_KHR;
     };
 
@@ -50,7 +50,7 @@ namespace JumaEngine
 
         VkSampleCountFlagBits getSampleCount() const { return m_CurrentSettings.sampleCount; }
         VkFormat getFormat() const { return m_CurrentSettings.surfaceFormat.format; }
-        glm::uvec2 getSize() const { return m_CurrentSettings.size; }
+        math::uvector2 getSize() const { return m_CurrentSettings.size; }
         uint32 getImageCount() const { return m_CurrentSettings.imageCount; }
 
         VkSwapchainKHR get() const { return m_Swapchain; }

@@ -43,7 +43,7 @@ namespace JumaEngine
         }
 
         const jshared_ptr<VulkanSwapchain>& swapchain = getRenderSubsystem()->getSwapchain();
-        const glm::uvec2 swapchainSize = swapchain->getSize();
+        const math::uvector2 swapchainSize = swapchain->getSize();
 
         // Shader stages
         jarray<VkPipelineShaderStageCreateInfo> shaderStageInfos = shaderVulkan->createPipelineStageInfos();

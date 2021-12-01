@@ -54,7 +54,7 @@ namespace JumaEngine
         glfwTerminate();
     }
 
-    WindowDescription* RenderSubsystem_OpenGL_GLFW::createWindowInternal(const glm::uvec2& size, const jstring& title)
+    WindowDescription* RenderSubsystem_OpenGL_GLFW::createWindowInternal(const math::uvector2& size, const jstring& title)
     {
         GLFWwindow* window = glfwCreateWindow(size.x, size.y, *title, nullptr, nullptr);
         if (window == nullptr)
@@ -90,7 +90,7 @@ namespace JumaEngine
         }
         return false;
     }
-    void RenderSubsystem_OpenGL_GLFW::setWindowSizeInternal(WindowDescription* window, const glm::uvec2& size)
+    void RenderSubsystem_OpenGL_GLFW::setWindowSizeInternal(WindowDescription* window, const math::uvector2& size)
     {
         WindowDescription_OpenGL_GLFW* window_GLFW = castWindow<WindowDescription_OpenGL_GLFW>(window);
         if ((window_GLFW != nullptr) && (window_GLFW->window != nullptr))

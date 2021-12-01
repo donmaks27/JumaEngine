@@ -61,7 +61,7 @@ namespace JumaEngine
         return result;
     }
 
-    WindowDescription* RenderSubsystem_Vulkan_GLFW::createWindowInternal(const glm::uvec2& size, const jstring& title)
+    WindowDescription* RenderSubsystem_Vulkan_GLFW::createWindowInternal(const math::uvector2& size, const jstring& title)
     {
         GLFWwindow* window = glfwCreateWindow(size.x, size.y, *title, nullptr, nullptr);
         if (window == nullptr)
@@ -103,7 +103,7 @@ namespace JumaEngine
         }
     }
 
-    void RenderSubsystem_Vulkan_GLFW::setWindowSize(WindowDescription* window, const glm::uvec2& size)
+    void RenderSubsystem_Vulkan_GLFW::setWindowSize(WindowDescription* window, const math::uvector2& size)
     {
         if (window != nullptr)
         {
@@ -112,8 +112,8 @@ namespace JumaEngine
     }
     void RenderSubsystem_Vulkan_GLFW::GLFW_FramebufferResizeCallback(GLFWwindow* window, int width, int height)
     {
-        WindowDescription* windowDescription = (WindowDescription*)glfwGetWindowUserPointer(window);
-        windowDescription->size = { width, height };
+        WindowDescription* windowDescription = static_cast<WindowDescription*>(glfwGetWindowUserPointer(window));
+        windowDescription->size = { static_cast<uint32>(width), static_cast<uint32>(height) };
         windowDescription->onSizeChanged.call(windowDescription);
     }
 
@@ -126,7 +126,7 @@ namespace JumaEngine
         }
         return false;
     }
-    void RenderSubsystem_Vulkan_GLFW::setWindowSizeInternal(WindowDescription* window, const glm::uvec2& size)
+    void RenderSubsystem_Vulkan_GLFW::setWindowSizeInternal(WindowDescription* window, const math::uvector2& size)
     {
         WindowDescription_Vulkan_GLFW* window_GLFW = castWindow<WindowDescription_Vulkan_GLFW>(window);
         if ((window_GLFW != nullptr) && (window_GLFW->window != nullptr))

@@ -112,7 +112,7 @@ namespace JumaEngine
                     {
                         uniformValue->data = data = new jarray<MaterialUniformData_Vulkan_Buffer>();
                     }
-                    if (data->getSize() != imageCount)
+                    if (data->getSize() != static_cast<int32>(imageCount))
                     {
                         const uint32 oldSize = static_cast<uint32>(data->getSize());
                         data->resize(imageCount);
@@ -121,7 +121,7 @@ namespace JumaEngine
                             MaterialUniformData_Vulkan_Buffer& dataBuffer = data->get(index);
                             dataBuffer.buffer = getRenderSubsystem()->createVulkanObject<VulkanBuffer>();
                             dataBuffer.buffer->init(
-                                sizeof(glm::mat4), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, {},
+                                sizeof(math::matrix4), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, {},
                                 VMA_MEMORY_USAGE_CPU_TO_GPU, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
                             );
                         }
@@ -336,7 +336,7 @@ namespace JumaEngine
                     MaterialUniformData_Vulkan_Buffer& dataBuffer = uniformData->get(data.swapchainImageIndex);
                     if (!dataBuffer.valueActual)
                     {
-                        glm::mat4 value;
+                        math::matrix4 value;
                         MaterialUniformActions::get<ShaderUniformType::Mat4>(uniform, value);
                         dataBuffer.buffer->setData(&value[0][0]);
                         dataBuffer.valueActual = true;

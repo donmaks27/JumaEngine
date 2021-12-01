@@ -23,7 +23,7 @@ namespace JumaEngine
         }
     }
 
-    void RenderSubsystem::setWindowSize(WindowDescription* window, const glm::uvec2& size)
+    void RenderSubsystem::setWindowSize(WindowDescription* window, const math::uvector2& size)
     {
         if (window != nullptr)
         {

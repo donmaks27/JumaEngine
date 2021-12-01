@@ -28,11 +28,11 @@ namespace JumaEngine
         Image_Vulkan() = default;
         virtual ~Image_Vulkan() override;
 
-        bool init(const glm::uvec2& size, uint32 mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, const jset<VulkanQueueType>& queues, 
+        bool init(const math::uvector2& size, uint32 mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, const jset<VulkanQueueType>& queues, 
             VkImageUsageFlags usage, VmaMemoryUsage memoryUsage, VkMemoryPropertyFlags properties);
         bool init(const VkImageCreateInfo& imageInfo, const VmaAllocationCreateInfo& allocationInfo);
         
-        bool init(VkImage existingImage, const glm::uvec2& size, ImageFormat format, uint32 mipLevels = 1);
+        bool init(VkImage existingImage, const math::uvector2& size, ImageFormat format, uint32 mipLevels = 1);
 
         bool createImageView(VkImageAspectFlags aspectFlags);
         
@@ -47,7 +47,7 @@ namespace JumaEngine
 
     protected:
 
-        virtual bool initInternal(const glm::uvec2& size, ImageFormat format, const uint8* data) override;
+        virtual bool initInternal(const math::uvector2& size, ImageFormat format, const uint8* data) override;
 
         virtual void clearInternal() override { clearImage(); }
 
@@ -63,8 +63,8 @@ namespace JumaEngine
 
 
         bool changeImageLayout(VkImageLayout newLayout);
-        bool copyDataToImage(const glm::uvec2& size, ImageFormat format, const uint8* data);
-        bool generateMipmaps(const glm::uvec2& size, ImageFormat format, VkImageLayout newLayout);
+        bool copyDataToImage(const math::uvector2& size, ImageFormat format, const uint8* data);
+        bool generateMipmaps(const math::uvector2& size, ImageFormat format, VkImageLayout newLayout);
 
         bool createImageView(ImageFormat format, VkImageAspectFlags aspectFlags);
         bool createSampler();

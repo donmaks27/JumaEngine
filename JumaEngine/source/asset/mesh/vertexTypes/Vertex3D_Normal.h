@@ -9,8 +9,8 @@ namespace JumaEngine
 {
     struct Vertex3D_Normal
     {
-        glm::vec3 position;
-        glm::vec3 normal;
+        math::vector3 position;
+        math::vector3 normal;
     };
 
     class VertexBufferData_Vertex3D_Normal final : public VertexBufferData<Vertex3D_Normal>

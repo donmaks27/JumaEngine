@@ -4,7 +4,6 @@
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
-#include <glm/common.hpp>
 #include "subsystems/render/Vulkan/RenderSubsystem_Vulkan.h"
 #include "subsystems/render/Vulkan/WindowDescription_Vulkan.h"
 #include "subsystems/render/Vulkan/Image_Vulkan.h"
@@ -38,7 +37,7 @@ namespace JumaEngine
         VkSurfaceCapabilitiesKHR capabilities;
         vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, window_vulkan->surface, &capabilities);
 
-        const uint32 imageCount = capabilities.maxImageCount > 0 ? glm::min(capabilities.minImageCount + 1, capabilities.maxImageCount) : capabilities.minImageCount + 1;
+        const uint32 imageCount = capabilities.maxImageCount > 0 ? math::min(capabilities.minImageCount + 1, capabilities.maxImageCount) : capabilities.minImageCount + 1;
 
         uint32 surfaceFormatCount;
         vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, window_vulkan->surface, &surfaceFormatCount, nullptr);
@@ -76,8 +75,8 @@ namespace JumaEngine
         }
 
         const VkExtent2D swapchainExtent = capabilities.currentExtent.width != UINT32_MAX ? capabilities.currentExtent : VkExtent2D{
-		    glm::clamp(window->size.x, capabilities.minImageExtent.width, capabilities.maxImageExtent.width),
-		    glm::clamp(window->size.y, capabilities.minImageExtent.height, capabilities.maxImageExtent.height)
+		    math::clamp(window->size.x, capabilities.minImageExtent.width, capabilities.maxImageExtent.width),
+		    math::clamp(window->size.y, capabilities.minImageExtent.height, capabilities.maxImageExtent.height)
 	    };
 
         uint32 surfacePresentModeCount;
@@ -378,7 +377,7 @@ namespace JumaEngine
             }
         }
 
-        m_CurrentInFlightFrame = glm::clamp<uint32>(m_CurrentInFlightFrame, 0, m_MaxFramesInFlight - 1);
+        m_CurrentInFlightFrame = math::clamp(m_CurrentInFlightFrame, 0, m_MaxFramesInFlight - 1);
         return true;
     }
 
@@ -452,8 +451,8 @@ namespace JumaEngine
         else
         {
             m_SettingForApply.size = {
-		        glm::clamp(window->size.x, capabilities.minImageExtent.width, capabilities.maxImageExtent.width),
-		        glm::clamp(window->size.y, capabilities.minImageExtent.height, capabilities.maxImageExtent.height)
+		        math::clamp(window->size.x, capabilities.minImageExtent.width, capabilities.maxImageExtent.width),
+		        math::clamp(window->size.y, capabilities.minImageExtent.height, capabilities.maxImageExtent.height)
 	        };
         }
         markAsNeededToRecreate();

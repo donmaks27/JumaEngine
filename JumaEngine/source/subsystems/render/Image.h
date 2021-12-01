@@ -5,8 +5,7 @@
 #include "common_header.h"
 #include "engine/EngineContextObject.h"
 
-#include <glm/vec2.hpp>
-
+#include "utils/math/vector2.h"
 #include "ImageFormat.h"
 
 namespace JumaEngine
@@ -20,10 +19,10 @@ namespace JumaEngine
         virtual ~Image() override = default;
 
         bool isValid() const { return m_Initialized; }
-        bool init(const glm::uvec2& size, ImageFormat format, const uint8* data);
+        bool init(const math::uvector2& size, ImageFormat format, const uint8* data);
         void clear();
 
-        const glm::uvec2& getSize() const { return m_Size; }
+        const math::uvector2& getSize() const { return m_Size; }
         ImageFormat getFormat() const { return m_Format; }
 
         static uint32 getPixelSize(ImageFormat format);
@@ -31,14 +30,14 @@ namespace JumaEngine
     protected:
 
         void markAsInitialized() { m_Initialized = true; }
-        void markAsInitialized(const glm::uvec2& size, const ImageFormat format)
+        void markAsInitialized(const math::uvector2& size, const ImageFormat format)
         {
             m_Size = size;
             m_Format = format;
             markAsInitialized();
         }
 
-        virtual bool initInternal(const glm::uvec2& size, ImageFormat format, const uint8* data) = 0;
+        virtual bool initInternal(const math::uvector2& size, ImageFormat format, const uint8* data) = 0;
 
         virtual void clearInternal() = 0;
 
@@ -46,7 +45,7 @@ namespace JumaEngine
 
         bool m_Initialized = false;
 
-        glm::uvec2 m_Size = glm::uvec2(0);
+        math::uvector2 m_Size = math::uvector2(0);
         ImageFormat m_Format = ImageFormat::None;
     };
 }

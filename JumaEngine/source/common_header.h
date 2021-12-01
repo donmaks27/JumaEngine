@@ -2,9 +2,6 @@
 
 #pragma once
 
-#define GLM_FORCE_INLINE
-#define GLM_FORCE_XYZW_ONLY
-
 #if defined(_DEBUG) || !defined(NDEBUG)
     #define JDEBUG 1
 #else

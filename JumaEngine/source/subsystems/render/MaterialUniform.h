@@ -4,9 +4,8 @@
 
 #include "common_header.h"
 
-#include <glm/mat4x4.hpp>
-
 #include "ShaderUniform.h"
+#include "utils/math/matrix4.h"
 #include "utils/jshared_ptr.h"
 
 namespace JumaEngine
@@ -28,8 +27,8 @@ namespace JumaEngine
             type = ShaderUniformType::Mat4;
         }
 
-        using value_type = glm::mat4;
-        value_type value = glm::mat4(0);
+        using value_type = math::matrix4;
+        value_type value = math::matrix4(0);
     };
     template<>
     struct MaterialUniformType<ShaderUniformType::Mat4> { using struct_type = MaterialUniform_Mat4; };

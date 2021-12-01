@@ -4,7 +4,6 @@
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
-#include <glm/common.hpp>
 #include "utils/jlog.h"
 #include "subsystems/render/Vulkan/RenderSubsystem_Vulkan.h"
 #include "VulkanCommandBuffer.h"
@@ -124,7 +123,7 @@ namespace JumaEngine
         VkBufferCopy copyRegion;
         copyRegion.srcOffset = 0;
         copyRegion.dstOffset = 0;
-        copyRegion.size = glm::min(m_BufferSize, dstBuffer->getSize());
+        copyRegion.size = math::min(m_BufferSize, dstBuffer->getSize());
         vkCmdCopyBuffer(commandBuffer->get(), m_Buffer, dstBuffer->get(), 1, &copyRegion);
 
         vkEndCommandBuffer(commandBuffer->get());

@@ -46,7 +46,7 @@ namespace JumaEngine
         }
         if (!compileShader(shaderText, shaderType, outShaderIndex))
         {
-#if JLOG_ENABLED
+#ifndef JUTILS_LOG_DISABLED
             jstring shaderTypeString;
             switch (shaderType)
             {
@@ -117,7 +117,7 @@ namespace JumaEngine
         glGetShaderiv(shaderIndex, GL_COMPILE_STATUS, &compileStatus);
         if (compileStatus == GL_FALSE)
         {
-#if JLOG_ENABLED
+#ifndef JUTILS_LOG_DISABLED
             GLint logLength;
             glGetShaderiv(shaderIndex, GL_INFO_LOG_LENGTH, &logLength);
 
@@ -150,7 +150,7 @@ namespace JumaEngine
         glGetProgramiv(shaderProgramIndex, GL_LINK_STATUS, &linkStatus);
         if (linkStatus == GL_FALSE)
         {
-#if JLOG_ENABLED
+#ifndef JUTILS_LOG_DISABLED
             int logLength;
             glGetProgramiv(shaderProgramIndex, GL_INFO_LOG_LENGTH, &logLength);
 
