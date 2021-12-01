@@ -4,8 +4,8 @@
 
 #include <string>
 
-#include "int_defines.h"
-#include "jmath.h"
+#include "type_defines.h"
+#include "math/jmath.h"
 
 namespace jutils
 {

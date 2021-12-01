@@ -23,7 +23,7 @@
 #define JUMAENGINE_SINGLE_WINDOW
 
 
-#include "utils/int_defines.h"
+#include "utils/type_defines.h"
 
 #if !JDEBUG
     #define JUTILS_LOG_DISABLED

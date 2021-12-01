@@ -4,7 +4,7 @@
 
 #include <set>
 
-#include "int_defines.h"
+#include "type_defines.h"
 
 namespace jutils
 {

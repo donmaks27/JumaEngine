@@ -104,6 +104,8 @@
     <ClCompile Include="source\engine\Engine.cpp" />
     <ClCompile Include="source\engine\EngineOld.cpp" />
     <ClCompile Include="source\engine\EngineContextObject.cpp" />
+    <ClCompile Include="source\engine\math_functions.cpp" />
+    <ClCompile Include="source\engine\system_functions.cpp" />
     <ClCompile Include="source\framework\gameObject\gameComponent\CameraComponent.cpp" />
     <ClCompile Include="source\framework\gameObject\gameComponent\GameComponent.cpp" />
     <ClCompile Include="source\framework\gameObject\gameComponent\MeshComponent.cpp" />
@@ -154,8 +156,6 @@
     <ClCompile Include="source\subsystems\SubsystemBase.cpp" />
     <ClCompile Include="source\transform\Rotation.cpp" />
     <ClCompile Include="source\utils\jlog.cpp" />
-    <ClCompile Include="source\utils\math_functions.cpp" />
-    <ClCompile Include="source\utils\system_functions.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\asset\AssetObject.h" />
@@ -181,6 +181,9 @@
     <ClInclude Include="source\engine\Engine.h" />
     <ClInclude Include="source\engine\EngineContextObject.h" />
     <ClInclude Include="source\engine\EngineObjectClass.h" />
+    <ClInclude Include="source\engine\math_consts.h" />
+    <ClInclude Include="source\engine\math_functions.h" />
+    <ClInclude Include="source\engine\system_functions.h" />
     <ClInclude Include="source\framework\gameObject\gameComponent\CameraComponent.h" />
     <ClInclude Include="source\framework\gameObject\gameComponent\GameComponent.h" />
     <ClInclude Include="source\framework\gameObject\gameComponent\MeshComponent.h" />
@@ -253,7 +256,37 @@
     <ClInclude Include="source\transform\Rotation.h" />
     <ClInclude Include="source\transform\Transform.h" />
     <ClInclude Include="source\utils\id_generator.h" />
-    <ClInclude Include="source\utils\int_defines.h" />
+    <ClInclude Include="source\utils\math\base_types\matrix2x2_base.h" />
+    <ClInclude Include="source\utils\math\base_types\matrix2x3_base.h" />
+    <ClInclude Include="source\utils\math\base_types\matrix2x4_base.h" />
+    <ClInclude Include="source\utils\math\base_types\matrix3x2_base.h" />
+    <ClInclude Include="source\utils\math\base_types\matrix3x3_base.h" />
+    <ClInclude Include="source\utils\math\base_types\matrix3x4_base.h" />
+    <ClInclude Include="source\utils\math\base_types\matrix4x2_base.h" />
+    <ClInclude Include="source\utils\math\base_types\matrix4x3_base.h" />
+    <ClInclude Include="source\utils\math\base_types\matrix4x4_base.h" />
+    <ClInclude Include="source\utils\math\base_types\matrix_base.h" />
+    <ClInclude Include="source\utils\math\base_types\matrix_operations.h" />
+    <ClInclude Include="source\utils\math\base_types\vector2_base.h" />
+    <ClInclude Include="source\utils\math\base_types\vector3_base.h" />
+    <ClInclude Include="source\utils\math\base_types\vector4_base.h" />
+    <ClInclude Include="source\utils\math\base_types\vector_base.h" />
+    <ClInclude Include="source\utils\math\jmath.h" />
+    <ClInclude Include="source\utils\math\jmath_matrix.h" />
+    <ClInclude Include="source\utils\math\jmath_vector.h" />
+    <ClInclude Include="source\utils\math\matrix2.h" />
+    <ClInclude Include="source\utils\math\matrix2x3.h" />
+    <ClInclude Include="source\utils\math\matrix2x4.h" />
+    <ClInclude Include="source\utils\math\matrix3.h" />
+    <ClInclude Include="source\utils\math\matrix3x2.h" />
+    <ClInclude Include="source\utils\math\matrix3x4.h" />
+    <ClInclude Include="source\utils\math\matrix4.h" />
+    <ClInclude Include="source\utils\math\matrix4x2.h" />
+    <ClInclude Include="source\utils\math\matrix4x3.h" />
+    <ClInclude Include="source\utils\math\vector2.h" />
+    <ClInclude Include="source\utils\math\vector3.h" />
+    <ClInclude Include="source\utils\math\vector4.h" />
+    <ClInclude Include="source\utils\type_defines.h" />
     <ClInclude Include="source\utils\jarray.h" />
     <ClInclude Include="source\utils\jdelegate.h" />
     <ClInclude Include="source\utils\jdelegate_multicast.h" />
@@ -264,10 +297,6 @@
     <ClInclude Include="source\utils\jstring.h" />
     <ClInclude Include="source\utils\jlog.h" />
     <ClInclude Include="source\utils\jmap_auto_id.h" />
-    <ClInclude Include="source\utils\jmath.h" />
-    <ClInclude Include="source\utils\math_consts.h" />
-    <ClInclude Include="source\utils\math_functions.h" />
-    <ClInclude Include="source\utils\system_functions.h" />
     <ClInclude Include="source\utils\type_checks.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

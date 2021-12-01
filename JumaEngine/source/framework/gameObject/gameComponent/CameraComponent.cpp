@@ -3,8 +3,8 @@
 #include "CameraComponent.h"
 
 #include "utils/jlog.h"
-#include "utils/math_functions.h"
-#include "utils/system_functions.h"
+#include "engine/math_functions.h"
+#include "engine/system_functions.h"
 
 namespace JumaEngine
 {

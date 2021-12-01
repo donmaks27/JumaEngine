@@ -4,7 +4,8 @@
 
 #include <type_traits>
 
-#define TEMPLATE_ENABLE(...) std::enable_if_t<__VA_ARGS__>* = nullptr
+#define TEMPLATE_ENABLE_IMPL(...) std::enable_if_t<__VA_ARGS__>*
+#define TEMPLATE_ENABLE(...) TEMPLATE_ENABLE_IMPL(__VA_ARGS__) = nullptr
 
 namespace jutils
 {

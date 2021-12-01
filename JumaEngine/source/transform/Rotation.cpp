@@ -1,7 +1,7 @@
 ﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
 
 #include "Rotation.h"
-#include "utils/math_functions.h"
+#include "engine/math_functions.h"
 #include "glm/gtx/quaternion.hpp"
 
 namespace JumaEngine

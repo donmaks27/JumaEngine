@@ -4,8 +4,8 @@
 
 #include <vector>
 
-#include "int_defines.h"
-#include "jmath.h"
+#include "type_defines.h"
+#include "math/jmath.h"
 
 namespace jutils
 {
@@ -161,6 +161,29 @@ namespace jutils
 
         const_iterator begin() const noexcept { return this->base_class::begin(); }
         const_iterator end() const noexcept { return this->base_class::end(); }
+
+        template<typename OtherAllocator>
+        bool operator==(const jarray<type, OtherAllocator>& value) const
+        {
+            if (getSize() != value.getSize())
+            {
+                return false;
+            }
+            if (isEmpty())
+            {
+                return true;
+            }
+            for (int32 index = 0; index < getSize(); index++)
+            {
+                if (getInternal(index) != value[index])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        template<typename OtherAllocator>
+        bool operator!=(const jarray<type, OtherAllocator>& value) const { return !this->operator==(value); }
 
     private:
 
