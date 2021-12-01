@@ -2,34 +2,47 @@
 
 #pragma once
 
-#include "common_header.h"
-
-namespace JumaEngine
+namespace jutils
 {
     template<typename... ArgTypes>
     class jdelegate
     {
     public:
+
         jdelegate() = default;
         jdelegate(const jdelegate& otherDelegate)
         {
-            if (otherDelegate.m_Container != nullptr)
+            if (otherDelegate.delegate_container != nullptr)
             {
-                m_Container = otherDelegate.m_Container->copy();
+                delegate_container = otherDelegate.delegate_container->copy();
             }
         }
         jdelegate(jdelegate&& otherDelegate) noexcept
         {
-            m_Container = otherDelegate.m_Container;
-            otherDelegate.m_Container = nullptr;
+            delegate_container = otherDelegate.delegate_container;
+            otherDelegate.delegate_container = nullptr;
         }
-        ~jdelegate()
+        ~jdelegate() { clear(); }
+
+        jdelegate& operator=(const jdelegate& otherDelegate)
+        {
+            if (this != &otherDelegate)
+            {
+                clear();
+                if (otherDelegate.delegate_container != nullptr)
+                {
+                    delegate_container = otherDelegate.delegate_container->copy();
+                }
+            }
+            return *this;
+        }
+        jdelegate& operator=(jdelegate&& otherDelegate) noexcept
         {
             clear();
+            delegate_container = otherDelegate.delegate_container;
+            otherDelegate.delegate_container = nullptr;
+            return *this;
         }
-
-        jdelegate& operator=(const jdelegate& otherDelegate) = delete;
-        jdelegate& operator=(jdelegate&& otherDelegate) = delete;
 
         template<typename T>
         void bind(T* object, void (T::*function)(ArgTypes...))
@@ -37,16 +50,16 @@ namespace JumaEngine
             clear();
             if (object != nullptr)
             {
-                m_Container = new delegate_container_impl<T>(object, function);
+                delegate_container = new jdelegate_container_implementation<T>(object, function);
             }
         }
 
         template<typename T>
         bool isBinded(T* object, void (T::*function)(ArgTypes...)) const
         {
-            if ((object != nullptr) && (m_Container != nullptr))
+            if ((object != nullptr) && (delegate_container != nullptr))
             {
-                const delegate_container_impl<T>* container = dynamic_cast<const delegate_container_impl<T>*>(m_Container);
+                const jdelegate_container_implementation<T>* container = dynamic_cast<const jdelegate_container_implementation<T>*>(delegate_container);
                 if (container != nullptr)
                 {
                     return container->isBinded(object, function);
@@ -57,9 +70,9 @@ namespace JumaEngine
         template<typename T>
         bool isBinded(T* object) const
         {
-            if ((object != nullptr) && (m_Container != nullptr))
+            if ((object != nullptr) && (delegate_container != nullptr))
             {
-                const delegate_container_impl<T>* container = dynamic_cast<const delegate_container_impl<T>*>(m_Container);
+                const jdelegate_container_implementation<T>* container = dynamic_cast<const jdelegate_container_implementation<T>*>(delegate_container);
                 if (container != nullptr)
                 {
                     return container->isBinded(object);
@@ -70,87 +83,93 @@ namespace JumaEngine
 
         void clear()
         {
-            if (m_Container != nullptr)
+            if (delegate_container != nullptr)
             {
-                delete m_Container;
-                m_Container = nullptr;
+                delete delegate_container;
+                delegate_container = nullptr;
             }
         }
 
-        void _call(ArgTypes... args)
+        void _call_internal(ArgTypes... args)
         {
-            if (m_Container != nullptr)
+            if (delegate_container != nullptr)
             {
-                m_Container->_call(args...);
+                delegate_container->call(args...);
             }
         }
 
     private:
 
-        class delegate_container
+        class jdelegate_container_interface
         {
         public:
-            virtual ~delegate_container() = default;
 
-            virtual delegate_container* copy() = 0;
+            virtual ~jdelegate_container_interface() = default;
 
-            virtual void _call(ArgTypes...) = 0;
+            virtual jdelegate_container_interface* copy() = 0;
+
+            virtual void call(ArgTypes...) = 0;
         };
         template<typename T>
-        class delegate_container_impl : public delegate_container
+        class jdelegate_container_implementation : public jdelegate_container_interface
         {
-            typedef void (T::*function_type)(ArgTypes...);
-
         public:
-            delegate_container_impl(T* object, function_type function)
-                : m_Object(object)
-                , m_Function(function)
+
+            using class_type = T;
+            using function_type = void (class_type::*)(ArgTypes...);
+
+            jdelegate_container_implementation(class_type* object, function_type function)
+                : object(object)
+                , function(function)
             {}
+            virtual ~jdelegate_container_implementation() override = default;
 
-            virtual delegate_container* copy() override { return new delegate_container_impl(m_Object, m_Function); }
+            virtual jdelegate_container_interface* copy() override { return new jdelegate_container_implementation(object, function); }
 
-            bool isBinded(T* object, function_type function) const { return isBinded(object) && (m_Function == function); }
-            bool isBinded(T* object) const { return m_Object == object; }
+            bool isBinded(class_type* checking_object, function_type checking_function) const { return isBinded(checking_object) && (function == checking_function); }
+            bool isBinded(class_type* checking_object) const { return object == checking_object; }
 
-            virtual void _call(ArgTypes... args) override
+            virtual void call(ArgTypes... args) override
             {
-                if (m_Object != nullptr)
+                if (object != nullptr)
                 {
-                    (m_Object->*m_Function)(args...);
+                    (object->*function)(args...);
                 }
             }
 
         private:
 
-            T* m_Object;
-            function_type m_Function;
+            T* object;
+            function_type function;
         };
 
-        delegate_container* m_Container = nullptr;
+        jdelegate_container_interface* delegate_container = nullptr;
     };
 }
 
-#define DECLARE_JUMAENGINE_DELEGATE_INTERNAL(DelegateName, ParamsTypes, ParamsNames, Params) \
-class DelegateName : public jdelegate<ParamsTypes> \
-{ \
-    using base_class = jdelegate<ParamsTypes>; \
-public: \
-    DelegateName() : base_class() {} \
-    DelegateName(base_class&& delegate) noexcept : base_class(std::move(delegate)) {} \
-    DelegateName(const base_class& delegate) : base_class(delegate) {} \
-    void call(Params) { _call(ParamsNames); } \
-};
+#define JUTILS_DELEGATE_CONCAT_HELPER(...) __VA_ARGS__
 
-#define DECLARE_JUMAENGINE_DELEGATE(DelegateName) DECLARE_JUMAENGINE_DELEGATE_INTERNAL(DelegateName, , , )
-#define DECLARE_JUMAENGINE_DELEGATE_OneParam(DelegateName, ParamType1, ParamName1) DECLARE_JUMAENGINE_DELEGATE_INTERNAL(DelegateName, \
-    JUMAENGINE_CONCAT_HELPER(ParamType1), JUMAENGINE_CONCAT_HELPER(ParamName1), \
-    JUMAENGINE_CONCAT_HELPER(ParamType1 ParamName1))
-#define DECLARE_JUMAENGINE_DELEGATE_TwoParams(DelegateName, ParamType1, ParamName1, ParamType2, ParamName2) DECLARE_JUMAENGINE_DELEGATE_INTERNAL(DelegateName, \
-    JUMAENGINE_CONCAT_HELPER(ParamType1, ParamType2), JUMAENGINE_CONCAT_HELPER(ParamName1, ParamName2), \
-    JUMAENGINE_CONCAT_HELPER(ParamType1 ParamName1, ParamType2 ParamName2))
-#define DECLARE_JUMAENGINE_DELEGATE_ThreeParams(DelegateName, ParamType1, ParamName1, ParamType2, ParamName2, ParamType3, ParamName3) DECLARE_JUMAENGINE_DELEGATE_INTERNAL(DelegateName, \
-    JUMAENGINE_CONCAT_HELPER(ParamType1, ParamType2, ParamType3), JUMAENGINE_CONCAT_HELPER(ParamName1, ParamName2, ParamName3), \
-    JUMAENGINE_CONCAT_HELPER(ParamType1 ParamName1, ParamType2 ParamName2, ParamType3 ParamName3))
-#define DECLARE_JUMAENGINE_DELEGATE_FourParams(DelegateName, ParamType1, ParamName1, ParamType2, ParamName2, ParamType3, ParamName3, ParamType4, ParamName4) DECLARE_JUMAENGINE_DELEGATE_INTERNAL(DelegateName, \
-    JUMAENGINE_CONCAT_HELPER(ParamType1, ParamType2, ParamType3, ParamType4), JUMAENGINE_CONCAT_HELPER(ParamName1, ParamName2, ParamName3, ParamName4), \
-    JUMAENGINE_CONCAT_HELPER(ParamType1 ParamName1, ParamType2 ParamName2, ParamType3 ParamName3, ParamType4 ParamName4))
+#define CREATE_JUTILS_DELEGATE_INTERNAL(DelegateName, ParamsTypes, ParamsNames, Params) \
+class DelegateName : public jutils::jdelegate<ParamsTypes>                              \
+{                                                                                       \
+    using base_class = jutils::jdelegate<ParamsTypes>;                                  \
+public:                                                                                 \
+    DelegateName() : base_class() {}                                                    \
+    DelegateName(const base_class& value) : base_class(value) {}                        \
+    DelegateName(base_class&& value) noexcept : base_class(std::move(value)) {}         \
+    void call(Params) { _call_internal(ParamsNames); }                                           \
+}
+
+#define CREATE_JUTILS_DELEGATE(DelegateName) CREATE_JUTILS_DELEGATE_INTERNAL(DelegateName, , , )
+#define CREATE_JUTILS_DELEGATE_OneParam(DelegateName, ParamType1, ParamName1) CREATE_JUTILS_DELEGATE_INTERNAL(DelegateName, \
+    JUTILS_DELEGATE_CONCAT_HELPER(ParamType1), JUTILS_DELEGATE_CONCAT_HELPER(ParamName1), \
+    JUTILS_DELEGATE_CONCAT_HELPER(ParamType1 ParamName1))
+#define CREATE_JUTILS_DELEGATE_TwoParams(DelegateName, ParamType1, ParamName1, ParamType2, ParamName2) CREATE_JUTILS_DELEGATE_INTERNAL(DelegateName, \
+    JUTILS_DELEGATE_CONCAT_HELPER(ParamType1, ParamType2), JUTILS_DELEGATE_CONCAT_HELPER(ParamName1, ParamName2), \
+    JUTILS_DELEGATE_CONCAT_HELPER(ParamType1 ParamName1, ParamType2 ParamName2))
+#define CREATE_JUTILS_DELEGATE_ThreeParams(DelegateName, ParamType1, ParamName1, ParamType2, ParamName2, ParamType3, ParamName3) CREATE_JUTILS_DELEGATE_INTERNAL(DelegateName, \
+    JUTILS_DELEGATE_CONCAT_HELPER(ParamType1, ParamType2, ParamType3), JUTILS_DELEGATE_CONCAT_HELPER(ParamName1, ParamName2, ParamName3), \
+    JUTILS_DELEGATE_CONCAT_HELPER(ParamType1 ParamName1, ParamType2 ParamName2, ParamType3 ParamName3))
+#define CREATE_JUTILS_DELEGATE_FourParams(DelegateName, ParamType1, ParamName1, ParamType2, ParamName2, ParamType3, ParamName3, ParamType4, ParamName4) CREATE_JUTILS_DELEGATE_INTERNAL(DelegateName, \
+    JUTILS_DELEGATE_CONCAT_HELPER(ParamType1, ParamType2, ParamType3, ParamType4), JUTILS_DELEGATE_CONCAT_HELPER(ParamName1, ParamName2, ParamName3, ParamName4), \
+    JUTILS_DELEGATE_CONCAT_HELPER(ParamType1 ParamName1, ParamType2 ParamName2, ParamType3 ParamName3, ParamType4 ParamName4))

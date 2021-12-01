@@ -17,11 +17,11 @@ namespace JumaEngine
     {
         const ILuint imageIndex = ilGenImage();
         ilBindImage(imageIndex);
-        if (ilLoadImage(filePath.c_str()) == IL_FALSE)
+        if (ilLoadImage(*filePath) == IL_FALSE)
         {
 #if JLOG_ENABLED
             const ILenum errorCode = ilGetError();
-            JUMA_LOG(warning, jstring(JTEXT("Fail to load image. Code: ")) + TO_JTEXT(errorCode));
+            JUMA_LOG(warning, jstring(JSTR("Fail to load image. Code: ")) + TO_JSTR(errorCode));
 #endif
             return false;
         }

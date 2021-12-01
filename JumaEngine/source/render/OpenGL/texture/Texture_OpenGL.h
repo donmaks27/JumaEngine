@@ -4,7 +4,7 @@
 
 #include "common_header.h"
 
-#if defined(JUMAENGINE_USE_GRAPHIC_API_OPENGL)
+#if defined(JUMAENGINE_INCLUDE_RENDER_API_OPENGL)
 
 #include "render/texture/TextureBase.h"
 
@@ -12,7 +12,7 @@ namespace JumaEngine
 {
     class Texture_OpenGL : public TextureBase
     {
-        JUMAENGINE_CLASS(Texture_OpenGL, TextureBase)
+        JUMAENGINE_CLASS_OLD(Texture_OpenGL, TextureBase)
 
     public:
         Texture_OpenGL() = default;

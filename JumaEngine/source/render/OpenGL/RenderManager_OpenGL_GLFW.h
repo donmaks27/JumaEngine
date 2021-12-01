@@ -4,16 +4,16 @@
 
 #include "common_header.h"
 
-#if defined(JUMAENGINE_USE_GRAPHIC_API_OPENGL) && defined(JUMAENGINE_USE_WINDOW_LIB_GLFW)
+#if defined(JUMAENGINE_INCLUDE_RENDER_API_OPENGL) && defined(JUMAENGINE_INCLUDE_WINDOW_LIB_GLFW)
 
-#include "render/window/WindowDescriptionGLFW.h"
+#include "render/window/WindowDescriptionGLFWOld.h"
 #include "RenderManagerBase_OpenGL.h"
 
 namespace JumaEngine
 {
     class RenderManager_OpenGL_GLFW final : public RenderManagerBase_OpenGL
     {
-        JUMAENGINE_CLASS(RenderManager_OpenGL_GLFW, RenderManagerBase_OpenGL)
+        JUMAENGINE_CLASS_OLD(RenderManager_OpenGL_GLFW, RenderManagerBase_OpenGL)
 
     public:
         RenderManager_OpenGL_GLFW() = default;
@@ -29,7 +29,7 @@ namespace JumaEngine
         virtual bool initInternal() override;
         virtual void terminateInternal() override;
         
-        virtual WindowDescriptionBase* createWindowInternal(const glm::uvec2& size, const jstring& title) override;
+        virtual WindowDescriptionBaseOld* createWindowInternal(const glm::uvec2& size, const jstring& title) override;
 
 #ifndef JUMAENGINE_SINGLE_WINDOW
         virtual void destroyWindowInternal(window_id windowID) override;
@@ -46,11 +46,11 @@ namespace JumaEngine
 
         static void errorCallback(int code, const char* errorMessage);
 
-        WindowDescriptionGLFW* getWindowDescriptionGLFW(const window_id windowID) { return getWindowDescription<WindowDescriptionGLFW>(windowID); }
-        const WindowDescriptionGLFW* getWindowDescriptionGLFW(const window_id windowID) const { return getWindowDescription<WindowDescriptionGLFW>(windowID); }
+        WindowDescriptionGLFWOld* getWindowDescriptionGLFW(const window_id windowID) { return getWindowDescription<WindowDescriptionGLFWOld>(windowID); }
+        const WindowDescriptionGLFWOld* getWindowDescriptionGLFW(const window_id windowID) const { return getWindowDescription<WindowDescriptionGLFWOld>(windowID); }
         GLFWwindow* getWindowGLFW(const window_id windowID) const
         {
-            const WindowDescriptionGLFW* description = getWindowDescriptionGLFW(windowID);
+            const WindowDescriptionGLFWOld* description = getWindowDescriptionGLFW(windowID);
             return description != nullptr ? description->windowPtr : nullptr;
         }
     };

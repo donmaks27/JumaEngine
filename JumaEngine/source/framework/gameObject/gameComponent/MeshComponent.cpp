@@ -2,13 +2,13 @@
 
 #include "MeshComponent.h"
 #include "CameraComponent.h"
-#include "asset/material/MaterialBase.h"
-#include "asset/mesh/Mesh.h"
-#include "utils/system_functions.h"
+#include "asset/material/MaterialBaseOld.h"
+#include "asset/mesh/MeshOld.h"
+#include "engine/system_functions.h"
 
 namespace JumaEngine
 {
-    void MeshComponent::setMesh(const asset_ptr<Mesh>& mesh)
+    void MeshComponent::setMesh(const asset_ptr<MeshOld>& mesh)
     {
         m_Mesh = mesh;
     }
@@ -17,10 +17,10 @@ namespace JumaEngine
     {
         if (m_Mesh != nullptr)
         {
-    		MaterialBase* material = m_Mesh->getMaterial(0).get();
+    		MaterialBaseOld* material = m_Mesh->getMaterial(0).get();
     		if (material != nullptr)
     		{
-    			const CameraComponent* camera = SystemFunctions::getWindowActiveCamera(this, windowID);
+    			const CameraComponent* camera = System::getWindowActiveCamera(this, windowID);
 				if (camera != nullptr)
 				{
 					material->setMaterialParam("uProjection", camera->getProjectionMatrix());

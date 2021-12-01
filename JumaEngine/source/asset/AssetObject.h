@@ -4,16 +4,16 @@
 
 #include "common_header.h"
 #include <memory>
-#include "utils/type_traits_macros.h"
+#include "utils/type_checks.h"
 #include "engine/EngineContextObject.h"
 
 namespace JumaEngine
 {
 	class AssetsManager;
 
-	class AssetObject : public EngineContextObject
+	class AssetObject : public EngineContextObjectOld
 	{
-        JUMAENGINE_CLASS(AssetObject, EngineContextObject)
+        JUMAENGINE_CLASS_OLD(AssetObject, EngineContextObjectOld)
 
 		friend AssetsManager;
 		

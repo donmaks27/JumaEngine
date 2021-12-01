@@ -1,29 +1,19 @@
-// Copyright 2021 Leonov Maksim. All Rights Reserved.
+﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
 
 #include "Engine.h"
-#include <chrono>
-#include "EngineContextObject.h"
-#include "asset/AssetsManager.h"
+#include "asset/mesh/vertexTypes/Vertex2D.h"
+#include "subsystems/render/Image.h"
+#include "subsystems/render/Material.h"
+#include "subsystems/render/RenderPrimitive.h"
+#include "subsystems/render/Shader.h"
+#include "subsystems/render/VertexBuffer.h"
+#include "subsystems/render/OpenGL/RenderSubsystem_OpenGL_GLFW.h"
+#include "subsystems/render/Vulkan/Image_Vulkan.h"
+#include "subsystems/render/Vulkan/RenderSubsystem_Vulkan_GLFW.h"
 #include "utils/jlog.h"
-#include "framework/gameObject/EngineWorld.h"
-#include "framework/gameObject/gameComponent/CameraComponent.h"
-#include "framework/gameObject/gameComponent/MeshComponent.h"
-#include "asset/material/Material.h"
-#include "asset/material/MaterialInstance.h"
-#include "asset/mesh/Mesh.h"
-#include "render/RenderManagerImpl.h"
-#include "render/renderTarget/RenderTargetDirectBase.h"
-#include "asset/mesh/MeshFileImporterBase.h"
-#include "asset/texture/TextureFileImporterBase.h"
-#include "render/vertexBuffer/vertexType/Vertex3D_Normal_TexCoord.h"
 
 namespace JumaEngine
 {
-    Engine::Engine()
-    {
-        m_MainThreadID = std::this_thread::get_id();
-    }
-
     EngineContextObject* Engine::createObject(const EngineContextObject::ClassType* objectClass)
     {
         EngineContextObject* object = objectClass != nullptr ? objectClass->createObject() : nullptr;
@@ -39,18 +29,18 @@ namespace JumaEngine
         if (object != nullptr)
         {
             object->m_OwnerEngine = this;
-        	object->onRegister();
+        	object->onRegistered();
         }
     }
 
-    bool Engine::startEngine(int argc, char** argv)
+    bool Engine::startEngine()
     {
-		if (m_EngineStarted)
-		{
-			return false;
-		}
+        if (m_Started)
+        {
+            return false;
+        }
 
-		m_EngineStarted = true;
+        m_Started = true;
     	
 #if JDEBUG && _WIN32
         _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
@@ -60,151 +50,102 @@ namespace JumaEngine
         _CrtMemCheckpoint(&memoryState);
 #endif
 
-        const bool result = startEngineInternal(argc, argv);
-        terminateEngine();
+        const bool result = startEngineInternal();
 
 #if JDEBUG && _WIN32
         _CrtMemDumpAllObjectsSince(&memoryState);
 #endif
-
-		m_EngineStarted = false;
+        
+		m_Started = false;
         return result;
     }
-    bool Engine::startEngineInternal(int argc, char** argv)
+    bool Engine::startEngineInternal()
     {
-        JUMA_LOG(info, JTEXT("Initialize engine..."));
-		if (!initEngine())
-		{
-			JUMA_LOG(error, JTEXT("Engnie initialization failed"));
-			return false;
-		}
-		JUMA_LOG(correct, JTEXT("Initialization complete"));
-    	onEngineInit();
+        JUMA_LOG(info, JSTR("Initializing engine..."));
+        if (!initEngine())
+        {
+            JUMA_LOG(error, JSTR("Failed to initialize Engine!"));
+            return false;
+        }
+        JUMA_LOG(correct, JSTR("Engine initialized"));
 
-    	JUMA_LOG(info, JTEXT("Start engine loop"));
-    	startEngineLoop();
-    	JUMA_LOG(info, JTEXT("Engine loop finished"));
+        JUMA_LOG(info, JSTR("Starting engine loop..."));
+        startEngineLoop();
+        JUMA_LOG(info, JSTR("Engine loop finished"));
 
-    	JUMA_LOG(info, JTEXT("Stopping engine..."));
-        stopEngine();
-        JUMA_LOG(info, JTEXT("Engine stopped"));
+        terminate();
+        JUMA_LOG(info, JSTR("Engine terminated"));
 
-    	return true;
+        return true;
     }
-
     bool Engine::initEngine()
     {
-		m_RenderManager = createObject<RenderManager_OpenGL>();
-    	if (!m_RenderManager->isInit())
-    	{
-    		return false;
-    	}
-    	
-    	return true;
-    }
-    void Engine::onEngineInit()
-    {
-		m_AssetsManager = createObject<AssetsManager>();
-    	
-        m_World = createObject<EngineWorld>();
+        m_RenderSubsystem = createObject<RenderSubsystem_Vulkan_GLFW>();
+        if (m_RenderSubsystem == nullptr)
+        {
+            return false;
+        }
+        m_RenderSubsystem->initSubsystem();
 
-        asset_ptr<Material> material = m_AssetsManager->createMaterial("content/shaders/testShaderTexCoords");
-    	material->addMaterialParam<glm::mat4>("uProjection", glm::mat4(1));
-    	material->addMaterialParam<glm::mat4>("uView", glm::mat4(1));
-    	material->addMaterialParam<glm::mat4>("uModel", glm::mat4(1));
+        const uint8 imageData[4] = { 255, 0, 0, 0 };
+        jshared_ptr<Image> image = m_RenderSubsystem->createImage();
+        image->init({ 1, 1 }, ImageFormat::RGBA, imageData);
 
-        const asset_ptr<TextureBase> texture = m_AssetsManager->createTexture(JTEXT("JUMA"));
-        m_TextureFileImporter->importFile(texture, "content/1.png");
-        material->addMaterialParam<TextureBase>("uTexture", TextureShaderUniform{ texture, 0 });
-    	material->finishInitialization();
+        jshared_ptr<Shader> shader = m_RenderSubsystem->createShader();
+        //shader->init(JSTR("content/shaders/ui"));
+        shader->init(JSTR("content/shaders/ui_texture"), {
+            { JSTR("uTexture"), { 0, ShaderUniformType::Image, { ShaderStage::Fragment } } }
+        });
+        jshared_ptr<Material> material = m_RenderSubsystem->createMaterial();
+        material->init(shader);
+        material->setUniformValue<ShaderUniformType::Image>(JSTR("uTexture"), image);
 
-        m_MeshFileImporter->importFile("content/SM_Cube.fbx");
-        asset_ptr<Mesh> mesh = m_AssetsManager->createMesh(JTEXT("Cube"));
-        m_MeshFileImporter->copyMeshData<VertexBufferData3D_Normal_TexCoord>(mesh, JTEXT("Cube"));
-        mesh->setMaterial(0, m_AssetsManager->createMaterialInstance(material));
+        DefaultVertexBuffer defaultVertexBufferData;
+        defaultVertexBufferData.vertices = {
+            { { 0.0f, 0.0f, 0.0f } },
+            { { 0.5f, 0.0f, 0.0f } },
+            { { 0.0f, 0.5f, 0.0f } },
+            { { 0.0f, 0.5f, 0.0f } },
+            { { 0.5f, 0.0f, 0.0f } },
+            { { 0.5f, 0.5f, 0.0f } }
+        };
+        VertexBufferData_Vertex2D vertexBufferData;
+        vertexBufferData.copyFromDefaultVertexBuffer(defaultVertexBufferData);
+        jshared_ptr<VertexBuffer> vertexBuffer = m_RenderSubsystem->createVertexBuffer();
+        vertexBuffer->init(&vertexBufferData);
 
-        MeshComponent* component = m_World->createSceneComponent<MeshComponent>();
-        component->setMesh(mesh);
-        //component->setWorldScale({ 0.3f, 0.3f, 0.3f });
+        m_RenderPrimitive = m_RenderSubsystem->createRenderPrimitive();
+        m_RenderPrimitive->init(vertexBuffer, material);
 
-        CameraComponent* camera = m_World->createSceneComponent<CameraComponent>();
-        Rotation rotation = { -30.0f, 60.0f };
-        camera->setWorldRotation(rotation);
-        glm::vec3 location = -rotation.toDirection() * 5.0f;
-        //location.z = 30.0f;
-    	camera->setWorldLocation(location);
-
-        m_RenderTarget = m_RenderManager->createRenderTargetDirect();
-        m_RenderTarget->setCamera(camera);
-        m_RenderManager->setWindowRenderTarget(m_RenderManager->getMainWindowID(), m_RenderTarget);
+        return true;
     }
 
     void Engine::startEngineLoop()
     {
-        onEngineLoopStart();
-
-    	std::chrono::time_point<std::chrono::steady_clock> lastTimeStamp = std::chrono::steady_clock::now();
-    	
-		render();
-    	while (!shouldStopEngine())
-    	{
-    		const std::chrono::time_point<std::chrono::steady_clock> timeStamp = std::chrono::steady_clock::now();
-    		const double deltaTime = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(timeStamp - lastTimeStamp).count()) / 1000000.0;
-    		lastTimeStamp = timeStamp;
-
-    		tick(deltaTime);
-    		render();
-    	}
-    }
-	
-    void Engine::onEngineLoopStart()
-    {
-    	if (m_World != nullptr)
-    	{
-    		m_World->onGameStarted();
-    	}
-    }
-	
-    bool Engine::shouldStopEngine() const
-    {
-        return m_RenderManager != nullptr ? m_RenderManager->shouldCloseMainWindow() : true;
-    }
-
-    void Engine::tick(const double deltaTime)
-    {
-    	if (m_World != nullptr)
-    	{
-    		m_World->tick(deltaTime);
-    	}
-    }
-
-    void Engine::render()
-    {
-    	m_RenderManager->startRender();
-    }
-
-    void Engine::stopEngine()
-    {
-        delete m_RenderTarget;
-        m_RenderTarget = nullptr;
-
-        delete m_World;
-        m_World = nullptr;
-
-		delete m_AssetsManager;
-    	m_AssetsManager = nullptr;
-    }
-	
-    void Engine::terminateEngine()
-    {
-    	delete m_MeshFileImporter;
-    	m_MeshFileImporter = nullptr;
-
-        if (m_RenderManager != nullptr)
+        std::chrono::time_point<std::chrono::steady_clock> lastTimestamp = std::chrono::steady_clock::now();
+        while (!m_RenderSubsystem->shouldCloseMainWindow())
         {
-            m_RenderManager->terminate();
-            delete m_RenderManager;
-            m_RenderManager = nullptr;
+            const std::chrono::time_point<std::chrono::steady_clock> timestamp = std::chrono::steady_clock::now();
+    		const double deltaTime = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(timestamp - lastTimestamp).count()) / 1000000.0;
+            lastTimestamp = timestamp;
+
+            m_RenderSubsystem->render();
         }
+    }
+
+    void Engine::terminate()
+    {
+        m_RenderSubsystem->onEnginePreTerminate();
+
+        m_RenderPrimitive.reset();
+
+        m_RenderSubsystem->clear();
+        delete m_RenderSubsystem;
+        m_RenderSubsystem = nullptr;
+    }
+
+    void Engine::render(const RenderOptions& options)
+    {
+        m_RenderPrimitive->render(options);
     }
 }

@@ -3,8 +3,8 @@
 #include "CameraComponent.h"
 
 #include "utils/jlog.h"
-#include "utils/math_functions.h"
-#include "utils/system_functions.h"
+#include "engine/math_functions.h"
+#include "engine/system_functions.h"
 
 namespace JumaEngine
 {
@@ -18,7 +18,7 @@ namespace JumaEngine
 	
 	void CameraComponent::updateProjectionMatrix()
 	{
-		//const float windowAspectRatio = SystemFunctions::getWindowAspectRatio(this);
+		//const float windowAspectRatio = System::getWindowAspectRatio(this);
         const float windowAspectRatio = 800.0f / 600.0f;
 		if (isPerspective())
 		{
@@ -60,7 +60,7 @@ namespace JumaEngine
 	{
 		const float newNear = glm::max(Consts::SmallNumber, nearDistance);
 		const float newFar = glm::max(newNear + Consts::SmallNumber, farDistance);
-		if (!MathFunctions::isNearlyEquals(newNear, m_NearClipDistance) || !MathFunctions::isNearlyEquals(newFar, m_FarClipDistance))
+		if (!Math::isNearlyEquals(newNear, m_NearClipDistance) || !Math::isNearlyEquals(newFar, m_FarClipDistance))
 		{
 			m_NearClipDistance = newNear;
 			m_FarClipDistance = newFar;
@@ -71,7 +71,7 @@ namespace JumaEngine
 	void CameraComponent::setFOV(const float angle)
 	{
 		const float newAngle = glm::clamp(angle, 0.0f, 360.0f);
-		if (!MathFunctions::isNearlyEquals(m_FOV, newAngle))
+		if (!Math::isNearlyEquals(m_FOV, newAngle))
 		{
 			m_FOV = newAngle;
 			if (isPerspective())
@@ -84,7 +84,7 @@ namespace JumaEngine
 	void CameraComponent::setOrthoWidth(const float width)
 	{
 		const float newWidth = glm::max(Consts::SmallNumber, width);
-		if (!MathFunctions::isNearlyEquals(m_OrthoWidth, newWidth))
+		if (!Math::isNearlyEquals(m_OrthoWidth, newWidth))
 		{
 			m_OrthoWidth = newWidth;
 			if (!isPerspective())

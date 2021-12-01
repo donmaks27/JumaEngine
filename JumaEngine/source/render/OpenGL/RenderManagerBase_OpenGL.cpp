@@ -2,13 +2,13 @@
 
 #include "RenderManagerBase_OpenGL.h"
 
-#if defined(JUMAENGINE_USE_GRAPHIC_API_OPENGL)
+#if defined(JUMAENGINE_INCLUDE_RENDER_API_OPENGL)
 
 #include "GL/glew.h"
 #include "engine/Engine.h"
 #include "utils/jlog.h"
-#include "shader/Shader_OpenGL.h"
-#include "vertexBuffer/VertexBuffer_OpenGL.h"
+#include "shader/ShaderOld_OpenGL.h"
+#include "vertexBuffer/VertexBufferOld_OpenGL.h"
 #include "renderTarget/RenderTargetDirect_OpenGL.h"
 #include "texture/Texture_OpenGL.h"
 
@@ -27,22 +27,22 @@ namespace JumaEngine
 
     ShaderBase* RenderManagerBase_OpenGL::createShaderInternal()
     {
-        Engine* engine = getOwnerEngine();
-        return engine != nullptr ? engine->createObject<Shader_OpenGL>() : nullptr;
+        EngineOld* engine = getOwnerEngine();
+        return engine != nullptr ? engine->createObject<ShaderOld_OpenGL>() : nullptr;
     }
-    VertexBufferBase* RenderManagerBase_OpenGL::createVertextBufferInternal()
+    VertexBufferBaseOld* RenderManagerBase_OpenGL::createVertextBufferInternal()
     {
-        Engine* engine = getOwnerEngine();
-        return engine != nullptr ? engine->createObject<VertexBuffer_OpenGL>() : nullptr;
+        EngineOld* engine = getOwnerEngine();
+        return engine != nullptr ? engine->createObject<VertexBufferOld_OpenGL>() : nullptr;
     }
     TextureBase* RenderManagerBase_OpenGL::createTextureInternal()
     {
-        Engine* engine = getOwnerEngine();
+        EngineOld* engine = getOwnerEngine();
         return engine != nullptr ? engine->createObject<Texture_OpenGL>() : nullptr;
     }
     RenderTargetDirectBase* RenderManagerBase_OpenGL::createRenderTargetDirectInternal()
     {
-        Engine* engine = getOwnerEngine();
+        EngineOld* engine = getOwnerEngine();
         return engine != nullptr ? engine->createObject<RenderTargetDirect_OpenGL>() : nullptr;
     }
 }

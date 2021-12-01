@@ -58,9 +58,6 @@
     <Filter Include="JumaEngine\engine">
       <UniqueIdentifier>{d24a0c7e-968b-45c2-b9c3-b7d211e73081}</UniqueIdentifier>
     </Filter>
-    <Filter Include="JumaEngine\render\vertexBuffer\vertexType">
-      <UniqueIdentifier>{d5afbd2b-c25e-427c-aa93-d6a199e7285d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="JumaEngine\render\texture">
       <UniqueIdentifier>{d6ba6774-51cd-4861-8cfc-139575577c69}</UniqueIdentifier>
     </Filter>
@@ -70,18 +67,33 @@
     <Filter Include="JumaEngine\asset\texture">
       <UniqueIdentifier>{3616da7b-b45f-45b9-8d66-d0accf2fb578}</UniqueIdentifier>
     </Filter>
+    <Filter Include="JumaEngine\subsystems">
+      <UniqueIdentifier>{7c50c3b3-79ff-4ecd-bcbb-d1a4f89517c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="JumaEngine\subsystems\render">
+      <UniqueIdentifier>{58ce6010-51dc-4059-aa00-14ac03e2ba31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="JumaEngine\subsystems\render\OpenGL">
+      <UniqueIdentifier>{210f5683-6143-474f-8205-9e9227b75aa0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="JumaEngine\asset\mesh\vertexTypes">
+      <UniqueIdentifier>{ac6d0d40-5023-4ff0-8127-843c24b48f7b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="JumaEngine\subsystems\render\Vulkan">
+      <UniqueIdentifier>{f10c22eb-453f-49f7-b72c-117d663b3d00}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="JumaEngine\subsystems\render\Vulkan\vulkanObjects">
+      <UniqueIdentifier>{37b06750-e10c-49d8-a59e-f0ae75d4fbf4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="JumaEngine\utils\math">
+      <UniqueIdentifier>{7adb6569-e86d-4c32-8fe1-6b37b5c33289}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="JumaEngine\utils\math\base_types">
+      <UniqueIdentifier>{cb52ac5d-5ec4-4a5e-8cdb-7486298f7312}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="source\utils\system_functions.cpp">
-      <Filter>JumaEngine\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="source\utils\math_functions.cpp">
-      <Filter>JumaEngine\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="source\render\vertexBuffer\VertexBufferBase.cpp">
-      <Filter>JumaEngine\render\vertexBuffer</Filter>
-    </ClCompile>
     <ClCompile Include="source\framework\gameObject\GameObject.cpp">
       <Filter>JumaEngine\framework\gameObject</Filter>
     </ClCompile>
@@ -115,18 +127,6 @@
     <ClCompile Include="source\asset\AssetsManager.cpp">
       <Filter>JumaEngine\asset</Filter>
     </ClCompile>
-    <ClCompile Include="source\asset\material\Material.cpp">
-      <Filter>JumaEngine\asset\material</Filter>
-    </ClCompile>
-    <ClCompile Include="source\asset\material\MaterialBase.cpp">
-      <Filter>JumaEngine\asset\material</Filter>
-    </ClCompile>
-    <ClCompile Include="source\asset\material\MaterialInstance.cpp">
-      <Filter>JumaEngine\asset\material</Filter>
-    </ClCompile>
-    <ClCompile Include="source\asset\mesh\Mesh.cpp">
-      <Filter>JumaEngine\asset\mesh</Filter>
-    </ClCompile>
     <ClCompile Include="source\asset\AssetObject.cpp">
       <Filter>JumaEngine\asset</Filter>
     </ClCompile>
@@ -138,12 +138,6 @@
     </ClCompile>
     <ClCompile Include="source\render\OpenGL\RenderManagerBase_OpenGL.cpp">
       <Filter>JumaEngine\render\OpenGL</Filter>
-    </ClCompile>
-    <ClCompile Include="source\render\OpenGL\shader\Shader_OpenGL.cpp">
-      <Filter>JumaEngine\render\OpenGL\shader</Filter>
-    </ClCompile>
-    <ClCompile Include="source\render\OpenGL\vertexBuffer\VertexBuffer_OpenGL.cpp">
-      <Filter>JumaEngine\render\OpenGL\vertexBuffer</Filter>
     </ClCompile>
     <ClCompile Include="source\render\renderTarget\RenderTargetBase.cpp">
       <Filter>JumaEngine\render\renderTarget</Filter>
@@ -159,9 +153,6 @@
     </ClCompile>
     <ClCompile Include="source\utils\jlog.cpp">
       <Filter>JumaEngine\utils</Filter>
-    </ClCompile>
-    <ClCompile Include="source\engine\Engine.cpp">
-      <Filter>JumaEngine\engine</Filter>
     </ClCompile>
     <ClCompile Include="source\engine\EngineContextObject.cpp">
       <Filter>JumaEngine\engine</Filter>
@@ -184,25 +175,124 @@
     <ClCompile Include="source\asset\texture\TextureFileImporter_DevIL.cpp">
       <Filter>JumaEngine\asset\texture</Filter>
     </ClCompile>
+    <ClCompile Include="source\subsystems\render\RenderSubsystem.cpp">
+      <Filter>JumaEngine\subsystems\render</Filter>
+    </ClCompile>
+    <ClCompile Include="source\subsystems\SubsystemBase.cpp">
+      <Filter>JumaEngine\subsystems</Filter>
+    </ClCompile>
+    <ClCompile Include="source\subsystems\render\OpenGL\RenderSubsystem_OpenGL.cpp">
+      <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="source\subsystems\render\OpenGL\RenderSubsystem_OpenGL_GLFW.cpp">
+      <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="source\engine\EngineOld.cpp">
+      <Filter>JumaEngine\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="source\engine\Engine.cpp">
+      <Filter>JumaEngine\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="source\render\vertexBuffer\VertexBufferBaseOld.cpp">
+      <Filter>JumaEngine\render\vertexBuffer</Filter>
+    </ClCompile>
+    <ClCompile Include="source\subsystems\render\VertexBuffer.cpp">
+      <Filter>JumaEngine\subsystems\render</Filter>
+    </ClCompile>
+    <ClCompile Include="source\render\OpenGL\vertexBuffer\VertexBufferOld_OpenGL.cpp">
+      <Filter>JumaEngine\render\OpenGL\vertexBuffer</Filter>
+    </ClCompile>
+    <ClCompile Include="source\subsystems\render\OpenGL\VertexBuffer_OpenGL.cpp">
+      <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="source\render\OpenGL\shader\ShaderOld_OpenGL.cpp">
+      <Filter>JumaEngine\render\OpenGL\shader</Filter>
+    </ClCompile>
+    <ClCompile Include="source\subsystems\render\Shader.cpp">
+      <Filter>JumaEngine\subsystems\render</Filter>
+    </ClCompile>
+    <ClCompile Include="source\subsystems\render\OpenGL\Shader_OpenGL.cpp">
+      <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="source\asset\material\MaterialOld.cpp">
+      <Filter>JumaEngine\asset\material</Filter>
+    </ClCompile>
+    <ClCompile Include="source\asset\material\MaterialBaseOld.cpp">
+      <Filter>JumaEngine\asset\material</Filter>
+    </ClCompile>
+    <ClCompile Include="source\asset\material\MaterialInstanceOld.cpp">
+      <Filter>JumaEngine\asset\material</Filter>
+    </ClCompile>
+    <ClCompile Include="source\subsystems\render\Material.cpp">
+      <Filter>JumaEngine\subsystems\render</Filter>
+    </ClCompile>
+    <ClCompile Include="source\subsystems\render\OpenGL\Material_OpenGL.cpp">
+      <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="source\subsystems\render\Image.cpp">
+      <Filter>JumaEngine\subsystems\render</Filter>
+    </ClCompile>
+    <ClCompile Include="source\subsystems\render\OpenGL\Image_OpenGL.cpp">
+      <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="source\subsystems\render\Vulkan\RenderSubsystem_Vulkan.cpp">
+      <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="source\subsystems\render\Vulkan\RenderSubsystem_Vulkan_GLFW.cpp">
+      <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="source\subsystems\render\Vulkan\Image_Vulkan.cpp">
+      <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanBuffer.cpp">
+      <Filter>JumaEngine\subsystems\render\Vulkan\vulkanObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanCommandBuffer.cpp">
+      <Filter>JumaEngine\subsystems\render\Vulkan\vulkanObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanCommandPool.cpp">
+      <Filter>JumaEngine\subsystems\render\Vulkan\vulkanObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanQueue.cpp">
+      <Filter>JumaEngine\subsystems\render\Vulkan\vulkanObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanSwapchain.cpp">
+      <Filter>JumaEngine\subsystems\render\Vulkan\vulkanObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanSwapchainFramebuffer.cpp">
+      <Filter>JumaEngine\subsystems\render\Vulkan\vulkanObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="source\subsystems\render\Vulkan\VertexBuffer_Vulkan.cpp">
+      <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="source\asset\mesh\MeshOld.cpp">
+      <Filter>JumaEngine\asset\mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="source\subsystems\render\Vulkan\Shader_Vulkan.cpp">
+      <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="source\subsystems\render\RenderPrimitive.cpp">
+      <Filter>JumaEngine\subsystems\render</Filter>
+    </ClCompile>
+    <ClCompile Include="source\subsystems\render\Vulkan\Material_Vulkan.cpp">
+      <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="source\subsystems\render\OpenGL\RenderPrimitive_OpenGL.cpp">
+      <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="source\subsystems\render\Vulkan\RenderPrimitive_Vulkan.cpp">
+      <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="source\engine\math_functions.cpp">
+      <Filter>JumaEngine\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="source\engine\system_functions.cpp">
+      <Filter>JumaEngine\engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\common_header.h">
       <Filter>JumaEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\system_functions.h">
-      <Filter>JumaEngine\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\math_functions.h">
-      <Filter>JumaEngine\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\math_consts.h">
-      <Filter>JumaEngine\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="source\render\vertexBuffer\VertexBufferBase.h">
-      <Filter>JumaEngine\render\vertexBuffer</Filter>
-    </ClInclude>
-    <ClInclude Include="source\render\vertexBuffer\VertexBufferData.h">
-      <Filter>JumaEngine\render\vertexBuffer</Filter>
     </ClInclude>
     <ClInclude Include="source\framework\gameObject\GameObject.h">
       <Filter>JumaEngine\framework\gameObject</Filter>
@@ -252,18 +342,6 @@
     <ClInclude Include="source\asset\AssetsManager.h">
       <Filter>JumaEngine\asset</Filter>
     </ClInclude>
-    <ClInclude Include="source\asset\material\Material.h">
-      <Filter>JumaEngine\asset\material</Filter>
-    </ClInclude>
-    <ClInclude Include="source\asset\material\MaterialBase.h">
-      <Filter>JumaEngine\asset\material</Filter>
-    </ClInclude>
-    <ClInclude Include="source\asset\material\MaterialInstance.h">
-      <Filter>JumaEngine\asset\material</Filter>
-    </ClInclude>
-    <ClInclude Include="source\asset\mesh\Mesh.h">
-      <Filter>JumaEngine\asset\mesh</Filter>
-    </ClInclude>
     <ClInclude Include="source\asset\AssetObject.h">
       <Filter>JumaEngine\asset</Filter>
     </ClInclude>
@@ -279,35 +357,17 @@
     <ClInclude Include="source\render\RenderManagerBase.h">
       <Filter>JumaEngine\render</Filter>
     </ClInclude>
-    <ClInclude Include="source\render\vertexBuffer\VertexBufferDescription.h">
-      <Filter>JumaEngine\render\vertexBuffer</Filter>
-    </ClInclude>
     <ClInclude Include="source\render\OpenGL\RenderManager_OpenGL_GLFW.h">
       <Filter>JumaEngine\render\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="source\render\OpenGL\RenderManagerBase_OpenGL.h">
       <Filter>JumaEngine\render\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="source\render\OpenGL\shader\Shader_OpenGL.h">
-      <Filter>JumaEngine\render\OpenGL\shader</Filter>
-    </ClInclude>
-    <ClInclude Include="source\render\OpenGL\vertexBuffer\VertexBuffer_OpenGL.h">
-      <Filter>JumaEngine\render\OpenGL\vertexBuffer</Filter>
-    </ClInclude>
-    <ClInclude Include="source\render\window\WindowDescriptionBase.h">
-      <Filter>JumaEngine\render\window</Filter>
-    </ClInclude>
-    <ClInclude Include="source\render\window\WindowDescriptionGLFW.h">
-      <Filter>JumaEngine\render\window</Filter>
-    </ClInclude>
     <ClInclude Include="source\render\window\window_id.h">
       <Filter>JumaEngine\render\window</Filter>
     </ClInclude>
     <ClInclude Include="source\render\renderTarget\RenderTargetBase.h">
       <Filter>JumaEngine\render\renderTarget</Filter>
-    </ClInclude>
-    <ClInclude Include="source\render\IRenderInterface.h">
-      <Filter>JumaEngine\render</Filter>
     </ClInclude>
     <ClInclude Include="source\render\OpenGL\renderTarget\RenderTargetDirect_OpenGL.h">
       <Filter>JumaEngine\render\OpenGL\renderTarget</Filter>
@@ -330,17 +390,11 @@
     <ClInclude Include="source\utils\jlog.h">
       <Filter>JumaEngine\utils</Filter>
     </ClInclude>
-    <ClInclude Include="source\engine\Engine.h">
-      <Filter>JumaEngine\engine</Filter>
-    </ClInclude>
     <ClInclude Include="source\engine\EngineContextObject.h">
       <Filter>JumaEngine\engine</Filter>
     </ClInclude>
     <ClInclude Include="source\engine\EngineObjectClass.h">
       <Filter>JumaEngine\engine</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\type_traits_macros.h">
-      <Filter>JumaEngine\utils</Filter>
     </ClInclude>
     <ClInclude Include="source\asset\mesh\MeshFileImporterBase.h">
       <Filter>JumaEngine\asset\mesh</Filter>
@@ -350,15 +404,6 @@
     </ClInclude>
     <ClInclude Include="source\asset\mesh\MeshFileImporterData.h">
       <Filter>JumaEngine\asset\mesh</Filter>
-    </ClInclude>
-    <ClInclude Include="source\render\vertexBuffer\vertexType\Vertex3D.h">
-      <Filter>JumaEngine\render\vertexBuffer\vertexType</Filter>
-    </ClInclude>
-    <ClInclude Include="source\render\vertexBuffer\vertexType\Vertex3D_Normal_TexCoord.h">
-      <Filter>JumaEngine\render\vertexBuffer\vertexType</Filter>
-    </ClInclude>
-    <ClInclude Include="source\render\vertexBuffer\vertexType\Vertex3D_Normal.h">
-      <Filter>JumaEngine\render\vertexBuffer\vertexType</Filter>
     </ClInclude>
     <ClInclude Include="source\render\texture\TextureBase.h">
       <Filter>JumaEngine\render\texture</Filter>
@@ -374,6 +419,297 @@
     </ClInclude>
     <ClInclude Include="source\render\texture\TextureShaderUniform.h">
       <Filter>JumaEngine\render\texture</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\type_checks.h">
+      <Filter>JumaEngine\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\RenderSubsystem.h">
+      <Filter>JumaEngine\subsystems\render</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\SubsystemBase.h">
+      <Filter>JumaEngine\subsystems</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\RenderedObject.h">
+      <Filter>JumaEngine\render</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\RenderInterface.h">
+      <Filter>JumaEngine\subsystems\render</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\jshared_ptr.h">
+      <Filter>JumaEngine\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\window\WindowDescriptionBaseOld.h">
+      <Filter>JumaEngine\render\window</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\OpenGL\RenderSubsystem_OpenGL.h">
+      <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\OpenGL\RenderSubsystem_OpenGL_GLFW.h">
+      <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\window\WindowDescriptionGLFWOld.h">
+      <Filter>JumaEngine\render\window</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\RenderOptions.h">
+      <Filter>JumaEngine\subsystems\render</Filter>
+    </ClInclude>
+    <ClInclude Include="source\engine\Engine.h">
+      <Filter>JumaEngine\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\vertexBuffer\VertexBufferBaseOld.h">
+      <Filter>JumaEngine\render\vertexBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="source\asset\mesh\DefaultVertexBuffer.h">
+      <Filter>JumaEngine\asset\mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="source\asset\mesh\VertexBufferData.h">
+      <Filter>JumaEngine\asset\mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="source\asset\mesh\VertexBufferDescription.h">
+      <Filter>JumaEngine\asset\mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="source\asset\mesh\vertexTypes\Vertex3D.h">
+      <Filter>JumaEngine\asset\mesh\vertexTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="source\asset\mesh\vertexTypes\Vertex3D_Normal.h">
+      <Filter>JumaEngine\asset\mesh\vertexTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="source\asset\mesh\vertexTypes\Vertex3D_Normal_TexCoord.h">
+      <Filter>JumaEngine\asset\mesh\vertexTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\VertexBuffer.h">
+      <Filter>JumaEngine\subsystems\render</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\OpenGL\vertexBuffer\VertexBufferOld_OpenGL.h">
+      <Filter>JumaEngine\render\OpenGL\vertexBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\OpenGL\VertexBuffer_OpenGL.h">
+      <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="source\render\OpenGL\shader\ShaderOld_OpenGL.h">
+      <Filter>JumaEngine\render\OpenGL\shader</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\Shader.h">
+      <Filter>JumaEngine\subsystems\render</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\OpenGL\Shader_OpenGL.h">
+      <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\ShaderStage.h">
+      <Filter>JumaEngine\subsystems\render</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\ShaderUniform.h">
+      <Filter>JumaEngine\subsystems\render</Filter>
+    </ClInclude>
+    <ClInclude Include="source\asset\material\MaterialOld.h">
+      <Filter>JumaEngine\asset\material</Filter>
+    </ClInclude>
+    <ClInclude Include="source\asset\material\MaterialBaseOld.h">
+      <Filter>JumaEngine\asset\material</Filter>
+    </ClInclude>
+    <ClInclude Include="source\asset\material\MaterialInstanceOld.h">
+      <Filter>JumaEngine\asset\material</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\Material.h">
+      <Filter>JumaEngine\subsystems\render</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\OpenGL\Material_OpenGL.h">
+      <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\MaterialUniform.h">
+      <Filter>JumaEngine\subsystems\render</Filter>
+    </ClInclude>
+    <ClInclude Include="source\asset\mesh\vertexTypes\Vertex2D.h">
+      <Filter>JumaEngine\asset\mesh\vertexTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\Image.h">
+      <Filter>JumaEngine\subsystems\render</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\OpenGL\Image_OpenGL.h">
+      <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\ImageFormat.h">
+      <Filter>JumaEngine\subsystems\render</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\Vulkan\RenderSubsystem_Vulkan.h">
+      <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\Vulkan\RenderSubsystem_Vulkan_GLFW.h">
+      <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\WindowDescription.h">
+      <Filter>JumaEngine\subsystems\render</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\OpenGL\WindowDescription_OpenGL.h">
+      <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\OpenGL\WindowDescription_OpenGL_GLFW.h">
+      <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\Vulkan\WindowDescription_Vulkan.h">
+      <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\Vulkan\WindowDescription_Vulkan_GLFW.h">
+      <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\Vulkan\VulkanContextObject.h">
+      <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="source\enabled_engine_parts.h">
+      <Filter>JumaEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\Vulkan\vma_lib.h">
+      <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\Vulkan\Image_Vulkan.h">
+      <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\Vulkan\RenderOptionsData_Vulkan.h">
+      <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanBuffer.h">
+      <Filter>JumaEngine\subsystems\render\Vulkan\vulkanObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanCommandBuffer.h">
+      <Filter>JumaEngine\subsystems\render\Vulkan\vulkanObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanCommandPool.h">
+      <Filter>JumaEngine\subsystems\render\Vulkan\vulkanObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanQueue.h">
+      <Filter>JumaEngine\subsystems\render\Vulkan\vulkanObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanQueueType.h">
+      <Filter>JumaEngine\subsystems\render\Vulkan\vulkanObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanSwapchain.h">
+      <Filter>JumaEngine\subsystems\render\Vulkan\vulkanObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanSwapchainFramebuffer.h">
+      <Filter>JumaEngine\subsystems\render\Vulkan\vulkanObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\Vulkan\VertexBuffer_Vulkan.h">
+      <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="source\asset\mesh\MeshOld.h">
+      <Filter>JumaEngine\asset\mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\Vulkan\Shader_Vulkan.h">
+      <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\Vulkan\Material_Vulkan.h">
+      <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\RenderPrimitive.h">
+      <Filter>JumaEngine\subsystems\render</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\OpenGL\RenderPrimitive_OpenGL.h">
+      <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\Vulkan\RenderPrimitive_Vulkan.h">
+      <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="source\engine\math_consts.h">
+      <Filter>JumaEngine\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="source\engine\math_functions.h">
+      <Filter>JumaEngine\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="source\engine\system_functions.h">
+      <Filter>JumaEngine\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\type_defines.h">
+      <Filter>JumaEngine\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\math\jmath.h">
+      <Filter>JumaEngine\utils\math</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\math\jmath_matrix.h">
+      <Filter>JumaEngine\utils\math</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\math\jmath_vector.h">
+      <Filter>JumaEngine\utils\math</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\math\matrix2.h">
+      <Filter>JumaEngine\utils\math</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\math\matrix2x3.h">
+      <Filter>JumaEngine\utils\math</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\math\matrix2x4.h">
+      <Filter>JumaEngine\utils\math</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\math\matrix3.h">
+      <Filter>JumaEngine\utils\math</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\math\matrix3x2.h">
+      <Filter>JumaEngine\utils\math</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\math\matrix3x4.h">
+      <Filter>JumaEngine\utils\math</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\math\matrix4.h">
+      <Filter>JumaEngine\utils\math</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\math\matrix4x2.h">
+      <Filter>JumaEngine\utils\math</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\math\matrix4x3.h">
+      <Filter>JumaEngine\utils\math</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\math\vector2.h">
+      <Filter>JumaEngine\utils\math</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\math\vector3.h">
+      <Filter>JumaEngine\utils\math</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\math\vector4.h">
+      <Filter>JumaEngine\utils\math</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\math\base_types\matrix_base.h">
+      <Filter>JumaEngine\utils\math\base_types</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\math\base_types\matrix_operations.h">
+      <Filter>JumaEngine\utils\math\base_types</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\math\base_types\matrix2x2_base.h">
+      <Filter>JumaEngine\utils\math\base_types</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\math\base_types\matrix2x3_base.h">
+      <Filter>JumaEngine\utils\math\base_types</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\math\base_types\matrix2x4_base.h">
+      <Filter>JumaEngine\utils\math\base_types</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\math\base_types\matrix3x2_base.h">
+      <Filter>JumaEngine\utils\math\base_types</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\math\base_types\matrix3x3_base.h">
+      <Filter>JumaEngine\utils\math\base_types</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\math\base_types\matrix3x4_base.h">
+      <Filter>JumaEngine\utils\math\base_types</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\math\base_types\matrix4x2_base.h">
+      <Filter>JumaEngine\utils\math\base_types</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\math\base_types\matrix4x3_base.h">
+      <Filter>JumaEngine\utils\math\base_types</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\math\base_types\matrix4x4_base.h">
+      <Filter>JumaEngine\utils\math\base_types</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\math\base_types\vector_base.h">
+      <Filter>JumaEngine\utils\math\base_types</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\math\base_types\vector2_base.h">
+      <Filter>JumaEngine\utils\math\base_types</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\math\base_types\vector3_base.h">
+      <Filter>JumaEngine\utils\math\base_types</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\math\base_types\vector4_base.h">
+      <Filter>JumaEngine\utils\math\base_types</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

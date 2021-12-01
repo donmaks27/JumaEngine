@@ -1,7 +1,7 @@
 ﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
 
 #include "Rotation.h"
-#include "utils/math_functions.h"
+#include "engine/math_functions.h"
 #include "glm/gtx/quaternion.hpp"
 
 namespace JumaEngine
@@ -23,7 +23,7 @@ namespace JumaEngine
 	}
 	void Rotation::fromDirection(const glm::vec3& direction)
 	{
-		if (MathFunctions::isNearlyZero(direction))
+		if (Math::isNearlyZero(direction))
 		{
 			pitch = 0.0f;
 			yaw = 0.0f;

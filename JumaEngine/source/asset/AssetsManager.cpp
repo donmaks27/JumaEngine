@@ -2,9 +2,9 @@
 
 #include "AssetsManager.h"
 #include "AssetObject.h"
-#include "material/Material.h"
-#include "material/MaterialInstance.h"
-#include "mesh/Mesh.h"
+#include "material/MaterialOld.h"
+#include "material/MaterialInstanceOld.h"
+#include "mesh/MeshOld.h"
 #include "render/RenderManagerBase.h"
 #include "render/shader/ShaderBase.h"
 #include "render/texture/TextureBase.h"
@@ -44,17 +44,17 @@ namespace JumaEngine
 		}
 	}
 
-	asset_ptr<Material> AssetsManager::createMaterial(const jstring& materialName)
+	asset_ptr<MaterialOld> AssetsManager::createMaterial(const jstring& materialName)
 	{
-		const jstring actualName = jstring(JTEXT("Material.")) + materialName;
+		const jstring actualName = jstring(JSTR("MaterialOld.")) + materialName;
 		
-        asset_ptr<Material>* existingAsset = m_Materials.findByKey(actualName);
+        asset_ptr<MaterialOld>* existingAsset = m_Materials.find(actualName);
 		if (existingAsset != nullptr)
 		{
 			return *existingAsset;
 		}
 
-        asset_ptr<Material> asset = createAssetObject<Material>();
+        asset_ptr<MaterialOld> asset = createAssetObject<MaterialOld>();
         if (asset != nullptr)
         {
             RenderManagerBase* renderManager = getRenderManager();
@@ -63,32 +63,32 @@ namespace JumaEngine
             {
                 asset->m_Shader->loadShader(materialName);
             }
-            m_Materials.add(actualName, asset);
+            m_Materials.set(actualName, asset);
         }
         return asset;
 	}
-    asset_ptr<MaterialInstance> AssetsManager::createMaterialInstance(const jstring& materialInstanceName, const asset_ptr<MaterialBase>& baseMaterial)
+    asset_ptr<MaterialInstanceOld> AssetsManager::createMaterialInstance(const jstring& materialInstanceName, const asset_ptr<MaterialBaseOld>& baseMaterial)
     {
-		const jstring actuallName = jstring(JTEXT("MaterialInstance.")) + materialInstanceName;
+		const jstring actuallName = jstring(JSTR("MaterialInstanceOld.")) + materialInstanceName;
 		
-        asset_ptr<MaterialInstance>* existingAsset = m_MaterialInstances.findByKey(actuallName);
+        asset_ptr<MaterialInstanceOld>* existingAsset = m_MaterialInstances.find(actuallName);
 		if (existingAsset != nullptr)
 		{
 			return *existingAsset;
 		}
 
-        asset_ptr<MaterialInstance> asset = createMaterialInstance(baseMaterial);
+        asset_ptr<MaterialInstanceOld> asset = createMaterialInstance(baseMaterial);
         if (asset != nullptr)
         {
-            m_MaterialInstances.add(actuallName, asset);
+            m_MaterialInstances.set(actuallName, asset);
         }
         return asset;
     }
-    asset_ptr<MaterialInstance> AssetsManager::createMaterialInstance(const asset_ptr<MaterialBase>& baseMaterial)
+    asset_ptr<MaterialInstanceOld> AssetsManager::createMaterialInstance(const asset_ptr<MaterialBaseOld>& baseMaterial)
     {
 		if (baseMaterial != nullptr)
 		{
-			asset_ptr<MaterialInstance> asset = createAssetObject<MaterialInstance>();
+			asset_ptr<MaterialInstanceOld> asset = createAssetObject<MaterialInstanceOld>();
 			if (asset != nullptr)
 			{
 				asset->m_BaseMaterial = baseMaterial;
@@ -98,29 +98,29 @@ namespace JumaEngine
 		return nullptr;
     }
 
-    asset_ptr<Mesh> AssetsManager::createMesh(const jstring& meshName)
+    asset_ptr<MeshOld> AssetsManager::createMesh(const jstring& meshName)
     {
-        const jstring actuallName = jstring(JTEXT("Mesh.")) + meshName;
+        const jstring actuallName = jstring(JSTR("MeshOld.")) + meshName;
 		
-        asset_ptr<Mesh>* existingAsset = m_Meshes.findByKey(actuallName);
+        asset_ptr<MeshOld>* existingAsset = m_Meshes.find(actuallName);
 		if (existingAsset != nullptr)
 		{
 			return *existingAsset;
 		}
 
-        asset_ptr<Mesh> asset = createAssetObject<Mesh>();
+        asset_ptr<MeshOld> asset = createAssetObject<MeshOld>();
         if (asset != nullptr)
         {
-            m_Meshes.add(actuallName, asset);
+            m_Meshes.set(actuallName, asset);
         }
         return asset;
     }
 
     asset_ptr<TextureBase> AssetsManager::createTexture(const jstring& textureName)
     {
-        const jstring actuallName = jstring(JTEXT("Texture.")) + textureName;
+        const jstring actuallName = jstring(JSTR("Texture.")) + textureName;
 		
-        asset_ptr<TextureBase>* existingAsset = m_Textures.findByKey(actuallName);
+        asset_ptr<TextureBase>* existingAsset = m_Textures.find(actuallName);
 		if (existingAsset != nullptr)
 		{
 			return *existingAsset;
@@ -129,7 +129,7 @@ namespace JumaEngine
         asset_ptr<TextureBase> asset = createTexture();
         if (asset != nullptr)
         {
-            m_Textures.add(actuallName, asset);
+            m_Textures.set(actuallName, asset);
         }
         return asset;
     }

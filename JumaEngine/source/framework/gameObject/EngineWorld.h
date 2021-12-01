@@ -7,7 +7,7 @@
 #include "WorldContextObject.h"
 #include "utils/jarray.h"
 #include "engine/EngineContextObject.h"
-#include "render/IRenderInterface.h"
+#include "render/RenderedObject.h"
 
 namespace JumaEngine
 {
@@ -15,9 +15,9 @@ namespace JumaEngine
     class GameComponent;
     class SceneComponent;
 
-    class EngineWorld : public EngineContextObject, public IRenderInterface
+    class EngineWorld : public EngineContextObjectOld, public IRenderedObject
     {
-        JUMAENGINE_CLASS(EngineWorld, EngineContextObject)
+        JUMAENGINE_CLASS_OLD(EngineWorld, EngineContextObjectOld)
 
     public:
         EngineWorld() = default;
@@ -105,7 +105,7 @@ namespace JumaEngine
         template<typename T, TEMPLATE_ENABLE(is_base_and_not_same<WorldContextObject, T>)>
         T* createObject()
         {
-            Engine* engine = getOwnerEngine();
+            EngineOld* engine = getOwnerEngine();
             if (engine != nullptr)
             {
                 T* object = engine->createObject<T>();

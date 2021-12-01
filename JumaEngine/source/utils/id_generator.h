@@ -2,11 +2,10 @@
 
 #pragma once
 
-#include "common_header.h"
 #include "jarray.h"
-#include "type_traits_macros.h"
+#include "type_checks.h"
 
-namespace JumaEngine
+namespace jutils
 {
     template<typename T = uint32, TEMPLATE_ENABLE(std::is_integral_v<T>)>
     class id_generator
@@ -17,22 +16,16 @@ namespace JumaEngine
 
         T generateID()
         {
-            if (!m_UnusedIDs.empty())
+            if (!m_UnusedIDs.isEmpty())
             {
-                const int64 index = static_cast<int64>(m_UnusedIDs.size()) - 1;
+                const int32 index = m_UnusedIDs.getSize() - 1;
                 T id = m_UnusedIDs[index];
                 m_UnusedIDs.removeAt(index);
                 return id;
             }
             return generateUniqueID();
         }
-
-        T generateUniqueID()
-        {
-            T id = m_NextID;
-            ++m_NextID;
-            return id;
-        }
+        T generateUniqueID() { return m_NextID++; }
 
         void makeIDUnused(const T id)
         {
@@ -42,7 +35,7 @@ namespace JumaEngine
             }
         }
 
-        void reset()
+        void clear()
         {
             m_UnusedIDs.clear();
             m_NextID = 1;

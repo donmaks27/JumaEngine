@@ -4,7 +4,7 @@
 
 #include "common_header.h"
 
-#if defined(JUMAENGINE_USE_GRAPHIC_API_OPENGL)
+#if defined(JUMAENGINE_INCLUDE_RENDER_API_OPENGL)
 
 #include "render/RenderManagerBase.h"
 
@@ -12,7 +12,7 @@ namespace JumaEngine
 {
     class RenderManagerBase_OpenGL : public RenderManagerBase
     {
-        JUMAENGINE_CLASS(RenderManagerBase_OpenGL, RenderManagerBase)
+        JUMAENGINE_CLASS_OLD(RenderManagerBase_OpenGL, RenderManagerBase)
 
     public:
         RenderManagerBase_OpenGL() = default;
@@ -23,7 +23,7 @@ namespace JumaEngine
         virtual bool initInternal() override;
 
         virtual ShaderBase* createShaderInternal() override;
-        virtual VertexBufferBase* createVertextBufferInternal() override;
+        virtual VertexBufferBaseOld* createVertextBufferInternal() override;
         virtual TextureBase* createTextureInternal() override;
         virtual RenderTargetDirectBase* createRenderTargetDirectInternal() override;
     };

@@ -2,7 +2,7 @@
 
 #include "RenderManager_OpenGL_GLFW.h"
 
-#if defined(JUMAENGINE_USE_GRAPHIC_API_OPENGL) && defined(JUMAENGINE_USE_WINDOW_LIB_GLFW)
+#if defined(JUMAENGINE_INCLUDE_RENDER_API_OPENGL) && defined(JUMAENGINE_INCLUDE_WINDOW_LIB_GLFW)
 
 #include "utils/jlog.h"
 
@@ -32,7 +32,7 @@ namespace JumaEngine
         glfwWindowHint(GLFW_SAMPLES, 0);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-        createWindow(glm::uvec2(800, 600), JTEXT("JumaEngine"));
+        createWindow(glm::uvec2(800, 600), JSTR("JumaEngine"));
 
         if (!Super::initInternal())
         {
@@ -44,7 +44,7 @@ namespace JumaEngine
     }
     void RenderManager_OpenGL_GLFW::errorCallback(const int code, const char* errorMessage)
     {
-        JUMA_LOG(error, jstring(JTEXT("Code: ")) + TO_JTEXT(code) + JTEXT(". ") + errorMessage);
+        JUMA_LOG(error, jstring(JSTR("Code: ")) + TO_JSTR(code) + JSTR(". ") + errorMessage);
     }
 
     void RenderManager_OpenGL_GLFW::terminateInternal()
@@ -57,16 +57,16 @@ namespace JumaEngine
         glfwTerminate();
     }
     
-    WindowDescriptionBase* RenderManager_OpenGL_GLFW::createWindowInternal(const glm::uvec2& size, const jstring& title)
+    WindowDescriptionBaseOld* RenderManager_OpenGL_GLFW::createWindowInternal(const glm::uvec2& size, const jstring& title)
     {
-        GLFWwindow* window = glfwCreateWindow(size.x, size.y, title.c_str(), nullptr, getWindowGLFW(getMainWindowID()));
+        GLFWwindow* window = glfwCreateWindow(size.x, size.y, *title, nullptr, getWindowGLFW(getMainWindowID()));
         if (window == nullptr)
         {
-            JUMA_LOG(warning, JTEXT("Fail to create GLFW window."));
+            JUMA_LOG(warning, JSTR("Fail to create GLFW window."));
             return nullptr;
         }
 
-        WindowDescriptionGLFW* windowDescription = new WindowDescriptionGLFW();
+        WindowDescriptionGLFWOld* windowDescription = new WindowDescriptionGLFWOld();
         windowDescription->windowSize = size;
         windowDescription->windowTitle = title;
         windowDescription->windowPtr = window;
@@ -126,7 +126,7 @@ namespace JumaEngine
         GLFWwindow* window = getWindowGLFW(windowID);
         if (window != nullptr)
         {
-            glfwSetWindowTitle(window, title.c_str());
+            glfwSetWindowTitle(window, *title);
             return true;
         }
         return false;

@@ -9,7 +9,7 @@ namespace JumaEngine
 {
 	class CameraComponent : public SceneComponent
 	{
-        JUMAENGINE_CLASS(CameraComponent, SceneComponent)
+        JUMAENGINE_CLASS_OLD(CameraComponent, SceneComponent)
 
 	public:
 		CameraComponent() = default;

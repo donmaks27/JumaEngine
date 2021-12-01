@@ -10,9 +10,9 @@
 
 namespace JumaEngine
 {
-    class ShaderBase : public EngineContextObject
+    class ShaderBase : public EngineContextObjectOld
     {
-        JUMAENGINE_CLASS(ShaderBase, EngineContextObject)
+        JUMAENGINE_CLASS_OLD(ShaderBase, EngineContextObjectOld)
 
     public:
         ShaderBase() = default;

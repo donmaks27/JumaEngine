@@ -4,7 +4,7 @@
 #include "framework/gameObject/EngineWorld.h"
 #include "framework/gameObject/gameComponent/CameraComponent.h"
 #include "render/RenderManagerBase.h"
-#include "utils/system_functions.h"
+#include "engine/system_functions.h"
 
 namespace JumaEngine
 {

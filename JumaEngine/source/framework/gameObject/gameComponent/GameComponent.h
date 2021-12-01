@@ -12,7 +12,7 @@ namespace JumaEngine
 
     class GameComponent : public WorldContextObject
     {
-        JUMAENGINE_CLASS(GameComponent, WorldContextObject)
+        JUMAENGINE_CLASS_OLD(GameComponent, WorldContextObject)
 
         friend EngineWorld;
 

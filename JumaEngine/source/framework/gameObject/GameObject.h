@@ -5,7 +5,7 @@
 #include "common_header.h"
 #include "WorldContextObject.h"
 #include "TransformObject.h"
-#include "render/IRenderInterface.h"
+#include "render/RenderedObject.h"
 #include "utils/jarray.h"
 
 namespace JumaEngine
@@ -13,9 +13,9 @@ namespace JumaEngine
     class GameComponent;
     class SceneComponent;
 
-    class GameObject : public WorldContextObject, public TransformObject, public IRenderInterface
+    class GameObject : public WorldContextObject, public TransformObject, public IRenderedObject
 	{
-        JUMAENGINE_CLASS(GameObject, WorldContextObject)
+        JUMAENGINE_CLASS_OLD(GameObject, WorldContextObject)
 
         friend EngineWorld;
 

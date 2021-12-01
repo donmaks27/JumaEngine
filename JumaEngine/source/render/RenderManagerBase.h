@@ -4,10 +4,10 @@
 
 #include "common_header.h"
 #include "window/window_id.h"
-#include "window/WindowDescriptionBase.h"
+#include "window/WindowDescriptionBaseOld.h"
 #include "utils/jmap_auto_id.h"
 #include "engine/EngineContextObject.h"
-#include "IRenderInterface.h"
+#include "RenderedObject.h"
 
 #ifndef JUMAENGINE_SINGLE_WINDOW
 #include "utils/jmutex_shared.h"
@@ -16,13 +16,13 @@
 namespace JumaEngine
 {
     class ShaderBase;
-    class VertexBufferBase;
+    class VertexBufferBaseOld;
     class TextureBase;
     class RenderTargetDirectBase;
 
-    class RenderManagerBase : public EngineContextObject, public IRenderInterface
+    class RenderManagerBase : public EngineContextObjectOld, public IRenderedObject
     {
-        JUMAENGINE_CLASS(RenderManagerBase, EngineContextObject)
+        JUMAENGINE_CLASS_OLD(RenderManagerBase, EngineContextObjectOld)
 
     public:
         RenderManagerBase() = default;
@@ -54,8 +54,8 @@ namespace JumaEngine
 
         ShaderBase* createShader();
 
-        VertexBufferBase* createVertextBuffer();
-        void deleteVertexBuffer(VertexBufferBase* vertexBuffer);
+        VertexBufferBaseOld* createVertextBuffer();
+        void deleteVertexBuffer(VertexBufferBaseOld* vertexBuffer);
 
         TextureBase* createTexture();
 
@@ -73,19 +73,19 @@ namespace JumaEngine
         void terminateWindowDescriptions();
         void terminateVertexBuffers();
 
-        virtual WindowDescriptionBase* createWindowInternal(const glm::uvec2& size, const jstring& title) = 0;
-        WindowDescriptionBase* getWindowDescriptionBase(window_id windowID);
-        const WindowDescriptionBase* getWindowDescriptionBase(window_id windowID) const;
-        template<typename T = WindowDescriptionBase, TEMPLATE_ENABLE(std::is_base_of_v<WindowDescriptionBase, T>)>
+        virtual WindowDescriptionBaseOld* createWindowInternal(const glm::uvec2& size, const jstring& title) = 0;
+        WindowDescriptionBaseOld* getWindowDescriptionBase(window_id windowID);
+        const WindowDescriptionBaseOld* getWindowDescriptionBase(window_id windowID) const;
+        template<typename T = WindowDescriptionBaseOld, TEMPLATE_ENABLE(std::is_base_of_v<WindowDescriptionBaseOld, T>)>
         T* getWindowDescription(const window_id windowID)
         {
-            WindowDescriptionBase* description = getWindowDescriptionBase(windowID);
+            WindowDescriptionBaseOld* description = getWindowDescriptionBase(windowID);
             return description != nullptr ? dynamic_cast<T*>(description) : nullptr;
         }
-        template<typename T = WindowDescriptionBase, TEMPLATE_ENABLE(std::is_base_of_v<WindowDescriptionBase, T>)>
+        template<typename T = WindowDescriptionBaseOld, TEMPLATE_ENABLE(std::is_base_of_v<WindowDescriptionBaseOld, T>)>
         const T* getWindowDescription(const window_id windowID) const
         {
-            const WindowDescriptionBase* description = getWindowDescriptionBase(windowID);
+            const WindowDescriptionBaseOld* description = getWindowDescriptionBase(windowID);
             return description != nullptr ? dynamic_cast<const T*>(description) : nullptr;
         }
 
@@ -100,7 +100,7 @@ namespace JumaEngine
         virtual bool updateWindowTitle(window_id windowID, const jstring& title) = 0;
 
         virtual ShaderBase* createShaderInternal() = 0;
-        virtual VertexBufferBase* createVertextBufferInternal() = 0;
+        virtual VertexBufferBaseOld* createVertextBufferInternal() = 0;
         virtual TextureBase* createTextureInternal() = 0;
         virtual RenderTargetDirectBase* createRenderTargetDirectInternal() = 0;
 
@@ -110,14 +110,14 @@ namespace JumaEngine
         bool m_Terminated = false;
 
         window_id m_MainWindowID = INVALID_WINDOW_ID;
-        jmap_auto_id<window_id, WindowDescriptionBase*> m_Windows;
+        jmap_auto_id<window_id, WindowDescriptionBaseOld*> m_Windows;
 
-        jarray<VertexBufferBase*> m_VertexBuffers;
+        jarray<VertexBufferBaseOld*> m_VertexBuffers;
 
 #ifndef JUMAENGINE_SINGLE_WINDOW
         mutable jmutex_shared m_WindowsListMutex;
 
-        jarray<VertexBufferBase*> m_VertexBuffersForDelete;
+        jarray<VertexBufferBaseOld*> m_VertexBuffersForDelete;
         mutable jmutex_shared m_VertexBuffersMutex;
 
 
