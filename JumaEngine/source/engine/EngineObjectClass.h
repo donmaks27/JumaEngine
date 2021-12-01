@@ -44,46 +44,6 @@ namespace JumaEngine
             T* operator()() const { return new T(); }
         };
     };
-
-
-
-    class EngineOld;
-    class EngineContextObjectOld;
-
-    class EngineObjectClassOld
-    {
-        friend EngineOld;
-
-    public:
-        EngineObjectClassOld() = default;
-        virtual ~EngineObjectClassOld() = default;
-
-        virtual jstring getClassName() const = 0;
-
-        template<typename T, TEMPLATE_ENABLE(std::is_base_of_v<EngineContextObjectOld, T>)>
-        bool isChild() const { return isDerrivedOrEqual(T::getClass()); }
-
-    protected:
-
-        virtual EngineContextObjectOld* createObject() const { return nullptr; }
-        template<typename T>
-        T* createObjectTemplate() const { return create_object_struct<T, !std::is_abstract_v<T>>()(); }
-
-        virtual bool isDerrivedOrEqual(const EngineObjectClassOld* classObject) const { return false; }
-
-    private:
-
-        template<typename T, bool Test>
-        struct create_object_struct
-        {
-            T* operator()() const { return nullptr; }
-        };
-        template<typename T>
-        struct create_object_struct<T, true>
-        {
-            T* operator()() const { return new T(); }
-        };
-    };
 }
 
 #define DECLARE_JUMAENGINE_CLASS_OBJECT(ClassName, ParentClassName)                                                 \
@@ -127,36 +87,3 @@ private:
     typedef ParentClassName Super;                                                          \
     protected: virtual void __internal_engine_class_dummy_function__() const override {}    \
     private:
-
-
-
-#define DECLARE_JUMAENGINE_OBJECT_CLASS_OLD(ClassName, ParentClassName)                                             \
-public:                                                                                                             \
-    class ClassName##_Class : public ParentClassName                                                                \
-    {                                                                                                               \
-        friend EngineOld;                                                                                              \
-    public:                                                                                                         \
-        ClassName##_Class() = default;                                                                              \
-        virtual ~ClassName##_Class() override = default;                                                            \
-        virtual jstring getClassName() const override { return #ClassName; }                                        \
-    protected:                                                                                                      \
-        virtual EngineContextObjectOld* createObject() const override { return createObjectTemplate<ClassName>(); }    \
-        virtual bool isDerrivedOrEqual(const EngineObjectClassOld* classObject) const override                      \
-        {                                                                                                           \
-            if (classObject == nullptr) { return false; }                                                           \
-            if (classObject == ClassName::getClass()) { return true; }                                              \
-            return ParentClassName::isDerrivedOrEqual(classObject);                                                 \
-        }                                                                                                           \
-    };                                                                                                              \
-    typedef ClassName##_Class ClassType;                                                                            \
-    static const ClassType* getClass()                                                                              \
-    {                                                                                                               \
-        static ClassType Class;                                                                                     \
-        return &Class;                                                                                              \
-    }                                                                                                               \
-private:
-
-
-#define JUMAENGINE_CLASS_OLD(ClassName, ParentClassName)                    \
-    DECLARE_JUMAENGINE_OBJECT_CLASS_OLD(ClassName, ParentClassName##_Class) \
-    typedef ParentClassName Super;

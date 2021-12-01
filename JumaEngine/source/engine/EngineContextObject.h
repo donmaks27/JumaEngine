@@ -35,38 +35,4 @@ namespace JumaEngine
 
         Engine* m_OwnerEngine = nullptr;
     };
-
-
-
-    class EngineOld;
-    class RenderManagerBase;
-
-    class EngineContextObjectOld
-    {
-        DECLARE_JUMAENGINE_OBJECT_CLASS_OLD(EngineContextObjectOld, EngineObjectClassOld)
-
-        friend EngineOld; 
-
-    public:
-        EngineContextObjectOld() = default;
-        virtual ~EngineContextObjectOld() = default;
-
-        EngineOld* getOwnerEngine() const { return m_OwnerEngine; }
-        RenderManagerBase* getRenderManager() const;
-
-        bool isMainThread() const;
-
-        template<typename To, typename From, TEMPLATE_ENABLE(std::is_base_of_v<EngineContextObjectOld, To> && is_base_and_not_same<From, To>)>
-        static To* cast(From* object) { return object != nullptr ? dynamic_cast<To*>(object) : nullptr; }
-        template<typename To, typename From, TEMPLATE_ENABLE(std::is_base_of_v<EngineContextObjectOld, To> && is_base_and_not_same<From, To>)>
-        static const To* cast(const From* object) { return cast<const To>(object); }
-
-    protected:
-
-    	virtual void onRegister() {}
-
-    private:
-
-        EngineOld* m_OwnerEngine = nullptr;
-    };
 }

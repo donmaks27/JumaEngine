@@ -19,16 +19,15 @@
 
 #endif
 
-#include "enabled_engine_parts.h"
-#define JUMAENGINE_SINGLE_WINDOW
 
+
+#include "enabled_engine_parts.h"
 
 #include "utils/type_defines.h"
 
 #if !JDEBUG
     #define JUTILS_LOG_DISABLED
 #endif
-
 #include "utils/jlog.h"
 #define JUMA_LOG(type, message) JUTILS_LOG_WRITE(type, message)
 #define JUMA_LOG_CUSTOM(type, message) JUTILS_LOG_WRITE_CUSTOM(type, message)
