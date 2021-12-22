@@ -147,12 +147,6 @@
     <ClInclude Include="source\utils\jset.h">
       <Filter>JumaEngine\utils</Filter>
     </ClInclude>
-    <ClInclude Include="source\utils\id_generator.h">
-      <Filter>JumaEngine\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\jmap_auto_id.h">
-      <Filter>JumaEngine\utils</Filter>
-    </ClInclude>
     <ClInclude Include="source\utils\jmutex_shared.h">
       <Filter>JumaEngine\utils</Filter>
     </ClInclude>
@@ -422,6 +416,12 @@
     </ClInclude>
     <ClInclude Include="source\utils\math\base_types\vector4_base.h">
       <Filter>JumaEngine\utils\math\base_types</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\jlist.h">
+      <Filter>JumaEngine\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="source\utils\juid.h">
+      <Filter>JumaEngine\utils</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

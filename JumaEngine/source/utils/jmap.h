@@ -8,39 +8,30 @@
 
 namespace jutils
 {
-    template<typename K, typename V, typename Allocator = std::allocator<std::pair<const K, V>>>
-    class jmap : std::map<K, V, std::less<>, Allocator>
+    template<typename K, typename V, typename ComparePred = std::less<>>
+    class jmap : std::map<K, V, ComparePred>
     {
-        using base_class = std::map<K, V, std::less<>, Allocator>;
+        using base_class = std::map<K, V, ComparePred>;
 
     public:
 
         using key_type = K;
         using value_type = V;
-        using allocator_type = Allocator;
+        using compare_predicate_type = ComparePred;
         using iterator = typename base_class::iterator;
         using const_iterator = typename base_class::const_iterator;
 
         jmap()
             : base_class()
         {}
-        explicit jmap(const allocator_type& alloc)
-            : base_class(alloc)
-        {}
-        jmap(std::initializer_list<std::pair<const key_type, value_type>> initializer, const allocator_type& alloc = allocator_type())
-            : base_class(initializer, alloc)
+        jmap(std::initializer_list<std::pair<const key_type, value_type>> initializer)
+            : base_class(initializer)
         {}
         jmap(const jmap& value)
             : base_class(value)
         {}
-        jmap(const jmap& value, const allocator_type& alloc)
-            : base_class(value, alloc)
-        {}
         jmap(jmap&& value) noexcept
             : base_class(std::move(value))
-        {}
-        jmap(jmap&& value, const allocator_type& alloc)
-            : base_class(std::move(value), alloc)
         {}
 
         jmap& operator=(std::initializer_list<std::pair<const key_type, value_type>> initializer)
@@ -60,6 +51,19 @@ namespace jutils
         }
 
         int32 getSize() const { return static_cast<int32>(this->base_class::size()); }
+        bool isEmpty() const { return this->base_class::empty(); }
+
+        iterator begin() { return this->base_class::begin(); }
+        iterator end() { return this->base_class::end(); }
+
+        const_iterator begin() const { return this->base_class::begin(); }
+        const_iterator end() const { return this->base_class::end(); }
+        
+        value_type& get(const key_type& key) { return this->base_class::find(key)->second; }
+        const value_type& get(const key_type& key) const { return this->base_class::find(key)->second; }
+        value_type& getOrAdd(const key_type& key) { return this->base_class::try_emplace(key).first->second; }
+        value_type& operator[](const key_type& key) { return getOrAdd(key); }
+        const value_type& operator[](const key_type& key) const { return get(key); }
 
         value_type* find(const key_type& key)
         {
@@ -71,10 +75,10 @@ namespace jutils
             auto iter = this->base_class::find(key);
             return iter != end() ? &iter->second : nullptr;
         }
-        template<typename Pred, typename ArrayType = jarray<key_type>>
-        ArrayType findByPredicate(Pred predicate) const
+        template<typename Pred>
+        jarray<key_type> findByPredicate(Pred predicate) const
         {
-            ArrayType result;
+            jarray<key_type> result;
             for (const auto keyAndValue : *this)
             {
                 if (predicate(keyAndValue.first, keyAndValue.second))
@@ -111,12 +115,7 @@ namespace jutils
         value_type& set(key_type&& key, const value_type& value) { return assign(std::move(key), value); }
         value_type& set(key_type&& key, value_type&& value) { return this->base_class::insert_or_assign(std::move(key), std::move(value)).first->second; }
 
-        value_type& get(const key_type& key) { return this->base_class::find(key)->second; }
-        const value_type& get(const key_type& key) const { return this->base_class::find(key)->second; }
-        value_type& getOrAdd(const key_type& key) { return this->base_class::try_emplace(key).first->second; }
-
-        value_type& operator[](const key_type& key) { return getOrAdd(key); }
-        const value_type& operator[](const key_type& key) const { return get(key); }
+        void reserve(const int32 size) { this->base_class::reserve(jutils::math::max(0, size)); }
 
         void remove(const key_type& key) { this->erase(this->base_class::find(key)); }
         template<typename Pred>
@@ -129,10 +128,28 @@ namespace jutils
         }
         void clear() { this->base_class::clear(); }
 
-        iterator begin() { return this->base_class::begin(); }
-        iterator end() { return this->base_class::end(); }
-
-        const_iterator begin() const { return this->base_class::begin(); }
-        const_iterator end() const { return this->base_class::end(); }
+        jmap& operator+=(std::initializer_list<std::pair<const key_type, value_type>> list)
+        {
+            for (auto& keyAndValue : list)
+            {
+                set(keyAndValue.first, keyAndValue.second);
+            }
+            return *this;
+        }
+        template<typename OtherComparePred>
+        jmap& operator+=(const jmap<key_type, value_type, OtherComparePred>& value)
+        {
+            for (auto& keyAndValue : value)
+            {
+                set(keyAndValue.first, keyAndValue.second);
+            }
+            return *this;
+        }
     };
+
+    template<typename KeyType, typename ValueType, typename ComparePred, typename OtherComparePred>
+    jmap<KeyType, ValueType, ComparePred> operator+(const jmap<KeyType, ValueType, ComparePred>& value1, const jmap<KeyType, ValueType, OtherComparePred>& value2)
+    {
+        return jmap<KeyType, ValueType, ComparePred>(value1) += value2;
+    }
 }

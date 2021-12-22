@@ -176,7 +176,8 @@
     <ClInclude Include="source\subsystems\render\Vulkan\WindowDescription_Vulkan_GLFW.h" />
     <ClInclude Include="source\subsystems\render\WindowDescription.h" />
     <ClInclude Include="source\subsystems\SubsystemBase.h" />
-    <ClInclude Include="source\utils\id_generator.h" />
+    <ClInclude Include="source\utils\jlist.h" />
+    <ClInclude Include="source\utils\juid.h" />
     <ClInclude Include="source\utils\math\base_types\matrix2x2_base.h" />
     <ClInclude Include="source\utils\math\base_types\matrix2x3_base.h" />
     <ClInclude Include="source\utils\math\base_types\matrix2x4_base.h" />
@@ -217,7 +218,6 @@
     <ClInclude Include="source\utils\jshared_ptr.h" />
     <ClInclude Include="source\utils\jstring.h" />
     <ClInclude Include="source\utils\jlog.h" />
-    <ClInclude Include="source\utils\jmap_auto_id.h" />
     <ClInclude Include="source\utils\type_checks.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

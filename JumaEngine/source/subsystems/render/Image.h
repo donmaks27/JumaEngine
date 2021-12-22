@@ -29,13 +29,11 @@ namespace JumaEngine
 
     protected:
 
+        math::uvector2 m_Size = math::uvector2(0);
+        ImageFormat m_Format = ImageFormat::None;
+
+
         void markAsInitialized() { m_Initialized = true; }
-        void markAsInitialized(const math::uvector2& size, const ImageFormat format)
-        {
-            m_Size = size;
-            m_Format = format;
-            markAsInitialized();
-        }
 
         virtual bool initInternal(const math::uvector2& size, ImageFormat format, const uint8* data) = 0;
 
@@ -44,8 +42,5 @@ namespace JumaEngine
     private:
 
         bool m_Initialized = false;
-
-        math::uvector2 m_Size = math::uvector2(0);
-        ImageFormat m_Format = ImageFormat::None;
     };
 }

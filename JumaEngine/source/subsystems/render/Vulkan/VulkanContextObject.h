@@ -53,4 +53,6 @@ namespace JumaEngine
     };
 }
 
+#define JUMA_VULKAN_ERROR_LOG(action, code) JUMA_LOG(error, jstring("Failed to ") + (action) + JSTR(". Code ") + TO_JSTR(code))
+
 #endif

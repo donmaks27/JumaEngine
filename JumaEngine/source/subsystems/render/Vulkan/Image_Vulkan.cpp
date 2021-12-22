@@ -24,6 +24,7 @@ namespace JumaEngine
         const jset<VulkanQueueType>& queues, const VkImageUsageFlags usage, const VmaMemoryUsage memoryUsage, const VkMemoryPropertyFlags properties)
     {
         jarray<uint32> uniqueQueueFamilies;
+        uniqueQueueFamilies.reserve(queues.getSize());
         for (auto& queue : queues)
         {
             uniqueQueueFamilies.addUnique(getRenderSubsystem()->getQueueFamilyIndex(queue));
@@ -73,13 +74,15 @@ namespace JumaEngine
         const VkResult result = vmaCreateImage(getRenderSubsystem()->getAllocator(), &imageInfo, &allocationInfo, &m_Image, &m_Allocation, nullptr);
         if (result != VK_SUCCESS)
         {
-            JUMA_LOG(error, JSTR("Failed to create image. Code ") + TO_JSTR(result));
+            JUMA_VULKAN_ERROR_LOG(JSTR("create image"), result);
             return false;
         }
 
         m_MipLevels = imageInfo.mipLevels;
         m_ImageLayout = imageInfo.initialLayout;
-        markAsInitialized({ imageInfo.extent.width, imageInfo.extent.height }, getImageFormatByVulkanFormat(imageInfo.format));
+        m_Size = { imageInfo.extent.width, imageInfo.extent.height };
+        m_Format = getImageFormatByVulkanFormat(imageInfo.format);
+        markAsInitialized();
         return true;
     }
 
@@ -98,7 +101,9 @@ namespace JumaEngine
 
         m_Image = existingImage;
         m_MipLevels = mipLevels;
-        markAsInitialized(size, format);
+        m_Size = size;
+        m_Format = format;
+        markAsInitialized();
         return true;
     }
 
@@ -145,7 +150,7 @@ namespace JumaEngine
         const VkResult result = vmaCreateImage(getRenderSubsystem()->getAllocator(), &imageInfo, &allocationInfo, &m_Image, &m_Allocation, nullptr);
         if (result != VK_SUCCESS)
         {
-            JUMA_LOG(error, JSTR("Failed to create image. Code ") + TO_JSTR(result));
+            JUMA_VULKAN_ERROR_LOG(JSTR("create image"), result);
             return false;
         }
 
@@ -157,6 +162,51 @@ namespace JumaEngine
             }
         }
         return createImageView(format, VK_IMAGE_ASPECT_COLOR_BIT) && createSampler();
+    }
+    bool Image_Vulkan::copyDataToImage(const math::uvector2& size, const ImageFormat format, const uint8* data)
+    {
+        if (!changeImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL))
+        {
+            return false;
+        }
+
+        const jshared_ptr<VulkanBuffer> stagingBuffer = getRenderSubsystem()->createVulkanObject<VulkanBuffer>();
+        stagingBuffer->init(
+            size.x * size.y * getPixelSize(format), 
+            VK_BUFFER_USAGE_TRANSFER_SRC_BIT, {}, 
+            VMA_MEMORY_USAGE_CPU_TO_GPU, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+        );
+        if (!stagingBuffer->isValid() || !stagingBuffer->setData(data))
+        {
+            return false;
+        }
+
+        const jshared_ptr<VulkanCommandPool>& commandPool = getRenderSubsystem()->getCommandPool(VulkanQueueType::Transfer);
+        const jshared_ptr<VulkanCommandBuffer> commandBuffer = commandPool != nullptr ? commandPool->createCommandBuffer(true) : nullptr;
+        if (commandBuffer == nullptr)
+        {
+            return false;
+        }
+
+        VkBufferImageCopy imageCopy{};
+        imageCopy.bufferOffset = 0;
+        imageCopy.bufferRowLength = 0;
+        imageCopy.bufferImageHeight = 0;
+        imageCopy.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        imageCopy.imageSubresource.mipLevel = 0;
+        imageCopy.imageSubresource.baseArrayLayer = 0;
+        imageCopy.imageSubresource.layerCount = 1;
+        imageCopy.imageOffset = { 0, 0, 0 };
+        imageCopy.imageExtent = { size.x, size.y, 1 };
+
+        VkCommandBufferBeginInfo beginInfo{};
+        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+        beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+        vkBeginCommandBuffer(commandBuffer->get(), &beginInfo);
+        vkCmdCopyBufferToImage(commandBuffer->get(), stagingBuffer->get(), m_Image, m_ImageLayout, 1, &imageCopy);
+        vkEndCommandBuffer(commandBuffer->get());
+        commandBuffer->submit(true);
+        return true;
     }
     bool Image_Vulkan::changeImageLayout(const VkImageLayout newLayout)
     {
@@ -222,51 +272,6 @@ namespace JumaEngine
         commandBuffer->submit(true);
 
         m_ImageLayout = newLayout;
-        return true;
-    }
-    bool Image_Vulkan::copyDataToImage(const math::uvector2& size, const ImageFormat format, const uint8* data)
-    {
-        if (!changeImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL))
-        {
-            return false;
-        }
-
-        const jshared_ptr<VulkanBuffer> stagingBuffer = getRenderSubsystem()->createVulkanObject<VulkanBuffer>();
-        stagingBuffer->init(
-            size.x * size.y * getPixelSize(format), 
-            VK_BUFFER_USAGE_TRANSFER_SRC_BIT, {}, 
-            VMA_MEMORY_USAGE_CPU_TO_GPU, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
-        );
-        if (!stagingBuffer->isValid() || !stagingBuffer->setData(data))
-        {
-            return false;
-        }
-
-        const jshared_ptr<VulkanCommandPool>& commandPool = getRenderSubsystem()->getCommandPool(VulkanQueueType::Transfer);
-        const jshared_ptr<VulkanCommandBuffer> commandBuffer = commandPool != nullptr ? commandPool->createCommandBuffer(true) : nullptr;
-        if (commandBuffer == nullptr)
-        {
-            return false;
-        }
-
-        VkBufferImageCopy imageCopy{};
-        imageCopy.bufferOffset = 0;
-        imageCopy.bufferRowLength = 0;
-        imageCopy.bufferImageHeight = 0;
-        imageCopy.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-        imageCopy.imageSubresource.mipLevel = 0;
-        imageCopy.imageSubresource.baseArrayLayer = 0;
-        imageCopy.imageSubresource.layerCount = 1;
-        imageCopy.imageOffset = { 0, 0, 0 };
-        imageCopy.imageExtent = { size.x, size.y, 1 };
-
-        VkCommandBufferBeginInfo beginInfo{};
-        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-        beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-        vkBeginCommandBuffer(commandBuffer->get(), &beginInfo);
-        vkCmdCopyBufferToImage(commandBuffer->get(), stagingBuffer->get(), m_Image, m_ImageLayout, 1, &imageCopy);
-        vkEndCommandBuffer(commandBuffer->get());
-        commandBuffer->submit(true);
         return true;
     }
     bool Image_Vulkan::generateMipmaps(const math::uvector2& size, const ImageFormat format, const VkImageLayout newLayout)
@@ -408,7 +413,7 @@ namespace JumaEngine
         const VkResult result = vkCreateImageView(getRenderSubsystem()->getDevice(), &imageViewInfo, nullptr, &m_ImageView);
         if (result != VK_SUCCESS)
         {
-            JUMA_LOG(error, JSTR("Failed to create image view. Code ") + TO_JSTR(result));
+            JUMA_VULKAN_ERROR_LOG(JSTR("create image view"), result);
             return false;
         }
         return true;
@@ -444,7 +449,7 @@ namespace JumaEngine
         const VkResult result = vkCreateSampler(getRenderSubsystem()->getDevice(), &samplerInfo, nullptr, &m_Sampler);
         if (result != VK_SUCCESS)
         {
-            JUMA_LOG(error, JSTR("Failed to create image sampler. Code ") + TO_JSTR(result));
+            JUMA_VULKAN_ERROR_LOG(JSTR("create image sampler"), result);
             return false;
         }
         return true;

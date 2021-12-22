@@ -22,7 +22,9 @@ namespace JumaEngine
             return false;
         }
 
-        markAsInitialized(size, format);
+        m_Size = size;
+        m_Format = format;
+        markAsInitialized();
         return true;
     }
 

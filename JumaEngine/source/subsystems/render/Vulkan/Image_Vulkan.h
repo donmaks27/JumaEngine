@@ -62,8 +62,8 @@ namespace JumaEngine
         VkImageLayout m_ImageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 
 
-        bool changeImageLayout(VkImageLayout newLayout);
         bool copyDataToImage(const math::uvector2& size, ImageFormat format, const uint8* data);
+        bool changeImageLayout(VkImageLayout newLayout);
         bool generateMipmaps(const math::uvector2& size, ImageFormat format, VkImageLayout newLayout);
 
         bool createImageView(ImageFormat format, VkImageAspectFlags aspectFlags);

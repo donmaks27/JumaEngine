@@ -40,11 +40,18 @@ namespace JumaEngine
 
 
         bool createDescriptorPool(const jshared_ptr<Shader>& shader);
-        bool createMaterialUniformDatas(const jshared_ptr<Shader>& shader);
+
+        bool createMaterialUniformData(const jshared_ptr<Shader>& shader);
+        void createMaterialUniformData_Matrix4(MaterialUniform* uniformValue, uint32 imageCount);
+        void createMaterialUniformData_Image(MaterialUniform* uniformValue, uint32 imageCount);
+
         bool createDescriptorSets(const jshared_ptr<Shader>& shader);
 
         void clearVulkanData() { clearVulkanData(getShader()); }
         void clearVulkanData(const jshared_ptr<Shader>& shader);
+
+        void updateMaterialUniformData_Matrix4(MaterialUniform* uniformValue, uint32 imageIndex);
+        void updateMaterialUniformData_Image(int32 uniformIndex, MaterialUniform* uniformValue, uint32 imageIndex);
     };
 }
 
