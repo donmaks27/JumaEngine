@@ -8,16 +8,16 @@
 
 namespace JumaEngine
 {
-    struct DefaultVertex
+    struct ImportedVertex
     {
         math::vector3 position = math::vector3(0);
         math::vector3 normal = math::vector3(0);
         math::vector2 textureCoords = math::vector2(0);
     };
 
-    struct DefaultVertexBuffer
+    struct ImportedVertexBuffer
     {
-        jarray<DefaultVertex> vertices;
+        jarray<ImportedVertex> vertices;
         jarray<uint32> vertexIndices;
     };
 }

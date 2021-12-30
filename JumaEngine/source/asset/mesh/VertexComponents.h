@@ -24,13 +24,4 @@ namespace JumaEngine
 
         bool isValid() const { return (componentID >= 0) && (componentType != VertexComponentType::None); }
     };
-
-    struct VertexBufferDescription
-    {
-        uint32 verticesCount = 0;
-        uint32 indicesCount = 0;
-
-        uint32 vertexSize = 0;
-        jarray<VertexComponentDescription> vertexComponents;
-    };
 }

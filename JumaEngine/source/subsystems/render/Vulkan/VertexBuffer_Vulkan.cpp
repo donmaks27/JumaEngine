@@ -22,12 +22,15 @@ namespace JumaEngine
 
     bool VertexBuffer_Vulkan::initInternal(const VertexBufferDataBase* data)
     {
-        const VertexBufferDescription& bufferDescription = getVertexBufferDescription();
+        const uint32 vertexSize = getVertexSize();
+        const uint32 indexCount = getIndexCount();
+        const jarray<VertexComponentDescription>& vertexComponents = getVertexComponents();
+
         const jset<VulkanQueueType> queues = { VulkanQueueType::Graphics, VulkanQueueType::Transfer };
 
         m_VertexBuffer = getRenderSubsystem()->createVulkanObject<VulkanBuffer>();
         m_VertexBuffer->initGPUBuffer(
-            data->getVertices(), bufferDescription.vertexSize * bufferDescription.verticesCount, 
+            data->getVertices(), vertexSize * getVertexCount(), 
             queues, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT
         );
         if (!m_VertexBuffer->isValid())
@@ -36,11 +39,11 @@ namespace JumaEngine
             return false;
         }
 
-        if (bufferDescription.indicesCount > 0)
+        if (indexCount > 0)
         {
             m_IndexBuffer = getRenderSubsystem()->createVulkanObject<VulkanBuffer>();
             m_IndexBuffer->initGPUBuffer(
-                data->getVertexIndices(), sizeof(uint32) * bufferDescription.indicesCount, 
+                data->getIndices(), sizeof(uint32) * indexCount, 
                 queues, VK_BUFFER_USAGE_INDEX_BUFFER_BIT
             );
             if (!m_IndexBuffer->isValid())
@@ -51,13 +54,14 @@ namespace JumaEngine
             }
         }
 
+        const int32 vertexComponentCount = vertexComponents.getSize();
         VkVertexInputBindingDescription& bindingDescription = m_BindingDescriptions.addDefault();
         bindingDescription.binding = 0;
-        bindingDescription.stride = bufferDescription.vertexSize;
+        bindingDescription.stride = vertexSize;
         bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-        for (int32 vertexComponentIndex = 0; vertexComponentIndex < bufferDescription.vertexComponents.getSize(); vertexComponentIndex++)
+        for (int32 vertexComponentIndex = 0; vertexComponentIndex < vertexComponentCount; vertexComponentIndex++)
         {
-            const VertexComponentDescription& componentDescriprion = bufferDescription.vertexComponents[vertexComponentIndex];
+            const VertexComponentDescription& componentDescriprion = vertexComponents[vertexComponentIndex];
             if (!componentDescriprion.isValid())
             {
                 continue;
@@ -122,15 +126,14 @@ namespace JumaEngine
         VkBuffer vertexBuffer = m_VertexBuffer->get();
         vkCmdBindVertexBuffers(vulkanCommandBuffer, 0, 1, &vertexBuffer, offsets);
 
-        const VertexBufferDescription& bufferDescription = getVertexBufferDescription();
         if (m_IndexBuffer == nullptr)
         {
-            vkCmdDraw(vulkanCommandBuffer, bufferDescription.verticesCount, 1, 0, 0);
+            vkCmdDraw(vulkanCommandBuffer, getVertexCount(), 1, 0, 0);
         }
         else
         {
             vkCmdBindIndexBuffer(vulkanCommandBuffer, m_IndexBuffer->get(), 0, VK_INDEX_TYPE_UINT32);
-            vkCmdDrawIndexed(vulkanCommandBuffer, bufferDescription.indicesCount, 1, 0, 0, 0);
+            vkCmdDrawIndexed(vulkanCommandBuffer, getIndexCount(), 1, 0, 0, 0);
         }
     }
 }

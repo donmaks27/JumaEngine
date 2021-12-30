@@ -17,11 +17,9 @@ namespace JumaEngine
     {
     public:
 
-        virtual void fillVertexBufferDescription(VertexBufferDescription& description) const override
+        virtual jarray<VertexComponentDescription> getVertexComponents() const override
         {
-            Super::fillVertexBufferDescription(description);
-
-            description.vertexComponents = {
+            return {
                 { 0, VertexComponentType::Vec3, offsetof(Vertex3D_Normal, position) },
                 { 1, VertexComponentType::Vec3, offsetof(Vertex3D_Normal, normal) }
             };
@@ -29,9 +27,10 @@ namespace JumaEngine
 
     protected:
 
-        void copyFromDefaultVertex(const uint32 index, const DefaultVertex& vertex) override
+        void copyFromImportedVertex(const ImportedVertex& importedVertex, VertexType& outVertex) override
         {
-            vertices[index] = { vertex.position, vertex.normal };
+            outVertex.position = importedVertex.position;
+            outVertex.normal = importedVertex.normal;
         }
     };
 }

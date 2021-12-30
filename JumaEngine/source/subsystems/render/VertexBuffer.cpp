@@ -19,7 +19,10 @@ namespace JumaEngine
             return false;
         }
 
-        data->fillVertexBufferDescription(m_Description);
+        m_VertexCount = data->getVertexCount();
+        m_IndexCount = data->getIndexCount();
+        m_VertexSize = data->getVertexSize();
+        m_VertexComponents = data->getVertexComponents();
         if (!initInternal(data))
         {
             return false;

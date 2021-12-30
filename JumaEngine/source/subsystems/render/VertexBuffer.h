@@ -5,7 +5,7 @@
 #include "common_header.h"
 #include "engine/EngineContextObject.h"
 
-#include "asset/mesh/VertexBufferDescription.h"
+#include "asset/mesh/VertexComponents.h"
 
 namespace JumaEngine
 {
@@ -23,7 +23,10 @@ namespace JumaEngine
         bool isValid() const { return m_Initialized; }
         void clear();
 
-        const VertexBufferDescription& getVertexBufferDescription() const { return m_Description; }
+        uint32 getVertexCount() const { return m_VertexCount; }
+        uint32 getIndexCount() const { return m_IndexCount; }
+        uint32 getVertexSize() const { return m_VertexSize; }
+        const jarray<VertexComponentDescription>& getVertexComponents() const { return m_VertexComponents; }
 
     protected:
 
@@ -34,6 +37,9 @@ namespace JumaEngine
 
         bool m_Initialized = false;
 
-        VertexBufferDescription m_Description = VertexBufferDescription();
+        uint32 m_VertexCount = 0;
+        uint32 m_IndexCount = 0;
+        uint32 m_VertexSize = 0;
+        jarray<VertexComponentDescription> m_VertexComponents;
     };
 }

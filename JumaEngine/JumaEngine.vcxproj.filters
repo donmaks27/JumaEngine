@@ -192,13 +192,7 @@
     <ClInclude Include="source\engine\Engine.h">
       <Filter>JumaEngine\engine</Filter>
     </ClInclude>
-    <ClInclude Include="source\asset\mesh\DefaultVertexBuffer.h">
-      <Filter>JumaEngine\asset\mesh</Filter>
-    </ClInclude>
     <ClInclude Include="source\asset\mesh\VertexBufferData.h">
-      <Filter>JumaEngine\asset\mesh</Filter>
-    </ClInclude>
-    <ClInclude Include="source\asset\mesh\VertexBufferDescription.h">
       <Filter>JumaEngine\asset\mesh</Filter>
     </ClInclude>
     <ClInclude Include="source\asset\mesh\vertexTypes\Vertex3D.h">
@@ -422,6 +416,12 @@
     </ClInclude>
     <ClInclude Include="source\utils\juid.h">
       <Filter>JumaEngine\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="source\asset\mesh\ImportedVertexBuffer.h">
+      <Filter>JumaEngine\asset\mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="source\asset\mesh\VertexComponents.h">
+      <Filter>JumaEngine\asset\mesh</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

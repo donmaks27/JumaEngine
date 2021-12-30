@@ -19,26 +19,28 @@ namespace JumaEngine
 
     bool VertexBuffer_OpenGL::initInternal(const VertexBufferDataBase* data)
     {
-        const VertexBufferDescription& bufferDescription = getVertexBufferDescription();
+        const uint32 vertexSize = getVertexSize();
+        const uint32 indexCount = getIndexCount();
+        const jarray<VertexComponentDescription>& vertexComponents = getVertexComponents();
 
         glGenBuffers(1, &m_VerticesVBO);
 
         glBindBuffer(GL_ARRAY_BUFFER, m_VerticesVBO);
         glBufferData(
             GL_ARRAY_BUFFER, 
-            bufferDescription.vertexSize * bufferDescription.verticesCount, 
+            vertexSize * getVertexCount(), 
             data->getVertices(), 
             GL_STATIC_DRAW
         );
 
-        if (bufferDescription.indicesCount > 0)
+        if (indexCount > 0)
         {
             glGenBuffers(1, &m_IndicesVBO);
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndicesVBO);
             glBufferData(
                 GL_ELEMENT_ARRAY_BUFFER, 
-                sizeof(uint32) * bufferDescription.indicesCount, 
-                data->getVertexIndices(), 
+                sizeof(uint32) * indexCount, 
+                data->getIndices(), 
                 GL_STATIC_DRAW
             );
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -47,9 +49,10 @@ namespace JumaEngine
         glGenVertexArrays(1, &m_VerticesVAO);
         glBindVertexArray(m_VerticesVAO);
 
-        for (int32 vertexComponentIndex = 0; vertexComponentIndex < bufferDescription.vertexComponents.getSize(); vertexComponentIndex++)
+        const int32 vertexComponentCount = vertexComponents.getSize();
+        for (int32 vertexComponentIndex = 0; vertexComponentIndex < vertexComponentCount; vertexComponentIndex++)
         {
-            const VertexComponentDescription& componentDescriprion = bufferDescription.vertexComponents[vertexComponentIndex];
+            const VertexComponentDescription& componentDescriprion = vertexComponents[vertexComponentIndex];
             if (!componentDescriprion.isValid())
             {
                 continue;
@@ -85,7 +88,7 @@ namespace JumaEngine
                 componentSize, 
                 componentType, 
                 GL_FALSE, 
-                bufferDescription.vertexSize, 
+                vertexSize, 
                 reinterpret_cast<const void*>(componentDescriprion.componentOffset)
             );
             glEnableVertexAttribArray(componentDescriprion.componentID);
@@ -126,17 +129,15 @@ namespace JumaEngine
             return;
         }
         
-        const VertexBufferDescription& bufferDescription = getVertexBufferDescription();
-
         glBindVertexArray(m_VerticesVAO);
         if (m_IndicesVBO == 0)
         {
-            glDrawArrays(GL_TRIANGLES, 0, bufferDescription.verticesCount);
+            glDrawArrays(GL_TRIANGLES, 0, getVertexCount());
         }
         else
         {
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndicesVBO);
-            glDrawElements(GL_TRIANGLES, bufferDescription.indicesCount, GL_UNSIGNED_INT, nullptr);
+            glDrawElements(GL_TRIANGLES, getIndexCount(), GL_UNSIGNED_INT, nullptr);
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
         }
         glBindVertexArray(0);

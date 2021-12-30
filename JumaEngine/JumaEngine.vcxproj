@@ -122,9 +122,9 @@
     <ClCompile Include="source\utils\jlog.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="source\asset\mesh\DefaultVertexBuffer.h" />
+    <ClInclude Include="source\asset\mesh\ImportedVertexBuffer.h" />
     <ClInclude Include="source\asset\mesh\VertexBufferData.h" />
-    <ClInclude Include="source\asset\mesh\VertexBufferDescription.h" />
+    <ClInclude Include="source\asset\mesh\VertexComponents.h" />
     <ClInclude Include="source\asset\mesh\vertexTypes\Vertex2D.h" />
     <ClInclude Include="source\asset\mesh\vertexTypes\Vertex3D.h" />
     <ClInclude Include="source\asset\mesh\vertexTypes\Vertex3D_Normal.h" />

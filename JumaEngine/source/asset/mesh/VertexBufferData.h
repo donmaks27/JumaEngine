@@ -3,8 +3,8 @@
 #pragma once
 
 #include "common_header.h"
-#include "VertexBufferDescription.h"
-#include "DefaultVertexBuffer.h"
+#include "VertexComponents.h"
+#include "ImportedVertexBuffer.h"
 
 namespace JumaEngine
 {
@@ -15,15 +15,18 @@ namespace JumaEngine
         virtual ~VertexBufferDataBase() = default;
 
         virtual const void* getVertices() const = 0;
-        const void* getVertexIndices() const { return !vertexIndices.isEmpty() ? vertexIndices.getData() : nullptr; }
+        virtual uint32 getVertexCount() const = 0;
 
-        virtual void fillVertexBufferDescription(VertexBufferDescription& description) const
-        {
-            description.indicesCount = static_cast<uint32>(vertexIndices.getSize());
-        }
+        const void* getIndices() const { return !vertexIndices.isEmpty() ? vertexIndices.getData() : nullptr; }
+        uint32 getIndexCount() const { return static_cast<uint32>(vertexIndices.getSize()); }
 
+        virtual uint32 getVertexSize() const = 0;
+        virtual jarray<VertexComponentDescription> getVertexComponents() const = 0;
+
+        void setVertexIndices(std::initializer_list<uint32> list) { vertexIndices = list; }
         void setVertexIndices(const jarray<uint32>& data) { vertexIndices = data; }
-        virtual void copyFromDefaultVertexBuffer(const DefaultVertexBuffer& buffer)
+
+        virtual void copyFromImportedVertexBuffer(const ImportedVertexBuffer& buffer)
         {
             setVertexIndices(buffer.vertexIndices);
         }
@@ -39,34 +42,32 @@ namespace JumaEngine
     public:
 
         virtual const void* getVertices() const override final { return vertices.getData(); }
+        virtual uint32 getVertexCount() const override final { return static_cast<uint32>(vertices.getSize()); }
+        
+        virtual uint32 getVertexSize() const override final { return sizeof(T); }
 
-        virtual void fillVertexBufferDescription(VertexBufferDescription& description) const override
-        {
-            VertexBufferDataBase::fillVertexBufferDescription(description);
-
-            description.verticesCount = static_cast<uint32>(vertices.getSize());
-            description.vertexSize = sizeof(T);
-        }
-
+        void setVertices(std::initializer_list<T> list) { vertices = list; }
         void setVertices(const jarray<T>& data) { vertices = data; }
-        virtual void copyFromDefaultVertexBuffer(const DefaultVertexBuffer& buffer) override final
+
+        virtual void copyFromImportedVertexBuffer(const ImportedVertexBuffer& buffer) override final
         {
-            VertexBufferDataBase::copyFromDefaultVertexBuffer(buffer);
+            VertexBufferDataBase::copyFromImportedVertexBuffer(buffer);
 
             vertices.resize(buffer.vertices.getSize());
             for (int32 index = 0; index < vertices.getSize(); ++index)
             {
-                copyFromDefaultVertex(index, buffer.vertices[index]);
+                copyFromImportedVertex(buffer.vertices[index], vertices[index]);
             }
         }
 
     protected:
 
-        typedef VertexBufferData<T> Super;
+        using Super = VertexBufferData<T>;
+        using VertexType = T;
 
         jarray<T> vertices;
 
 
-        virtual void copyFromDefaultVertex(uint32 index, const DefaultVertex& vertex) = 0;
+        virtual void copyFromImportedVertex(const ImportedVertex& importedVertex, VertexType& outVertex) = 0;
     };
 }

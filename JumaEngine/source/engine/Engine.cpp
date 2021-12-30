@@ -100,7 +100,7 @@ namespace JumaEngine
         material->init(shader);
         material->setUniformValue<ShaderUniformType::Image>(JSTR("uTexture"), image);
 
-        DefaultVertexBuffer defaultVertexBufferData;
+        ImportedVertexBuffer defaultVertexBufferData;
         defaultVertexBufferData.vertices = {
             { { 0.0f, 0.0f, 0.0f } },
             { { 0.5f, 0.0f, 0.0f } },
@@ -110,7 +110,7 @@ namespace JumaEngine
             { { 0.5f, 0.5f, 0.0f } }
         };
         VertexBufferData_Vertex2D vertexBufferData;
-        vertexBufferData.copyFromDefaultVertexBuffer(defaultVertexBufferData);
+        vertexBufferData.copyFromImportedVertexBuffer(defaultVertexBufferData);
         jshared_ptr<VertexBuffer> vertexBuffer = m_RenderSubsystem->createVertexBuffer();
         vertexBuffer->init(&vertexBufferData);
 
