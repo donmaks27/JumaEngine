@@ -6,7 +6,7 @@
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
-#include "subsystems/render/VertexBuffer.h"
+#include "subsystems/render/vertexBuffer/VertexBuffer.h"
 #include "VulkanContextObject.h"
 
 #include <vulkan/vulkan_core.h>

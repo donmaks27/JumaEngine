@@ -5,7 +5,8 @@
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_OPENGL)
 
 #include <GL/glew.h>
-#include "asset/mesh/VertexBufferData.h"
+
+#include "subsystems/render/vertexBuffer/VertexBufferData.h"
 
 namespace JumaEngine
 {

@@ -6,7 +6,7 @@
 
 #include "RenderOptionsData_Vulkan.h"
 #include "RenderSubsystem_Vulkan.h"
-#include "asset/mesh/VertexBufferData.h"
+#include "subsystems/render/vertexBuffer/VertexBufferData.h"
 #include "vulkanObjects/VulkanBuffer.h"
 #include "vulkanObjects/VulkanCommandBuffer.h"
 

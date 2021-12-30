@@ -104,7 +104,7 @@
     <ClCompile Include="source\subsystems\render\OpenGL\VertexBuffer_OpenGL.cpp" />
     <ClCompile Include="source\subsystems\render\RenderSubsystem.cpp" />
     <ClCompile Include="source\subsystems\render\Shader.cpp" />
-    <ClCompile Include="source\subsystems\render\VertexBuffer.cpp" />
+    <ClCompile Include="source\subsystems\render\vertexBuffer\VertexBuffer.cpp" />
     <ClCompile Include="source\subsystems\render\Vulkan\Image_Vulkan.cpp" />
     <ClCompile Include="source\subsystems\render\Vulkan\Material_Vulkan.cpp" />
     <ClCompile Include="source\subsystems\render\Vulkan\RenderPrimitive_Vulkan.cpp" />
@@ -122,13 +122,6 @@
     <ClCompile Include="source\utils\jlog.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="source\asset\mesh\ImportedVertexBuffer.h" />
-    <ClInclude Include="source\asset\mesh\VertexBufferData.h" />
-    <ClInclude Include="source\asset\mesh\VertexComponents.h" />
-    <ClInclude Include="source\asset\mesh\vertexTypes\Vertex2D.h" />
-    <ClInclude Include="source\asset\mesh\vertexTypes\Vertex3D.h" />
-    <ClInclude Include="source\asset\mesh\vertexTypes\Vertex3D_Normal.h" />
-    <ClInclude Include="source\asset\mesh\vertexTypes\Vertex3D_Normal_TexCoord.h" />
     <ClInclude Include="source\common_header.h" />
     <ClInclude Include="source\enabled_engine_parts.h" />
     <ClInclude Include="source\engine\Engine.h" />
@@ -154,7 +147,14 @@
     <ClInclude Include="source\subsystems\render\Shader.h" />
     <ClInclude Include="source\subsystems\render\ShaderStage.h" />
     <ClInclude Include="source\subsystems\render\ShaderUniform.h" />
-    <ClInclude Include="source\subsystems\render\VertexBuffer.h" />
+    <ClInclude Include="source\subsystems\render\vertexBuffer\ImportedVertexBuffer.h" />
+    <ClInclude Include="source\subsystems\render\vertexBuffer\Vertex2D.h" />
+    <ClInclude Include="source\subsystems\render\vertexBuffer\Vertex3D.h" />
+    <ClInclude Include="source\subsystems\render\vertexBuffer\Vertex3D_Normal.h" />
+    <ClInclude Include="source\subsystems\render\vertexBuffer\Vertex3D_Normal_TexCoord.h" />
+    <ClInclude Include="source\subsystems\render\vertexBuffer\VertexBuffer.h" />
+    <ClInclude Include="source\subsystems\render\vertexBuffer\VertexBufferData.h" />
+    <ClInclude Include="source\subsystems\render\vertexBuffer\VertexComponents.h" />
     <ClInclude Include="source\subsystems\render\Vulkan\Image_Vulkan.h" />
     <ClInclude Include="source\subsystems\render\Vulkan\Material_Vulkan.h" />
     <ClInclude Include="source\subsystems\render\Vulkan\RenderOptionsData_Vulkan.h" />

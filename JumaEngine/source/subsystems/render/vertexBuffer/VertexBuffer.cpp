@@ -1,7 +1,7 @@
 ﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
 
 #include "VertexBuffer.h"
-#include "asset/mesh/VertexBufferData.h"
+#include "VertexBufferData.h"
 #include "utils/jlog.h"
 
 namespace JumaEngine

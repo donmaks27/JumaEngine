@@ -1,12 +1,12 @@
 ﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
 
 #include "Engine.h"
-#include "asset/mesh/vertexTypes/Vertex2D.h"
+#include "subsystems/render/vertexBuffer/Vertex2D.h"
 #include "subsystems/render/Image.h"
 #include "subsystems/render/Material.h"
 #include "subsystems/render/RenderPrimitive.h"
 #include "subsystems/render/Shader.h"
-#include "subsystems/render/VertexBuffer.h"
+#include "subsystems/render/vertexBuffer/VertexBuffer.h"
 #include "subsystems/render/OpenGL/RenderSubsystem_OpenGL_GLFW.h"
 #include "subsystems/render/Vulkan/Image_Vulkan.h"
 #include "subsystems/render/Vulkan/RenderSubsystem_Vulkan_GLFW.h"

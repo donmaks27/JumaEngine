@@ -5,7 +5,7 @@
 #include "common_header.h"
 #include "engine/EngineContextObject.h"
 
-#include "asset/mesh/VertexComponents.h"
+#include "VertexComponents.h"
 
 namespace JumaEngine
 {

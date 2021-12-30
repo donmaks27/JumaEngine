@@ -3,29 +3,29 @@
 #pragma once
 
 #include "common_header.h"
-#include "asset/mesh/VertexBufferData.h"
+#include "VertexBufferData.h"
 
 namespace JumaEngine
 {
-    struct Vertex3D
+    struct Vertex2D
     {
-        math::vector3 position;
+        math::vector2 position;
     };
 
-    class VertexBufferData_Vertex3D final : public VertexBufferData<Vertex3D>
+    class VertexBufferData_Vertex2D final : public VertexBufferData<Vertex2D>
     {
     public:
 
         virtual jarray<VertexComponentDescription> getVertexComponents() const override
         {
-            return {{ 0, VertexComponentType::Vec3, offsetof(Vertex3D, position) }};
+            return {{ 0, VertexComponentType::Vec2, offsetof(Vertex2D, position) }};
         }
 
     protected:
 
         void copyFromImportedVertex(const ImportedVertex& importedVertex, VertexType& outVertex) override
         {
-            outVertex.position = importedVertex.position;
+            outVertex.position = { importedVertex.position.x, importedVertex.position.y };
         }
     };
 }

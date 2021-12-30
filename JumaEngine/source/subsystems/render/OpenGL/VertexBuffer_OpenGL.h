@@ -6,7 +6,7 @@
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_OPENGL)
 
-#include "subsystems/render/VertexBuffer.h"
+#include "subsystems/render/vertexBuffer/VertexBuffer.h"
 
 namespace JumaEngine
 {
