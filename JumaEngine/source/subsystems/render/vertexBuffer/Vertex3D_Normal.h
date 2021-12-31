@@ -13,11 +13,12 @@ namespace JumaEngine
         math::vector3 normal;
     };
 
-    class VertexBufferData_Vertex3D_Normal final : public VertexBufferData<Vertex3D_Normal>
+    template<>
+    struct VertexTypeDescription<Vertex3D_Normal> : std::true_type
     {
-    public:
+        JUMAENGINE_VERTEX_TYPE(Vertex3D_Normal)
 
-        virtual jarray<VertexComponentDescription> getVertexComponents() const override
+        static jarray<VertexComponentDescription> getVertexComponents()
         {
             return {
                 { 0, VertexComponentType::Vec3, offsetof(Vertex3D_Normal, position) },
@@ -25,9 +26,7 @@ namespace JumaEngine
             };
         }
 
-    protected:
-
-        void copyFromImportedVertex(const ImportedVertex& importedVertex, VertexType& outVertex) override
+        static void copyFromImportedVertex(VertexType& outVertex, const ImportedVertex& importedVertex)
         {
             outVertex.position = importedVertex.position;
             outVertex.normal = importedVertex.normal;

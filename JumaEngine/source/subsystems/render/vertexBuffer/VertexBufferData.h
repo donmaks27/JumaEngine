@@ -3,8 +3,9 @@
 #pragma once
 
 #include "common_header.h"
+#include "VertexBase.h"
+#include "ImportedVertex.h"
 #include "VertexComponents.h"
-#include "ImportedVertexBuffer.h"
 
 namespace JumaEngine
 {
@@ -36,38 +37,39 @@ namespace JumaEngine
         jarray<uint32> vertexIndices;
     };
 
-    template<typename T>
-    class VertexBufferData : public VertexBufferDataBase
+    template<typename T, TEMPLATE_ENABLE(is_vertex_type<T>)>
+    class VertexBufferData final : public VertexBufferDataBase
     {
     public:
+        VertexBufferData() = default;
+        virtual ~VertexBufferData() override = default;
 
-        virtual const void* getVertices() const override final { return vertices.getData(); }
-        virtual uint32 getVertexCount() const override final { return static_cast<uint32>(vertices.getSize()); }
+        using VertexType = T;
+        using VertexDescription = VertexTypeDescription<VertexType>;
+
+        virtual const void* getVertices() const override { return vertices.getData(); }
+        virtual uint32 getVertexCount() const override { return static_cast<uint32>(vertices.getSize()); }
         
-        virtual uint32 getVertexSize() const override final { return sizeof(T); }
+        virtual uint32 getVertexSize() const override { return sizeof(VertexType); }
+        virtual jarray<VertexComponentDescription> getVertexComponents() const override { return VertexDescription::getVertexComponents(); }
 
-        void setVertices(std::initializer_list<T> list) { vertices = list; }
-        void setVertices(const jarray<T>& data) { vertices = data; }
+        void setVertices(std::initializer_list<VertexType> list) { vertices = list; }
+        void setVertices(const jarray<VertexType>& data) { vertices = data; }
 
-        virtual void copyFromImportedVertexBuffer(const ImportedVertexBuffer& buffer) override final
+        virtual void copyFromImportedVertexBuffer(const ImportedVertexBuffer& buffer) override
         {
             VertexBufferDataBase::copyFromImportedVertexBuffer(buffer);
 
-            vertices.resize(buffer.vertices.getSize());
-            for (int32 index = 0; index < vertices.getSize(); ++index)
+            const int32 size = buffer.vertices.getSize();
+            vertices.resize(size);
+            for (int32 index = 0; index < size; index++)
             {
-                copyFromImportedVertex(buffer.vertices[index], vertices[index]);
+                VertexDescription::copyFromImportedVertex(vertices[index], buffer.vertices[index]);
             }
         }
 
-    protected:
+    private:
 
-        using Super = VertexBufferData<T>;
-        using VertexType = T;
-
-        jarray<T> vertices;
-
-
-        virtual void copyFromImportedVertex(const ImportedVertex& importedVertex, VertexType& outVertex) = 0;
+        jarray<VertexType> vertices;
     };
 }

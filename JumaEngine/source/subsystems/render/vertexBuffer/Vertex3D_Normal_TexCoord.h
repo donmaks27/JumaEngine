@@ -14,11 +14,12 @@ namespace JumaEngine
         math::vector2 textureCoords;
     };
 
-    class VertexBufferData_Vertex3D_Normal_TexCoord final : public VertexBufferData<Vertex3D_Normal_TexCoord>
+    template<>
+    struct VertexTypeDescription<Vertex3D_Normal_TexCoord> : std::true_type
     {
-    public:
+        JUMAENGINE_VERTEX_TYPE(Vertex3D_Normal_TexCoord)
 
-        virtual jarray<VertexComponentDescription> getVertexComponents() const override
+        static jarray<VertexComponentDescription> getVertexComponents()
         {
             return {
                 { 0, VertexComponentType::Vec3, offsetof(Vertex3D_Normal_TexCoord, position) },
@@ -27,9 +28,7 @@ namespace JumaEngine
             };
         }
 
-    protected:
-
-        void copyFromImportedVertex(const ImportedVertex& importedVertex, VertexType& outVertex) override
+        static void copyFromImportedVertex(VertexType& outVertex, const ImportedVertex& importedVertex)
         {
             outVertex.position = importedVertex.position;
             outVertex.normal = importedVertex.normal;

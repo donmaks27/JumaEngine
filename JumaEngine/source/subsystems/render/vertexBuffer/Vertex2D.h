@@ -12,18 +12,17 @@ namespace JumaEngine
         math::vector2 position;
     };
 
-    class VertexBufferData_Vertex2D final : public VertexBufferData<Vertex2D>
+    template<>
+    struct VertexTypeDescription<Vertex2D> : std::true_type
     {
-    public:
+        JUMAENGINE_VERTEX_TYPE(Vertex2D)
 
-        virtual jarray<VertexComponentDescription> getVertexComponents() const override
+        static jarray<VertexComponentDescription> getVertexComponents()
         {
-            return {{ 0, VertexComponentType::Vec2, offsetof(Vertex2D, position) }};
+            return {{ 0, VertexComponentType::Vec2, offsetof(VertexType, position) }};
         }
 
-    protected:
-
-        void copyFromImportedVertex(const ImportedVertex& importedVertex, VertexType& outVertex) override
+        static void copyFromImportedVertex(VertexType& outVertex, const ImportedVertex& importedVertex)
         {
             outVertex.position = { importedVertex.position.x, importedVertex.position.y };
         }

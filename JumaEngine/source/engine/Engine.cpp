@@ -109,7 +109,7 @@ namespace JumaEngine
             { { 0.5f, 0.0f, 0.0f } },
             { { 0.5f, 0.5f, 0.0f } }
         };
-        VertexBufferData_Vertex2D vertexBufferData;
+        VertexBufferData<Vertex2D> vertexBufferData;
         vertexBufferData.copyFromImportedVertexBuffer(defaultVertexBufferData);
         jshared_ptr<VertexBuffer> vertexBuffer = m_RenderSubsystem->createVertexBuffer();
         vertexBuffer->init(&vertexBufferData);

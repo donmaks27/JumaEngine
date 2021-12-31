@@ -393,9 +393,6 @@
     <ClInclude Include="source\utils\juid.h">
       <Filter>JumaEngine\utils</Filter>
     </ClInclude>
-    <ClInclude Include="source\subsystems\render\vertexBuffer\ImportedVertexBuffer.h">
-      <Filter>JumaEngine\subsystems\render\vertexBuffer</Filter>
-    </ClInclude>
     <ClInclude Include="source\subsystems\render\vertexBuffer\Vertex2D.h">
       <Filter>JumaEngine\subsystems\render\vertexBuffer</Filter>
     </ClInclude>
@@ -415,6 +412,12 @@
       <Filter>JumaEngine\subsystems\render\vertexBuffer</Filter>
     </ClInclude>
     <ClInclude Include="source\subsystems\render\vertexBuffer\VertexComponents.h">
+      <Filter>JumaEngine\subsystems\render\vertexBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\vertexBuffer\ImportedVertex.h">
+      <Filter>JumaEngine\subsystems\render\vertexBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\vertexBuffer\VertexBase.h">
       <Filter>JumaEngine\subsystems\render\vertexBuffer</Filter>
     </ClInclude>
   </ItemGroup>

@@ -147,11 +147,12 @@
     <ClInclude Include="source\subsystems\render\Shader.h" />
     <ClInclude Include="source\subsystems\render\ShaderStage.h" />
     <ClInclude Include="source\subsystems\render\ShaderUniform.h" />
-    <ClInclude Include="source\subsystems\render\vertexBuffer\ImportedVertexBuffer.h" />
+    <ClInclude Include="source\subsystems\render\vertexBuffer\ImportedVertex.h" />
     <ClInclude Include="source\subsystems\render\vertexBuffer\Vertex2D.h" />
     <ClInclude Include="source\subsystems\render\vertexBuffer\Vertex3D.h" />
     <ClInclude Include="source\subsystems\render\vertexBuffer\Vertex3D_Normal.h" />
     <ClInclude Include="source\subsystems\render\vertexBuffer\Vertex3D_Normal_TexCoord.h" />
+    <ClInclude Include="source\subsystems\render\vertexBuffer\VertexBase.h" />
     <ClInclude Include="source\subsystems\render\vertexBuffer\VertexBuffer.h" />
     <ClInclude Include="source\subsystems\render\vertexBuffer\VertexBufferData.h" />
     <ClInclude Include="source\subsystems\render\vertexBuffer\VertexComponents.h" />
