@@ -7,8 +7,8 @@
 #include "subsystems/render/Vulkan/RenderSubsystem_Vulkan.h"
 #include "VulkanCommandPool.h"
 #include "VulkanQueue.h"
-#include "utils/jlog.h"
-#include "utils/jshared_ptr.h"
+#include "jutils/jlog.h"
+#include "jutils/jshared_ptr.h"
 
 namespace JumaEngine
 {

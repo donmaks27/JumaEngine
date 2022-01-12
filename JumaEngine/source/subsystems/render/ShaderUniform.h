@@ -4,7 +4,7 @@
 
 #include "common_header.h"
 #include "ShaderStage.h"
-#include "utils/jset.h"
+#include "jutils/jset.h"
 
 namespace JumaEngine
 {

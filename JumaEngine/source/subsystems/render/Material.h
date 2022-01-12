@@ -6,8 +6,8 @@
 #include "engine/EngineContextObject.h"
 
 #include "MaterialUniform.h"
-#include "utils/jshared_ptr.h"
-#include "utils/jdelegate_multicast.h"
+#include "jutils/jshared_ptr.h"
+#include "jutils/jdelegate_multicast.h"
 
 namespace JumaEngine
 {

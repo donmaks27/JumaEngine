@@ -2,7 +2,7 @@
 
 #include "Material.h"
 #include "Shader.h"
-#include "utils/jlog.h"
+#include "jutils/jlog.h"
 #include "MaterialUniform.h"
 
 namespace JumaEngine

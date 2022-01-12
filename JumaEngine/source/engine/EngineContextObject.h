@@ -3,7 +3,7 @@
 #pragma once
 
 #include "common_header.h"
-#include "utils/type_checks.h"
+#include "jutils/type_checks.h"
 #include "EngineObjectClass.h"
 
 namespace JumaEngine

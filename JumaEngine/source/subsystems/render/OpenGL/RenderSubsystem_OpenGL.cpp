@@ -5,7 +5,8 @@
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_OPENGL)
 
 #include <GL/glew.h>
-#include "utils/jlog.h"
+
+#include "jutils/jlog.h"
 #include "engine/Engine.h"
 #include "VertexBuffer_OpenGL.h"
 #include "Shader_OpenGL.h"

@@ -7,7 +7,7 @@
 #include "RenderSubsystem_Vulkan.h"
 #include "Shader_Vulkan.h"
 #include "subsystems/render/Shader.h"
-#include "utils/jlog.h"
+#include "jutils/jlog.h"
 #include "vulkanObjects/VulkanSwapchain.h"
 #include "vulkanObjects/VulkanBuffer.h"
 #include "Image_Vulkan.h"

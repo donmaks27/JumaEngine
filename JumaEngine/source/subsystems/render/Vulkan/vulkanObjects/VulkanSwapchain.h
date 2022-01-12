@@ -10,10 +10,10 @@
 
 #include <vulkan/vulkan_core.h>
 
-#include "utils/jshared_ptr.h"
-#include "utils/jarray.h"
-#include "utils/jdelegate_multicast.h"
-#include "utils/math/vector2.h"
+#include "jutils/jshared_ptr.h"
+#include "jutils/jarray.h"
+#include "jutils/jdelegate_multicast.h"
+#include "jutils/math/vector2.h"
 #include "subsystems/render/RenderOptions.h"
 
 namespace JumaEngine

@@ -4,9 +4,6 @@
     <Filter Include="JumaEngine">
       <UniqueIdentifier>{d948da5d-ec6e-4e71-96d8-8ccdc5e4738e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="JumaEngine\utils">
-      <UniqueIdentifier>{21ac3b5a-0748-4d09-b412-ea15d570b926}</UniqueIdentifier>
-    </Filter>
     <Filter Include="JumaEngine\engine">
       <UniqueIdentifier>{d24a0c7e-968b-45c2-b9c3-b7d211e73081}</UniqueIdentifier>
     </Filter>
@@ -25,21 +22,21 @@
     <Filter Include="JumaEngine\subsystems\render\Vulkan\vulkanObjects">
       <UniqueIdentifier>{37b06750-e10c-49d8-a59e-f0ae75d4fbf4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="JumaEngine\utils\math">
-      <UniqueIdentifier>{7adb6569-e86d-4c32-8fe1-6b37b5c33289}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="JumaEngine\utils\math\base_types">
-      <UniqueIdentifier>{cb52ac5d-5ec4-4a5e-8cdb-7486298f7312}</UniqueIdentifier>
-    </Filter>
     <Filter Include="JumaEngine\subsystems\render\vertexBuffer">
       <UniqueIdentifier>{c4153fca-51e8-4ed8-b431-8a0d73434265}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="JumaEngine\jutils">
+      <UniqueIdentifier>{e7e4a46c-0ae6-41f8-aeb5-ce0143262998}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="JumaEngine\jutils\math">
+      <UniqueIdentifier>{81e06290-8df5-4a70-94fc-5bdfb9956da9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="JumaEngine\jutils\math\base_types">
+      <UniqueIdentifier>{82302be5-d44d-4373-b632-a9e39b3df690}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="source\utils\jlog.cpp">
-      <Filter>JumaEngine\utils</Filter>
-    </ClCompile>
     <ClCompile Include="source\subsystems\render\RenderSubsystem.cpp">
       <Filter>JumaEngine\subsystems\render</Filter>
     </ClCompile>
@@ -124,43 +121,19 @@
     <ClCompile Include="source\subsystems\render\vertexBuffer\VertexBuffer.cpp">
       <Filter>JumaEngine\subsystems\render\vertexBuffer</Filter>
     </ClCompile>
+    <ClCompile Include="source\jutils\jlog.cpp">
+      <Filter>JumaEngine\jutils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\common_header.h">
       <Filter>JumaEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\jarray.h">
-      <Filter>JumaEngine\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\jstring.h">
-      <Filter>JumaEngine\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\jmap.h">
-      <Filter>JumaEngine\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\jset.h">
-      <Filter>JumaEngine\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\jmutex_shared.h">
-      <Filter>JumaEngine\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\jdelegate.h">
-      <Filter>JumaEngine\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\jdelegate_multicast.h">
-      <Filter>JumaEngine\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\jlog.h">
-      <Filter>JumaEngine\utils</Filter>
     </ClInclude>
     <ClInclude Include="source\engine\EngineContextObject.h">
       <Filter>JumaEngine\engine</Filter>
     </ClInclude>
     <ClInclude Include="source\engine\EngineObjectClass.h">
       <Filter>JumaEngine\engine</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\type_checks.h">
-      <Filter>JumaEngine\utils</Filter>
     </ClInclude>
     <ClInclude Include="source\subsystems\render\RenderSubsystem.h">
       <Filter>JumaEngine\subsystems\render</Filter>
@@ -170,9 +143,6 @@
     </ClInclude>
     <ClInclude Include="source\subsystems\render\RenderInterface.h">
       <Filter>JumaEngine\subsystems\render</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\jshared_ptr.h">
-      <Filter>JumaEngine\utils</Filter>
     </ClInclude>
     <ClInclude Include="source\subsystems\render\OpenGL\RenderSubsystem_OpenGL.h">
       <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
@@ -294,105 +264,6 @@
     <ClInclude Include="source\subsystems\render\Vulkan\RenderPrimitive_Vulkan.h">
       <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="source\utils\type_defines.h">
-      <Filter>JumaEngine\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\math\jmath.h">
-      <Filter>JumaEngine\utils\math</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\math\jmath_matrix.h">
-      <Filter>JumaEngine\utils\math</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\math\jmath_vector.h">
-      <Filter>JumaEngine\utils\math</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\math\matrix2.h">
-      <Filter>JumaEngine\utils\math</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\math\matrix2x3.h">
-      <Filter>JumaEngine\utils\math</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\math\matrix2x4.h">
-      <Filter>JumaEngine\utils\math</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\math\matrix3.h">
-      <Filter>JumaEngine\utils\math</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\math\matrix3x2.h">
-      <Filter>JumaEngine\utils\math</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\math\matrix3x4.h">
-      <Filter>JumaEngine\utils\math</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\math\matrix4.h">
-      <Filter>JumaEngine\utils\math</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\math\matrix4x2.h">
-      <Filter>JumaEngine\utils\math</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\math\matrix4x3.h">
-      <Filter>JumaEngine\utils\math</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\math\vector2.h">
-      <Filter>JumaEngine\utils\math</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\math\vector3.h">
-      <Filter>JumaEngine\utils\math</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\math\vector4.h">
-      <Filter>JumaEngine\utils\math</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\math\base_types\matrix_base.h">
-      <Filter>JumaEngine\utils\math\base_types</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\math\base_types\matrix_operations.h">
-      <Filter>JumaEngine\utils\math\base_types</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\math\base_types\matrix2x2_base.h">
-      <Filter>JumaEngine\utils\math\base_types</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\math\base_types\matrix2x3_base.h">
-      <Filter>JumaEngine\utils\math\base_types</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\math\base_types\matrix2x4_base.h">
-      <Filter>JumaEngine\utils\math\base_types</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\math\base_types\matrix3x2_base.h">
-      <Filter>JumaEngine\utils\math\base_types</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\math\base_types\matrix3x3_base.h">
-      <Filter>JumaEngine\utils\math\base_types</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\math\base_types\matrix3x4_base.h">
-      <Filter>JumaEngine\utils\math\base_types</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\math\base_types\matrix4x2_base.h">
-      <Filter>JumaEngine\utils\math\base_types</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\math\base_types\matrix4x3_base.h">
-      <Filter>JumaEngine\utils\math\base_types</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\math\base_types\matrix4x4_base.h">
-      <Filter>JumaEngine\utils\math\base_types</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\math\base_types\vector_base.h">
-      <Filter>JumaEngine\utils\math\base_types</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\math\base_types\vector2_base.h">
-      <Filter>JumaEngine\utils\math\base_types</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\math\base_types\vector3_base.h">
-      <Filter>JumaEngine\utils\math\base_types</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\math\base_types\vector4_base.h">
-      <Filter>JumaEngine\utils\math\base_types</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\jlist.h">
-      <Filter>JumaEngine\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="source\utils\juid.h">
-      <Filter>JumaEngine\utils</Filter>
-    </ClInclude>
     <ClInclude Include="source\subsystems\render\vertexBuffer\Vertex2D.h">
       <Filter>JumaEngine\subsystems\render\vertexBuffer</Filter>
     </ClInclude>
@@ -419,6 +290,144 @@
     </ClInclude>
     <ClInclude Include="source\subsystems\render\vertexBuffer\VertexBase.h">
       <Filter>JumaEngine\subsystems\render\vertexBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\jarray.h">
+      <Filter>JumaEngine\jutils</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\jdelegate.h">
+      <Filter>JumaEngine\jutils</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\jdelegate_multicast.h">
+      <Filter>JumaEngine\jutils</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\jheap_allocator.h">
+      <Filter>JumaEngine\jutils</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\jlist.h">
+      <Filter>JumaEngine\jutils</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\jlog.h">
+      <Filter>JumaEngine\jutils</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\jmap.h">
+      <Filter>JumaEngine\jutils</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\jpool_allocator.h">
+      <Filter>JumaEngine\jutils</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\jset.h">
+      <Filter>JumaEngine\jutils</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\jstack_allocator.h">
+      <Filter>JumaEngine\jutils</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\jstring.h">
+      <Filter>JumaEngine\jutils</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\juid.h">
+      <Filter>JumaEngine\jutils</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\type_checks.h">
+      <Filter>JumaEngine\jutils</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\type_defines.h">
+      <Filter>JumaEngine\jutils</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\math\jhash.h">
+      <Filter>JumaEngine\jutils\math</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\math\jmath.h">
+      <Filter>JumaEngine\jutils\math</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\math\jmath_matrix.h">
+      <Filter>JumaEngine\jutils\math</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\math\jmath_vector.h">
+      <Filter>JumaEngine\jutils\math</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\math\matrix2.h">
+      <Filter>JumaEngine\jutils\math</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\math\matrix2x3.h">
+      <Filter>JumaEngine\jutils\math</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\math\matrix2x4.h">
+      <Filter>JumaEngine\jutils\math</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\math\matrix3.h">
+      <Filter>JumaEngine\jutils\math</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\math\matrix3x2.h">
+      <Filter>JumaEngine\jutils\math</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\math\matrix3x4.h">
+      <Filter>JumaEngine\jutils\math</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\math\matrix4.h">
+      <Filter>JumaEngine\jutils\math</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\math\matrix4x2.h">
+      <Filter>JumaEngine\jutils\math</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\math\matrix4x3.h">
+      <Filter>JumaEngine\jutils\math</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\math\vector2.h">
+      <Filter>JumaEngine\jutils\math</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\math\vector3.h">
+      <Filter>JumaEngine\jutils\math</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\math\vector4.h">
+      <Filter>JumaEngine\jutils\math</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\math\base_types\matrix_base.h">
+      <Filter>JumaEngine\jutils\math\base_types</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\math\base_types\matrix_operations.h">
+      <Filter>JumaEngine\jutils\math\base_types</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\math\base_types\matrix2x2_base.h">
+      <Filter>JumaEngine\jutils\math\base_types</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\math\base_types\matrix2x3_base.h">
+      <Filter>JumaEngine\jutils\math\base_types</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\math\base_types\matrix2x4_base.h">
+      <Filter>JumaEngine\jutils\math\base_types</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\math\base_types\matrix3x2_base.h">
+      <Filter>JumaEngine\jutils\math\base_types</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\math\base_types\matrix3x3_base.h">
+      <Filter>JumaEngine\jutils\math\base_types</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\math\base_types\matrix3x4_base.h">
+      <Filter>JumaEngine\jutils\math\base_types</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\math\base_types\matrix4x2_base.h">
+      <Filter>JumaEngine\jutils\math\base_types</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\math\base_types\matrix4x3_base.h">
+      <Filter>JumaEngine\jutils\math\base_types</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\math\base_types\matrix4x4_base.h">
+      <Filter>JumaEngine\jutils\math\base_types</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\math\base_types\vector_base.h">
+      <Filter>JumaEngine\jutils\math\base_types</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\math\base_types\vector2_base.h">
+      <Filter>JumaEngine\jutils\math\base_types</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\math\base_types\vector3_base.h">
+      <Filter>JumaEngine\jutils\math\base_types</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\math\base_types\vector4_base.h">
+      <Filter>JumaEngine\jutils\math\base_types</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\jshared_ptr.h">
+      <Filter>JumaEngine\jutils</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

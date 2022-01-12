@@ -3,7 +3,7 @@
 #pragma once
 
 #include "common_header.h"
-#include "utils/jarray.h"
+#include "jutils/jarray.h"
 
 namespace JumaEngine
 {

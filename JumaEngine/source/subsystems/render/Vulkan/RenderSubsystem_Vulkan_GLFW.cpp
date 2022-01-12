@@ -4,7 +4,7 @@
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN) && defined(JUMAENGINE_INCLUDE_WINDOW_LIB_GLFW)
 
-#include "utils/jlog.h"
+#include "jutils/jlog.h"
 #include "WindowDescription_Vulkan_GLFW.h"
 
 namespace JumaEngine

@@ -4,8 +4,8 @@
 
 #include "common_header.h"
 
-#include "utils/jdelegate_multicast.h"
-#include "utils/math/vector2.h"
+#include "jutils/jdelegate_multicast.h"
+#include "jutils/math/vector2.h"
 
 namespace JumaEngine
 {

@@ -13,8 +13,8 @@
 #include "vma_lib.h"
 
 #include "vulkanObjects/VulkanQueueType.h"
-#include "utils/jset.h"
-#include "utils/jshared_ptr.h"
+#include "jutils/jset.h"
+#include "jutils/jshared_ptr.h"
 
 namespace JumaEngine
 {

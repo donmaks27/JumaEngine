@@ -5,7 +5,7 @@
 #include "common_header.h"
 #include "engine/EngineContextObject.h"
 
-#include "utils/math/vector2.h"
+#include "jutils/math/vector2.h"
 #include "ImageFormat.h"
 
 namespace JumaEngine

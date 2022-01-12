@@ -11,8 +11,8 @@
 #include "vma_lib.h"
 #include <vulkan/vulkan_core.h>
 
-#include "utils/jarray.h"
-#include "utils/jmap.h"
+#include "jutils/jarray.h"
+#include "jutils/jmap.h"
 #include "vulkanObjects/VulkanQueueType.h"
 #include "VulkanContextObject.h"
 

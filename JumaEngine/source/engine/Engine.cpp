@@ -11,7 +11,7 @@
 #include "subsystems/render/vertexBuffer/VertexBufferData.h"
 #include "subsystems/render/Vulkan/Image_Vulkan.h"
 #include "subsystems/render/Vulkan/RenderSubsystem_Vulkan_GLFW.h"
-#include "utils/jlog.h"
+#include "jutils/jlog.h"
 
 namespace JumaEngine
 {

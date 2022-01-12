@@ -8,24 +8,24 @@
     #define JDEBUG 0
 #endif
 
-#if JDEBUG && _WIN32
+/*#if JDEBUG && _WIN32
 
 #include <crtdbg.h>
     #define debug_new new(_NORMAL_BLOCK, __FILE__, __LINE__)
 #define new debug_new
 
-#endif
+#endif*/
 
 
 
 #include "enabled_engine_parts.h"
 
-#include "utils/type_defines.h"
+#include "jutils/type_defines.h"
 
 #if !JDEBUG
     #define JUTILS_LOG_DISABLED
 #endif
-#include "utils/jlog.h"
+#include "jutils/jlog.h"
 #define JUMA_LOG(type, message) JUTILS_LOG_WRITE(type, message)
 #define JUMA_LOG_CUSTOM(type, message) JUTILS_LOG_WRITE_CUSTOM(type, message)
 #define JUMA_LOG_EMPTY(type, message) JUTILS_LOG_WRITE_EMPTY(type, message)

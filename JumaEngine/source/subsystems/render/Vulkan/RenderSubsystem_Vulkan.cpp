@@ -6,8 +6,8 @@
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
-#include "utils/jlog.h"
-#include "utils/jset.h"
+#include "jutils/jlog.h"
+#include "jutils/jset.h"
 #include "WindowDescription_Vulkan.h"
 #include "vulkanObjects/VulkanQueue.h"
 #include "vulkanObjects/VulkanCommandPool.h"

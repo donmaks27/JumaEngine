@@ -10,7 +10,7 @@
 
 #include <vulkan/vulkan_core.h>
 
-#include "utils/jdelegate_multicast.h"
+#include "jutils/jdelegate_multicast.h"
 
 namespace JumaEngine
 {

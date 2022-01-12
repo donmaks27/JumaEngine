@@ -6,8 +6,8 @@
 #include "engine/EngineContextObject.h"
 
 #include "ShaderUniform.h"
-#include "utils/jmap.h"
-#include "utils/jdelegate_multicast.h"
+#include "jutils/jmap.h"
+#include "jutils/jdelegate_multicast.h"
 
 namespace JumaEngine
 {

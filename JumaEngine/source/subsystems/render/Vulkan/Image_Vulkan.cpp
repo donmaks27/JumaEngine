@@ -4,7 +4,7 @@
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
-#include "utils/jlog.h"
+#include "jutils/jlog.h"
 #include "RenderSubsystem_Vulkan.h"
 #include "vulkanObjects/VulkanBuffer.h"
 #include "vulkanObjects/VulkanCommandBuffer.h"

@@ -1,7 +1,7 @@
 ﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
 
 #include "RenderPrimitive.h"
-#include "utils/jlog.h"
+#include "jutils/jlog.h"
 
 namespace JumaEngine
 {

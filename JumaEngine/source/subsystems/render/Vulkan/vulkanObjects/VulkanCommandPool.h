@@ -11,8 +11,8 @@
 #include <vulkan/vulkan_core.h>
 
 #include "VulkanQueueType.h"
-#include "utils/jshared_ptr.h"
-#include "utils/jarray.h"
+#include "jutils/jshared_ptr.h"
+#include "jutils/jarray.h"
 
 namespace JumaEngine
 {

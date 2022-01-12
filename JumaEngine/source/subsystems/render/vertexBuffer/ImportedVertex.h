@@ -3,9 +3,9 @@
 #pragma once
 
 #include "common_header.h"
-#include "utils/jarray.h"
-#include "utils/math/vector2.h"
-#include "utils/math/vector3.h"
+#include "jutils/jarray.h"
+#include "jutils/math/vector2.h"
+#include "jutils/math/vector3.h"
 
 namespace JumaEngine
 {

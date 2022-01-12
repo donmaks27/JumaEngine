@@ -6,8 +6,9 @@
 
 #include <fstream>
 #include <GL/glew.h>
-#include "utils/jarray.h"
-#include "utils/jlog.h"
+
+#include "jutils/jarray.h"
+#include "jutils/jlog.h"
 
 namespace JumaEngine
 {

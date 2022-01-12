@@ -7,7 +7,7 @@
 #include "subsystems/render/Vulkan/RenderSubsystem_Vulkan.h"
 #include "subsystems/render/Vulkan/WindowDescription_Vulkan.h"
 #include "subsystems/render/Vulkan/Image_Vulkan.h"
-#include "utils/jlog.h"
+#include "jutils/jlog.h"
 #include "VulkanSwapchainFramebuffer.h"
 #include "subsystems/render/Vulkan/RenderOptionsData_Vulkan.h"
 #include "VulkanCommandBuffer.h"

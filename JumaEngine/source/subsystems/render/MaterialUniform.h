@@ -5,8 +5,8 @@
 #include "common_header.h"
 
 #include "ShaderUniform.h"
-#include "utils/math/matrix4.h"
-#include "utils/jshared_ptr.h"
+#include "jutils/math/matrix4.h"
+#include "jutils/jshared_ptr.h"
 
 namespace JumaEngine
 {

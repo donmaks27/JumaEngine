@@ -5,8 +5,7 @@
 #include "common_header.h"
 #include "EngineContextObject.h"
 #include "subsystems/render/RenderInterface.h"
-#include "utils/jshared_ptr.h"
-#include <thread>
+#include "jutils/jshared_ptr.h"
 
 namespace JumaEngine
 {

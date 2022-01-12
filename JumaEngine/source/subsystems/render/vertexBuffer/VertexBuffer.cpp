@@ -2,7 +2,7 @@
 
 #include "VertexBuffer.h"
 #include "VertexBufferData.h"
-#include "utils/jlog.h"
+#include "jutils/jlog.h"
 
 namespace JumaEngine
 {
