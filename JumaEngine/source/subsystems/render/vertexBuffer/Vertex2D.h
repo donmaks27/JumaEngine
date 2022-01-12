@@ -3,7 +3,7 @@
 #pragma once
 
 #include "common_header.h"
-#include "VertexBufferData.h"
+#include "VertexBase.h"
 
 namespace JumaEngine
 {

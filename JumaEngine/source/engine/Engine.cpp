@@ -8,6 +8,7 @@
 #include "subsystems/render/Shader.h"
 #include "subsystems/render/vertexBuffer/VertexBuffer.h"
 #include "subsystems/render/OpenGL/RenderSubsystem_OpenGL_GLFW.h"
+#include "subsystems/render/vertexBuffer/VertexBufferData.h"
 #include "subsystems/render/Vulkan/Image_Vulkan.h"
 #include "subsystems/render/Vulkan/RenderSubsystem_Vulkan_GLFW.h"
 #include "utils/jlog.h"
