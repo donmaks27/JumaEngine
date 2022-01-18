@@ -429,5 +429,8 @@
     <ClInclude Include="source\jutils\jshared_ptr.h">
       <Filter>JumaEngine\jutils</Filter>
     </ClInclude>
+    <ClInclude Include="source\jutils\jtree_red_black.h">
+      <Filter>JumaEngine\jutils</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

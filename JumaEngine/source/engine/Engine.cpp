@@ -13,6 +13,8 @@
 #include "subsystems/render/Vulkan/RenderSubsystem_Vulkan_GLFW.h"
 #include "jutils/jlog.h"
 
+#include <chrono>
+
 namespace JumaEngine
 {
     EngineContextObject* Engine::createObject(const EngineContextObject::ClassType* objectClass)

@@ -139,6 +139,7 @@
     <ClInclude Include="source\jutils\jshared_ptr.h" />
     <ClInclude Include="source\jutils\jstack_allocator.h" />
     <ClInclude Include="source\jutils\jstring.h" />
+    <ClInclude Include="source\jutils\jtree_red_black.h" />
     <ClInclude Include="source\jutils\juid.h" />
     <ClInclude Include="source\jutils\math\base_types\matrix2x2_base.h" />
     <ClInclude Include="source\jutils\math\base_types\matrix2x3_base.h" />
