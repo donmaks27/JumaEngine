@@ -71,7 +71,7 @@ namespace JumaEngine
         jarray<VkDescriptorSetLayoutBinding> layoutBindings;
         for (const auto& uniform : uniforms)
         {
-            const ShaderUniform& shaderUniform = uniform.second;
+            const ShaderUniform& shaderUniform = uniform.value;
 
             VkDescriptorSetLayoutBinding layoutBinding{};
             layoutBinding.binding = shaderUniform.location;
@@ -151,7 +151,7 @@ namespace JumaEngine
         }
         for (const auto& shaderModule : m_ShaderModules)
         {
-            vkDestroyShaderModule(device, shaderModule.second, nullptr);
+            vkDestroyShaderModule(device, shaderModule.value, nullptr);
         }
     }
 
@@ -167,9 +167,9 @@ namespace JumaEngine
         {
             VkPipelineShaderStageCreateInfo& vertShaderStageInfo = result.addDefault();
             vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-            vertShaderStageInfo.module = shaderStageAndModule.second;
+            vertShaderStageInfo.module = shaderStageAndModule.value;
             vertShaderStageInfo.pName = "main";
-            switch (shaderStageAndModule.first)
+            switch (shaderStageAndModule.key)
             {
             case ShaderStage::Vertex: vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT; break;
             case ShaderStage::Geometry: vertShaderStageInfo.stage = VK_SHADER_STAGE_GEOMETRY_BIT; break;

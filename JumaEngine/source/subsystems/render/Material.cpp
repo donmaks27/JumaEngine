@@ -74,10 +74,10 @@ namespace JumaEngine
     {
         for (const auto& nameAndShaderUniform : shader->getUniforms())
         {
-            MaterialUniform* uniform = MaterialUniformActions::create(nameAndShaderUniform.second.type);
+            MaterialUniform* uniform = MaterialUniformActions::create(nameAndShaderUniform.value.type);
             if (uniform != nullptr)
             {
-                m_UniformNames.add(nameAndShaderUniform.first);
+                m_UniformNames.add(nameAndShaderUniform.key);
                 m_UniformValues.add(uniform);
             }
         }

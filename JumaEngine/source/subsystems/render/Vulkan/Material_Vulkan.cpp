@@ -73,7 +73,7 @@ namespace JumaEngine
         for (const auto& uniformNameAndType : uniforms)
         {
             VkDescriptorType type;
-            switch (uniformNameAndType.second.type)
+            switch (uniformNameAndType.value.type)
             {
             case ShaderUniformType::Mat4: type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER; break;
             case ShaderUniformType::Image: type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER; break;
@@ -104,13 +104,13 @@ namespace JumaEngine
         const uint32 imageCount = getRenderSubsystem()->getSwapchain()->getImageCount();
         for (const auto& uniformNameAndType : shader->getUniforms())
         {
-            MaterialUniform* uniformValue = getUniformValue(uniformNameAndType.first);
+            MaterialUniform* uniformValue = getUniformValue(uniformNameAndType.key);
             if (uniformValue == nullptr)
             {
                 return false;
             }
 
-            switch (uniformNameAndType.second.type)
+            switch (uniformNameAndType.value.type)
             {
             case ShaderUniformType::Mat4:
                 createMaterialUniformData_Matrix4(uniformValue, imageCount);
@@ -217,13 +217,13 @@ namespace JumaEngine
             for (const auto& uniformNameAndType : uniforms)
             {
                 VkWriteDescriptorSet descriptorWrite{};
-                MaterialUniform* uniformValue = getUniformValue(uniformNameAndType.first);
+                MaterialUniform* uniformValue = getUniformValue(uniformNameAndType.key);
                 if (uniformValue == nullptr)
                 {
                     continue;
                 }
 
-                switch (uniformNameAndType.second.type)
+                switch (uniformNameAndType.value.type)
                 {
                 case ShaderUniformType::Mat4:
                     {
@@ -277,7 +277,7 @@ namespace JumaEngine
                 
                 descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
                 descriptorWrite.dstSet = m_DescriptorSets[imageIndex];
-                descriptorWrite.dstBinding = uniformNameAndType.second.location;
+                descriptorWrite.dstBinding = uniformNameAndType.value.location;
                 descriptorWrite.dstArrayElement = 0;
                 descriptorWrites.add(descriptorWrite);
             }
@@ -298,8 +298,8 @@ namespace JumaEngine
         {
             for (const auto& uniformNameAndType : shader->getUniforms())
             {
-                MaterialUniform* uniformValue = getUniformValue(uniformNameAndType.first);
-                switch (uniformNameAndType.second.type)
+                MaterialUniform* uniformValue = getUniformValue(uniformNameAndType.key);
+                switch (uniformNameAndType.value.type)
                 {
                 case ShaderUniformType::Mat4:
                     delete static_cast<MaterialUniformData_Vulkan_Buffer*>(uniformValue->data);

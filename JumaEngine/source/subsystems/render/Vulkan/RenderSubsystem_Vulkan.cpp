@@ -304,7 +304,7 @@ namespace JumaEngine
         jset<uint32> uniqueQueueFamilies;
         for (const auto& queueTypeAndIndex : m_QueueFamilyIndices)
         {
-            uniqueQueueFamilies.add(queueTypeAndIndex.second);
+            uniqueQueueFamilies.add(queueTypeAndIndex.value);
         }
 
         float queuePriority = 1.0f;

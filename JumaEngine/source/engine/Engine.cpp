@@ -97,7 +97,7 @@ namespace JumaEngine
         jshared_ptr<Shader> shader = m_RenderSubsystem->createShader();
         //shader->init(JSTR("content/shaders/ui"));
         shader->init(JSTR("content/shaders/ui_texture"), {
-            { JSTR("uTexture"), { 0, ShaderUniformType::Image, { ShaderStage::Fragment } } }
+            { JSTR("uTexture"), ShaderUniform{ 0, ShaderUniformType::Image, { ShaderStage::Fragment } } }
         });
         jshared_ptr<Material> material = m_RenderSubsystem->createMaterial();
         material->init(shader);

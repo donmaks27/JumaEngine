@@ -46,9 +46,9 @@ namespace JumaEngine
         const jmap<jstring, ShaderUniform>& uniforms = getShader()->getUniforms();
         for (const auto& nameAndUniform : uniforms)
         {
-            const jstring& name = nameAndUniform.first;
-            const uint32& location = nameAndUniform.second.location;
-            switch (nameAndUniform.second.type)
+            const jstring& name = nameAndUniform.key;
+            const uint32& location = nameAndUniform.value.location;
+            switch (nameAndUniform.value.type)
             {
             case ShaderUniformType::Mat4:
                 {
