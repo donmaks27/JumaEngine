@@ -333,18 +333,6 @@
     <ClInclude Include="source\jutils\type_defines.h">
       <Filter>JumaEngine\jutils</Filter>
     </ClInclude>
-    <ClInclude Include="source\jutils\math\jhash.h">
-      <Filter>JumaEngine\jutils\math</Filter>
-    </ClInclude>
-    <ClInclude Include="source\jutils\math\jmath.h">
-      <Filter>JumaEngine\jutils\math</Filter>
-    </ClInclude>
-    <ClInclude Include="source\jutils\math\jmath_matrix.h">
-      <Filter>JumaEngine\jutils\math</Filter>
-    </ClInclude>
-    <ClInclude Include="source\jutils\math\jmath_vector.h">
-      <Filter>JumaEngine\jutils\math</Filter>
-    </ClInclude>
     <ClInclude Include="source\jutils\math\matrix2.h">
       <Filter>JumaEngine\jutils\math</Filter>
     </ClInclude>
@@ -430,6 +418,30 @@
       <Filter>JumaEngine\jutils</Filter>
     </ClInclude>
     <ClInclude Include="source\jutils\jtree_red_black.h">
+      <Filter>JumaEngine\jutils</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\math\math_vector.h">
+      <Filter>JumaEngine\jutils\math</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\math\math_matrix.h">
+      <Filter>JumaEngine\jutils\math</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\math\math.h">
+      <Filter>JumaEngine\jutils\math</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\math\hash.h">
+      <Filter>JumaEngine\jutils\math</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\jhash_table.h">
+      <Filter>JumaEngine\jutils</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\jmap_hash.h">
+      <Filter>JumaEngine\jutils</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\jmap_pair.h">
+      <Filter>JumaEngine\jutils</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\jset_hash.h">
       <Filter>JumaEngine\jutils</Filter>
     </ClInclude>
   </ItemGroup>
