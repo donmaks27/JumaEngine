@@ -131,8 +131,11 @@
     <ClInclude Include="source\jutils\jdelegate.h" />
     <ClInclude Include="source\jutils\jdelegate_multicast.h" />
     <ClInclude Include="source\jutils\jhash_table.h" />
+    <ClInclude Include="source\jutils\jhash_table_chain.h" />
+    <ClInclude Include="source\jutils\jhash_table_open.h" />
     <ClInclude Include="source\jutils\jheap_allocator.h" />
     <ClInclude Include="source\jutils\jlist.h" />
+    <ClInclude Include="source\jutils\jlist_allocator.h" />
     <ClInclude Include="source\jutils\jlog.h" />
     <ClInclude Include="source\jutils\jmap.h" />
     <ClInclude Include="source\jutils\jmap_hash.h" />
@@ -143,6 +146,8 @@
     <ClInclude Include="source\jutils\jshared_ptr.h" />
     <ClInclude Include="source\jutils\jstack_allocator.h" />
     <ClInclude Include="source\jutils\jstring.h" />
+    <ClInclude Include="source\jutils\jstringID.h" />
+    <ClInclude Include="source\jutils\jstring_hash_table.h" />
     <ClInclude Include="source\jutils\jtree_red_black.h" />
     <ClInclude Include="source\jutils\juid.h" />
     <ClInclude Include="source\jutils\math\base_types\matrix2x2_base.h" />

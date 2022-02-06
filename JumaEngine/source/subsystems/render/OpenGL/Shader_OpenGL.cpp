@@ -73,7 +73,7 @@ namespace JumaEngine
         while (!file.eof())
         {
             jstring line;
-            getline(file, line);
+            readStreamLine(file, line);
             line += '\n';
             outShaderText.add(line);
         }
