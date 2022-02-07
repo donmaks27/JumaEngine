@@ -3,7 +3,7 @@
 #pragma once
 
 #include "common_header.h"
-#include "VertexBase.h"
+#include "VertexInfo.h"
 
 namespace JumaEngine
 {
@@ -13,7 +13,7 @@ namespace JumaEngine
     };
 
     template<>
-    struct VertexTypeDescription<Vertex2D> : std::true_type
+    struct VertexInfo<Vertex2D> : std::true_type
     {
         JUMAENGINE_VERTEX_TYPE(Vertex2D)
 

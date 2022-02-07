@@ -13,7 +13,7 @@ namespace JumaEngine
     };
 
     template<>
-    struct VertexTypeDescription<Vertex3D> : std::true_type
+    struct VertexInfo<Vertex3D> : std::true_type
     {
         JUMAENGINE_VERTEX_TYPE(Vertex3D)
 

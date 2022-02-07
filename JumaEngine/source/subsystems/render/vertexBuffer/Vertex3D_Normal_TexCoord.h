@@ -15,7 +15,7 @@ namespace JumaEngine
     };
 
     template<>
-    struct VertexTypeDescription<Vertex3D_Normal_TexCoord> : std::true_type
+    struct VertexInfo<Vertex3D_Normal_TexCoord> : std::true_type
     {
         JUMAENGINE_VERTEX_TYPE(Vertex3D_Normal_TexCoord)
 

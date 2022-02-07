@@ -18,10 +18,8 @@ namespace JumaEngine
 
     struct VertexComponentDescription
     {
-        int32 componentID = -1;
-        VertexComponentType componentType = VertexComponentType::None;
-        size_t componentOffset = 0;
-
-        bool isValid() const { return (componentID >= 0) && (componentType != VertexComponentType::None); }
+        int32 ID = -1;
+        VertexComponentType type = VertexComponentType::None;
+        uint32 offset = 0;
     };
 }

@@ -19,6 +19,7 @@
 #include "Material_Vulkan.h"
 #include "RenderPrimitive_Vulkan.h"
 #include "VertexBuffer_Vulkan.h"
+#include "subsystems/render/vertexBuffer/VertexBufferData.h"
 
 namespace JumaEngine
 {
@@ -466,6 +467,55 @@ namespace JumaEngine
     {
         Engine* engine = getOwnerEngine();
         return registerVulkanObject(engine != nullptr ? engine->createObject<RenderPrimitive_Vulkan>() : nullptr);
+    }
+
+    VertexDescription_Vulkan::VertexDescription_Vulkan(const uint32 vertexSize, const jarray<VertexComponentDescription>& vertexComponents)
+    {
+        binding.binding = 0;
+        binding.stride = vertexSize;
+        binding.inputRate = VkVertexInputRate::VK_VERTEX_INPUT_RATE_VERTEX;
+
+        for (int32 index = 0, componentsCount = vertexComponents.getSize(); index < componentsCount; index++)
+        {
+            const VertexComponentDescription& componentDescriprion = vertexComponents[index];
+            VkFormat format = VkFormat::VK_FORMAT_UNDEFINED;
+            switch (componentDescriprion.type)
+            {
+            case VertexComponentType::Float:
+                format = VK_FORMAT_R32_SFLOAT;
+                break;
+            case VertexComponentType::Vec2:
+                format = VK_FORMAT_R32G32_SFLOAT;
+                break;
+            case VertexComponentType::Vec3:
+                format = VK_FORMAT_R32G32B32_SFLOAT;
+                break;
+            case VertexComponentType::Vec4:
+                format = VK_FORMAT_R32G32B32A32_SFLOAT;
+                break;
+
+            default: continue;
+            }
+
+            VkVertexInputAttributeDescription attribute;
+            attribute.location = componentDescriprion.ID;
+            attribute.binding = binding.binding;
+            attribute.offset = componentDescriprion.offset;
+            attribute.format = format;
+            attributes.add(attribute);
+        }
+    }
+
+    void RenderSubsystem_Vulkan::cacheVertexDescription(const VertexBufferDataBase* vertexBufferData)
+    {
+        if (vertexBufferData != nullptr)
+        {
+            VertexDescription_Vulkan& description = m_RegisteredVertexTypes[vertexBufferData->getVertexName()];
+            if (description.attributes.isEmpty())
+            {
+                description = VertexDescription_Vulkan(vertexBufferData->getVertexSize(), vertexBufferData->getVertexComponents());
+            }
+        }
     }
 }
 

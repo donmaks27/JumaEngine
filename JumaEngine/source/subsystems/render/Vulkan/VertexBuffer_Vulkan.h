@@ -9,9 +9,8 @@
 #include "subsystems/render/vertexBuffer/VertexBuffer.h"
 #include "VulkanContextObject.h"
 
-#include <vulkan/vulkan_core.h>
-
 #include "jutils/jshared_ptr.h"
+#include "jutils/jstringID.h"
 
 namespace JumaEngine
 {
@@ -29,8 +28,7 @@ namespace JumaEngine
 
         void render(const RenderOptionsData_Vulkan& data);
 
-        const jarray<VkVertexInputBindingDescription>& getBindingDescriptions() const { return m_BindingDescriptions; }
-        const jarray<VkVertexInputAttributeDescription>& getAttributeDescriptions() const { return m_AttributeDescriptions; }
+        const jstringID& getVertexName() const { return m_VertexName; }
 
     protected:
 
@@ -42,8 +40,7 @@ namespace JumaEngine
         jshared_ptr<VulkanBuffer> m_VertexBuffer = nullptr;
         jshared_ptr<VulkanBuffer> m_IndexBuffer = nullptr;
 
-        jarray<VkVertexInputBindingDescription> m_BindingDescriptions;
-        jarray<VkVertexInputAttributeDescription> m_AttributeDescriptions;
+        jstringID m_VertexName = jstringID_NONE;
 
 
         void clearVulkanBuffers();

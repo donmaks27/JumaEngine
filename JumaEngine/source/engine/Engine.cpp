@@ -12,6 +12,7 @@
 #include "subsystems/render/Vulkan/Image_Vulkan.h"
 #include "subsystems/render/Vulkan/RenderSubsystem_Vulkan_GLFW.h"
 #include "jutils/jlog.h"
+#include "jutils/jstringID.h"
 
 #include <chrono>
 
@@ -83,6 +84,8 @@ namespace JumaEngine
     }
     bool Engine::initEngine()
     {
+        jstring_hash_table::CreateInstance();
+
         m_RenderSubsystem = createObject<RenderSubsystem_Vulkan_GLFW>();
         if (m_RenderSubsystem == nullptr)
         {
@@ -145,6 +148,8 @@ namespace JumaEngine
         m_RenderSubsystem->clear();
         delete m_RenderSubsystem;
         m_RenderSubsystem = nullptr;
+
+        jstring_hash_table::ClearInstance();
     }
 
     void Engine::render(const RenderOptions& options)

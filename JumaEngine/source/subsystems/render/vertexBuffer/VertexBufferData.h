@@ -3,7 +3,7 @@
 #pragma once
 
 #include "common_header.h"
-#include "VertexBase.h"
+#include "VertexInfo.h"
 
 namespace JumaEngine
 {
@@ -13,6 +13,7 @@ namespace JumaEngine
         VertexBufferDataBase() = default;
         virtual ~VertexBufferDataBase() = default;
 
+        virtual const jstringID& getVertexName() const = 0;
         virtual uint32 getVertexSize() const = 0;
         virtual jarray<VertexComponentDescription> getVertexComponents() const = 0;
 
@@ -43,10 +44,11 @@ namespace JumaEngine
         virtual ~VertexBufferData() override = default;
 
         using VertexType = T;
-        using VertexDescription = VertexTypeDescription<VertexType>;
+        using VertexInfo = VertexInfo<VertexType>;
 
-        virtual uint32 getVertexSize() const override { return sizeof(VertexType); }
-        virtual jarray<VertexComponentDescription> getVertexComponents() const override { return VertexDescription::getVertexComponents(); }
+        virtual const jstringID& getVertexName() const override { return VertexInfo::getVertexName(); }
+        virtual uint32 getVertexSize() const override { return VertexInfo::getVertexSize(); }
+        virtual jarray<VertexComponentDescription> getVertexComponents() const override { return VertexInfo::getVertexComponents(); }
 
         virtual const void* getVertices() const override { return vertices.getData(); }
         virtual uint32 getVertexCount() const override { return static_cast<uint32>(vertices.getSize()); }
@@ -62,7 +64,7 @@ namespace JumaEngine
             vertices.resize(size);
             for (int32 index = 0; index < size; index++)
             {
-                VertexDescription::copyFromImportedVertex(vertices[index], buffer.vertices[index]);
+                VertexInfo::copyFromImportedVertex(vertices[index], buffer.vertices[index]);
             }
         }
 

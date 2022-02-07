@@ -54,49 +54,8 @@ namespace JumaEngine
             }
         }
 
-        const int32 vertexComponentCount = vertexComponents.getSize();
-        VkVertexInputBindingDescription& bindingDescription = m_BindingDescriptions.addDefault();
-        bindingDescription.binding = 0;
-        bindingDescription.stride = vertexSize;
-        bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-        for (int32 vertexComponentIndex = 0; vertexComponentIndex < vertexComponentCount; vertexComponentIndex++)
-        {
-            const VertexComponentDescription& componentDescriprion = vertexComponents[vertexComponentIndex];
-            if (!componentDescriprion.isValid())
-            {
-                continue;
-            }
-
-            switch (componentDescriprion.componentType)
-            {
-            case VertexComponentType::Float: 
-                m_AttributeDescriptions.add({ 
-                    static_cast<uint32>(componentDescriprion.componentID), bindingDescription.binding,
-                    VK_FORMAT_R32_SFLOAT, static_cast<uint32>(componentDescriprion.componentOffset)
-                });
-                break;
-            case VertexComponentType::Vec2: 
-                m_AttributeDescriptions.add({ 
-                    static_cast<uint32>(componentDescriprion.componentID), bindingDescription.binding,
-                    VK_FORMAT_R32G32_SFLOAT, static_cast<uint32>(componentDescriprion.componentOffset)
-                });
-                break;
-            case VertexComponentType::Vec3: 
-                m_AttributeDescriptions.add({ 
-                    static_cast<uint32>(componentDescriprion.componentID), bindingDescription.binding,
-                    VK_FORMAT_R32G32B32_SFLOAT, static_cast<uint32>(componentDescriprion.componentOffset)
-                });
-                break;
-            case VertexComponentType::Vec4: 
-                m_AttributeDescriptions.add({ 
-                    static_cast<uint32>(componentDescriprion.componentID), bindingDescription.binding,
-                    VK_FORMAT_R32G32B32A32_SFLOAT, static_cast<uint32>(componentDescriprion.componentOffset)
-                });
-                break;
-
-            default: ;
-            }
-        }
+        getRenderSubsystem()->cacheVertexDescription(data);
+        m_VertexName = data->getVertexName();
         return true;
     }
 
@@ -106,8 +65,7 @@ namespace JumaEngine
     }
     void VertexBuffer_Vulkan::clearVulkanBuffers()
     {
-        m_BindingDescriptions.clear();
-        m_AttributeDescriptions.clear();
+        m_VertexName = jstringID_NONE;
 
         m_VertexBuffer.reset();
         m_IndexBuffer.reset();

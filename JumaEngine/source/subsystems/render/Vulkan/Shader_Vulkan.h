@@ -24,7 +24,7 @@ namespace JumaEngine
         VkDescriptorSetLayout getDescriptorSetLayout() const { return m_DescriptorSetLayout; }
         VkPipelineLayout getPipelineLayout() const { return m_PipelineLayout; }
 
-        jarray<VkPipelineShaderStageCreateInfo> createPipelineStageInfos() const;
+        const jarray<VkPipelineShaderStageCreateInfo>& getPipelineStageInfos() const { return m_PipelineStageInfos; }
 
     protected:
 
@@ -36,12 +36,14 @@ namespace JumaEngine
         jmap<ShaderStage, VkShaderModule> m_ShaderModules;
         VkDescriptorSetLayout m_DescriptorSetLayout = nullptr;
         VkPipelineLayout m_PipelineLayout = nullptr;
+        jarray<VkPipelineShaderStageCreateInfo> m_PipelineStageInfos;
 
 
         void createShaderModules(const jstring& shaderName);
         void createShaderModule(const jstring& fileName, ShaderStage stage);
         bool createDescriptorSetLayout(const jmap<jstring, ShaderUniform>& uniforms);
         bool createPipelineLayout();
+        void createPipelineStageInfos();
 
         void clearVulkanData();
     };

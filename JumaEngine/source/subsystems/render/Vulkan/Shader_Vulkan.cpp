@@ -28,6 +28,7 @@ namespace JumaEngine
             clearVulkanData();
             return false;
         }
+        createPipelineStageInfos();
         return true;
     }
 
@@ -137,10 +138,29 @@ namespace JumaEngine
         return true;
     }
 
+    void Shader_Vulkan::createPipelineStageInfos()
+    {
+        for (auto& shaderStageAndModule : m_ShaderModules)
+        {
+            VkPipelineShaderStageCreateInfo& vertShaderStageInfo = m_PipelineStageInfos.addDefault();
+            vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+            vertShaderStageInfo.module = shaderStageAndModule.value;
+            vertShaderStageInfo.pName = "main";
+            switch (shaderStageAndModule.key)
+            {
+            case ShaderStage::Vertex: vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT; break;
+            case ShaderStage::Geometry: vertShaderStageInfo.stage = VK_SHADER_STAGE_GEOMETRY_BIT; break;
+            case ShaderStage::Fragment: vertShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT; break;
+            default: ;
+            }
+        }
+    }
+
     void Shader_Vulkan::clearVulkanData()
     {
         VkDevice device = getRenderSubsystem()->getDevice();
 
+        m_PipelineStageInfos.clear();
         if (m_DescriptorSetLayout != nullptr)
         {
             if (m_PipelineLayout != nullptr)
@@ -153,31 +173,6 @@ namespace JumaEngine
         {
             vkDestroyShaderModule(device, shaderModule.value, nullptr);
         }
-    }
-
-    jarray<VkPipelineShaderStageCreateInfo> Shader_Vulkan::createPipelineStageInfos() const
-    {
-        if (!isValid())
-        {
-            return {};
-        }
-
-        jarray<VkPipelineShaderStageCreateInfo> result;
-        for (auto& shaderStageAndModule : m_ShaderModules)
-        {
-            VkPipelineShaderStageCreateInfo& vertShaderStageInfo = result.addDefault();
-            vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-            vertShaderStageInfo.module = shaderStageAndModule.value;
-            vertShaderStageInfo.pName = "main";
-            switch (shaderStageAndModule.key)
-            {
-            case ShaderStage::Vertex: vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT; break;
-            case ShaderStage::Geometry: vertShaderStageInfo.stage = VK_SHADER_STAGE_GEOMETRY_BIT; break;
-            case ShaderStage::Fragment: vertShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT; break;
-            default: ;
-            }
-        }
-        return result;
     }
 }
 

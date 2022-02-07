@@ -13,14 +13,31 @@
 
 #include "jutils/jarray.h"
 #include "jutils/jmap.h"
+#include "jutils/jstringID.h"
 #include "vulkanObjects/VulkanQueueType.h"
 #include "VulkanContextObject.h"
 
 namespace JumaEngine
 {
+    class VertexBufferDataBase;
+    struct VertexComponentDescription;
     class VulkanSwapchain;
     class VulkanCommandPool;
     class VulkanQueue;
+
+    struct VertexDescription_Vulkan
+    {
+        VertexDescription_Vulkan() = default;
+        VertexDescription_Vulkan(uint32 vertexSize, const jarray<VertexComponentDescription>& vertexComponents);
+        VertexDescription_Vulkan(const VertexDescription_Vulkan&) = default;
+        VertexDescription_Vulkan(VertexDescription_Vulkan&&) noexcept = default;
+
+        VertexDescription_Vulkan& operator=(const VertexDescription_Vulkan&) = default;
+        VertexDescription_Vulkan& operator=(VertexDescription_Vulkan&&) noexcept = default;
+
+        VkVertexInputBindingDescription binding = VkVertexInputBindingDescription();
+        jarray<VkVertexInputAttributeDescription> attributes;
+    };
 
     class RenderSubsystem_Vulkan : public RenderSubsystem
     {
@@ -51,6 +68,9 @@ namespace JumaEngine
         virtual jshared_ptr<Material> createMaterial() override;
         virtual jshared_ptr<Image> createImage() override;
         virtual jshared_ptr<RenderPrimitive> createRenderPrimitive() override;
+
+        void cacheVertexDescription(const VertexBufferDataBase* vertexBufferData);
+        const VertexDescription_Vulkan* findVertexDescription(const jstringID& vertexName) const { return m_RegisteredVertexTypes.find(vertexName); }
         
     protected:
 
@@ -75,6 +95,8 @@ namespace JumaEngine
         jmap<uint32, jshared_ptr<VulkanQueue>> m_Queues;
         jmap<VulkanQueueType, jshared_ptr<VulkanCommandPool>> m_CommandPools;
         jshared_ptr<VulkanSwapchain> m_Swapchain = nullptr;
+
+        jmap<jstringID, VertexDescription_Vulkan> m_RegisteredVertexTypes;
 
 
         static VKAPI_ATTR VkBool32 VKAPI_CALL Vulkan_DebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, 

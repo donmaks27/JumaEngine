@@ -35,9 +35,15 @@ namespace JumaEngine
     }
     bool RenderPrimitive_Vulkan::createRenderPipeline(const jshared_ptr<VertexBuffer>& vertexBuffer, const jshared_ptr<Material>& material)
     {
-        const VertexBuffer_Vulkan* vertexBufferVulkan = dynamic_cast<const VertexBuffer_Vulkan*>(vertexBuffer.get());
-        const Shader_Vulkan* shaderVulkan = material != nullptr ? dynamic_cast<Shader_Vulkan*>(material->getShader().get()) : nullptr;
+        const VertexBuffer_Vulkan* vertexBufferVulkan = cast<VertexBuffer_Vulkan>(vertexBuffer.get());
+        const Shader_Vulkan* shaderVulkan = material != nullptr ? cast<Shader_Vulkan>(material->getShader().get()) : nullptr;
         if ((vertexBufferVulkan == nullptr) || (shaderVulkan == nullptr))
+        {
+            return false;
+        }
+
+        const VertexDescription_Vulkan* vertexDescription = getRenderSubsystem()->findVertexDescription(vertexBufferVulkan->getVertexName());
+        if (vertexDescription == nullptr)
         {
             return false;
         }
@@ -46,17 +52,15 @@ namespace JumaEngine
         const math::uvector2 swapchainSize = swapchain->getSize();
 
         // Shader stages
-        jarray<VkPipelineShaderStageCreateInfo> shaderStageInfos = shaderVulkan->createPipelineStageInfos();
+        const jarray<VkPipelineShaderStageCreateInfo>& shaderStageInfos = shaderVulkan->getPipelineStageInfos();
 
         // Vertex input data
-        const jarray<VkVertexInputBindingDescription>& bindingDescriptions = vertexBufferVulkan->getBindingDescriptions();
-        const jarray<VkVertexInputAttributeDescription>& attributeDescriptions = vertexBufferVulkan->getAttributeDescriptions();
         VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
         vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-        vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32>(bindingDescriptions.getSize());
-        vertexInputInfo.pVertexBindingDescriptions = bindingDescriptions.getData();
-        vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32>(attributeDescriptions.getSize());
-        vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.getData();
+        vertexInputInfo.vertexBindingDescriptionCount = 1;
+        vertexInputInfo.pVertexBindingDescriptions = &vertexDescription->binding;
+        vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32>(vertexDescription->attributes.getSize());
+        vertexInputInfo.pVertexAttributeDescriptions = vertexDescription->attributes.getData();
 
         // Geometry type
         VkPipelineInputAssemblyStateCreateInfo inputAssembly{};

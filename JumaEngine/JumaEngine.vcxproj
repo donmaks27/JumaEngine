@@ -147,7 +147,6 @@
     <ClInclude Include="source\jutils\jstack_allocator.h" />
     <ClInclude Include="source\jutils\jstring.h" />
     <ClInclude Include="source\jutils\jstringID.h" />
-    <ClInclude Include="source\jutils\jstring_hash_table.h" />
     <ClInclude Include="source\jutils\jtree_red_black.h" />
     <ClInclude Include="source\jutils\juid.h" />
     <ClInclude Include="source\jutils\math\base_types\matrix2x2_base.h" />
@@ -208,7 +207,7 @@
     <ClInclude Include="source\subsystems\render\vertexBuffer\Vertex3D.h" />
     <ClInclude Include="source\subsystems\render\vertexBuffer\Vertex3D_Normal.h" />
     <ClInclude Include="source\subsystems\render\vertexBuffer\Vertex3D_Normal_TexCoord.h" />
-    <ClInclude Include="source\subsystems\render\vertexBuffer\VertexBase.h" />
+    <ClInclude Include="source\subsystems\render\vertexBuffer\VertexInfo.h" />
     <ClInclude Include="source\subsystems\render\vertexBuffer\VertexBuffer.h" />
     <ClInclude Include="source\subsystems\render\vertexBuffer\VertexBufferData.h" />
     <ClInclude Include="source\subsystems\render\vertexBuffer\VertexComponents.h" />

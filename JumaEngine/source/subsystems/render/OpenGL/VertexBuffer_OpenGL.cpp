@@ -54,14 +54,9 @@ namespace JumaEngine
         for (int32 vertexComponentIndex = 0; vertexComponentIndex < vertexComponentCount; vertexComponentIndex++)
         {
             const VertexComponentDescription& componentDescriprion = vertexComponents[vertexComponentIndex];
-            if (!componentDescriprion.isValid())
-            {
-                continue;
-            }
-
             GLenum componentType = 0;
             uint32 componentSize = 0;
-            switch (componentDescriprion.componentType)
+            switch (componentDescriprion.type)
             {
             case VertexComponentType::Float: 
                 componentType = GL_FLOAT;
@@ -85,14 +80,14 @@ namespace JumaEngine
             }
 
             glVertexAttribPointer(
-                componentDescriprion.componentID, 
+                componentDescriprion.ID, 
                 componentSize, 
                 componentType, 
                 GL_FALSE, 
                 vertexSize, 
-                reinterpret_cast<const void*>(componentDescriprion.componentOffset)
+                reinterpret_cast<const void*>(static_cast<std::uintptr_t>(componentDescriprion.offset))
             );
-            glEnableVertexAttribArray(componentDescriprion.componentID);
+            glEnableVertexAttribArray(componentDescriprion.ID);
         }
 
         glBindVertexArray(0);
