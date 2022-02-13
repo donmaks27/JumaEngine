@@ -10,11 +10,13 @@
 #include "subsystems/render/OpenGL/RenderSubsystem_OpenGL_GLFW.h"
 #include "subsystems/render/vertexBuffer/VertexBufferData.h"
 #include "subsystems/render/Vulkan/Image_Vulkan.h"
-#include "subsystems/render/Vulkan/RenderSubsystem_Vulkan_GLFW.h"
+#include "subsystems/render/Vulkan/RenderSubsystem_Vulkan.h"
 #include "jutils/jlog.h"
 #include "jutils/jstringID.h"
 
 #include <chrono>
+
+#include "subsystems/window/Vulkan/WindowSubsystem_Vulkan_GLFW.h"
 
 namespace JumaEngine
 {
@@ -86,7 +88,14 @@ namespace JumaEngine
     {
         jstring_hash_table::CreateInstance();
 
-        m_RenderSubsystem = createObject<RenderSubsystem_Vulkan_GLFW>();
+        m_WindowSubsytem = createObject<WindowSubsystem_Vulkan_GLFW>();
+        if (m_WindowSubsytem == nullptr)
+        {
+            return false;
+        }
+        m_WindowSubsytem->initSubsystem();
+
+        m_RenderSubsystem = createObject<RenderSubsystem_Vulkan>();
         if (m_RenderSubsystem == nullptr)
         {
             return false;
@@ -148,6 +157,10 @@ namespace JumaEngine
         m_RenderSubsystem->clear();
         delete m_RenderSubsystem;
         m_RenderSubsystem = nullptr;
+
+        m_WindowSubsytem->clear();
+        delete m_WindowSubsytem;
+        m_WindowSubsytem = nullptr;
 
         jstring_hash_table::ClearInstance();
     }

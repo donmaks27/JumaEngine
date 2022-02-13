@@ -55,7 +55,7 @@ namespace JumaEngine
     }
     bool Material_Vulkan::createDescriptorPool(const jshared_ptr<Shader>& shader)
     {
-        const jshared_ptr<VulkanSwapchain>& swapchain = getRenderSubsystem()->getSwapchain();
+        VulkanSwapchain* swapchain = getRenderSubsystem()->getSwapchain();
         const uint32 imageCount = (swapchain != nullptr) && swapchain->isValid() ? swapchain->getImageCount() : 0;
         if (imageCount == 0)
         {

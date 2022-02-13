@@ -18,11 +18,11 @@
 
 namespace JumaEngine
 {
+    class Window;
+    class Window_Vulkan;
     class VulkanCommandBuffer;
     class VulkanSwapchainFramebuffer;
     class Image_Vulkan;
-    class WindowDescription_Vulkan;
-    class WindowDescription;
     class VulkanSwapchain;
 
     struct VulkanSwapchainSettings
@@ -46,7 +46,7 @@ namespace JumaEngine
         OnVulkanSwapchainEvent onRenderPassChanged;
 
 
-        bool init(WindowDescription* window);
+        bool init(Window_Vulkan* window);
 
         VkSampleCountFlagBits getSampleCount() const { return m_CurrentSettings.sampleCount; }
         VkFormat getFormat() const { return m_CurrentSettings.surfaceFormat.format; }
@@ -70,7 +70,7 @@ namespace JumaEngine
 
     private:
 
-        WindowDescription* m_Window = nullptr;
+        Window_Vulkan* m_Window = nullptr;
 
         VkSwapchainKHR m_Swapchain = nullptr;
         jshared_ptr<Image_Vulkan> m_RenderImage_Color = nullptr;
@@ -91,7 +91,6 @@ namespace JumaEngine
 
 
         VkSampleCountFlagBits getMaxSampleCount() const;
-        WindowDescription_Vulkan* getWindow() const;
 
         bool createSwapchain();
         bool createRenderImages();
@@ -99,9 +98,9 @@ namespace JumaEngine
         bool createFramebuffers();
         bool createSyncObjects();
 
-        void clearSwapchain();
+        void clearVulkanObjects();
 
-        void onWindowSizeChanged(WindowDescription* window);
+        void onWindowSizeChanged(Window* window);
 
         void markAsNeededToRecreate();
         bool applySettingsInternal(bool forceRecreate);

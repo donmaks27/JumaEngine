@@ -8,7 +8,6 @@
 
 #include "jutils/jlog.h"
 #include "jutils/jset.h"
-#include "WindowDescription_Vulkan.h"
 #include "vulkanObjects/VulkanQueue.h"
 #include "vulkanObjects/VulkanCommandPool.h"
 #include "vulkanObjects/VulkanSwapchain.h"
@@ -20,6 +19,8 @@
 #include "RenderPrimitive_Vulkan.h"
 #include "VertexBuffer_Vulkan.h"
 #include "subsystems/render/vertexBuffer/VertexBufferData.h"
+#include "subsystems/window/Vulkan/WindowSubsystem_Vulkan.h"
+#include "subsystems/window/Vulkan/Window_Vulkan.h"
 
 namespace JumaEngine
 {
@@ -70,11 +71,13 @@ namespace JumaEngine
         {
             return false;
         }
+
         if (!pickPhysicalDevice() || !createDevice() || !createCommandPools())
         {
             return false;
         }
-        return createSwapchain();
+
+        return cast<Window_Vulkan>(m_MainWindow)->createVulkanSwapchain();
     }
     bool RenderSubsystem_Vulkan::createVulkanInstance()
     {
@@ -162,11 +165,12 @@ namespace JumaEngine
     }
     jarray<const char*> RenderSubsystem_Vulkan::getRequiredVulkanExtensions() const
     {
+        const WindowSubsystem_Vulkan* windowSubsystem = cast<WindowSubsystem_Vulkan>(getOwnerEngine()->getWindowSubsystem());
+        jarray<const char*> extensions = windowSubsystem->getVulkanInstanceExtensions();
 #if JDEBUG
-        return { VK_EXT_DEBUG_UTILS_EXTENSION_NAME };
-#else
-        return {};
+        extensions.add(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 #endif
+        return extensions;
     }
     VkBool32 RenderSubsystem_Vulkan::Vulkan_DebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, 
         VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
@@ -193,7 +197,7 @@ namespace JumaEngine
         jarray<VkPhysicalDevice> devices(deviceCount);
         vkEnumeratePhysicalDevices(m_VulkanInstance, &deviceCount, devices.getData());
 
-        WindowDescription_Vulkan* window = castWindow<WindowDescription_Vulkan>(getMainWindow());
+        VkSurfaceKHR surface = cast<Window_Vulkan>(m_MainWindow)->getVulkanSurface();
         for (const auto& device : devices)
         {
             VkPhysicalDeviceProperties deviceProperties;
@@ -204,7 +208,7 @@ namespace JumaEngine
             }
 
             jmap<VulkanQueueType, uint32> indices;
-            if (!getQueueFamilyIndices(device, window, indices))
+            if (!getQueueFamilyIndices(device, surface, indices))
             {
                 continue;
             }
@@ -236,9 +240,9 @@ namespace JumaEngine
             }
 
             uint32 surfaceFormatCount;
-	        vkGetPhysicalDeviceSurfaceFormatsKHR(device, window->surface, &surfaceFormatCount, nullptr);
+	        vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &surfaceFormatCount, nullptr);
             uint32 surfacePresentModeCount;
-	        vkGetPhysicalDeviceSurfacePresentModesKHR(device, window->surface, &surfacePresentModeCount, nullptr);
+	        vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &surfacePresentModeCount, nullptr);
             if ((surfaceFormatCount == 0) || (surfacePresentModeCount == 0))
             {
                 continue;
@@ -257,14 +261,8 @@ namespace JumaEngine
         }
         return false;
     }
-    bool RenderSubsystem_Vulkan::getQueueFamilyIndices(VkPhysicalDevice physicalDevice, WindowDescription* window, jmap<VulkanQueueType, uint32>& outQueueIndices)
+    bool RenderSubsystem_Vulkan::getQueueFamilyIndices(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, jmap<VulkanQueueType, uint32>& outQueueIndices)
     {
-        WindowDescription_Vulkan* window_Vulkan = castWindow<WindowDescription_Vulkan>(window);
-        if ((window_Vulkan == nullptr) || (window_Vulkan->surface == nullptr))
-        {
-            return false;
-        }
-
         uint32_t queueFamilyCount = 0;
         vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, nullptr);
         jarray<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
@@ -281,7 +279,7 @@ namespace JumaEngine
             if (!indices.contains(VulkanQueueType::Present))
             {
                 VkBool32 presentSupport = false;
-    		    vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, queueFamilyIndex, window_Vulkan->surface, &presentSupport);
+    		    vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, queueFamilyIndex, surface, &presentSupport);
                 if (presentSupport)
                 {
                     indices[VulkanQueueType::Present] = queueFamilyIndex;
@@ -380,12 +378,6 @@ namespace JumaEngine
         return true;
     }
 
-    bool RenderSubsystem_Vulkan::createSwapchain()
-    {
-        m_Swapchain = createVulkanObject<VulkanSwapchain>();
-        return m_Swapchain->init(getMainWindow());
-    }
-
     void RenderSubsystem_Vulkan::clearVulkan()
     {
         if (m_VulkanInstance != nullptr)
@@ -394,7 +386,7 @@ namespace JumaEngine
             {
                 vkDeviceWaitIdle(m_Device);
 
-                m_Swapchain.reset();
+                cast<Window_Vulkan>(m_MainWindow)->destroyVulkanSwapchain();
 
                 m_CommandPools.clear();
                 m_QueueFamilyIndices.clear();
@@ -419,23 +411,32 @@ namespace JumaEngine
         }
     }
 
+    VulkanSwapchain* RenderSubsystem_Vulkan::getSwapchain() const
+    {
+        return cast<Window_Vulkan>(m_MainWindow)->getVulkanSwapchain();
+    }
+
     void RenderSubsystem_Vulkan::render()
     {
-        RenderOptions options;
-        options.data = new RenderOptionsData_Vulkan();
-        options.data->invertFacesOrientation = false;
+        m_MainWindow->startRender();
 
-        if (m_Swapchain->startRender(options))
+        RenderOptions options;
+        RenderOptionsData_Vulkan optionsVulkan;
+        optionsVulkan.invertFacesOrientation = false;
+        options.data = &optionsVulkan;
+
+        VulkanSwapchain* swapchain = cast<Window_Vulkan>(m_MainWindow)->getVulkanSwapchain();
+        if (swapchain->startRender(options))
         {
             callEngineRender(options);
-            m_Swapchain->finishRender(options);
+            swapchain->finishRender(options);
         }
-        if (m_Swapchain->isNeedToRecreate())
+        if (swapchain->isNeedToRecreate())
         {
-            m_Swapchain->applySettings(true);
+            swapchain->applySettings(true);
         }
 
-        delete options.getData<RenderOptionsData_Vulkan>();
+        m_MainWindow->finishRender();
     }
 
     void RenderSubsystem_Vulkan::onEnginePreTerminate()
@@ -506,7 +507,7 @@ namespace JumaEngine
         }
     }
 
-    void RenderSubsystem_Vulkan::cacheVertexDescription(const VertexBufferDataBase* vertexBufferData)
+    void RenderSubsystem_Vulkan::registerVertexType(const VertexBufferDataBase* vertexBufferData)
     {
         if (vertexBufferData != nullptr)
         {

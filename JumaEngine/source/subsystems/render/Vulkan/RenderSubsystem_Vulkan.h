@@ -41,7 +41,7 @@ namespace JumaEngine
 
     class RenderSubsystem_Vulkan : public RenderSubsystem
     {
-        JUMAENGINE_ABSTRACT_CLASS(RenderSubsystem_Vulkan, RenderSubsystem)
+        JUMAENGINE_CLASS(RenderSubsystem_Vulkan, RenderSubsystem)
 
     public:
         RenderSubsystem_Vulkan() = default;
@@ -55,7 +55,7 @@ namespace JumaEngine
         uint32 getQueueFamilyIndex(const VulkanQueueType queueType) const { return m_QueueFamilyIndices[queueType]; }
         const jshared_ptr<VulkanQueue>& getQueue(const VulkanQueueType queueType) const { return m_Queues[m_QueueFamilyIndices[queueType]]; }
         const jshared_ptr<VulkanCommandPool>& getCommandPool(const VulkanQueueType queueType) const { return m_CommandPools[queueType]; }
-        const jshared_ptr<VulkanSwapchain>& getSwapchain() const { return m_Swapchain; }
+        VulkanSwapchain* getSwapchain() const;
 
         virtual void render() override;
 
@@ -69,15 +69,13 @@ namespace JumaEngine
         virtual jshared_ptr<Image> createImage() override;
         virtual jshared_ptr<RenderPrimitive> createRenderPrimitive() override;
 
-        void cacheVertexDescription(const VertexBufferDataBase* vertexBufferData);
+        void registerVertexType(const VertexBufferDataBase* vertexBufferData);
         const VertexDescription_Vulkan* findVertexDescription(const jstringID& vertexName) const { return m_RegisteredVertexTypes.find(vertexName); }
         
     protected:
 
         virtual bool initSubsystemInternal() override;
         virtual void clearSubsystemInternal() override;
-
-        virtual jarray<const char*> getRequiredVulkanExtensions() const;
 
     private:
 
@@ -94,7 +92,6 @@ namespace JumaEngine
         jmap<VulkanQueueType, uint32> m_QueueFamilyIndices;
         jmap<uint32, jshared_ptr<VulkanQueue>> m_Queues;
         jmap<VulkanQueueType, jshared_ptr<VulkanCommandPool>> m_CommandPools;
-        jshared_ptr<VulkanSwapchain> m_Swapchain = nullptr;
 
         jmap<jstringID, VertexDescription_Vulkan> m_RegisteredVertexTypes;
 
@@ -104,12 +101,12 @@ namespace JumaEngine
 
         bool initVulkan();
         bool createVulkanInstance();
+        jarray<const char*> getRequiredVulkanExtensions() const;
 
         bool pickPhysicalDevice();
-        static bool getQueueFamilyIndices(VkPhysicalDevice physicalDevice, WindowDescription* window, jmap<VulkanQueueType, uint32>& outQueueIndices);
+        static bool getQueueFamilyIndices(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, jmap<VulkanQueueType, uint32>& outQueueIndices);
         bool createDevice();
         bool createCommandPools();
-        bool createSwapchain();
 
         void clearVulkan();
 

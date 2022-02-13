@@ -5,7 +5,6 @@
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
 #include "subsystems/render/Vulkan/RenderSubsystem_Vulkan.h"
-#include "subsystems/render/Vulkan/WindowDescription_Vulkan.h"
 #include "subsystems/render/Vulkan/Image_Vulkan.h"
 #include "jutils/jlog.h"
 #include "VulkanSwapchainFramebuffer.h"
@@ -13,6 +12,7 @@
 #include "VulkanCommandBuffer.h"
 #include "VulkanCommandPool.h"
 #include "VulkanQueue.h"
+#include "subsystems/window/Vulkan/Window_Vulkan.h"
 
 namespace JumaEngine
 {
@@ -20,33 +20,40 @@ namespace JumaEngine
     {
         if (isValid())
         {
-            clearSwapchain();
+            clearVulkanObjects();
         }
     }
 
-    bool VulkanSwapchain::init(WindowDescription* window)
+    bool VulkanSwapchain::init(Window_Vulkan* window)
     {
-        if (isValid() || (window == nullptr))
+        if (isValid())
         {
+            JUMA_LOG(error, JSTR("Swapchain already initialized"));
+            return false;
+        }
+        if (window == nullptr)
+        {
+            JUMA_LOG(error, JSTR("Invalid window parameter"));
             return false;
         }
 
-        WindowDescription_Vulkan* window_vulkan = dynamic_cast<WindowDescription_Vulkan*>(window);
         VkPhysicalDevice physicalDevice = getRenderSubsystem()->getPhysicalDevice();
+        VkSurfaceKHR surface = window->getVulkanSurface();
 
+        // Get image count
         VkSurfaceCapabilitiesKHR capabilities;
-        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, window_vulkan->surface, &capabilities);
-
+        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface, &capabilities);
         const uint32 imageCount = capabilities.maxImageCount > 0 ? math::min(capabilities.minImageCount + 1, capabilities.maxImageCount) : capabilities.minImageCount + 1;
 
+        // Pick surface format
         uint32 surfaceFormatCount;
-        vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, window_vulkan->surface, &surfaceFormatCount, nullptr);
+        vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &surfaceFormatCount, nullptr);
         if (surfaceFormatCount == 0)
         {
             return false;
         }
         jarray<VkSurfaceFormatKHR> surfaceFormats(surfaceFormatCount);
-        vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, window_vulkan->surface, &surfaceFormatCount, surfaceFormats.getData());
+        vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &surfaceFormatCount, surfaceFormats.getData());
         VkSurfaceFormatKHR surfaceFormat = surfaceFormats[0];
         for (const auto& format : surfaceFormats)
         {
@@ -57,8 +64,9 @@ namespace JumaEngine
             }
         }
 
+        // Pick depth format
         VkFormat depthFormat = VK_FORMAT_UNDEFINED;
-        for (const auto& format : jarray<VkFormat>{ VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT })
+        for (const auto& format : { VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT })
         {
             VkFormatProperties formatProperties;
             vkGetPhysicalDeviceFormatProperties(physicalDevice, format, &formatProperties);
@@ -74,15 +82,18 @@ namespace JumaEngine
             return false;
         }
 
-        const VkExtent2D swapchainExtent = capabilities.currentExtent.width != UINT32_MAX ? capabilities.currentExtent : VkExtent2D{
-		    math::clamp(window->size.x, capabilities.minImageExtent.width, capabilities.maxImageExtent.width),
-		    math::clamp(window->size.y, capabilities.minImageExtent.height, capabilities.maxImageExtent.height)
+        // Calculate swapchain size
+        const math::uvector2 windowSize = window->getSize();
+        const VkExtent2D swapchainSize = capabilities.currentExtent.width != UINT32_MAX ? capabilities.currentExtent : VkExtent2D{
+		    math::clamp(windowSize.x, capabilities.minImageExtent.width, capabilities.maxImageExtent.width),
+		    math::clamp(windowSize.y, capabilities.minImageExtent.height, capabilities.maxImageExtent.height)
 	    };
 
+        // Pick present mode
         uint32 surfacePresentModeCount;
-	    vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, window_vulkan->surface, &surfacePresentModeCount, nullptr);
+	    vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &surfacePresentModeCount, nullptr);
 	    jarray<VkPresentModeKHR> surfacePresentModes(surfacePresentModeCount);
-	    vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, window_vulkan->surface, &surfacePresentModeCount, surfacePresentModes.getData());
+	    vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &surfacePresentModeCount, surfacePresentModes.getData());
         const VkPresentModeKHR presentMode = surfacePresentModes.contains(VK_PRESENT_MODE_MAILBOX_KHR) ? VK_PRESENT_MODE_MAILBOX_KHR : VK_PRESENT_MODE_FIFO_KHR;
         
         m_Window = window;
@@ -91,12 +102,12 @@ namespace JumaEngine
         m_CurrentSettings.imageCount = imageCount;
         m_CurrentSettings.surfaceFormat = surfaceFormat;
         m_CurrentSettings.depthFormat = depthFormat;
-        m_CurrentSettings.size = { swapchainExtent.width, swapchainExtent.height };
+        m_CurrentSettings.size = { swapchainSize.width, swapchainSize.height };
         m_CurrentSettings.presentMode = presentMode;
 
         if (!createSwapchain() || !createRenderImages() || !createRenderPass() || !createFramebuffers())
         {
-            clearSwapchain();
+            clearVulkanObjects();
             m_Window = nullptr;
             return false;
         }
@@ -122,37 +133,35 @@ namespace JumaEngine
         if (counts & VK_SAMPLE_COUNT_2_BIT) { return VK_SAMPLE_COUNT_2_BIT; }
         return VK_SAMPLE_COUNT_1_BIT;
     }
-    WindowDescription_Vulkan* VulkanSwapchain::getWindow() const
-    {
-        return dynamic_cast<WindowDescription_Vulkan*>(m_Window);
-    }
 
     bool VulkanSwapchain::createSwapchain()
     {
-        WindowDescription_Vulkan* window = getWindow();
+        VkDevice device = getRenderSubsystem()->getDevice();
+        VkSurfaceKHR surface = m_Window->getVulkanSurface();
         
         VkSurfaceCapabilitiesKHR capabilities;
-        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(getRenderSubsystem()->getPhysicalDevice(), window->surface, &capabilities);
+        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(getRenderSubsystem()->getPhysicalDevice(), surface, &capabilities);
 
-        jarray<uint32> queueFamilyIndices;
-        queueFamilyIndices.add(getRenderSubsystem()->getQueueFamilyIndex(VulkanQueueType::Graphics));
-        queueFamilyIndices.addUnique(getRenderSubsystem()->getQueueFamilyIndex(VulkanQueueType::Present));
+        const uint32 queueFamilyIndices[2] = {
+            getRenderSubsystem()->getQueueFamilyIndex(VulkanQueueType::Graphics),
+            getRenderSubsystem()->getQueueFamilyIndex(VulkanQueueType::Present)
+        };
 
         VkSwapchainKHR oldSwapchain = m_Swapchain;
         VkSwapchainCreateInfoKHR swapchainInfo{};
         swapchainInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-	    swapchainInfo.surface = window->surface;
+	    swapchainInfo.surface = surface;
 	    swapchainInfo.minImageCount = m_CurrentSettings.imageCount;
 	    swapchainInfo.imageFormat = m_CurrentSettings.surfaceFormat.format;
 	    swapchainInfo.imageColorSpace = m_CurrentSettings.surfaceFormat.colorSpace;
 	    swapchainInfo.imageExtent = { m_CurrentSettings.size.x, m_CurrentSettings.size.y };
 	    swapchainInfo.imageArrayLayers = 1;
 	    swapchainInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-	    if (queueFamilyIndices.getSize() > 1)
+	    if (queueFamilyIndices[0] != queueFamilyIndices[1])
 	    {
 		    swapchainInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
-		    swapchainInfo.queueFamilyIndexCount = static_cast<uint32>(queueFamilyIndices.getSize());
-		    swapchainInfo.pQueueFamilyIndices = queueFamilyIndices.getData();
+		    swapchainInfo.queueFamilyIndexCount = 2;
+		    swapchainInfo.pQueueFamilyIndices = queueFamilyIndices;
 	    }
 	    else
 	    {
@@ -165,39 +174,22 @@ namespace JumaEngine
 	    swapchainInfo.presentMode = m_CurrentSettings.presentMode;
 	    swapchainInfo.clipped = VK_TRUE;
 	    swapchainInfo.oldSwapchain = oldSwapchain;
-        const VkResult result = vkCreateSwapchainKHR(getRenderSubsystem()->getDevice(), &swapchainInfo, nullptr, &m_Swapchain);
-        if (result != VK_SUCCESS)
-        {
-            JUMA_LOG(error, JSTR("Failed to create swapchain. Code ") + TO_JSTR(result));
-            return false;
-        }
+        const VkResult result = vkCreateSwapchainKHR(device, &swapchainInfo, nullptr, &m_Swapchain);
         if (oldSwapchain != nullptr)
         {
-            vkDestroySwapchainKHR(getRenderSubsystem()->getDevice(), oldSwapchain, nullptr);
+            vkDestroySwapchainKHR(device, oldSwapchain, nullptr);
+        }
+        if (result != VK_SUCCESS)
+        {
+            JUMA_VULKAN_ERROR_LOG(JSTR("Failed to create swapchain"), result);
+            return false;
         }
 
-        vkGetSwapchainImagesKHR(getRenderSubsystem()->getDevice(), m_Swapchain, &m_CurrentSettings.imageCount, nullptr);
+        vkGetSwapchainImagesKHR(device, m_Swapchain, &m_CurrentSettings.imageCount, nullptr);
         return true;
     }
     bool VulkanSwapchain::createRenderImages()
     {
-        m_CurrentSettings.depthFormat = VK_FORMAT_UNDEFINED;
-        for (const auto& format : jarray<VkFormat>{ VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT })
-        {
-            VkFormatProperties formatProperties;
-            vkGetPhysicalDeviceFormatProperties(getRenderSubsystem()->getPhysicalDevice(), format, &formatProperties);
-            if (formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT)
-            {
-                m_CurrentSettings.depthFormat = format;
-                break;
-            }
-        }
-        if (m_CurrentSettings.depthFormat == VK_FORMAT_UNDEFINED)
-        {
-            JUMA_LOG(error, JSTR("Can't find appropriate depth format"));
-            return false;
-        }
-
         m_RenderImage_Color = jshared_dynamic_cast<Image_Vulkan>(getRenderSubsystem()->createImage());
         m_RenderImage_Color->init(
             m_CurrentSettings.size, 1, m_CurrentSettings.sampleCount, m_CurrentSettings.surfaceFormat.format, 
@@ -227,6 +219,8 @@ namespace JumaEngine
         const bool multisampleEnabled = m_CurrentSettings.sampleCount != VK_SAMPLE_COUNT_1_BIT;
 
         jarray<VkAttachmentDescription> attachments;
+        attachments.reserve(3);
+
         VkAttachmentDescription& colorAttachment = attachments.addDefault();
         colorAttachment.format = m_CurrentSettings.surfaceFormat.format;
         colorAttachment.samples = m_CurrentSettings.sampleCount;
@@ -258,29 +252,22 @@ namespace JumaEngine
             colorAttachmentResolve.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
         }
 
-        jarray<VkAttachmentReference> attachmentRefs;
-        VkAttachmentReference& colorAttachmentRef = attachmentRefs.addDefault();
+        VkAttachmentReference colorAttachmentRef{};
         colorAttachmentRef.attachment = 0;
         colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-        VkAttachmentReference& depthAttachmentRef = attachmentRefs.addDefault();
+        VkAttachmentReference depthAttachmentRef{};
         depthAttachmentRef.attachment = 1;
         depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-        if (multisampleEnabled)
-        {
-            VkAttachmentReference& colorAttachmentResolveRef = attachmentRefs.addDefault();
-            colorAttachmentResolveRef.attachment = 2;
-            colorAttachmentResolveRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-        }
+        VkAttachmentReference colorAttachmentResolveRef{};
+        colorAttachmentResolveRef.attachment = 2;
+        colorAttachmentResolveRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
         VkSubpassDescription subpass{};
         subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
         subpass.colorAttachmentCount = 1;
-        subpass.pColorAttachments = &attachmentRefs[0];
-        subpass.pDepthStencilAttachment = &attachmentRefs[1];
-        if (multisampleEnabled)
-        {
-            subpass.pResolveAttachments = &attachmentRefs[2];
-        }
+        subpass.pColorAttachments = &colorAttachmentRef;
+        subpass.pDepthStencilAttachment = &depthAttachmentRef;
+        subpass.pResolveAttachments = multisampleEnabled ? &colorAttachmentResolveRef : nullptr;
 
         VkSubpassDependency dependency{};
         dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
@@ -290,7 +277,7 @@ namespace JumaEngine
         dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
         dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
 
-        VkRenderPassCreateInfo renderPassInfo = VkRenderPassCreateInfo();
+        VkRenderPassCreateInfo renderPassInfo{};
         renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
         renderPassInfo.attachmentCount = static_cast<uint32>(attachments.getSize());
         renderPassInfo.pAttachments = attachments.getData();
@@ -301,15 +288,14 @@ namespace JumaEngine
         const VkResult result = vkCreateRenderPass(getRenderSubsystem()->getDevice(), &renderPassInfo, nullptr, &m_RenderPass);
         if (result != VK_SUCCESS)
         {
-            JUMA_LOG(error, JSTR("Failed to create render pass. Code ") + TO_JSTR(result));
+            JUMA_VULKAN_ERROR_LOG(JSTR("Failed to create render pass"), result);
             return false;
         }
         return true;
     }
     bool VulkanSwapchain::createFramebuffers()
     {
-        uint32 swapchainImageCount = 0;
-        vkGetSwapchainImagesKHR(getRenderSubsystem()->getDevice(), m_Swapchain, &swapchainImageCount, nullptr);
+        uint32 swapchainImageCount = m_CurrentSettings.imageCount;
         jarray<VkImage> swapchainImages(swapchainImageCount);
 	    vkGetSwapchainImagesKHR(getRenderSubsystem()->getDevice(), m_Swapchain, &swapchainImageCount, swapchainImages.getData());
 
@@ -360,19 +346,19 @@ namespace JumaEngine
             VkResult result = vkCreateSemaphore(device, &semaphoreInfo, nullptr, &m_Semaphores_ImageAvailable[index]);
             if (result != VK_SUCCESS)
             {
-                JUMA_LOG(error, JSTR("Failed to create semaphore. Code ") + TO_JSTR(result));
+                JUMA_VULKAN_ERROR_LOG(JSTR("Failed to create semaphore"), result);
                 return false;
             }
             result = vkCreateSemaphore(device, &semaphoreInfo, nullptr, &m_Semaphores_RenderFinished[index]);
             if (result != VK_SUCCESS)
             {
-                JUMA_LOG(error, JSTR("Failed to create semaphore. Code ") + TO_JSTR(result));
+                JUMA_VULKAN_ERROR_LOG(JSTR("Failed to create semaphore"), result);
                 return false;
             }
             result = vkCreateFence(device, &fenceInfo, nullptr, &m_Fences_RenderFinished[index]);
             if (result != VK_SUCCESS)
             {
-                JUMA_LOG(error, JSTR("Failed to create fence. Code ") + TO_JSTR(result));
+                JUMA_VULKAN_ERROR_LOG(JSTR("Failed to create fence"), result);
                 return false;
             }
         }
@@ -383,7 +369,7 @@ namespace JumaEngine
 
     void VulkanSwapchain::clearInternal()
     {
-        clearSwapchain();
+        clearVulkanObjects();
 
         if (m_Window != nullptr)
         {
@@ -391,7 +377,7 @@ namespace JumaEngine
             m_Window = nullptr;
         }
     }
-    void VulkanSwapchain::clearSwapchain()
+    void VulkanSwapchain::clearVulkanObjects()
     {
         VkDevice device = getRenderSubsystem()->getDevice();
 
@@ -440,21 +426,23 @@ namespace JumaEngine
         }
     }
 
-    void VulkanSwapchain::onWindowSizeChanged(WindowDescription* window)
+    void VulkanSwapchain::onWindowSizeChanged(Window* window)
     {
         VkSurfaceCapabilitiesKHR capabilities;
-        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(getRenderSubsystem()->getPhysicalDevice(), getWindow()->surface, &capabilities);
+        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(getRenderSubsystem()->getPhysicalDevice(), m_Window->getVulkanSurface(), &capabilities);
         if (capabilities.currentExtent.width != UINT32_MAX)
         {
             m_SettingForApply.size = { capabilities.currentExtent.width, capabilities.currentExtent.height };
         }
         else
         {
+            const math::uvector2 windowSize = window->getSize();
             m_SettingForApply.size = {
-		        math::clamp(window->size.x, capabilities.minImageExtent.width, capabilities.maxImageExtent.width),
-		        math::clamp(window->size.y, capabilities.minImageExtent.height, capabilities.maxImageExtent.height)
+		        math::clamp(windowSize.x, capabilities.minImageExtent.width, capabilities.maxImageExtent.width),
+		        math::clamp(windowSize.y, capabilities.minImageExtent.height, capabilities.maxImageExtent.height)
 	        };
         }
+
         markAsNeededToRecreate();
     }
 
@@ -478,7 +466,7 @@ namespace JumaEngine
         }
         if (!applySettingsInternal(forceRecreate))
         {
-            clearSwapchain();
+            clearVulkanObjects();
         }
     }
     bool VulkanSwapchain::applySettingsInternal(const bool forceRecreate)
@@ -592,7 +580,7 @@ namespace JumaEngine
             throw std::runtime_error(*message);
         }
 
-        jarray<VkClearValue> clearValues(2);
+        VkClearValue clearValues[2];
         clearValues[0].color = { { 1.0f, 1.0f, 1.0f, 1.0f } };
         clearValues[1].depthStencil = { 1.0f, 0 };
         VkRenderPassBeginInfo renderPassInfo{};
@@ -601,8 +589,8 @@ namespace JumaEngine
         renderPassInfo.framebuffer = m_Framebuffers[swapchainImageIndex]->get();
         renderPassInfo.renderArea.offset = { 0, 0 };
         renderPassInfo.renderArea.extent = { m_CurrentSettings.size.x, m_CurrentSettings.size.y };
-        renderPassInfo.clearValueCount = static_cast<uint32>(clearValues.getSize());
-        renderPassInfo.pClearValues = clearValues.getData();
+        renderPassInfo.clearValueCount = 2;
+        renderPassInfo.pClearValues = clearValues;
         vkCmdBeginRenderPass(commandBuffer->get(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
         return commandBuffer;
     }

@@ -54,7 +54,7 @@ namespace JumaEngine
             }
         }
 
-        getRenderSubsystem()->cacheVertexDescription(data);
+        getRenderSubsystem()->registerVertexType(data);
         m_VertexName = data->getVertexName();
         return true;
     }

@@ -54,7 +54,7 @@ namespace JumaEngine
         glfwTerminate();
     }
 
-    WindowDescription* RenderSubsystem_OpenGL_GLFW::createWindowInternal(const math::uvector2& size, const jstring& title)
+    WindowDescriptionOld* RenderSubsystem_OpenGL_GLFW::createWindowInternal(const math::uvector2& size, const jstring& title)
     {
         GLFWwindow* window = glfwCreateWindow(size.x, size.y, *title, nullptr, nullptr);
         if (window == nullptr)
@@ -71,7 +71,7 @@ namespace JumaEngine
         windowDescription->window = window;
         return windowDescription;
     }
-    void RenderSubsystem_OpenGL_GLFW::terminateWindowInternal(WindowDescription* window)
+    void RenderSubsystem_OpenGL_GLFW::terminateWindowInternal(WindowDescriptionOld* window)
     {
         WindowDescription_OpenGL_GLFW* window_GLFW = castWindow<WindowDescription_OpenGL_GLFW>(window);
         if ((window_GLFW != nullptr) && (window_GLFW->window != nullptr))
@@ -81,7 +81,7 @@ namespace JumaEngine
         }
     }
     
-    bool RenderSubsystem_OpenGL_GLFW::shouldCloseWindowInternal(WindowDescription* window) const
+    bool RenderSubsystem_OpenGL_GLFW::shouldCloseWindowInternal(WindowDescriptionOld* window) const
     {
         WindowDescription_OpenGL_GLFW* window_GLFW = castWindow<WindowDescription_OpenGL_GLFW>(window);
         if ((window_GLFW != nullptr) && (window_GLFW->window != nullptr))
@@ -90,7 +90,7 @@ namespace JumaEngine
         }
         return false;
     }
-    void RenderSubsystem_OpenGL_GLFW::setWindowSizeInternal(WindowDescription* window, const math::uvector2& size)
+    void RenderSubsystem_OpenGL_GLFW::setWindowSizeInternal(WindowDescriptionOld* window, const math::uvector2& size)
     {
         WindowDescription_OpenGL_GLFW* window_GLFW = castWindow<WindowDescription_OpenGL_GLFW>(window);
         if ((window_GLFW != nullptr) && (window_GLFW->window != nullptr))
@@ -98,7 +98,7 @@ namespace JumaEngine
             glfwSetWindowSize(window_GLFW->window, size.x, size.y);
         }
     }
-    void RenderSubsystem_OpenGL_GLFW::setWindowTitleInternal(WindowDescription* window, const jstring& title)
+    void RenderSubsystem_OpenGL_GLFW::setWindowTitleInternal(WindowDescriptionOld* window, const jstring& title)
     {
         WindowDescription_OpenGL_GLFW* window_GLFW = castWindow<WindowDescription_OpenGL_GLFW>(window);
         if ((window_GLFW != nullptr) && (window_GLFW->window != nullptr))

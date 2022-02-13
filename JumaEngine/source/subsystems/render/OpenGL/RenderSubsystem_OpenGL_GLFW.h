@@ -25,12 +25,12 @@ namespace JumaEngine
         virtual bool initSubsystemInternal() override;
         virtual void clearSubsystemInternal() override;
         
-        virtual WindowDescription* createWindowInternal(const math::uvector2& size, const jstring& title) override;
-        virtual void terminateWindowInternal(WindowDescription* window) override;
+        virtual WindowDescriptionOld* createWindowInternal(const math::uvector2& size, const jstring& title) override;
+        virtual void terminateWindowInternal(WindowDescriptionOld* window) override;
 
-        virtual bool shouldCloseWindowInternal(WindowDescription* window) const override;
-        virtual void setWindowSizeInternal(WindowDescription* window, const math::uvector2& size) override;
-        virtual void setWindowTitleInternal(WindowDescription* window, const jstring& title) override;
+        virtual bool shouldCloseWindowInternal(WindowDescriptionOld* window) const override;
+        virtual void setWindowSizeInternal(WindowDescriptionOld* window, const math::uvector2& size) override;
+        virtual void setWindowTitleInternal(WindowDescriptionOld* window, const jstring& title) override;
 
     private:
 

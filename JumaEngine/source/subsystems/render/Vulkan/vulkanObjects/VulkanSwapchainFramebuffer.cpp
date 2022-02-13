@@ -63,7 +63,7 @@ namespace JumaEngine
         const VkResult result = vkCreateFramebuffer(getRenderSubsystem()->getDevice(), &framebufferInfo, nullptr, &m_Framebuffer);
         if (result != VK_SUCCESS)
         {
-            JUMA_LOG(error, JSTR("Failed to create framebuffer. Code ") + TO_JSTR(result));
+            JUMA_VULKAN_ERROR_LOG(JSTR("Failed to create framebuffer"), result);
             return false;
         }
 

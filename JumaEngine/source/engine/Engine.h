@@ -9,6 +9,7 @@
 
 namespace JumaEngine
 {
+    class WindowSubsystem;
     class RenderPrimitive;
     class RenderSubsystem;
 
@@ -26,12 +27,14 @@ namespace JumaEngine
         
         virtual void render(const RenderOptions& options) override;
 
+        WindowSubsystem* getWindowSubsystem() const { return m_WindowSubsytem; }
         RenderSubsystem* getRenderSubsystem() const { return m_RenderSubsystem; }
 
     private:
 
         bool m_Started = false;
 
+        WindowSubsystem* m_WindowSubsytem = nullptr;
         RenderSubsystem* m_RenderSubsystem = nullptr;
 
         jshared_ptr<RenderPrimitive> m_RenderPrimitive = nullptr;

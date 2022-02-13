@@ -6,11 +6,11 @@
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_OPENGL)
 
-#include "subsystems/render/WindowDescription.h"
+#include "subsystems/render/WindowDescriptionOld.h"
 
 namespace JumaEngine
 {
-    class WindowDescription_OpenGL : public WindowDescription
+    class WindowDescription_OpenGL : public WindowDescriptionOld
     {
     public:
         WindowDescription_OpenGL() = default;
