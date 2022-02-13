@@ -52,6 +52,8 @@ namespace JumaEngine
         VkDevice getDevice() const { return m_Device; }
         VmaAllocator getAllocator() const { return m_Allocator; }
 
+        bool pickDepthFormat(VkFormat& outFormat) const;
+
         uint32 getQueueFamilyIndex(const VulkanQueueType queueType) const { return m_QueueFamilyIndices[queueType]; }
         const jshared_ptr<VulkanQueue>& getQueue(const VulkanQueueType queueType) const { return m_Queues[m_QueueFamilyIndices[queueType]]; }
         const jshared_ptr<VulkanCommandPool>& getCommandPool(const VulkanQueueType queueType) const { return m_CommandPools[queueType]; }

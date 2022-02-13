@@ -49,7 +49,6 @@ namespace JumaEngine
         }
 
         VulkanSwapchain* swapchain = getRenderSubsystem()->getSwapchain();
-        const math::uvector2 swapchainSize = swapchain->getSize();
 
         // Shader stages
         const jarray<VkPipelineShaderStageCreateInfo>& shaderStageInfos = shaderVulkan->getPipelineStageInfos();
@@ -80,25 +79,10 @@ namespace JumaEngine
         depthStencil.front = {};
         depthStencil.back = {};
 
-        // Part of rendered image
-        VkViewport viewport{};
-        viewport.x = 0.0f;
-        viewport.y = 0.0f;
-        viewport.width = static_cast<float>(swapchainSize.x);
-        viewport.height = static_cast<float>(swapchainSize.y);
-        viewport.minDepth = 0.0f;
-        viewport.maxDepth = 1.0f;
-        // Part of screen
-        VkRect2D scissor{};
-        scissor.offset = { 0, 0 };
-        scissor.extent = { swapchainSize.x, swapchainSize.y };
-        // Viewport combination
         VkPipelineViewportStateCreateInfo viewportState{};
         viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
         viewportState.viewportCount = 1;
-        viewportState.pViewports = &viewport;
         viewportState.scissorCount = 1;
-        viewportState.pScissors = &scissor;
 
         VkPipelineRasterizationStateCreateInfo rasterizer{};
         rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
@@ -144,14 +128,14 @@ namespace JumaEngine
         colorBlending.blendConstants[2] = 0.0f;
         colorBlending.blendConstants[3] = 0.0f;
 
-        //*VkDynamicState dynamicStates[] = {
-	       // VK_DYNAMIC_STATE_VIEWPORT,
-	       // VK_DYNAMIC_STATE_LINE_WIDTH
-        //};
-        //VkPipelineDynamicStateCreateInfo dynamicState = VkPipelineDynamicStateCreateInfo();
-        //dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-        //dynamicState.dynamicStateCount = 2;
-        //dynamicState.pDynamicStates = dynamicStates;
+        VkDynamicState dynamicStates[] = {
+            VK_DYNAMIC_STATE_VIEWPORT,
+            VK_DYNAMIC_STATE_SCISSOR
+        };
+        VkPipelineDynamicStateCreateInfo dynamicState = VkPipelineDynamicStateCreateInfo();
+        dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+        dynamicState.dynamicStateCount = 2;
+        dynamicState.pDynamicStates = dynamicStates;
 
         VkGraphicsPipelineCreateInfo pipelineInfo{};
         pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -164,7 +148,7 @@ namespace JumaEngine
         pipelineInfo.pRasterizationState = &rasterizer;
         pipelineInfo.pMultisampleState = &multisampling;
         pipelineInfo.pColorBlendState = &colorBlending;
-        pipelineInfo.pDynamicState = nullptr;
+        pipelineInfo.pDynamicState = &dynamicState;
         pipelineInfo.layout = shaderVulkan->getPipelineLayout();
         pipelineInfo.renderPass = swapchain->getRenderPass();
         pipelineInfo.subpass = 0;

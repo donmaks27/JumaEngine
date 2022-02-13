@@ -67,6 +67,7 @@ namespace JumaEngine
     void Window_Vulkan_GLFW::onWindowResizedCallback(const math::uvector2& newSize)
     {
         m_Size = newSize;
+        onSizeChanged.call(this);
     }
     
     bool Window_Vulkan_GLFW::shouldClose() const

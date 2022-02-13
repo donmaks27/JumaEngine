@@ -37,7 +37,8 @@ namespace JumaEngine
             return false;
         }
 
-        VkPhysicalDevice physicalDevice = getRenderSubsystem()->getPhysicalDevice();
+        RenderSubsystem_Vulkan* renderSubsystem = getRenderSubsystem();
+        VkPhysicalDevice physicalDevice = renderSubsystem->getPhysicalDevice();
         VkSurfaceKHR surface = window->getVulkanSurface();
 
         // Get image count
@@ -46,37 +47,16 @@ namespace JumaEngine
         const uint32 imageCount = capabilities.maxImageCount > 0 ? math::min(capabilities.minImageCount + 1, capabilities.maxImageCount) : capabilities.minImageCount + 1;
 
         // Pick surface format
-        uint32 surfaceFormatCount;
-        vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &surfaceFormatCount, nullptr);
-        if (surfaceFormatCount == 0)
+        VkSurfaceFormatKHR surfaceFormat;
+        if (!window->pickSurfaceFormat(surfaceFormat))
         {
+            JUMA_LOG(error, JSTR("Failed to pick surface format"));
             return false;
-        }
-        jarray<VkSurfaceFormatKHR> surfaceFormats(surfaceFormatCount);
-        vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &surfaceFormatCount, surfaceFormats.getData());
-        VkSurfaceFormatKHR surfaceFormat = surfaceFormats[0];
-        for (const auto& format : surfaceFormats)
-        {
-            if ((format.format == VK_FORMAT_B8G8R8A8_SRGB) && (format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR))
-            {
-                surfaceFormat = format;
-                break;
-            }
         }
 
         // Pick depth format
         VkFormat depthFormat = VK_FORMAT_UNDEFINED;
-        for (const auto& format : { VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT })
-        {
-            VkFormatProperties formatProperties;
-            vkGetPhysicalDeviceFormatProperties(physicalDevice, format, &formatProperties);
-            if (formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT)
-            {
-                depthFormat = format;
-                break;
-            }
-        }
-        if (depthFormat == VK_FORMAT_UNDEFINED)
+        if (!renderSubsystem->pickDepthFormat(depthFormat))
         {
             JUMA_LOG(error, JSTR("Can't find appropriate depth format"));
             return false;
@@ -592,6 +572,20 @@ namespace JumaEngine
         renderPassInfo.clearValueCount = 2;
         renderPassInfo.pClearValues = clearValues;
         vkCmdBeginRenderPass(commandBuffer->get(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+        VkViewport viewport{};
+        viewport.x = 0.0f;
+        viewport.y = 0.0f;
+        viewport.width = static_cast<float>(m_CurrentSettings.size.x);
+        viewport.height = static_cast<float>(m_CurrentSettings.size.y);
+        viewport.minDepth = 0.0f;
+        viewport.maxDepth = 1.0f;
+        VkRect2D scissor{};
+        scissor.offset = { 0, 0 };
+        scissor.extent = { m_CurrentSettings.size.x, m_CurrentSettings.size.y };
+        vkCmdSetViewport(commandBuffer->get(), 0, 1, &viewport);
+        vkCmdSetScissor(commandBuffer->get(), 0, 1, &scissor);
+
         return commandBuffer;
     }
 

@@ -378,6 +378,21 @@ namespace JumaEngine
         return true;
     }
 
+    bool RenderSubsystem_Vulkan::pickDepthFormat(VkFormat& outFormat) const
+    {
+        for (const auto& format : { VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT })
+        {
+            VkFormatProperties formatProperties;
+            vkGetPhysicalDeviceFormatProperties(m_PhysicalDevice, format, &formatProperties);
+            if (formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT)
+            {
+                outFormat = format;
+                return true;
+            }
+        }
+        return false;
+    }
+
     void RenderSubsystem_Vulkan::clearVulkan()
     {
         if (m_VulkanInstance != nullptr)
