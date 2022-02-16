@@ -10,22 +10,13 @@
 
 namespace JumaEngine
 {
-    RenderSubsystem_Vulkan* Window_Vulkan::getRenderSubsystem() const
-    {
-        return cast<RenderSubsystem_Vulkan>(getOwnerEngine()->getRenderSubsystem());
-    }
-    VkInstance Window_Vulkan::getVulkanInstance() const
-    {
-        return getRenderSubsystem()->getVulkanInstance();
-    }
-
     void Window_Vulkan::destroyWindow_Vulkan()
     {
         destroyVulkanSwapchain();
 
         if (m_VulkanSurface != nullptr)
         {
-            vkDestroySurfaceKHR(getVulkanInstance(), m_VulkanSurface, nullptr);
+            vkDestroySurfaceKHR(getRenderSubsystem()->getVulkanInstance(), m_VulkanSurface, nullptr);
             m_VulkanSurface = nullptr;
         }
     }
@@ -37,16 +28,17 @@ namespace JumaEngine
             return false;
         }
 
-        RenderSubsystem_Vulkan* renderSubsystem = getRenderSubsystem();
+        VkPhysicalDevice physicalDevice = getRenderSubsystem()->getPhysicalDevice();
+
         uint32 surfaceFormatCount;
-        vkGetPhysicalDeviceSurfaceFormatsKHR(renderSubsystem->getPhysicalDevice(), m_VulkanSurface, &surfaceFormatCount, nullptr);
+        vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, m_VulkanSurface, &surfaceFormatCount, nullptr);
         if (surfaceFormatCount == 0)
         {
             return false;
         }
 
         jarray<VkSurfaceFormatKHR> surfaceFormats(surfaceFormatCount);
-        vkGetPhysicalDeviceSurfaceFormatsKHR(renderSubsystem->getPhysicalDevice(), m_VulkanSurface, &surfaceFormatCount, surfaceFormats.getData());
+        vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, m_VulkanSurface, &surfaceFormatCount, surfaceFormats.getData());
 
         for (const auto& surfaceFormat : surfaceFormats)
         {
@@ -92,6 +84,12 @@ namespace JumaEngine
             delete m_VulkanSwapchain;
             m_VulkanSwapchain = nullptr;
         }
+    }
+    
+    void Window_Vulkan::onWindowResized(const math::uvector2& newSize)
+    {
+        Super::onWindowResized(newSize);
+        m_VulkanSwapchain->onWindowSizeChanged();
     }
 }
 

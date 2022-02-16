@@ -16,8 +16,6 @@ namespace JumaEngine
     using window_id_type = uint32;
     constexpr window_id_type INVALID_WINDOW_ID = juid<window_id_type>::invalidUID;
 
-    CREATE_JUTILS_MULTICAST_DELEGATE_OneParam(OnWindowEvent, Window*, window);
-
     class Window : public EngineContextObject
     {
         JUMAENGINE_ABSTRACT_CLASS(Window, EngineContextObject)
@@ -25,9 +23,6 @@ namespace JumaEngine
     public:
         Window() = default;
         virtual ~Window() override = default;
-
-        OnWindowEvent onSizeChanged;
-
 
         virtual bool isValid() const = 0;
 
@@ -48,5 +43,8 @@ namespace JumaEngine
 
         jstring m_Title;
         math::uvector2 m_Size = { 0, 0 };
+
+
+        virtual void onWindowResized(const math::uvector2& newSize) { m_Size = newSize; }
     };
 }

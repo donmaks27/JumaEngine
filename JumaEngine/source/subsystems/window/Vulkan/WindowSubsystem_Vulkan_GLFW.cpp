@@ -63,12 +63,14 @@ namespace JumaEngine
 
     Window* WindowSubsystem_Vulkan_GLFW::createWindow(const jstring& title, const math::uvector2& size)
     {
-        RenderSubsystem_Vulkan* renderSubsystem = cast<RenderSubsystem_Vulkan>(getOwnerEngine()->getRenderSubsystem());
         Window_Vulkan_GLFW* window = getOwnerEngine()->createObject<Window_Vulkan_GLFW>();
         if (window == nullptr)
         {
             return nullptr;
         }
+        
+        RenderSubsystem_Vulkan* renderSubsystem = cast<RenderSubsystem_Vulkan>(getOwnerEngine()->getRenderSubsystem());
+        renderSubsystem->registerVulkanObject(window);
 
         const window_id_type id = m_WindowIDs.getUID();
         if (!window->initWindow(id, title, size))

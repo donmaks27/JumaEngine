@@ -39,6 +39,8 @@ namespace JumaEngine
 
     class VulkanSwapchain : public VulkanContextObject
     {
+        friend Window_Vulkan;
+
     public:
         VulkanSwapchain() = default;
         virtual ~VulkanSwapchain() override;
@@ -100,7 +102,7 @@ namespace JumaEngine
 
         void clearVulkanObjects();
 
-        void onWindowSizeChanged(Window* window);
+        void onWindowSizeChanged();
 
         void markAsNeededToRecreate();
         bool applySettingsInternal(bool forceRecreate);

@@ -93,8 +93,6 @@ namespace JumaEngine
         }
 
         m_SettingForApply = m_CurrentSettings;
-        m_Window->onSizeChanged.bind(this, &VulkanSwapchain::onWindowSizeChanged);
-
         markAsInitialized();
         return true;
     }
@@ -351,11 +349,7 @@ namespace JumaEngine
     {
         clearVulkanObjects();
 
-        if (m_Window != nullptr)
-        {
-            m_Window->onSizeChanged.unbind(this, &VulkanSwapchain::onWindowSizeChanged);
-            m_Window = nullptr;
-        }
+        m_Window = nullptr;
     }
     void VulkanSwapchain::clearVulkanObjects()
     {
@@ -406,7 +400,7 @@ namespace JumaEngine
         }
     }
 
-    void VulkanSwapchain::onWindowSizeChanged(Window* window)
+    void VulkanSwapchain::onWindowSizeChanged()
     {
         VkSurfaceCapabilitiesKHR capabilities;
         vkGetPhysicalDeviceSurfaceCapabilitiesKHR(getRenderSubsystem()->getPhysicalDevice(), m_Window->getVulkanSurface(), &capabilities);
@@ -416,7 +410,7 @@ namespace JumaEngine
         }
         else
         {
-            const math::uvector2 windowSize = window->getSize();
+            const math::uvector2 windowSize = m_Window->getSize();
             m_SettingForApply.size = {
 		        math::clamp(windowSize.x, capabilities.minImageExtent.width, capabilities.maxImageExtent.width),
 		        math::clamp(windowSize.y, capabilities.minImageExtent.height, capabilities.maxImageExtent.height)

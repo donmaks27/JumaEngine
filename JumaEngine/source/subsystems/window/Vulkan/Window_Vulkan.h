@@ -7,6 +7,7 @@
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
 #include "subsystems/window/Window.h"
+#include "subsystems/render/Vulkan/VulkanContextObject.h"
 
 #include <vulkan/vulkan_core.h>
 
@@ -15,7 +16,7 @@ namespace JumaEngine
     class RenderSubsystem_Vulkan;
     class VulkanSwapchain;
 
-    class Window_Vulkan : public Window
+    class Window_Vulkan : public Window, public VulkanContextObjectBase
     {
         JUMAENGINE_ABSTRACT_CLASS(Window_Vulkan, Window)
 
@@ -37,10 +38,9 @@ namespace JumaEngine
         VulkanSwapchain* m_VulkanSwapchain = nullptr;
 
 
-        RenderSubsystem_Vulkan* getRenderSubsystem() const;
-        VkInstance getVulkanInstance() const;
-
         void destroyWindow_Vulkan();
+
+        virtual void onWindowResized(const math::uvector2& newSize) override;
     };
 }
 

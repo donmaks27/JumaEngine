@@ -37,7 +37,7 @@ namespace JumaEngine
         }
 
         VkSurfaceKHR surface = nullptr;
-        const VkResult result = glfwCreateWindowSurface(getVulkanInstance(), window, nullptr, &surface);
+        const VkResult result = glfwCreateWindowSurface(getRenderSubsystem()->getVulkanInstance(), window, nullptr, &surface);
         if (result != VK_SUCCESS)
         {
             JUMA_VULKAN_ERROR_LOG(JSTR("Failed to create window surface"), result);
@@ -61,13 +61,8 @@ namespace JumaEngine
         Window_Vulkan_GLFW* window = static_cast<Window_Vulkan_GLFW*>(glfwGetWindowUserPointer(windowGLFW));
         if (window != nullptr)
         {
-            window->onWindowResizedCallback({ math::max<uint32>(width, 0), math::max<uint32>(height, 0) });
+            window->onWindowResized({ math::max<uint32>(width, 0), math::max<uint32>(height, 0) });
         }
-    }
-    void Window_Vulkan_GLFW::onWindowResizedCallback(const math::uvector2& newSize)
-    {
-        m_Size = newSize;
-        onSizeChanged.call(this);
     }
     
     bool Window_Vulkan_GLFW::shouldClose() const

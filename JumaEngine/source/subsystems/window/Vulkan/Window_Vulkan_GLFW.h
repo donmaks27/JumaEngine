@@ -39,7 +39,6 @@ namespace JumaEngine
         bool isValid_GLFW() const { return m_WindowGLFW != nullptr; }
 
         static void GLFW_FramebufferResizeCallback(GLFWwindow* windowGLFW, int width, int height);
-        void onWindowResizedCallback(const math::uvector2& newSize);
 
         void destroyWindow_GLFW();
     };

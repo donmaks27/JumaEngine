@@ -65,6 +65,15 @@ namespace JumaEngine
 
         template<typename T, TEMPLATE_ENABLE(is_base_and_not_same<VulkanContextObjectBase, T>)>
         T* createVulkanObject() { return registerVulkanObject(new T()); }
+        template<typename T, TEMPLATE_ENABLE(is_base_and_not_same<VulkanContextObjectBase, T>)>
+        T* registerVulkanObject(T* vulkanContextObject)
+        {
+            if (vulkanContextObject != nullptr)
+            {
+                vulkanContextObject->m_RenderSubsystem = this;
+            }
+            return vulkanContextObject;
+        }
         virtual jshared_ptr<VertexBuffer> createVertexBuffer() override;
         virtual jshared_ptr<Shader> createShader() override;
         virtual jshared_ptr<Material> createMaterial() override;
@@ -111,16 +120,6 @@ namespace JumaEngine
         bool createCommandPools();
 
         void clearVulkan();
-
-        template<typename T, TEMPLATE_ENABLE(is_base_and_not_same<VulkanContextObjectBase, T>)>
-        T* registerVulkanObject(T* vulkanContextObject)
-        {
-            if (vulkanContextObject != nullptr)
-            {
-                vulkanContextObject->m_RenderSubsystem = this;
-            }
-            return vulkanContextObject;
-        }
     };
 }
 
