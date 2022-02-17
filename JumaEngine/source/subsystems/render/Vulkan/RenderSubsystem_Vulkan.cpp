@@ -21,6 +21,7 @@
 #include "subsystems/render/vertexBuffer/VertexBufferData.h"
 #include "subsystems/window/Vulkan/WindowSubsystem_Vulkan.h"
 #include "subsystems/window/Vulkan/Window_Vulkan.h"
+#include "vulkanObjects/VulkanRenderPass.h"
 
 namespace JumaEngine
 {
@@ -402,6 +403,12 @@ namespace JumaEngine
                 vkDeviceWaitIdle(m_Device);
 
                 cast<Window_Vulkan>(m_MainWindow)->destroyVulkanSwapchain();
+                for (const auto& renderPassTypeAndPointer : m_RenderPasses)
+                {
+                    delete renderPassTypeAndPointer.value;
+                }
+                m_RenderPasses.clear();
+                m_RenderPassTypes.clear();
 
                 m_CommandPools.clear();
                 m_QueueFamilyIndices.clear();
@@ -532,6 +539,34 @@ namespace JumaEngine
                 description = VertexDescription_Vulkan(vertexBufferData->getVertexSize(), vertexBufferData->getVertexComponents());
             }
         }
+    }
+
+    VulkanRenderPass* RenderSubsystem_Vulkan::createRenderPass(const VulkanRenderPassDescription& description)
+    {
+        if ((description.colorFormat == VK_FORMAT_UNDEFINED) || (description.depthFormat == VK_FORMAT_UNDEFINED))
+        {
+            return nullptr;
+        }
+
+        RenderPassTypeContainer& typeContainer = m_RenderPassTypes[description];
+        if (typeContainer.id == INVALID_RENDER_PASS_TYPE_ID)
+        {
+            typeContainer.id = m_RenderPassTypeIDs.getUID();
+        }
+
+        VulkanRenderPass*& renderPass = m_RenderPasses[description];
+        if (renderPass == nullptr)
+        {
+            renderPass = createVulkanObject<VulkanRenderPass>();
+            if (!renderPass->init(description, typeContainer.id))
+            {
+                delete renderPass;
+                m_RenderPasses.remove(description);
+                return nullptr;
+            }
+            typeContainer.count++;
+        }
+        return renderPass;
     }
 }
 

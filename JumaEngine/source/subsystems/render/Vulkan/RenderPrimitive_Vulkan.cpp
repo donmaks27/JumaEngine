@@ -12,6 +12,7 @@
 #include "vulkanObjects/VulkanSwapchain.h"
 #include "RenderOptionsData_Vulkan.h"
 #include "vulkanObjects/VulkanCommandBuffer.h"
+#include "vulkanObjects/VulkanRenderPass.h"
 
 namespace JumaEngine
 {
@@ -150,7 +151,7 @@ namespace JumaEngine
         pipelineInfo.pColorBlendState = &colorBlending;
         pipelineInfo.pDynamicState = &dynamicState;
         pipelineInfo.layout = shaderVulkan->getPipelineLayout();
-        pipelineInfo.renderPass = swapchain->getRenderPass();
+        pipelineInfo.renderPass = swapchain->getRenderPass()->get();
         pipelineInfo.subpass = 0;
         pipelineInfo.basePipelineHandle = nullptr;
         pipelineInfo.basePipelineIndex = -1;

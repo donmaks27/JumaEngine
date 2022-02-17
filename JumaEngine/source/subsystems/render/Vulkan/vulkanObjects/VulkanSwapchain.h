@@ -20,6 +20,7 @@ namespace JumaEngine
 {
     class Window;
     class Window_Vulkan;
+    class VulkanRenderPass;
     class VulkanCommandBuffer;
     class VulkanSwapchainFramebuffer;
     class Image_Vulkan;
@@ -58,7 +59,7 @@ namespace JumaEngine
         VkSwapchainKHR get() const { return m_Swapchain; }
         const jshared_ptr<Image_Vulkan>& getRenderColorImage() const { return m_RenderImage_Color; }
         const jshared_ptr<Image_Vulkan>& getRenderDepthImage() const { return m_RenderImage_Depth; }
-        VkRenderPass getRenderPass() const { return m_RenderPass; }
+        VulkanRenderPass* getRenderPass() const { return m_RenderPass; }
 
         void applySettings(bool forceRecreate = false);
         bool isNeedToRecreate() const { return m_NeedToRecreate; }
@@ -77,7 +78,7 @@ namespace JumaEngine
         VkSwapchainKHR m_Swapchain = nullptr;
         jshared_ptr<Image_Vulkan> m_RenderImage_Color = nullptr;
         jshared_ptr<Image_Vulkan> m_RenderImage_Depth = nullptr;
-        VkRenderPass m_RenderPass = nullptr;
+        VulkanRenderPass* m_RenderPass = nullptr;
         jarray<jshared_ptr<VulkanSwapchainFramebuffer>> m_Framebuffers;
 
         uint32 m_MaxFramesInFlight = 2;

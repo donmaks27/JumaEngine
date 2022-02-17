@@ -8,6 +8,7 @@
 #include "subsystems/render/Vulkan/RenderSubsystem_Vulkan.h"
 #include "subsystems/render/Vulkan/Image_Vulkan.h"
 #include "VulkanSwapchain.h"
+#include "VulkanRenderPass.h"
 
 namespace JumaEngine
 {
@@ -54,7 +55,7 @@ namespace JumaEngine
         const math::uvector2 swapchainSize = swapchain->getSize();
         VkFramebufferCreateInfo framebufferInfo{};
         framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-        framebufferInfo.renderPass = swapchain->getRenderPass();
+        framebufferInfo.renderPass = swapchain->getRenderPass()->get();
         framebufferInfo.attachmentCount = static_cast<uint32>(attachments.getSize());
         framebufferInfo.pAttachments = attachments.getData();
         framebufferInfo.width = swapchainSize.x;

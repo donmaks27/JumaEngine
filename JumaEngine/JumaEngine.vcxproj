@@ -116,6 +116,7 @@
     <ClCompile Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanCommandBuffer.cpp" />
     <ClCompile Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanCommandPool.cpp" />
     <ClCompile Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanQueue.cpp" />
+    <ClCompile Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanRenderPass.cpp" />
     <ClCompile Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanSwapchain.cpp" />
     <ClCompile Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanSwapchainFramebuffer.cpp" />
     <ClCompile Include="source\subsystems\SubsystemBase.cpp" />
@@ -224,6 +225,8 @@
     <ClInclude Include="source\subsystems\render\Vulkan\VertexBuffer_Vulkan.h" />
     <ClInclude Include="source\subsystems\render\Vulkan\vma_lib.h" />
     <ClInclude Include="source\subsystems\render\Vulkan\VulkanContextObject.h" />
+    <ClInclude Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanRenderPass.h" />
+    <ClInclude Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanRenderPassDescription.h" />
     <ClInclude Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanBuffer.h" />
     <ClInclude Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanCommandBuffer.h" />
     <ClInclude Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanCommandPool.h" />

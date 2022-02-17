@@ -16,11 +16,13 @@
 #include "jutils/jstringID.h"
 #include "vulkanObjects/VulkanQueueType.h"
 #include "VulkanContextObject.h"
+#include "vulkanObjects/VulkanRenderPassDescription.h"
 
 namespace JumaEngine
 {
     class VertexBufferDataBase;
     struct VertexComponentDescription;
+    class VulkanRenderPass;
     class VulkanSwapchain;
     class VulkanCommandPool;
     class VulkanQueue;
@@ -82,13 +84,22 @@ namespace JumaEngine
 
         void registerVertexType(const VertexBufferDataBase* vertexBufferData);
         const VertexDescription_Vulkan* findVertexDescription(const jstringID& vertexName) const { return m_RegisteredVertexTypes.find(vertexName); }
-        
+
+        VulkanRenderPass* createRenderPass(const VulkanRenderPassDescription& description);
+
     protected:
 
         virtual bool initSubsystemInternal() override;
         virtual void clearSubsystemInternal() override;
 
     private:
+
+        struct RenderPassTypeContainer
+        {
+            render_pass_id_type id = INVALID_RENDER_PASS_TYPE_ID;
+            uint32 count = 0;
+        };
+
 
         const jarray<const char*> m_VulkanDeviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 
@@ -105,6 +116,10 @@ namespace JumaEngine
         jmap<VulkanQueueType, jshared_ptr<VulkanCommandPool>> m_CommandPools;
 
         jmap<jstringID, VertexDescription_Vulkan> m_RegisteredVertexTypes;
+
+        juid<render_pass_id_type> m_RenderPassTypeIDs;
+        jmap<VulkanRenderPassDescription, RenderPassTypeContainer, VulkanRenderPassDescription::CompatiblePred> m_RenderPassTypes;
+        jmap<VulkanRenderPassDescription, VulkanRenderPass*, VulkanRenderPassDescription::EqualPred> m_RenderPasses;
 
 
         static VKAPI_ATTR VkBool32 VKAPI_CALL Vulkan_DebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, 
