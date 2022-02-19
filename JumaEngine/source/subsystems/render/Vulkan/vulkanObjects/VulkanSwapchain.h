@@ -18,6 +18,7 @@
 
 namespace JumaEngine
 {
+    class VulkanFramebuffer;
     class Window;
     class Window_Vulkan;
     class VulkanRenderPass;
@@ -57,8 +58,6 @@ namespace JumaEngine
         uint32 getImageCount() const { return m_CurrentSettings.imageCount; }
 
         VkSwapchainKHR get() const { return m_Swapchain; }
-        const jshared_ptr<Image_Vulkan>& getRenderColorImage() const { return m_RenderImage_Color; }
-        const jshared_ptr<Image_Vulkan>& getRenderDepthImage() const { return m_RenderImage_Depth; }
         VulkanRenderPass* getRenderPass() const { return m_RenderPass; }
 
         void applySettings(bool forceRecreate = false);
@@ -76,13 +75,12 @@ namespace JumaEngine
         Window_Vulkan* m_Window = nullptr;
 
         VkSwapchainKHR m_Swapchain = nullptr;
-        jshared_ptr<Image_Vulkan> m_RenderImage_Color = nullptr;
-        jshared_ptr<Image_Vulkan> m_RenderImage_Depth = nullptr;
         VulkanRenderPass* m_RenderPass = nullptr;
-        jarray<jshared_ptr<VulkanSwapchainFramebuffer>> m_Framebuffers;
+        jarray<jshared_ptr<VulkanFramebuffer>> m_Framebuffers;
 
         uint32 m_MaxFramesInFlight = 2;
         uint32 m_CurrentInFlightFrame = 0;
+        jarray<int32> m_InFlightFrameIndices;
         jarray<VkSemaphore> m_Semaphores_ImageAvailable;
         jarray<VkSemaphore> m_Semaphores_RenderFinished;
         jarray<VkFence> m_Fences_RenderFinished;
@@ -96,7 +94,6 @@ namespace JumaEngine
         VkSampleCountFlagBits getMaxSampleCount() const;
 
         bool createSwapchain();
-        bool createRenderImages();
         bool createRenderPass();
         bool createFramebuffers();
         bool createSyncObjects();

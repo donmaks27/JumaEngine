@@ -7,13 +7,13 @@
 #include "subsystems/render/Vulkan/RenderSubsystem_Vulkan.h"
 #include "subsystems/render/Vulkan/Image_Vulkan.h"
 #include "jutils/jlog.h"
-#include "VulkanSwapchainFramebuffer.h"
 #include "subsystems/render/Vulkan/RenderOptionsData_Vulkan.h"
 #include "VulkanCommandBuffer.h"
 #include "VulkanCommandPool.h"
 #include "VulkanQueue.h"
 #include "subsystems/window/Vulkan/Window_Vulkan.h"
 #include "VulkanRenderPass.h"
+#include "VulkanFramebuffer.h"
 
 namespace JumaEngine
 {
@@ -86,7 +86,7 @@ namespace JumaEngine
         m_CurrentSettings.size = { swapchainSize.width, swapchainSize.height };
         m_CurrentSettings.presentMode = presentMode;
 
-        if (!createSwapchain() || !createRenderImages() || !createRenderPass() || !createFramebuffers())
+        if (!createSwapchain() || !createRenderPass() || !createFramebuffers())
         {
             clearVulkanObjects();
             m_Window = nullptr;
@@ -167,38 +167,12 @@ namespace JumaEngine
         vkGetSwapchainImagesKHR(device, m_Swapchain, &m_CurrentSettings.imageCount, nullptr);
         return true;
     }
-    bool VulkanSwapchain::createRenderImages()
-    {
-        m_RenderImage_Color = jshared_dynamic_cast<Image_Vulkan>(getRenderSubsystem()->createImage());
-        m_RenderImage_Color->init(
-            m_CurrentSettings.size, 1, m_CurrentSettings.sampleCount, m_CurrentSettings.surfaceFormat.format, 
-            { VulkanQueueType::Graphics, VulkanQueueType::Transfer }, 
-            VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VMA_MEMORY_USAGE_GPU_ONLY, 0
-        );
-        if (!m_RenderImage_Color->isValid() || !m_RenderImage_Color->createImageView(VK_IMAGE_ASPECT_COLOR_BIT))
-        {
-            return false;
-        }
-
-        m_RenderImage_Depth = jshared_dynamic_cast<Image_Vulkan>(getRenderSubsystem()->createImage());
-        m_RenderImage_Depth->init(
-            m_CurrentSettings.size, 1, m_CurrentSettings.sampleCount, m_CurrentSettings.depthFormat,
-            { VulkanQueueType::Graphics, VulkanQueueType::Transfer },
-            VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VMA_MEMORY_USAGE_GPU_ONLY, 0
-        );
-        if (!m_RenderImage_Depth->isValid() || !m_RenderImage_Depth->createImageView(VK_IMAGE_ASPECT_DEPTH_BIT))
-        {
-            return false;
-        }
-
-        return true;
-    }
     bool VulkanSwapchain::createRenderPass()
     {
         VulkanRenderPassDescription description;
         description.sampleCount = m_CurrentSettings.sampleCount;
         description.colorFormat = m_CurrentSettings.surfaceFormat.format;
-        description.depthFormat = Image_Vulkan::getVulkanFormatByImageFormat(m_RenderImage_Depth->getFormat());
+        description.depthFormat = m_CurrentSettings.depthFormat;
         description.renderToSwapchain = true;
         m_RenderPass = getRenderSubsystem()->createRenderPass(description);
         if (m_RenderPass == nullptr)
@@ -210,20 +184,24 @@ namespace JumaEngine
     }
     bool VulkanSwapchain::createFramebuffers()
     {
+        RenderSubsystem_Vulkan* renderSubsystem = getRenderSubsystem();
+
         uint32 swapchainImageCount = m_CurrentSettings.imageCount;
         jarray<VkImage> swapchainImages(swapchainImageCount);
 	    vkGetSwapchainImagesKHR(getRenderSubsystem()->getDevice(), m_Swapchain, &swapchainImageCount, swapchainImages.getData());
 
         m_Framebuffers.resize(swapchainImageCount);
+        m_InFlightFrameIndices.resize(swapchainImageCount);
         for (int32 index = 0; index < m_Framebuffers.getSize(); index++)
         {
+            m_InFlightFrameIndices[index] = -1;
+
             if (m_Framebuffers[index] == nullptr)
             {
-                m_Framebuffers[index] = getRenderSubsystem()->createVulkanObject<VulkanSwapchainFramebuffer>();
+                m_Framebuffers[index] = renderSubsystem->createVulkanObject<VulkanFramebuffer>();
             }
-            m_Framebuffers[index]->setCommandBuffer(nullptr);
-            m_Framebuffers[index]->setRenderFinishedFence(nullptr);
-            if (!m_Framebuffers[index]->init(this, swapchainImages[index]))
+            m_Framebuffers[index]->setRenderCommandBuffer(nullptr);
+            if (!m_Framebuffers[index]->create(m_RenderPass, m_CurrentSettings.size, swapchainImages[index]))
             {
                 return false;
             }
@@ -325,9 +303,6 @@ namespace JumaEngine
             onRenderPassChanged.call(this);
         }
 
-        m_RenderImage_Depth.reset();
-        m_RenderImage_Color.reset();
-
         if (m_Swapchain != nullptr)
         {
             vkDestroySwapchainKHR(device, m_Swapchain, nullptr);
@@ -400,10 +375,6 @@ namespace JumaEngine
         {
             return false;
         }
-        if (shouldRecreateRenderImages && !createRenderImages())
-        {
-            return false;
-        }
         if (shouldRecreateRenderPass && !createRenderPass())
         {
             return false;
@@ -429,8 +400,9 @@ namespace JumaEngine
 
         VkDevice device = getRenderSubsystem()->getDevice();
 
-        uint32 renderImageIndex = 0;
         vkWaitForFences(device, 1, &m_Fences_RenderFinished[m_CurrentInFlightFrame], VK_TRUE, UINT64_MAX);
+
+        uint32 renderImageIndex = 0;
         const VkResult result = vkAcquireNextImageKHR(device, m_Swapchain, UINT64_MAX, m_Semaphores_ImageAvailable[m_CurrentInFlightFrame], nullptr, &renderImageIndex);
         if ((result != VK_SUCCESS) && (result != VK_SUBOPTIMAL_KHR))
         {
@@ -444,10 +416,13 @@ namespace JumaEngine
             markAsNeededToRecreate();
             return false;
         }
-        VkFence fence = m_Framebuffers[renderImageIndex]->getRenderFinishedFence();
+
+        const int32 prevInFlightFrameIndex = m_InFlightFrameIndices[renderImageIndex];
+        VkFence fence = m_Fences_RenderFinished.isValidIndex(prevInFlightFrameIndex) ? m_Fences_RenderFinished[prevInFlightFrameIndex] : nullptr;
         if (fence != nullptr)
         {
             vkWaitForFences(device, 1, &fence, VK_TRUE, UINT64_MAX);
+            m_InFlightFrameIndices[renderImageIndex] = -1;
         }
 
         const jshared_ptr<VulkanCommandBuffer> commandBuffer = createRenderCommandBuffer(renderImageIndex);
@@ -455,8 +430,8 @@ namespace JumaEngine
         {
             return false;
         }
-        m_Framebuffers[renderImageIndex]->setCommandBuffer(commandBuffer);
-        m_Framebuffers[renderImageIndex]->setRenderFinishedFence(m_Fences_RenderFinished[m_CurrentInFlightFrame]);
+        m_Framebuffers[renderImageIndex]->setRenderCommandBuffer(commandBuffer);
+        m_InFlightFrameIndices[renderImageIndex] = m_CurrentInFlightFrame;
         vkResetFences(device, 1, &m_Fences_RenderFinished[m_CurrentInFlightFrame]);
 
         RenderOptionsData_Vulkan* optionsData = options.getData<RenderOptionsData_Vulkan>();
@@ -517,7 +492,7 @@ namespace JumaEngine
     void VulkanSwapchain::finishRender(const RenderOptions& options)
     {
         const uint32 swapchainImageIndex = options.getData<RenderOptionsData_Vulkan>()->swapchainImageIndex;
-        const jshared_ptr<VulkanCommandBuffer>& commandBuffer = m_Framebuffers[swapchainImageIndex]->getCommandBuffer();
+        const jshared_ptr<VulkanCommandBuffer>& commandBuffer = m_Framebuffers[swapchainImageIndex]->getRenderCommandBuffer();
 
         vkCmdEndRenderPass(commandBuffer->get());
         VkResult result = vkEndCommandBuffer(commandBuffer->get());

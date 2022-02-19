@@ -26,7 +26,8 @@ namespace JumaEngine
         VkAttachmentDescription attachments[3];
         const int32 attachmentCount = multisampleEnabled ? 3 : 2;
 
-        VkAttachmentDescription& colorAttachment = attachments[0] = VkAttachmentDescription{};
+        VkAttachmentDescription& colorAttachment = attachments[0];
+        colorAttachment.flags = 0;
         colorAttachment.format = description.colorFormat;
         colorAttachment.samples = description.sampleCount;
         colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
@@ -43,7 +44,8 @@ namespace JumaEngine
             colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
         }
 
-        VkAttachmentDescription& depthAttachment = attachments[1] = VkAttachmentDescription{};
+        VkAttachmentDescription& depthAttachment = attachments[1];
+        depthAttachment.flags = 0;
         depthAttachment.format = description.depthFormat;
         depthAttachment.samples = description.sampleCount;
         depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
@@ -55,15 +57,16 @@ namespace JumaEngine
 
         if (multisampleEnabled)
         {
-            VkAttachmentDescription& colorAttachmentResolve = attachments[2] = VkAttachmentDescription{};
-            colorAttachmentResolve.format = description.colorFormat;
-            colorAttachmentResolve.samples = VK_SAMPLE_COUNT_1_BIT;
-            colorAttachmentResolve.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-            colorAttachmentResolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-            colorAttachmentResolve.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-            colorAttachmentResolve.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-            colorAttachmentResolve.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-            colorAttachmentResolve.finalLayout = !description.renderToSwapchain ? VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL : VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+            VkAttachmentDescription& colorResolveAttachment = attachments[2];
+            colorResolveAttachment.flags = 0;
+            colorResolveAttachment.format = description.colorFormat;
+            colorResolveAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+            colorResolveAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+            colorResolveAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+            colorResolveAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+            colorResolveAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+            colorResolveAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+            colorResolveAttachment.finalLayout = !description.renderToSwapchain ? VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL : VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
         }
         
         constexpr VkAttachmentReference attachmentRefs[3] = {
@@ -117,6 +120,44 @@ namespace JumaEngine
 
             m_TypeID = INVALID_RENDER_PASS_TYPE_ID;
         }
+    }
+
+    VulkanFramebufferImagesDescription VulkanRenderPass::getImagesDescription() const
+    {
+        if (!isValid())
+        {
+            return VulkanFramebufferImagesDescription();
+        }
+
+        VulkanFramebufferImagesDescription result;
+
+        if (m_Description.sampleCount != VK_SAMPLE_COUNT_1_BIT)
+        {
+            result.images.resize(3);
+            result.resultImageIndex = 2;
+
+            VulkanFramebufferImageDescription& resolveImage = result.images[2];
+            resolveImage.sampleCount = VK_SAMPLE_COUNT_1_BIT;
+            resolveImage.format = m_Description.colorFormat;
+            resolveImage.depthImage = false;
+        }
+        else
+        {
+            result.images.resize(2);
+            result.resultImageIndex = 0;
+        }
+
+        VulkanFramebufferImageDescription& colorImage = result.images[0];
+        colorImage.sampleCount = m_Description.sampleCount;
+        colorImage.format = m_Description.colorFormat;
+        colorImage.depthImage = false;
+
+        VulkanFramebufferImageDescription& depthImage = result.images[1];
+        depthImage.sampleCount = m_Description.sampleCount;
+        depthImage.format = m_Description.depthFormat;
+        depthImage.depthImage = true;
+
+        return result;
     }
 }
 

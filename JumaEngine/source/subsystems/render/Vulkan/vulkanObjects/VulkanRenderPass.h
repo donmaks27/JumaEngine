@@ -25,9 +25,11 @@ namespace JumaEngine
         const VulkanRenderPassDescription& getDescription() const { return m_Description; }
         render_pass_id_type getTypeID() const { return m_TypeID; }
 
+        VulkanFramebufferImagesDescription getImagesDescription() const;
+
     protected:
 
-        void clearInternal() override { clearRenderPass(); }
+        virtual void clearInternal() override { clearRenderPass(); }
 
     private:
 
