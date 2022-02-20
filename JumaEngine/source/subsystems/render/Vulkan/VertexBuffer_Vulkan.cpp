@@ -80,9 +80,9 @@ namespace JumaEngine
 
         VkCommandBuffer vulkanCommandBuffer = data.commandBuffer->get();
 
-        VkDeviceSize offsets[] = { 0 };
         VkBuffer vertexBuffer = m_VertexBuffer->get();
-        vkCmdBindVertexBuffers(vulkanCommandBuffer, 0, 1, &vertexBuffer, offsets);
+        const VkDeviceSize offset = 0;
+        vkCmdBindVertexBuffers(vulkanCommandBuffer, 0, 1, &vertexBuffer, &offset);
 
         if (m_IndexBuffer == nullptr)
         {

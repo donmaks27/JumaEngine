@@ -76,7 +76,7 @@ namespace JumaEngine
 
         VkSwapchainKHR m_Swapchain = nullptr;
         VulkanRenderPass* m_RenderPass = nullptr;
-        jarray<jshared_ptr<VulkanFramebuffer>> m_Framebuffers;
+        jarray<VulkanFramebuffer*> m_Framebuffers;
 
         uint32 m_MaxFramesInFlight = 2;
         uint32 m_CurrentInFlightFrame = 0;

@@ -124,7 +124,7 @@ namespace JumaEngine
         applicationInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
         applicationInfo.pEngineName = JSTR("JumaEngine");
         applicationInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-        applicationInfo.apiVersion = VK_API_VERSION_1_2;
+        applicationInfo.apiVersion = VK_API_VERSION_1_3;
 
         VkInstanceCreateInfo instanceInfo{};
         instanceInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;

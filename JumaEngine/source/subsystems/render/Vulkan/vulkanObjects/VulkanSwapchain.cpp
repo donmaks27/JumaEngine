@@ -190,8 +190,13 @@ namespace JumaEngine
         jarray<VkImage> swapchainImages(swapchainImageCount);
 	    vkGetSwapchainImagesKHR(getRenderSubsystem()->getDevice(), m_Swapchain, &swapchainImageCount, swapchainImages.getData());
 
+        for (int32 index = swapchainImageCount; index < m_Framebuffers.getSize(); index++)
+        {
+            delete m_Framebuffers[index];
+        }
         m_Framebuffers.resize(swapchainImageCount);
         m_InFlightFrameIndices.resize(swapchainImageCount);
+
         for (int32 index = 0; index < m_Framebuffers.getSize(); index++)
         {
             m_InFlightFrameIndices[index] = -1;
@@ -295,6 +300,10 @@ namespace JumaEngine
         m_Semaphores_RenderFinished.clear();
         m_Fences_RenderFinished.clear();
 
+        for (auto& frambuffer : m_Framebuffers)
+        {
+            delete frambuffer;
+        }
         m_Framebuffers.clear();
 
         if (m_RenderPass != nullptr)
