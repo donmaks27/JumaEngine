@@ -5,8 +5,8 @@
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
 #include "RenderSubsystem_Vulkan.h"
-#include "Shader_Vulkan.h"
-#include "subsystems/render/Shader.h"
+#include "ShaderOld_Vulkan.h"
+#include "subsystems/render/ShaderOld.h"
 #include "jutils/jlog.h"
 #include "vulkanObjects/VulkanSwapchain.h"
 #include "vulkanObjects/VulkanBuffer.h"
@@ -44,7 +44,7 @@ namespace JumaEngine
         }
     }
 
-    bool Material_Vulkan::initInternal(const jshared_ptr<Shader>& shader)
+    bool Material_Vulkan::initInternal(const jshared_ptr<ShaderOld>& shader)
     {
         if (!createDescriptorPool(shader) || !createMaterialUniformData(shader) || !createDescriptorSets(shader))
         {
@@ -53,7 +53,7 @@ namespace JumaEngine
         }
         return true;
     }
-    bool Material_Vulkan::createDescriptorPool(const jshared_ptr<Shader>& shader)
+    bool Material_Vulkan::createDescriptorPool(const jshared_ptr<ShaderOld>& shader)
     {
         VulkanSwapchain* swapchain = getRenderSubsystem()->getSwapchain();
         const uint32 imageCount = (swapchain != nullptr) && swapchain->isValid() ? swapchain->getImageCount() : 0;
@@ -99,7 +99,7 @@ namespace JumaEngine
         return true;
     }
 
-    bool Material_Vulkan::createMaterialUniformData(const jshared_ptr<Shader>& shader)
+    bool Material_Vulkan::createMaterialUniformData(const jshared_ptr<ShaderOld>& shader)
     {
         const uint32 imageCount = getRenderSubsystem()->getSwapchain()->getImageCount();
         for (const auto& uniformNameAndType : shader->getUniforms())
@@ -170,7 +170,7 @@ namespace JumaEngine
         }
     }
 
-    bool Material_Vulkan::createDescriptorSets(const jshared_ptr<Shader>& shader)
+    bool Material_Vulkan::createDescriptorSets(const jshared_ptr<ShaderOld>& shader)
     {
         if (m_DescriptorPool == nullptr)
         {
@@ -178,7 +178,7 @@ namespace JumaEngine
         }
 
         VkDevice device = getRenderSubsystem()->getDevice();
-        const Shader_Vulkan* shaderVulkan = dynamic_cast<const Shader_Vulkan*>(shader.get());
+        const ShaderOld_Vulkan* shaderVulkan = dynamic_cast<const ShaderOld_Vulkan*>(shader.get());
         const uint32 imageCount = getRenderSubsystem()->getSwapchain()->getImageCount();
 
         m_DescriptorSets.resize(imageCount);
@@ -286,7 +286,7 @@ namespace JumaEngine
         return true;
     }
 
-    void Material_Vulkan::clearVulkanData(const jshared_ptr<Shader>& shader)
+    void Material_Vulkan::clearVulkanData(const jshared_ptr<ShaderOld>& shader)
     {
         m_DescriptorSets.clear();
         if (m_DescriptorPool != nullptr)
@@ -386,7 +386,7 @@ namespace JumaEngine
             }
         }
 
-        const Shader_Vulkan* shader = dynamic_cast<const Shader_Vulkan*>(getShader().get());
+        const ShaderOld_Vulkan* shader = dynamic_cast<const ShaderOld_Vulkan*>(getShader().get());
         vkCmdBindDescriptorSets(
             data.commandBuffer->get(), VK_PIPELINE_BIND_POINT_GRAPHICS, 
             shader->getPipelineLayout(), 0, 1, &m_DescriptorSets[data.swapchainImageIndex], 

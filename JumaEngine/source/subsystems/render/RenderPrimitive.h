@@ -10,8 +10,8 @@
 
 namespace JumaEngine
 {
-    class VertexBuffer;
-    class Material;
+    class VertexBufferOld;
+    class MaterialOld;
 
     class RenderPrimitive : public EngineContextObject, public IRenderInterface
     {
@@ -21,22 +21,22 @@ namespace JumaEngine
         RenderPrimitive() = default;
         virtual ~RenderPrimitive() override = default;
 
-        bool init(const jshared_ptr<VertexBuffer>& vertexBuffer, const jshared_ptr<Material>& material);
+        bool init(const jshared_ptr<VertexBufferOld>& vertexBuffer, const jshared_ptr<MaterialOld>& material);
         bool isValid() const { return m_Initialized; }
         void clear();
 
-        const jshared_ptr<VertexBuffer>& getVertexBuffer() const { return m_VertexBuffer; }
-        const jshared_ptr<Material>& getMaterial() const { return m_Material; }
+        const jshared_ptr<VertexBufferOld>& getVertexBuffer() const { return m_VertexBuffer; }
+        const jshared_ptr<MaterialOld>& getMaterial() const { return m_Material; }
 
     protected:
 
-        virtual bool initInternal(const jshared_ptr<VertexBuffer>& vertexBuffer, const jshared_ptr<Material>& material) = 0;
+        virtual bool initInternal(const jshared_ptr<VertexBufferOld>& vertexBuffer, const jshared_ptr<MaterialOld>& material) = 0;
         virtual void clearInternal() = 0;
 
     private:
 
         bool m_Initialized = false;
-        jshared_ptr<VertexBuffer> m_VertexBuffer;
-        jshared_ptr<Material> m_Material;
+        jshared_ptr<VertexBufferOld> m_VertexBuffer;
+        jshared_ptr<MaterialOld> m_Material;
     };
 }

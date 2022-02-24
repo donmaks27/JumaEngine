@@ -4,7 +4,7 @@
 
 #include "common_header.h"
 
-#include "RenderOptions.h"
+#include "RenderOptionsOld.h"
 
 namespace JumaEngine
 {
@@ -16,6 +16,6 @@ namespace JumaEngine
 
     public:
 
-        virtual void render(const RenderOptions& options) {}
+        virtual void render(const RenderOptionsOld& options) {}
     };
 }

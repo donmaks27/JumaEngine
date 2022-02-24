@@ -19,7 +19,7 @@ namespace JumaEngine
 
     void SubsystemBase::clear()
     {
-        if (isInit())
+        if (isValid())
         {
             clearSubsystemInternal();
             m_Terminated = true;

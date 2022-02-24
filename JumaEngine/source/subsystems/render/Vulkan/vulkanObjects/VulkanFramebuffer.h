@@ -30,6 +30,7 @@ namespace JumaEngine
         bool create(VulkanRenderPass* renderPass, const math::uvector2& size, VkImage resultImage);
 
         VkFramebuffer get() const { return m_Framebuffer; }
+        VulkanRenderPass* getRenderPass() const { return m_RenderPass; }
 
         const jshared_ptr<VulkanCommandBuffer>& getRenderCommandBuffer() const { return m_CommandBuffer; }
         void setRenderCommandBuffer(const jshared_ptr<VulkanCommandBuffer>& commandBuffer) { m_CommandBuffer = commandBuffer; }

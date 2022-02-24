@@ -1,27 +1,19 @@
-﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
+﻿// Copyright 2022 Leonov Maksim. All Rights Reserved.
 
 #include "Material.h"
+#include "RenderSubsystem.h"
 #include "Shader.h"
-#include "jutils/jlog.h"
-#include "MaterialUniform.h"
+#include "engine/Engine.h"
+#include "jutils/math/math_matrix.h"
 
 namespace JumaEngine
 {
     Material::~Material()
     {
-        if (isValid())
-        {
-            clearMaterial();
-            onMaterialCleared();
-        }
+        clear();
     }
 
-    bool Material::isValid() const
-    {
-        return isMaterialInstance() ? m_BaseMaterial->isValid() : (m_BaseShader != nullptr) && m_BaseShader->isValid();
-    }
-
-    bool Material::init(const jshared_ptr<Shader>& shader)
+    bool Material::init(Shader* shader)
     {
         if (isValid())
         {
@@ -30,100 +22,127 @@ namespace JumaEngine
         }
         if ((shader == nullptr) || !shader->isValid())
         {
-            JUMA_LOG(warning, JSTR("Shader not valid"));
+            JUMA_LOG(warning, JSTR("Invalid shader"));
             return false;
         }
 
         m_BaseShader = shader;
-        initUniformValues(shader);
-        if (!initInternal(shader))
-        {
-            clearUniformValues();
-            m_BaseShader = nullptr;
-            return false;
-        }
+        createUniformValues(shader);
+        m_BaseShader->onClear.bind(this, &Material::onBaseShaderClear);
 
-        m_BaseShader->onPreClear.bind(this, &Material::onBaseShaderPreClear);
+        m_Initialized = true;
         return true;
     }
-    bool Material::init(const jshared_ptr<Material>& material)
+    bool Material::init(Material* baseMaterial)
     {
         if (isValid())
         {
             JUMA_LOG(warning, JSTR("Material already initialized"));
             return false;
         }
-        if ((material == nullptr) || !material->isValid())
+        if ((baseMaterial == nullptr) || !baseMaterial->isValid())
         {
-            JUMA_LOG(warning, JSTR("Base material not valid"));
+            JUMA_LOG(warning, JSTR("Invalid base material"));
             return false;
         }
 
-        m_BaseMaterial = material;
-        if (!initInternal(material->getShader()))
-        {
-            m_BaseMaterial = nullptr;
-            return false;
-        }
+        m_BaseMaterial = baseMaterial;
+        m_BaseShader = m_BaseMaterial->getShader();
+        m_BaseMaterial->onClear.bind(this, &Material::onBaseMaterialClear);
+        m_BaseMaterial->onParamChanged.bind(this, &Material::onBaseMaterialParamChanged);
 
-        m_BaseMaterial->onPreClear.bind(this, &Material::onBaseMaterialPreClear);
+        m_Initialized = true;
         return true;
     }
-
-    void Material::initUniformValues(const jshared_ptr<Shader>& shader)
-    {
-        for (const auto& nameAndShaderUniform : shader->getUniforms())
-        {
-            MaterialUniform* uniform = MaterialUniformActions::create(nameAndShaderUniform.value.type);
-            if (uniform != nullptr)
-            {
-                m_UniformNames.add(nameAndShaderUniform.key);
-                m_UniformValues.add(uniform);
-            }
-        }
-    }
-
+    
     void Material::clear()
     {
         if (isValid())
         {
-            onMaterialPreClear();
+            if (!isMaterialInstance())
+            {
+                m_BaseShader->onClear.unbind(this, &Material::onBaseShaderClear);
+            }
+            else
+            {
+                m_BaseMaterial->onParamChanged.unbind(this, &Material::onBaseMaterialParamChanged);
+                m_BaseMaterial->onClear.unbind(this, &Material::onBaseMaterialClear);
+            }
+            onClear.call(this);
 
-            clearInternal();
-            clearMaterial();
+            clearRenderObject();
 
-            onMaterialCleared();
+            clearUniformValues();
+
+            m_BaseMaterial = nullptr;
+            m_BaseShader = nullptr;
+            m_Initialized = false;
         }
     }
-    void Material::clearMaterial()
+
+    void Material::createUniformValues(Shader* shader)
     {
-        clearUniformValues();
-        if (m_BaseShader != nullptr)
+        for (const auto& uniformNameAndType : shader->getUniforms())
         {
-            m_BaseShader->onPreClear.unbind(this, &Material::onBaseShaderPreClear);
-            m_BaseShader = nullptr;
-        }
-        if (m_BaseMaterial != nullptr)
-        {
-            m_BaseMaterial->onPreClear.unbind(this, &Material::onBaseMaterialPreClear);
-            m_BaseMaterial = nullptr;
+            const jstringID& uniformName = uniformNameAndType.key;
+            const ShaderUniform& uniformType = uniformNameAndType.value;
+            switch (uniformType.type)
+            {
+            case ShaderUniformType::Mat4: 
+                m_UniformValues_Mat4.add(uniformName, math::matrix4(1));
+                break;
+            case ShaderUniformType::Image: break;
+
+            default: ;
+            }
         }
     }
     void Material::clearUniformValues()
     {
-        for (const auto& uniform : m_UniformValues)
-        {
-            MaterialUniformActions::terminate(uniform);
-        }
-        m_UniformNames.clear();
-        m_UniformValues.clear();
+        m_UniformValues_Mat4.clear();
     }
 
-    ShaderUniformType Material::getUniformType(const jstring& name) const
+    bool Material::createRenderObject()
+    {
+        if (!isValid())
+        {
+            JUMA_LOG(warning, JSTR("Shader not initialized"));
+            return false;
+        }
+
+        RenderSubsystem* renderSubsystem = getOwnerEngine()->getRenderSubsystem();
+        m_RenderObject = renderSubsystem->createMaterialObject();
+        if (!m_RenderObject->init(this))
+        {
+            delete m_RenderObject;
+            m_RenderObject = nullptr;
+            return false;
+        }
+        return true;
+    }
+    void Material::clearRenderObject()
+    {
+        if (m_RenderObject != nullptr)
+        {
+            delete m_RenderObject;
+            m_RenderObject = nullptr;
+        }
+    }
+
+    bool Material::render(VertexBuffer* vertexBuffer, const RenderOptions* renderOptions)
+    {
+        if (m_RenderObject == nullptr)
+        {
+            return false;
+        }
+        return m_RenderObject->render(vertexBuffer, renderOptions);
+    }
+
+    ShaderUniformType Material::getParamType(const jstringID& paramName) const
     {
         if (isValid())
         {
-            const ShaderUniform* uniform = getShader()->getUniforms().find(name);
+            const ShaderUniform* uniform = m_BaseShader->getUniforms().find(paramName);
             if (uniform != nullptr)
             {
                 return uniform->type;
@@ -131,17 +150,82 @@ namespace JumaEngine
         }
         return ShaderUniformType::None;
     }
-    MaterialUniform* Material::getUniformValue(const jstring& name) const
+    bool Material::isOverrideParam(const jstringID& paramName) const
     {
-        const int32 index = m_UniformNames.indexOf(name);
-        if (index != -1)
+        if (!isValid())
         {
-            return m_UniformValues[index];
+            return false;
         }
-        if (isMaterialInstance() && getUniformNames().contains(name))
+        if (!isMaterialInstance())
         {
-            return m_BaseMaterial->getUniformValue(name);
+            return true;
         }
-        return nullptr;
+
+        const ShaderUniform* uniform = m_BaseShader->getUniforms().find(paramName);
+        if (uniform == nullptr)
+        {
+            return false;
+        }
+
+        switch (uniform->type)
+        {
+        case ShaderUniformType::Mat4: return m_UniformValues_Mat4.contains(paramName);
+
+        default: ;
+        }
+        return false;
+    }
+    
+    void Material::onBaseMaterialParamChanged(Material* material, const jstringID& paramName)
+    {
+        if (!isOverrideParam(paramName))
+        {
+            notifyMaterialParamChanged(paramName);
+        }
+    }
+    void Material::notifyMaterialParamChanged(const jstringID& paramName)
+    {
+        if (m_RenderObject != nullptr)
+        {
+            m_RenderObject->onMaterialParamChanged(paramName);
+        }
+        onParamChanged.call(this, paramName);
+    }
+
+    bool Material::isUniformTypeCorrect(const jstringID& paramName, const ShaderUniformType type) const
+    {
+        const ShaderUniform* uniform = m_BaseShader->getUniforms().find(paramName);
+        return (uniform != nullptr) && (uniform->type == type);
+    }
+
+    void Material::resetParamValue(const jstringID& paramName)
+    {
+        bool success = false;
+        switch (getParamType(paramName))
+        {
+        case ShaderUniformType::Mat4:
+            {
+                if (isMaterialInstance())
+                {
+                    success = m_UniformValues_Mat4.remove(paramName);
+                }
+                else
+                {
+                    math::matrix4& value = m_UniformValues_Mat4[paramName];
+                    if (!math::isMatricesEqual(value, math::matrix4(1)))
+                    {
+                        value = math::matrix4(1);
+                        success = true;
+                    }
+                }
+            }
+            break;
+
+        default: ;
+        }
+        if (success)
+        {
+            notifyMaterialParamChanged(paramName);
+        }
     }
 }

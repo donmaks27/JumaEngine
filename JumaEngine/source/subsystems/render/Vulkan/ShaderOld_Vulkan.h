@@ -6,20 +6,20 @@
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
-#include "subsystems/render/Shader.h"
+#include "subsystems/render/ShaderOld.h"
 #include "VulkanContextObject.h"
 
 #include <vulkan/vulkan_core.h>
 
 namespace JumaEngine
 {
-    class Shader_Vulkan final : public Shader, public VulkanContextObjectBase
+    class ShaderOld_Vulkan final : public ShaderOld, public VulkanContextObjectBase
     {
-        JUMAENGINE_CLASS(Shader_Vulkan, Shader)
+        JUMAENGINE_CLASS(ShaderOld_Vulkan, ShaderOld)
 
     public:
-        Shader_Vulkan() = default;
-        virtual ~Shader_Vulkan() override;
+        ShaderOld_Vulkan() = default;
+        virtual ~ShaderOld_Vulkan() override;
 
         VkDescriptorSetLayout getDescriptorSetLayout() const { return m_DescriptorSetLayout; }
         VkPipelineLayout getPipelineLayout() const { return m_PipelineLayout; }

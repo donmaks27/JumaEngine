@@ -18,11 +18,11 @@ namespace JumaEngine
         RenderPrimitive_OpenGL() = default;
         virtual ~RenderPrimitive_OpenGL() override = default;
 
-        virtual void render(const RenderOptions& options) override;
+        virtual void render(const RenderOptionsOld& options) override;
 
     protected:
 
-        virtual bool initInternal(const jshared_ptr<VertexBuffer>& vertexBuffer, const jshared_ptr<Material>& material) override { return true; }
+        virtual bool initInternal(const jshared_ptr<VertexBufferOld>& vertexBuffer, const jshared_ptr<Material>& material) override { return true; }
         virtual void clearInternal() override {}
     };
 }

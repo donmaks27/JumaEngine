@@ -11,7 +11,7 @@
 
 namespace JumaEngine
 {
-    void RenderPrimitive_OpenGL::render(const RenderOptions& options)
+    void RenderPrimitive_OpenGL::render(const RenderOptionsOld& options)
     {
         if (!isValid())
         {

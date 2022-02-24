@@ -6,7 +6,7 @@
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
-#include "subsystems/render/RenderOptions.h"
+#include "subsystems/render/RenderOptionsOld.h"
 
 namespace JumaEngine
 {

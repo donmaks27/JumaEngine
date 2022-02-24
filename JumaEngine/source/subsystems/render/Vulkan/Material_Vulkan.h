@@ -6,7 +6,7 @@
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
-#include "subsystems/render/Material.h"
+#include "subsystems/render/MaterialOld.h"
 #include "VulkanContextObject.h"
 
 #include <vulkan/vulkan_core.h>
@@ -16,9 +16,9 @@ namespace JumaEngine
     struct RenderOptionsData_Vulkan;
     class VulkanCommandBuffer;
 
-    class Material_Vulkan final : public Material, public VulkanContextObjectBase
+    class Material_Vulkan final : public MaterialOld, public VulkanContextObjectBase
     {
-        JUMAENGINE_CLASS(Material_Vulkan, Material)
+        JUMAENGINE_CLASS(Material_Vulkan, MaterialOld)
 
     public:
         Material_Vulkan() = default;
@@ -28,7 +28,7 @@ namespace JumaEngine
 
     protected:
 
-        virtual bool initInternal(const jshared_ptr<Shader>& shader) override;
+        virtual bool initInternal(const jshared_ptr<ShaderOld>& shader) override;
         virtual void clearInternal() override { clearVulkanData(); }
 
         virtual void onMaterialUniformChanged(const jstring& name) override;
@@ -39,16 +39,16 @@ namespace JumaEngine
         jarray<VkDescriptorSet> m_DescriptorSets;
 
 
-        bool createDescriptorPool(const jshared_ptr<Shader>& shader);
+        bool createDescriptorPool(const jshared_ptr<ShaderOld>& shader);
 
-        bool createMaterialUniformData(const jshared_ptr<Shader>& shader);
+        bool createMaterialUniformData(const jshared_ptr<ShaderOld>& shader);
         void createMaterialUniformData_Matrix4(MaterialUniform* uniformValue, uint32 imageCount);
         void createMaterialUniformData_Image(MaterialUniform* uniformValue, uint32 imageCount);
 
-        bool createDescriptorSets(const jshared_ptr<Shader>& shader);
+        bool createDescriptorSets(const jshared_ptr<ShaderOld>& shader);
 
         void clearVulkanData() { clearVulkanData(getShader()); }
-        void clearVulkanData(const jshared_ptr<Shader>& shader);
+        void clearVulkanData(const jshared_ptr<ShaderOld>& shader);
 
         void updateMaterialUniformData_Matrix4(MaterialUniform* uniformValue, uint32 imageIndex);
         void updateMaterialUniformData_Image(int32 uniformIndex, MaterialUniform* uniformValue, uint32 imageIndex);

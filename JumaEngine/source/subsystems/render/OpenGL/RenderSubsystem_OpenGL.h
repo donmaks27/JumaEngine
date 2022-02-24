@@ -20,7 +20,7 @@ namespace JumaEngine
 
         virtual void render() override;
 
-        virtual jshared_ptr<VertexBuffer> createVertexBuffer() override;
+        virtual jshared_ptr<VertexBufferOld> createVertexBuffer() override;
         virtual jshared_ptr<Shader> createShader() override;
         virtual jshared_ptr<Material> createMaterial() override;
         virtual jshared_ptr<Image> createImage() override;

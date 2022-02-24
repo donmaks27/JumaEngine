@@ -5,7 +5,7 @@
 
 namespace JumaEngine
 {
-    bool RenderPrimitive::init(const jshared_ptr<VertexBuffer>& vertexBuffer, const jshared_ptr<Material>& material)
+    bool RenderPrimitive::init(const jshared_ptr<VertexBufferOld>& vertexBuffer, const jshared_ptr<MaterialOld>& material)
     {
         if (isValid())
         {

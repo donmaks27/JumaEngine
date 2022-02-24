@@ -5,7 +5,7 @@
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
 #include "Material_Vulkan.h"
-#include "Shader_Vulkan.h"
+#include "ShaderOld_Vulkan.h"
 #include "RenderSubsystem_Vulkan.h"
 #include "VertexBuffer_Vulkan.h"
 #include "jutils/jlog.h"
@@ -24,7 +24,7 @@ namespace JumaEngine
         }
     }
 
-    bool RenderPrimitive_Vulkan::initInternal(const jshared_ptr<VertexBuffer>& vertexBuffer, const jshared_ptr<Material>& material)
+    bool RenderPrimitive_Vulkan::initInternal(const jshared_ptr<VertexBufferOld>& vertexBuffer, const jshared_ptr<MaterialOld>& material)
     {
         if (!createRenderPipeline(vertexBuffer, material))
         {
@@ -34,10 +34,10 @@ namespace JumaEngine
         getRenderSubsystem()->getSwapchain()->onRenderPassChanged.bind(this, &RenderPrimitive_Vulkan::onRenderPassChanged);
         return true;
     }
-    bool RenderPrimitive_Vulkan::createRenderPipeline(const jshared_ptr<VertexBuffer>& vertexBuffer, const jshared_ptr<Material>& material)
+    bool RenderPrimitive_Vulkan::createRenderPipeline(const jshared_ptr<VertexBufferOld>& vertexBuffer, const jshared_ptr<MaterialOld>& material)
     {
         const VertexBuffer_Vulkan* vertexBufferVulkan = cast<VertexBuffer_Vulkan>(vertexBuffer.get());
-        const Shader_Vulkan* shaderVulkan = material != nullptr ? cast<Shader_Vulkan>(material->getShader().get()) : nullptr;
+        const ShaderOld_Vulkan* shaderVulkan = material != nullptr ? cast<ShaderOld_Vulkan>(material->getShader().get()) : nullptr;
         if ((vertexBufferVulkan == nullptr) || (shaderVulkan == nullptr))
         {
             return false;
@@ -197,7 +197,7 @@ namespace JumaEngine
         }
     }
 
-    void RenderPrimitive_Vulkan::render(const RenderOptions& options)
+    void RenderPrimitive_Vulkan::render(const RenderOptionsOld& options)
     {
         if (!isValid())
         {

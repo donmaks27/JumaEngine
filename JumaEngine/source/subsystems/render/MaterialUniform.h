@@ -12,6 +12,18 @@ namespace JumaEngine
 {
     class Image;
 
+    template<ShaderUniformType Type>
+    struct MaterialUniformInfo
+    {
+        static constexpr bool isValid = false;
+    };
+    template<>
+    struct MaterialUniformInfo<ShaderUniformType::Mat4>
+    {
+        static constexpr bool isValid = true;
+        using value_type = math::matrix4;
+    };
+
     struct MaterialUniform
     {
         ShaderUniformType type = ShaderUniformType::None;

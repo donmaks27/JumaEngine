@@ -14,10 +14,11 @@
 #include "jutils/jarray.h"
 #include "jutils/jdelegate_multicast.h"
 #include "jutils/math/vector2.h"
-#include "subsystems/render/RenderOptions.h"
+#include "subsystems/render/RenderOptionsOld.h"
 
 namespace JumaEngine
 {
+    struct RenderOptions;
     class VulkanFramebuffer;
     class Window;
     class Window_Vulkan;
@@ -52,6 +53,8 @@ namespace JumaEngine
 
         bool init(Window_Vulkan* window);
 
+        uint8 getMaxRenderedFrameCount() const { return m_MaxRenderedFrameCount; }
+
         VkSampleCountFlagBits getSampleCount() const { return m_CurrentSettings.sampleCount; }
         VkFormat getFormat() const { return m_CurrentSettings.surfaceFormat.format; }
         math::uvector2 getSize() const { return m_CurrentSettings.size; }
@@ -63,8 +66,8 @@ namespace JumaEngine
         void applySettings(bool forceRecreate = false);
         bool isNeedToRecreate() const { return m_NeedToRecreate; }
 
-        bool startRender(const RenderOptions& options);
-        void finishRender(const RenderOptions& options);
+        bool startRender(RenderOptions* options);
+        void finishRender(RenderOptions* options);
 
     protected:
 
@@ -78,9 +81,10 @@ namespace JumaEngine
         VulkanRenderPass* m_RenderPass = nullptr;
         jarray<VulkanFramebuffer*> m_Framebuffers;
 
-        uint32 m_MaxFramesInFlight = 2;
-        uint32 m_CurrentInFlightFrame = 0;
-        jarray<int32> m_InFlightFrameIndices;
+        uint8 m_MaxRenderedFrameCount = 3;
+        uint8 m_RenderedFrameCount = 2;
+        uint8 m_RenderedFrameIndex = 0;
+        jarray<int32> m_SwapchainImage_RenderedFrameIndices;
         jarray<VkSemaphore> m_Semaphores_ImageAvailable;
         jarray<VkSemaphore> m_Semaphores_RenderFinished;
         jarray<VkFence> m_Fences_RenderFinished;

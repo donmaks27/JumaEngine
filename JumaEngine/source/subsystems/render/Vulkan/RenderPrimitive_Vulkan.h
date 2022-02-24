@@ -23,11 +23,11 @@ namespace JumaEngine
         RenderPrimitive_Vulkan() = default;
         virtual ~RenderPrimitive_Vulkan() override;
 
-        virtual void render(const RenderOptions& options) override;
+        virtual void render(const RenderOptionsOld& options) override;
 
     protected:
 
-        virtual bool initInternal(const jshared_ptr<VertexBuffer>& vertexBuffer, const jshared_ptr<Material>& material) override;
+        virtual bool initInternal(const jshared_ptr<VertexBufferOld>& vertexBuffer, const jshared_ptr<MaterialOld>& material) override;
         virtual void clearInternal() override;
 
     private:
@@ -36,7 +36,7 @@ namespace JumaEngine
         VkPipeline m_RenderPipeline = nullptr;
 
 
-        bool createRenderPipeline(const jshared_ptr<VertexBuffer>& vertexBuffer, const jshared_ptr<Material>& material);
+        bool createRenderPipeline(const jshared_ptr<VertexBufferOld>& vertexBuffer, const jshared_ptr<MaterialOld>& material);
         bool recreateRenderPipeline();
         void onRenderPassChanged(VulkanSwapchain* swapchain);
 

@@ -4,20 +4,23 @@
 
 #include "common_header.h"
 #include "EngineContextObject.h"
-#include "subsystems/render/RenderInterface.h"
 #include "jutils/jshared_ptr.h"
 
 namespace JumaEngine
 {
+    struct RenderOptions;
+    class Shader;
+    class Material;
+    class VertexBuffer;
     class WindowSubsystem;
     class RenderPrimitive;
     class RenderSubsystem;
 
-    class Engine final : public IRenderInterface
+    class Engine final
     {
     public:
         Engine() = default;
-        virtual ~Engine() override = default;
+        ~Engine() = default;
 
         EngineContextObject* createObject(const EngineContextObject::ClassType* objectClass);
         template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<EngineContextObject, T>)>
@@ -25,7 +28,7 @@ namespace JumaEngine
 
         bool startEngine();
         
-        virtual void render(const RenderOptions& options) override;
+        void render(const RenderOptions* options);
 
         WindowSubsystem* getWindowSubsystem() const { return m_WindowSubsytem; }
         RenderSubsystem* getRenderSubsystem() const { return m_RenderSubsystem; }
@@ -38,6 +41,9 @@ namespace JumaEngine
         RenderSubsystem* m_RenderSubsystem = nullptr;
 
         jshared_ptr<RenderPrimitive> m_RenderPrimitive = nullptr;
+        Shader* m_Shader = nullptr;
+        Material* m_Material = nullptr;
+        VertexBuffer* m_VertexBuffer = nullptr;
 
 
         void registerEngineObject(EngineContextObject* object);

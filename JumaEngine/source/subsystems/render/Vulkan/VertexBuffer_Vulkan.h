@@ -6,7 +6,7 @@
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
-#include "subsystems/render/vertexBuffer/VertexBuffer.h"
+#include "subsystems/render/vertex/VertexBufferOld.h"
 #include "VulkanContextObject.h"
 
 #include "jutils/jshared_ptr.h"
@@ -18,9 +18,9 @@ namespace JumaEngine
     class VulkanCommandBuffer;
     class VulkanBuffer;
 
-    class VertexBuffer_Vulkan final : public VertexBuffer, public VulkanContextObjectBase
+    class VertexBuffer_Vulkan final : public VertexBufferOld, public VulkanContextObjectBase
     {
-        JUMAENGINE_CLASS(VertexBuffer_Vulkan, VertexBuffer)
+        JUMAENGINE_CLASS(VertexBuffer_Vulkan, VertexBufferOld)
 
     public:
         VertexBuffer_Vulkan() = default;

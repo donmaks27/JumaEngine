@@ -11,13 +11,13 @@ namespace JumaEngine
 {
     class VertexBufferDataBase;
 
-    class VertexBuffer : public EngineContextObject
+    class VertexBufferOld : public EngineContextObject
     {
-        JUMAENGINE_ABSTRACT_CLASS(VertexBuffer, EngineContextObject)
+        JUMAENGINE_ABSTRACT_CLASS(VertexBufferOld, EngineContextObject)
 
     public:
-        VertexBuffer() = default;
-        virtual ~VertexBuffer() override = default;
+        VertexBufferOld() = default;
+        virtual ~VertexBufferOld() override = default;
 
         bool init(const VertexBufferDataBase* data);
         bool isValid() const { return m_Initialized; }

@@ -14,14 +14,18 @@
 #include "engine/Engine.h"
 #include "Image_Vulkan.h"
 #include "RenderOptionsData_Vulkan.h"
-#include "Shader_Vulkan.h"
+#include "ShaderOld_Vulkan.h"
 #include "Material_Vulkan.h"
 #include "RenderPrimitive_Vulkan.h"
 #include "VertexBuffer_Vulkan.h"
-#include "subsystems/render/vertexBuffer/VertexBufferData.h"
+#include "subsystems/render/vertex/VertexBufferData.h"
 #include "subsystems/window/Vulkan/WindowSubsystem_Vulkan.h"
 #include "subsystems/window/Vulkan/Window_Vulkan.h"
 #include "vulkanObjects/VulkanRenderPass.h"
+#include "ShaderObject_Vulkan.h"
+#include "MaterialObject_Vulkan.h"
+#include "VertexBufferObject_Vulkan.h"
+#include "RenderOptions_Vulkan.h"
 
 namespace JumaEngine
 {
@@ -442,16 +446,12 @@ namespace JumaEngine
     {
         m_MainWindow->startRender();
 
-        RenderOptions options;
-        RenderOptionsData_Vulkan optionsVulkan;
-        optionsVulkan.invertFacesOrientation = false;
-        options.data = &optionsVulkan;
-
+        RenderOptions_Vulkan options;
         VulkanSwapchain* swapchain = cast<Window_Vulkan>(m_MainWindow)->getVulkanSwapchain();
-        if (swapchain->startRender(options))
+        if (swapchain->startRender(&options))
         {
-            callEngineRender(options);
-            swapchain->finishRender(options);
+            callEngineRender(&options);
+            swapchain->finishRender(&options);
         }
         if (swapchain->isNeedToRecreate())
         {
@@ -466,17 +466,30 @@ namespace JumaEngine
         vkQueueWaitIdle(getQueue(VulkanQueueType::Graphics)->get());
     }
 
-    jshared_ptr<VertexBuffer> RenderSubsystem_Vulkan::createVertexBuffer()
+    ShaderObject* RenderSubsystem_Vulkan::createShaderObject()
+    {
+        return createVulkanObject<ShaderObject_Vulkan>();
+    }
+    MaterialObject* RenderSubsystem_Vulkan::createMaterialObject()
+    {
+        return createVulkanObject<MaterialObject_Vulkan>();
+    }
+    VertexBufferObject* RenderSubsystem_Vulkan::createVertexBufferObject()
+    {
+        return createVulkanObject<VertexBufferObject_Vulkan>();
+    }
+
+    jshared_ptr<VertexBufferOld> RenderSubsystem_Vulkan::createVertexBuffer()
     {
         Engine* engine = getOwnerEngine();
         return registerVulkanObject(engine != nullptr ? engine->createObject<VertexBuffer_Vulkan>() : nullptr);
     }
-    jshared_ptr<Shader> RenderSubsystem_Vulkan::createShader()
+    jshared_ptr<ShaderOld> RenderSubsystem_Vulkan::createShaderOld()
     {
         Engine* engine = getOwnerEngine();
-        return registerVulkanObject(engine != nullptr ? engine->createObject<Shader_Vulkan>() : nullptr);
+        return registerVulkanObject(engine != nullptr ? engine->createObject<ShaderOld_Vulkan>() : nullptr);
     }
-    jshared_ptr<Material> RenderSubsystem_Vulkan::createMaterial()
+    jshared_ptr<MaterialOld> RenderSubsystem_Vulkan::createMaterial()
     {
         Engine* engine = getOwnerEngine();
         return registerVulkanObject(engine != nullptr ? engine->createObject<Material_Vulkan>() : nullptr);

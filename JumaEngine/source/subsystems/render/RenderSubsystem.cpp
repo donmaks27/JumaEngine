@@ -23,7 +23,7 @@ namespace JumaEngine
         }
     }
 
-    void RenderSubsystem::callEngineRender(const RenderOptions& options) const
+    void RenderSubsystem::callEngineRender(const RenderOptions* options) const
     {
         Engine* engine = getOwnerEngine();
         if (engine != nullptr)

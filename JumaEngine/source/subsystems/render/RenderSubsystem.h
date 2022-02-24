@@ -5,17 +5,21 @@
 #include "common_header.h"
 #include "subsystems/SubsystemBase.h"
 
-#include "RenderOptions.h"
+#include "RenderOptionsOld.h"
 #include "subsystems/window/Window.h"
 #include "jutils/jshared_ptr.h"
 
 namespace JumaEngine
 {
+    struct RenderOptions;
+    class VertexBufferObject;
     class RenderPrimitive;
     class Image;
-    class VertexBuffer;
-    class Material;
-    class Shader;
+    class VertexBufferOld;
+    class MaterialOld;
+    class ShaderOld;
+    class ShaderObject;
+    class MaterialObject;
 
     class RenderSubsystem : public SubsystemBase
     {
@@ -34,9 +38,13 @@ namespace JumaEngine
 
         virtual void onEnginePreTerminate() {}
 
-        virtual jshared_ptr<VertexBuffer> createVertexBuffer() = 0;
-        virtual jshared_ptr<Shader> createShader() = 0;
-        virtual jshared_ptr<Material> createMaterial() = 0;
+        virtual ShaderObject* createShaderObject() = 0;
+        virtual MaterialObject* createMaterialObject() = 0;
+        virtual VertexBufferObject* createVertexBufferObject() = 0;
+
+        virtual jshared_ptr<VertexBufferOld> createVertexBuffer() = 0;
+        virtual jshared_ptr<ShaderOld> createShaderOld() = 0;
+        virtual jshared_ptr<MaterialOld> createMaterial() = 0;
         virtual jshared_ptr<Image> createImage() = 0;
         virtual jshared_ptr<RenderPrimitive> createRenderPrimitive() = 0;
 
@@ -48,6 +56,6 @@ namespace JumaEngine
         bool createMainWindow();
         void terminateMainWindow();
 
-        void callEngineRender(const RenderOptions& options) const;
+        void callEngineRender(const RenderOptions* options) const;
     };
 }

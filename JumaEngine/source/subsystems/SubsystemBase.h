@@ -17,7 +17,7 @@ namespace JumaEngine
         SubsystemBase() = default;
         virtual ~SubsystemBase() override = default;
 
-        bool isInit() const { return m_Initialized && !m_Terminated; }
+        bool isValid() const { return m_Initialized && !m_Terminated; }
         void clear();
 
     protected:

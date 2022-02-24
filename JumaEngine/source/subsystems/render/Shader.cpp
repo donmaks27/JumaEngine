@@ -1,51 +1,76 @@
-﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
+﻿// Copyright 2022 Leonov Maksim. All Rights Reserved.
 
 #include "Shader.h"
-#include "jutils/jlog.h"
+#include "RenderSubsystem.h"
+#include "engine/Engine.h"
 
 namespace JumaEngine
 {
     Shader::~Shader()
     {
-        if (isValid())
-        {
-            onShaderCleared();
-        }
+        clear();
     }
 
-    bool Shader::init(const jstring& shaderName, const jmap<jstring, ShaderUniform>& uniforms)
+    bool Shader::init(const jstring& vertexShader, const jstring& fragmentShader, jmap<jstringID, ShaderUniform> uniforms)
     {
         if (isValid())
         {
-            JUMA_LOG(warning, JSTR("Shader already loaded"));
+            JUMA_LOG(warning, JSTR("Shader already initalized"));
             return false;
         }
-        if (shaderName.isEmpty())
+        if (vertexShader.isEmpty() || fragmentShader.isEmpty())
         {
-            JUMA_LOG(warning, JSTR("Shader name is empty"));
+            JUMA_LOG(warning, JSTR("Empty shader name"));
             return false;
         }
-        if (!initInternal(shaderName, uniforms))
-        {
-            return false;
-        }
+
+        m_VertexShaderName = vertexShader;
+        m_FragmentShaderName = fragmentShader;
+        m_ShaderUniforms = std::move(uniforms);
 
         m_Initialized = true;
-        m_Name = shaderName;
-        m_ShaderUniforms = uniforms;
         return true;
     }
-
     void Shader::clear()
     {
         if (isValid())
         {
-            onShaderPreClear();
+            onClear.call(this);
 
-            clearInternal();
+            clearRenderObject();
+
+            m_VertexShaderName.clear();
+            m_FragmentShaderName.clear();
+            m_ShaderUniforms.clear();
+
             m_Initialized = false;
+        }
+    }
 
-            onShaderCleared();
+    bool Shader::createRenderObject()
+    {
+        if (!isValid())
+        {
+            JUMA_LOG(warning, JSTR("Shader not initialized"));
+            return false;
+        }
+
+        RenderSubsystem* renderSubsystem = getOwnerEngine()->getRenderSubsystem();
+        m_RenderObject = renderSubsystem->createShaderObject();
+        if (!m_RenderObject->init(this))
+        {
+            delete m_RenderObject;
+            m_RenderObject = nullptr;
+            return false;
+        }
+        return true;
+    }
+    void Shader::clearRenderObject()
+    {
+        if (m_RenderObject != nullptr)
+        {
+            delete m_RenderObject;
+            m_RenderObject = nullptr;
         }
     }
 }

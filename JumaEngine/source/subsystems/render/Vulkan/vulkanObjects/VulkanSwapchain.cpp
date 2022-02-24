@@ -14,6 +14,7 @@
 #include "subsystems/window/Vulkan/Window_Vulkan.h"
 #include "VulkanRenderPass.h"
 #include "VulkanFramebuffer.h"
+#include "subsystems/render/Vulkan/RenderOptions_Vulkan.h"
 
 namespace JumaEngine
 {
@@ -45,7 +46,9 @@ namespace JumaEngine
         // Get image count
         VkSurfaceCapabilitiesKHR capabilities;
         vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface, &capabilities);
-        const uint32 imageCount = capabilities.maxImageCount > 0 ? math::min(capabilities.minImageCount + 1, capabilities.maxImageCount) : capabilities.minImageCount + 1;
+        m_MaxRenderedFrameCount = capabilities.maxImageCount > 0 ? static_cast<uint8>(math::min(capabilities.maxImageCount, 3)) : 3;
+        m_RenderedFrameCount = math::min(m_MaxRenderedFrameCount, 2);
+        const uint32 imageCount = m_MaxRenderedFrameCount;
 
         // Pick surface format
         VkSurfaceFormatKHR surfaceFormat;
@@ -195,11 +198,11 @@ namespace JumaEngine
             delete m_Framebuffers[index];
         }
         m_Framebuffers.resize(swapchainImageCount);
-        m_InFlightFrameIndices.resize(swapchainImageCount);
+        m_SwapchainImage_RenderedFrameIndices.resize(swapchainImageCount);
 
         for (int32 index = 0; index < m_Framebuffers.getSize(); index++)
         {
-            m_InFlightFrameIndices[index] = -1;
+            m_SwapchainImage_RenderedFrameIndices[index] = -1;
 
             if (m_Framebuffers[index] == nullptr)
             {
@@ -217,16 +220,16 @@ namespace JumaEngine
     {
         VkDevice device = getRenderSubsystem()->getDevice();
 
-        m_Semaphores_ImageAvailable.resize(m_MaxFramesInFlight);
-        m_Semaphores_RenderFinished.resize(m_MaxFramesInFlight);
-        m_Fences_RenderFinished.resize(m_MaxFramesInFlight);
+        m_Semaphores_ImageAvailable.resize(m_RenderedFrameCount);
+        m_Semaphores_RenderFinished.resize(m_RenderedFrameCount);
+        m_Fences_RenderFinished.resize(m_RenderedFrameCount);
 
         VkSemaphoreCreateInfo semaphoreInfo{};
         semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
         VkFenceCreateInfo fenceInfo{};
         fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
         fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
-        for (uint32 index = 0; index < m_MaxFramesInFlight; index++)
+        for (uint32 index = 0; index < m_RenderedFrameCount; index++)
         {
             if (m_Semaphores_ImageAvailable[index] != nullptr)
             {
@@ -261,7 +264,7 @@ namespace JumaEngine
             }
         }
 
-        m_CurrentInFlightFrame = math::clamp(m_CurrentInFlightFrame, 0, m_MaxFramesInFlight - 1);
+        m_RenderedFrameIndex = math::clamp(m_RenderedFrameIndex, 0, m_RenderedFrameCount - 1);
         return true;
     }
 
@@ -400,7 +403,7 @@ namespace JumaEngine
         return true;
     }
 
-    bool VulkanSwapchain::startRender(const RenderOptions& options)
+    bool VulkanSwapchain::startRender(RenderOptions* options)
     {
         if (!isValid() || m_NeedToRecreate)
         {
@@ -409,10 +412,10 @@ namespace JumaEngine
 
         VkDevice device = getRenderSubsystem()->getDevice();
 
-        vkWaitForFences(device, 1, &m_Fences_RenderFinished[m_CurrentInFlightFrame], VK_TRUE, UINT64_MAX);
+        vkWaitForFences(device, 1, &m_Fences_RenderFinished[m_RenderedFrameIndex], VK_TRUE, UINT64_MAX);
 
         uint32 renderImageIndex = 0;
-        const VkResult result = vkAcquireNextImageKHR(device, m_Swapchain, UINT64_MAX, m_Semaphores_ImageAvailable[m_CurrentInFlightFrame], nullptr, &renderImageIndex);
+        const VkResult result = vkAcquireNextImageKHR(device, m_Swapchain, UINT64_MAX, m_Semaphores_ImageAvailable[m_RenderedFrameIndex], nullptr, &renderImageIndex);
         if ((result != VK_SUCCESS) && (result != VK_SUBOPTIMAL_KHR))
         {
             if (result != VK_ERROR_OUT_OF_DATE_KHR)
@@ -426,12 +429,12 @@ namespace JumaEngine
             return false;
         }
 
-        const int32 prevInFlightFrameIndex = m_InFlightFrameIndices[renderImageIndex];
+        const int32 prevInFlightFrameIndex = m_SwapchainImage_RenderedFrameIndices[renderImageIndex];
         VkFence fence = m_Fences_RenderFinished.isValidIndex(prevInFlightFrameIndex) ? m_Fences_RenderFinished[prevInFlightFrameIndex] : nullptr;
         if (fence != nullptr)
         {
             vkWaitForFences(device, 1, &fence, VK_TRUE, UINT64_MAX);
-            m_InFlightFrameIndices[renderImageIndex] = -1;
+            m_SwapchainImage_RenderedFrameIndices[renderImageIndex] = -1;
         }
 
         const jshared_ptr<VulkanCommandBuffer> commandBuffer = createRenderCommandBuffer(renderImageIndex);
@@ -440,12 +443,14 @@ namespace JumaEngine
             return false;
         }
         m_Framebuffers[renderImageIndex]->setRenderCommandBuffer(commandBuffer);
-        m_InFlightFrameIndices[renderImageIndex] = m_CurrentInFlightFrame;
-        vkResetFences(device, 1, &m_Fences_RenderFinished[m_CurrentInFlightFrame]);
+        m_SwapchainImage_RenderedFrameIndices[renderImageIndex] = m_RenderedFrameIndex;
+        vkResetFences(device, 1, &m_Fences_RenderFinished[m_RenderedFrameIndex]);
 
-        RenderOptionsData_Vulkan* optionsData = options.getData<RenderOptionsData_Vulkan>();
-        optionsData->swapchainImageIndex = renderImageIndex;
-        optionsData->commandBuffer = commandBuffer;
+        RenderOptions_Vulkan* renderOptions = reinterpret_cast<RenderOptions_Vulkan*>(options);
+        renderOptions->commandBuffer = commandBuffer.get();
+        renderOptions->frameIndex = m_RenderedFrameIndex;
+        renderOptions->swapchainImageIndex = renderImageIndex;
+        renderOptions->framebuffer = m_Framebuffers[renderImageIndex];
         return true;
     }
     jshared_ptr<VulkanCommandBuffer> VulkanSwapchain::createRenderCommandBuffer(const uint32 swapchainImageIndex)
@@ -498,9 +503,10 @@ namespace JumaEngine
         return commandBuffer;
     }
 
-    void VulkanSwapchain::finishRender(const RenderOptions& options)
+    void VulkanSwapchain::finishRender(RenderOptions* options)
     {
-        const uint32 swapchainImageIndex = options.getData<RenderOptionsData_Vulkan>()->swapchainImageIndex;
+        RenderOptions_Vulkan* renderOptions = reinterpret_cast<RenderOptions_Vulkan*>(options);
+        const uint32 swapchainImageIndex = renderOptions->swapchainImageIndex;
         const jshared_ptr<VulkanCommandBuffer>& commandBuffer = m_Framebuffers[swapchainImageIndex]->getRenderCommandBuffer();
 
         vkCmdEndRenderPass(commandBuffer->get());
@@ -512,9 +518,9 @@ namespace JumaEngine
             throw std::runtime_error(*message);
         }
 
-        VkSemaphore waitSemaphores[] = { m_Semaphores_ImageAvailable[m_CurrentInFlightFrame] };
+        VkSemaphore waitSemaphores[] = { m_Semaphores_ImageAvailable[m_RenderedFrameIndex] };
         VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-        VkSemaphore signalSemaphores[] = { m_Semaphores_RenderFinished[m_CurrentInFlightFrame] };
+        VkSemaphore signalSemaphores[] = { m_Semaphores_RenderFinished[m_RenderedFrameIndex] };
         VkSubmitInfo submitInfo{};
         submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
         submitInfo.waitSemaphoreCount = 1;
@@ -522,7 +528,7 @@ namespace JumaEngine
         submitInfo.pWaitDstStageMask = waitStages;
         submitInfo.signalSemaphoreCount = 1;
         submitInfo.pSignalSemaphores = signalSemaphores;
-        if (!commandBuffer->submit(submitInfo, m_Fences_RenderFinished[m_CurrentInFlightFrame], false))
+        if (!commandBuffer->submit(submitInfo, m_Fences_RenderFinished[m_RenderedFrameIndex], false))
         {
             throw std::runtime_error(JSTR("Failed to submit draw command buffer"));
         }
@@ -547,7 +553,7 @@ namespace JumaEngine
             throw std::runtime_error(*message);
         }
 
-        m_CurrentInFlightFrame = (m_CurrentInFlightFrame + 1) % m_MaxFramesInFlight;
+        m_RenderedFrameIndex = (m_RenderedFrameIndex + 1) % m_RenderedFrameCount;
     }
 }
 

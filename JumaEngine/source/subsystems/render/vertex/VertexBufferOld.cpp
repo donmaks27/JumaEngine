@@ -1,12 +1,12 @@
 ﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
 
-#include "VertexBuffer.h"
+#include "VertexBufferOld.h"
 #include "VertexBufferData.h"
 #include "jutils/jlog.h"
 
 namespace JumaEngine
 {
-    bool VertexBuffer::init(const VertexBufferDataBase* data)
+    bool VertexBufferOld::init(const VertexBufferDataBase* data)
     {
         if (isValid())
         {
@@ -32,7 +32,7 @@ namespace JumaEngine
         return true;
     }
 
-    void VertexBuffer::clear()
+    void VertexBufferOld::clear()
     {
         if (isValid())
         {

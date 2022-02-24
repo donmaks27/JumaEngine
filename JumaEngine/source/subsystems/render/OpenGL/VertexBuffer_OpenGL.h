@@ -6,13 +6,13 @@
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_OPENGL)
 
-#include "subsystems/render/vertexBuffer/VertexBuffer.h"
+#include "subsystems/render/vertexBuffer/VertexBufferOld.h"
 
 namespace JumaEngine
 {
-    class VertexBuffer_OpenGL final : public VertexBuffer
+    class VertexBuffer_OpenGL final : public VertexBufferOld
     {
-        JUMAENGINE_CLASS(VertexBuffer_OpenGL, VertexBuffer)
+        JUMAENGINE_CLASS(VertexBuffer_OpenGL, VertexBufferOld)
 
     public:
         VertexBuffer_OpenGL() = default;

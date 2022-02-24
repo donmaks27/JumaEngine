@@ -29,7 +29,7 @@ namespace JumaEngine
 
     void RenderSubsystem_OpenGL::render()
     {
-        RenderOptions options;
+        RenderOptionsOld options;
         options.data = new RenderOptionsData();
         options.data->invertFacesOrientation = false;
 
@@ -49,7 +49,7 @@ namespace JumaEngine
         delete options.data;
     }
 
-    jshared_ptr<VertexBuffer> RenderSubsystem_OpenGL::createVertexBuffer()
+    jshared_ptr<VertexBufferOld> RenderSubsystem_OpenGL::createVertexBuffer()
     {
         Engine* engine = getOwnerEngine();
         return engine != nullptr ? engine->createObject<VertexBuffer_OpenGL>() : nullptr;
