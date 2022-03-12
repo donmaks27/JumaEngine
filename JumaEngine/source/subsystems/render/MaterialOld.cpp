@@ -3,7 +3,7 @@
 #include "MaterialOld.h"
 #include "ShaderOld.h"
 #include "jutils/jlog.h"
-#include "MaterialUniform.h"
+#include "material/MaterialUniform.h"
 
 namespace JumaEngine
 {

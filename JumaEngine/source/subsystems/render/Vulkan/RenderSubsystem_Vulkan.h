@@ -80,12 +80,12 @@ namespace JumaEngine
         virtual ShaderObject* createShaderObject() override;
         virtual MaterialObject* createMaterialObject() override;
         virtual VertexBufferObject* createVertexBufferObject() override;
+        virtual TextureObject* createTextureObject() override;
 
         virtual jshared_ptr<VertexBufferOld> createVertexBuffer() override;
         virtual jshared_ptr<ShaderOld> createShaderOld() override;
         virtual jshared_ptr<MaterialOld> createMaterial() override;
-        virtual jshared_ptr<Image> createImage() override;
-        virtual jshared_ptr<RenderPrimitive> createRenderPrimitive() override;
+        virtual jshared_ptr<ImageOld> createImage() override;
 
         void registerVertexType(const VertexBufferDataBase* vertexBufferData);
         const VertexDescription_Vulkan* findVertexDescription(const jstringID& vertexName) const { return m_RegisteredVertexTypes.find(vertexName); }

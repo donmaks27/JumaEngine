@@ -12,7 +12,7 @@ namespace JumaEngine
     {
         None,
         Mat4,
-        Image
+        Texture
     };
 
     struct ShaderUniform

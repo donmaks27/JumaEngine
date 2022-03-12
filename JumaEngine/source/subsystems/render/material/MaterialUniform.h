@@ -10,7 +10,8 @@
 
 namespace JumaEngine
 {
-    class Image;
+    class Texture;
+    class ImageOld;
 
     template<ShaderUniformType Type>
     struct MaterialUniformInfo
@@ -22,6 +23,12 @@ namespace JumaEngine
     {
         static constexpr bool isValid = true;
         using value_type = math::matrix4;
+    };
+    template<>
+    struct MaterialUniformInfo<ShaderUniformType::Texture>
+    {
+        static constexpr bool isValid = true;
+        using value_type = Texture*;
     };
 
     struct MaterialUniform
@@ -49,14 +56,14 @@ namespace JumaEngine
     {
         MaterialUniform_Image()
         {
-            type = ShaderUniformType::Image;
+            type = ShaderUniformType::Texture;
         }
 
-        using value_type = jshared_ptr<Image>;
+        using value_type = jshared_ptr<ImageOld>;
         value_type value = nullptr;
     };
     template<>
-    struct MaterialUniformType<ShaderUniformType::Image> { using struct_type = MaterialUniform_Image; };
+    struct MaterialUniformType<ShaderUniformType::Texture> { using struct_type = MaterialUniform_Image; };
 
     namespace MaterialUniformActions
     {
@@ -74,7 +81,7 @@ namespace JumaEngine
             switch (type)
             {
             case ShaderUniformType::Mat4: return create<ShaderUniformType::Mat4>();
-            case ShaderUniformType::Image: return create<ShaderUniformType::Image>();
+            case ShaderUniformType::Texture: return create<ShaderUniformType::Texture>();
             default: ;
             }
             return nullptr;
@@ -115,8 +122,8 @@ namespace JumaEngine
                 case ShaderUniformType::Mat4: 
                     delete static_cast<MaterialUniformType<ShaderUniformType::Mat4>::struct_type*>(uniform);
                     break;
-                case ShaderUniformType::Image: 
-                    delete static_cast<MaterialUniformType<ShaderUniformType::Image>::struct_type*>(uniform);
+                case ShaderUniformType::Texture: 
+                    delete static_cast<MaterialUniformType<ShaderUniformType::Texture>::struct_type*>(uniform);
                     break;
 
                 default: 

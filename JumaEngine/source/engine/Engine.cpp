@@ -5,19 +5,20 @@
 #include <chrono>
 
 #include "subsystems/render/vertex/Vertex2D.h"
-#include "subsystems/render/Image.h"
+#include "subsystems/render/ImageOld.h"
 #include "subsystems/render/MaterialOld.h"
-#include "subsystems/render/RenderPrimitive.h"
 #include "subsystems/render/ShaderOld.h"
 #include "subsystems/render/OpenGL/RenderSubsystem_OpenGL_GLFW.h"
 #include "subsystems/render/vertex/VertexBufferData.h"
-#include "subsystems/render/Vulkan/Image_Vulkan.h"
+#include "subsystems/render/Vulkan/ImageOld_Vulkan.h"
 #include "subsystems/render/Vulkan/RenderSubsystem_Vulkan.h"
 #include "jutils/jlog.h"
 #include "jutils/jstringID.h"
 #include "subsystems/render/Material.h"
 #include "subsystems/render/Shader.h"
+#include "subsystems/render/Texture.h"
 #include "subsystems/render/VertexBuffer.h"
+#include "subsystems/render/texture/TextureData.h"
 #include "subsystems/window/Vulkan/WindowSubsystem_Vulkan_GLFW.h"
 
 namespace JumaEngine
@@ -104,12 +105,32 @@ namespace JumaEngine
         }
         m_RenderSubsystem->initSubsystem();
 
+        TextureData* textureData = new TextureData();
+        textureData->init(
+            { 2, 2 }, TextureFormat::RGBA, 
+            new uint8[16]
+            {
+                255, 0, 0, 0,
+                0, 255, 0, 0,
+                0, 0, 255, 0,
+                0, 0, 0, 0
+            }
+        );
+
+        m_Texture = createObject<Texture>();
+        m_Texture->init(textureData);
+        m_Texture->createRenderObject();
+
         m_Shader = createObject<Shader>();
-        m_Shader->init(JSTR("content/shaders/ui"), JSTR("content/shaders/ui"));
+        m_Shader->init(
+            JSTR("content/shaders/ui_texture"), JSTR("content/shaders/ui_texture"),
+            { { JSTR("uTexture"), ShaderUniform{ 0, ShaderUniformType::Texture, { ShaderStage::Fragment } } } }
+        );
         m_Shader->createRenderObject();
 
         m_Material = createObject<Material>();
         m_Material->init(m_Shader);
+        m_Material->setParamValue<ShaderUniformType::Texture>(JSTR("uTexture"), m_Texture);
         m_Material->createRenderObject();
 
         ImportedVertexBuffer defaultVertexBufferData;
@@ -129,17 +150,17 @@ namespace JumaEngine
         m_VertexBuffer->createRenderObject();
 
         //const uint8 imageData[4] = { 255, 0, 0, 0 };
-        //jshared_ptr<Image> image = m_RenderSubsystem->createImage();
-        //image->init({ 1, 1 }, ImageFormat::RGBA, imageData);
+        //jshared_ptr<ImageOld> image = m_RenderSubsystem->createImage();
+        //image->init({ 1, 1 }, TextureFormat::RGBA, imageData);
 
         //jshared_ptr<ShaderOld> shader = m_RenderSubsystem->createShaderOld();
         ////shader->init(JSTR("content/shaders/ui"));
         //shader->init(JSTR("content/shaders/ui_texture"), {
-        //    { JSTR("uTexture"), ShaderUniform{ 0, ShaderUniformType::Image, { ShaderStage::Fragment } } }
+        //    { JSTR("uTexture"), ShaderUniform{ 0, ShaderUniformType::Texture, { ShaderStage::Fragment } } }
         //});
         //jshared_ptr<MaterialOld> material = m_RenderSubsystem->createMaterial();
         //material->init(shader);
-        //material->setUniformValue<ShaderUniformType::Image>(JSTR("uTexture"), image);
+        //material->setUniformValue<ShaderUniformType::Texture>(JSTR("uTexture"), image);
 
         //ImportedVertexBuffer defaultVertexBufferData;
         //defaultVertexBufferData.vertices = {
@@ -181,6 +202,7 @@ namespace JumaEngine
         delete m_VertexBuffer;
         delete m_Material;
         delete m_Shader;
+        delete m_Texture;
         //m_RenderPrimitive.reset();
 
         m_RenderSubsystem->clear();

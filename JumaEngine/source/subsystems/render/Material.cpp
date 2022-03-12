@@ -3,6 +3,7 @@
 #include "Material.h"
 #include "RenderSubsystem.h"
 #include "Shader.h"
+#include "Texture.h"
 #include "engine/Engine.h"
 #include "jutils/math/math_matrix.h"
 
@@ -91,7 +92,9 @@ namespace JumaEngine
             case ShaderUniformType::Mat4: 
                 m_UniformValues_Mat4.add(uniformName, math::matrix4(1));
                 break;
-            case ShaderUniformType::Image: break;
+            case ShaderUniformType::Texture: 
+                m_UniformValues_Texture.add(uniformName, nullptr);
+                break;
 
             default: ;
             }
@@ -170,6 +173,7 @@ namespace JumaEngine
         switch (uniform->type)
         {
         case ShaderUniformType::Mat4: return m_UniformValues_Mat4.contains(paramName);
+        case ShaderUniformType::Texture: return m_UniformValues_Texture.contains(paramName);
 
         default: ;
         }
@@ -200,30 +204,51 @@ namespace JumaEngine
 
     void Material::resetParamValue(const jstringID& paramName)
     {
-        bool success = false;
-        switch (getParamType(paramName))
+        bool paramChanged = false;
+        const ShaderUniformType type = getParamType(paramName);
+        if (isMaterialInstance())
         {
-        case ShaderUniformType::Mat4:
+            switch (type)
             {
-                if (isMaterialInstance())
-                {
-                    success = m_UniformValues_Mat4.remove(paramName);
-                }
-                else
+            case ShaderUniformType::Mat4:
+                paramChanged = m_UniformValues_Mat4.remove(paramName);
+                break;
+            case ShaderUniformType::Texture:
+                paramChanged = m_UniformValues_Texture.remove(paramName);
+                break;
+
+            default: ;
+            }
+        }
+        else
+        {
+            switch (type)
+            {
+            case ShaderUniformType::Mat4:
                 {
                     math::matrix4& value = m_UniformValues_Mat4[paramName];
                     if (!math::isMatricesEqual(value, math::matrix4(1)))
                     {
                         value = math::matrix4(1);
-                        success = true;
+                        paramChanged = true;
                     }
                 }
-            }
-            break;
+                break;
+            case ShaderUniformType::Texture:
+                {
+                    Texture*& value = m_UniformValues_Texture[paramName];
+                    if (value != nullptr)
+                    {
+                        value = nullptr;
+                        paramChanged = true;
+                    }
+                }
+                break;
 
-        default: ;
+            default: ;
+            }
         }
-        if (success)
+        if (paramChanged)
         {
             notifyMaterialParamChanged(paramName);
         }

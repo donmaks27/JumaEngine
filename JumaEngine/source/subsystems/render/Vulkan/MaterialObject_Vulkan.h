@@ -15,6 +15,7 @@
 
 namespace JumaEngine
 {
+    class VulkanImage;
     class VulkanRenderPass;
     class VulkanBuffer;
 
@@ -45,11 +46,17 @@ namespace JumaEngine
             bool valid = false;
             VulkanBuffer* buffer = nullptr;
         };
+        struct UniformValue_Image
+        {
+            bool valid = false;
+            VulkanImage* image = nullptr;
+        };
 
         VkDescriptorPool m_DescriptorPool = nullptr;
         jarray<DescriptorSetContainer> m_DescriptorSets;
 
         jmap<jstringID, jarray<UniformValue_Buffer>> m_UniformValues_Buffer;
+        jmap<jstringID, jarray<UniformValue_Image>> m_UniformValues_Image;
 
         jmap<jstringID, jmap<render_pass_id_type, VkPipeline>> m_RenderPipelines;
 
@@ -65,6 +72,8 @@ namespace JumaEngine
         template<ShaderUniformType Type>
         bool updateBufferUniformValueData(const jstringID& name, uint32 frameIndex, VkDescriptorBufferInfo& outInfo);
         bool updateBufferUniformValueData(UniformValue_Buffer* bufferValue, uint64 dataSize, const void* data, VkDescriptorBufferInfo& outInfo);
+
+        bool updateTextureUniformValue(const jstringID& name, uint32 frameIndex, VkDescriptorImageInfo& outInfo);
 
         void clearVulkanData();
 

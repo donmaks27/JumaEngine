@@ -12,11 +12,10 @@
 #include "vulkanObjects/VulkanCommandPool.h"
 #include "vulkanObjects/VulkanSwapchain.h"
 #include "engine/Engine.h"
-#include "Image_Vulkan.h"
+#include "ImageOld_Vulkan.h"
 #include "RenderOptionsData_Vulkan.h"
 #include "ShaderOld_Vulkan.h"
 #include "Material_Vulkan.h"
-#include "RenderPrimitive_Vulkan.h"
 #include "VertexBuffer_Vulkan.h"
 #include "subsystems/render/vertex/VertexBufferData.h"
 #include "subsystems/window/Vulkan/WindowSubsystem_Vulkan.h"
@@ -26,6 +25,7 @@
 #include "MaterialObject_Vulkan.h"
 #include "VertexBufferObject_Vulkan.h"
 #include "RenderOptions_Vulkan.h"
+#include "TextureObject_Vulkan.h"
 
 namespace JumaEngine
 {
@@ -128,7 +128,7 @@ namespace JumaEngine
         applicationInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
         applicationInfo.pEngineName = JSTR("JumaEngine");
         applicationInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-        applicationInfo.apiVersion = VK_API_VERSION_1_3;
+        applicationInfo.apiVersion = VK_API_VERSION_1_2;
 
         VkInstanceCreateInfo instanceInfo{};
         instanceInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
@@ -478,6 +478,10 @@ namespace JumaEngine
     {
         return createVulkanObject<VertexBufferObject_Vulkan>();
     }
+    TextureObject* RenderSubsystem_Vulkan::createTextureObject()
+    {
+        return createVulkanObject<TextureObject_Vulkan>();
+    }
 
     jshared_ptr<VertexBufferOld> RenderSubsystem_Vulkan::createVertexBuffer()
     {
@@ -494,15 +498,10 @@ namespace JumaEngine
         Engine* engine = getOwnerEngine();
         return registerVulkanObject(engine != nullptr ? engine->createObject<Material_Vulkan>() : nullptr);
     }
-    jshared_ptr<Image> RenderSubsystem_Vulkan::createImage()
+    jshared_ptr<ImageOld> RenderSubsystem_Vulkan::createImage()
     {
         Engine* engine = getOwnerEngine();
-        return registerVulkanObject(engine != nullptr ? engine->createObject<Image_Vulkan>() : nullptr);
-    }
-    jshared_ptr<RenderPrimitive> RenderSubsystem_Vulkan::createRenderPrimitive()
-    {
-        Engine* engine = getOwnerEngine();
-        return registerVulkanObject(engine != nullptr ? engine->createObject<RenderPrimitive_Vulkan>() : nullptr);
+        return registerVulkanObject(engine != nullptr ? engine->createObject<ImageOld_Vulkan>() : nullptr);
     }
 
     VertexDescription_Vulkan::VertexDescription_Vulkan(const uint32 vertexSize, const jarray<VertexComponentDescription>& vertexComponents)

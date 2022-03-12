@@ -17,7 +17,7 @@
 namespace JumaEngine
 {
     class VulkanCommandBuffer;
-    class Image_Vulkan;
+    class ImageOld_Vulkan;
     class VulkanRenderPass;
 
     class VulkanFramebuffer : public VulkanContextObject
@@ -26,7 +26,7 @@ namespace JumaEngine
         VulkanFramebuffer() = default;
         virtual ~VulkanFramebuffer() override;
 
-        bool create(VulkanRenderPass* renderPass, const math::uvector2& size, const jshared_ptr<Image_Vulkan>& resultImage);
+        bool create(VulkanRenderPass* renderPass, const math::uvector2& size, const jshared_ptr<ImageOld_Vulkan>& resultImage);
         bool create(VulkanRenderPass* renderPass, const math::uvector2& size, VkImage resultImage);
 
         VkFramebuffer get() const { return m_Framebuffer; }
@@ -45,17 +45,17 @@ namespace JumaEngine
 
         VulkanRenderPass* m_RenderPass = nullptr;
 
-        jarray<jshared_ptr<Image_Vulkan>> m_Images;
+        jarray<jshared_ptr<ImageOld_Vulkan>> m_Images;
         math::uvector2 m_ImagesSize = { 0, 0 };
         int32 m_ResultImageIndex = -1;
         
         jshared_ptr<VulkanCommandBuffer> m_CommandBuffer = nullptr;
 
         
-        bool init(VulkanRenderPass* renderPass, const math::uvector2& size, const jshared_ptr<Image_Vulkan>& resultImage);
-        bool recreate(VulkanRenderPass* renderPass, const math::uvector2& size, const jshared_ptr<Image_Vulkan>& resultImage);
+        bool init(VulkanRenderPass* renderPass, const math::uvector2& size, const jshared_ptr<ImageOld_Vulkan>& resultImage);
+        bool recreate(VulkanRenderPass* renderPass, const math::uvector2& size, const jshared_ptr<ImageOld_Vulkan>& resultImage);
 
-        bool createImages(const jshared_ptr<Image_Vulkan>& resultImage);
+        bool createImages(const jshared_ptr<ImageOld_Vulkan>& resultImage);
         bool createFrambuffer();
 
         void clearFramebuffer();

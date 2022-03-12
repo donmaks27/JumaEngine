@@ -10,7 +10,7 @@
 #include "jutils/jlog.h"
 #include "vulkanObjects/VulkanSwapchain.h"
 #include "vulkanObjects/VulkanBuffer.h"
-#include "Image_Vulkan.h"
+#include "ImageOld_Vulkan.h"
 #include "RenderOptionsData_Vulkan.h"
 #include "vulkanObjects/VulkanCommandBuffer.h"
 
@@ -30,7 +30,7 @@ namespace JumaEngine
         struct SwapchainImageData
         {
             bool valueActual = false;
-            jshared_ptr<Image> image = nullptr;
+            jshared_ptr<ImageOld> image = nullptr;
         };
         jarray<SwapchainImageData> data;
     };
@@ -76,7 +76,7 @@ namespace JumaEngine
             switch (uniformNameAndType.value.type)
             {
             case ShaderUniformType::Mat4: type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER; break;
-            case ShaderUniformType::Image: type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER; break;
+            case ShaderUniformType::Texture: type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER; break;
             default: return false;
             }
 
@@ -116,7 +116,7 @@ namespace JumaEngine
                 createMaterialUniformData_Matrix4(uniformValue, imageCount);
                 break;
 
-            case ShaderUniformType::Image:
+            case ShaderUniformType::Texture:
                 createMaterialUniformData_Image(uniformValue, imageCount);
                 break;
 
@@ -246,7 +246,7 @@ namespace JumaEngine
                     }
                     break;
 
-                case ShaderUniformType::Image:
+                case ShaderUniformType::Texture:
                     {
                         MaterialUniformData_Vulkan_Image* uniformData = static_cast<MaterialUniformData_Vulkan_Image*>(uniformValue->data);
                         if ((uniformData == nullptr) || !uniformData->data.isValidIndex(imageIndex))
@@ -255,7 +255,7 @@ namespace JumaEngine
                             return false;
                         }
 
-                        Image_Vulkan* image = dynamic_cast<Image_Vulkan*>(uniformData->data[imageIndex].image.get());
+                        ImageOld_Vulkan* image = dynamic_cast<ImageOld_Vulkan*>(uniformData->data[imageIndex].image.get());
                         if (image == nullptr)
                         {
                             continue;
@@ -305,7 +305,7 @@ namespace JumaEngine
                     delete static_cast<MaterialUniformData_Vulkan_Buffer*>(uniformValue->data);
                     break;
 
-                case ShaderUniformType::Image: 
+                case ShaderUniformType::Texture: 
                     delete static_cast<MaterialUniformData_Vulkan_Image*>(uniformValue->data);
                     break;
 
@@ -336,7 +336,7 @@ namespace JumaEngine
             }
             break;
 
-        case ShaderUniformType::Image: 
+        case ShaderUniformType::Texture: 
             {
                 MaterialUniformData_Vulkan_Image* uniformData = static_cast<MaterialUniformData_Vulkan_Image*>(uniform->data);
                 for (auto& dataImage : uniformData->data)
@@ -378,7 +378,7 @@ namespace JumaEngine
                 updateMaterialUniformData_Matrix4(uniformValue, data.swapchainImageIndex);
                 break;
 
-            case ShaderUniformType::Image:
+            case ShaderUniformType::Texture:
                 updateMaterialUniformData_Image(uniformIndex, uniformValue, data.swapchainImageIndex);
                 break;
 
@@ -427,7 +427,7 @@ namespace JumaEngine
             return;
         }
 
-        MaterialUniformActions::get<ShaderUniformType::Image>(uniformValue, imageData.image);
+        MaterialUniformActions::get<ShaderUniformType::Texture>(uniformValue, imageData.image);
         if (imageData.image == nullptr)
         {
             // TODO: Deal with this case later
@@ -435,7 +435,7 @@ namespace JumaEngine
             return;
         }
 
-        Image_Vulkan* imageVulkan = dynamic_cast<Image_Vulkan*>(imageData.image.get());
+        ImageOld_Vulkan* imageVulkan = dynamic_cast<ImageOld_Vulkan*>(imageData.image.get());
         VkDescriptorImageInfo imageInfo{};
         imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
         imageInfo.imageView = imageVulkan->getImageView();

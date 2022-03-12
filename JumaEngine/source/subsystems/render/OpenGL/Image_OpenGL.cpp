@@ -16,18 +16,18 @@ namespace JumaEngine
         }
     }
 
-    uint32 Image_OpenGL::imageFormatToGLFormat(const ImageFormat format)
+    uint32 Image_OpenGL::imageFormatToGLFormat(const TextureFormat format)
     {
         switch (format)
         {
-        case ImageFormat::RGBA: return GL_RGBA;
-        case ImageFormat::BGRA: return GL_BGRA;
+        case TextureFormat::RGBA: return GL_RGBA;
+        case TextureFormat::BGRA: return GL_BGRA;
         default: ;
         }
         return 0;
     }
 
-    bool Image_OpenGL::initInternal(const math::uvector2& size, const ImageFormat format, const uint8* data)
+    bool Image_OpenGL::initInternal(const math::uvector2& size, const TextureFormat format, const uint8* data)
     {
         const GLenum glFormat = imageFormatToGLFormat(format);
         if (glFormat == 0)

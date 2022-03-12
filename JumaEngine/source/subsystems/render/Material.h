@@ -10,7 +10,7 @@
 #include "jutils/jmap.h"
 #include "jutils/jstringID.h"
 #include "jutils/math/matrix4.h"
-#include "MaterialUniform.h"
+#include "material/MaterialUniform.h"
 
 namespace JumaEngine
 {
@@ -74,12 +74,16 @@ namespace JumaEngine
 
     private:
 
+        using mat4_value_type = MaterialUniformInfo<ShaderUniformType::Mat4>::value_type;
+        using texture_value_type = MaterialUniformInfo<ShaderUniformType::Texture>::value_type;
+
         bool m_Initialized = false;
 
         Shader* m_BaseShader = nullptr;
         Material* m_BaseMaterial = nullptr;
 
-        jmap<jstringID, MaterialUniformInfo<ShaderUniformType::Mat4>::value_type> m_UniformValues_Mat4;
+        jmap<jstringID, mat4_value_type> m_UniformValues_Mat4;
+        jmap<jstringID, texture_value_type> m_UniformValues_Texture;
 
         MaterialObject* m_RenderObject = nullptr;
 
@@ -98,12 +102,16 @@ namespace JumaEngine
         template<ShaderUniformType Type>
         bool getParamValueInternal(const jstringID& paramName, typename MaterialUniformInfo<Type>::value_type& outValue) const { return false; }
         template<>
-        inline bool getParamValueInternal<ShaderUniformType::Mat4>(const jstringID& paramName, MaterialUniformInfo<ShaderUniformType::Mat4>::value_type& outValue) const;
+        inline bool getParamValueInternal<ShaderUniformType::Mat4>(const jstringID& paramName, mat4_value_type& outValue) const;
+        template<>
+        inline bool getParamValueInternal<ShaderUniformType::Texture>(const jstringID& paramName, texture_value_type& outValue) const;
 
         template<ShaderUniformType Type>
         bool setParamValueInternal(const jstringID& paramName, const typename MaterialUniformInfo<Type>::value_type& value) { return false; }
         template<>
-        inline bool setParamValueInternal<ShaderUniformType::Mat4>(const jstringID& paramName, const MaterialUniformInfo<ShaderUniformType::Mat4>::value_type& value);
+        inline bool setParamValueInternal<ShaderUniformType::Mat4>(const jstringID& paramName, const mat4_value_type& value);
+        template<>
+        inline bool setParamValueInternal<ShaderUniformType::Texture>(const jstringID& paramName, const texture_value_type& value);
     };
 
     template <ShaderUniformType Type, TEMPLATE_ENABLE_IMPL(MaterialUniformInfo<Type>::isValid)>
@@ -120,9 +128,20 @@ namespace JumaEngine
         return isMaterialInstance() && m_BaseMaterial->getParamValueInternal<Type>(paramName, outValue);
     }
     template<>
-    bool Material::getParamValueInternal<ShaderUniformType::Mat4>(const jstringID& paramName, MaterialUniformInfo<ShaderUniformType::Mat4>::value_type& outValue) const
+    bool Material::getParamValueInternal<ShaderUniformType::Mat4>(const jstringID& paramName, mat4_value_type& outValue) const
     {
         const MaterialUniformInfo<ShaderUniformType::Mat4>::value_type* value = m_UniformValues_Mat4.find(paramName);
+        if (value != nullptr)
+        {
+            outValue = *value;
+            return true;
+        }
+        return false;
+    }
+    template<>
+    bool Material::getParamValueInternal<ShaderUniformType::Texture>(const jstringID& paramName, texture_value_type& outValue) const
+    {
+        const MaterialUniformInfo<ShaderUniformType::Texture>::value_type* value = m_UniformValues_Texture.find(paramName);
         if (value != nullptr)
         {
             outValue = *value;
@@ -142,9 +161,15 @@ namespace JumaEngine
         return true;
     }
     template<>
-    bool Material::setParamValueInternal<ShaderUniformType::Mat4>(const jstringID& paramName, const MaterialUniformInfo<ShaderUniformType::Mat4>::value_type& value)
+    bool Material::setParamValueInternal<ShaderUniformType::Mat4>(const jstringID& paramName, const mat4_value_type& value)
     {
         m_UniformValues_Mat4[paramName] = value;
+        return true;
+    }
+    template<>
+    bool Material::setParamValueInternal<ShaderUniformType::Texture>(const jstringID& paramName, const texture_value_type& value)
+    {
+        m_UniformValues_Texture[paramName] = value;
         return true;
     }
 }

@@ -5,7 +5,7 @@
 #include "common_header.h"
 #include "engine/EngineContextObject.h"
 
-#include "ShaderUniform.h"
+#include "material/ShaderUniform.h"
 #include "jutils/jmap.h"
 #include "jutils/jdelegate_multicast.h"
 

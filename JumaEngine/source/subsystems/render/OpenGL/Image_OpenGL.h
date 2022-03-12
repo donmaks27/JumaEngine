@@ -23,7 +23,7 @@ namespace JumaEngine
 
     protected:
 
-        virtual bool initInternal(const math::uvector2& size, ImageFormat format, const uint8* data) override;
+        virtual bool initInternal(const math::uvector2& size, TextureFormat format, const uint8* data) override;
         virtual void clearInternal() override;
 
     private:
@@ -31,7 +31,7 @@ namespace JumaEngine
         uint32 m_Index = 0;
 
 
-        static uint32 imageFormatToGLFormat(ImageFormat format);
+        static uint32 imageFormatToGLFormat(TextureFormat format);
 
         void clearOpenGL();
     };

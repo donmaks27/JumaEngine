@@ -97,7 +97,7 @@ namespace JumaEngine
                     layoutBinding.descriptorCount = 1;
                 }
                 break;
-            case ShaderUniformType::Image:
+            case ShaderUniformType::Texture:
                 {
                     layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
                     layoutBinding.descriptorCount = 1;

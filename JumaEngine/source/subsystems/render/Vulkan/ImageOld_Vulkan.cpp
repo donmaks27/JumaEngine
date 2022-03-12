@@ -1,6 +1,6 @@
 ﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
 
-#include "Image_Vulkan.h"
+#include "ImageOld_Vulkan.h"
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
@@ -12,7 +12,7 @@
 
 namespace JumaEngine
 {
-    Image_Vulkan::~Image_Vulkan()
+    ImageOld_Vulkan::~ImageOld_Vulkan()
     {
         if (isValid())
         {
@@ -20,7 +20,7 @@ namespace JumaEngine
         }
     }
 
-    bool Image_Vulkan::init(const math::uvector2& size, const uint32 mipLevels, const VkSampleCountFlagBits numSamples, const VkFormat format, 
+    bool ImageOld_Vulkan::init(const math::uvector2& size, const uint32 mipLevels, const VkSampleCountFlagBits numSamples, const VkFormat format, 
         const jset<VulkanQueueType>& queues, const VkImageUsageFlags usage, const VmaMemoryUsage memoryUsage, const VkMemoryPropertyFlags properties)
     {
         jarray<uint32> uniqueQueueFamilies;
@@ -63,7 +63,7 @@ namespace JumaEngine
         allocationInfo.preferredFlags = properties;
         return init(imageInfo, allocationInfo);
     }
-    bool Image_Vulkan::init(const VkImageCreateInfo& imageInfo, const VmaAllocationCreateInfo& allocationInfo)
+    bool ImageOld_Vulkan::init(const VkImageCreateInfo& imageInfo, const VmaAllocationCreateInfo& allocationInfo)
     {
         if (isValid())
         {
@@ -86,14 +86,14 @@ namespace JumaEngine
         return true;
     }
 
-    bool Image_Vulkan::init(VkImage existingImage, const math::uvector2& size, const ImageFormat format, const uint32 mipLevels)
+    bool ImageOld_Vulkan::init(VkImage existingImage, const math::uvector2& size, const TextureFormat format, const uint32 mipLevels)
     {
         if (isValid())
         {
             JUMA_LOG(warning, JSTR("Image already initialized"));
             return false;
         }
-        if ((existingImage == nullptr) || (size.x == 0) || (size.y == 0) || (format == ImageFormat::None) || (mipLevels == 0))
+        if ((existingImage == nullptr) || (size.x == 0) || (size.y == 0) || (format == TextureFormat::None) || (mipLevels == 0))
         {
             JUMA_LOG(warning, JSTR("Wrong input data"));
             return false;
@@ -107,7 +107,7 @@ namespace JumaEngine
         return true;
     }
 
-    bool Image_Vulkan::initInternal(const math::uvector2& size, const ImageFormat format, const uint8* data)
+    bool ImageOld_Vulkan::initInternal(const math::uvector2& size, const TextureFormat format, const uint8* data)
     {
         m_MipLevels = static_cast<uint32>(std::floor(std::log2(math::max(size.x, size.y)))) + 1;
         m_ImageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
@@ -163,7 +163,7 @@ namespace JumaEngine
         }
         return createImageView(format, VK_IMAGE_ASPECT_COLOR_BIT) && createSampler();
     }
-    bool Image_Vulkan::copyDataToImage(const math::uvector2& size, const ImageFormat format, const uint8* data)
+    bool ImageOld_Vulkan::copyDataToImage(const math::uvector2& size, const TextureFormat format, const uint8* data)
     {
         if (!changeImageLayout(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL))
         {
@@ -208,7 +208,7 @@ namespace JumaEngine
         commandBuffer->submit(true);
         return true;
     }
-    bool Image_Vulkan::changeImageLayout(const VkImageLayout newLayout)
+    bool ImageOld_Vulkan::changeImageLayout(const VkImageLayout newLayout)
     {
         if (m_ImageLayout == newLayout)
         {
@@ -274,7 +274,7 @@ namespace JumaEngine
         m_ImageLayout = newLayout;
         return true;
     }
-    bool Image_Vulkan::generateMipmaps(const math::uvector2& size, const ImageFormat format, const VkImageLayout newLayout)
+    bool ImageOld_Vulkan::generateMipmaps(const math::uvector2& size, const TextureFormat format, const VkImageLayout newLayout)
     {
         VkFormatProperties formatProperties;
         vkGetPhysicalDeviceFormatProperties(getRenderSubsystem()->getPhysicalDevice(), getVulkanFormatByImageFormat(format), &formatProperties);
@@ -379,7 +379,7 @@ namespace JumaEngine
         return true;
     }
 
-    bool Image_Vulkan::createImageView(const VkImageAspectFlags aspectFlags)
+    bool ImageOld_Vulkan::createImageView(const VkImageAspectFlags aspectFlags)
     {
         if (!isValid())
         {
@@ -388,7 +388,7 @@ namespace JumaEngine
         }
         return createImageView(getFormat(), aspectFlags);
     }
-    bool Image_Vulkan::createImageView(const ImageFormat format, const VkImageAspectFlags aspectFlags)
+    bool ImageOld_Vulkan::createImageView(const TextureFormat format, const VkImageAspectFlags aspectFlags)
     {
         if (m_ImageView != nullptr)
         {
@@ -418,7 +418,7 @@ namespace JumaEngine
         }
         return true;
     }
-    bool Image_Vulkan::createSampler()
+    bool ImageOld_Vulkan::createSampler()
     {
         if (m_Sampler != nullptr)
         {
@@ -455,7 +455,7 @@ namespace JumaEngine
         return true;
     }
 
-    void Image_Vulkan::clearImage()
+    void ImageOld_Vulkan::clearImage()
     {
         if (m_Sampler != nullptr)
         {
@@ -476,28 +476,28 @@ namespace JumaEngine
         m_ImageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
     }
 
-    ImageFormat Image_Vulkan::getImageFormatByVulkanFormat(const VkFormat format)
+    TextureFormat ImageOld_Vulkan::getImageFormatByVulkanFormat(const VkFormat format)
     {
         switch (format)
         {
-        case VK_FORMAT_R8G8B8A8_SRGB: return ImageFormat::RGBA;
-        case VK_FORMAT_B8G8R8A8_SRGB: return ImageFormat::BGRA;
-        case VK_FORMAT_D32_SFLOAT: return ImageFormat::SFLOAT32;
-        case VK_FORMAT_D32_SFLOAT_S8_UINT: return ImageFormat::SFLOAT32_UINT8;
-        case VK_FORMAT_D24_UNORM_S8_UINT: return ImageFormat::UNORM24_UINT8;
+        case VK_FORMAT_R8G8B8A8_SRGB: return TextureFormat::RGBA;
+        case VK_FORMAT_B8G8R8A8_SRGB: return TextureFormat::BGRA;
+        case VK_FORMAT_D32_SFLOAT: return TextureFormat::SFLOAT32;
+        case VK_FORMAT_D32_SFLOAT_S8_UINT: return TextureFormat::SFLOAT32_UINT8;
+        case VK_FORMAT_D24_UNORM_S8_UINT: return TextureFormat::UNORM24_UINT8;
         default: ;
         }
-        return ImageFormat::None;
+        return TextureFormat::None;
     }
-    VkFormat Image_Vulkan::getVulkanFormatByImageFormat(const ImageFormat format)
+    VkFormat ImageOld_Vulkan::getVulkanFormatByImageFormat(const TextureFormat format)
     {
         switch (format)
         {
-        case ImageFormat::RGBA: return VK_FORMAT_R8G8B8A8_SRGB;
-        case ImageFormat::BGRA: return VK_FORMAT_B8G8R8A8_SRGB;
-        case ImageFormat::SFLOAT32: return VK_FORMAT_D32_SFLOAT;
-        case ImageFormat::SFLOAT32_UINT8: return VK_FORMAT_D32_SFLOAT_S8_UINT;
-        case ImageFormat::UNORM24_UINT8: return VK_FORMAT_D24_UNORM_S8_UINT;
+        case TextureFormat::RGBA: return VK_FORMAT_R8G8B8A8_SRGB;
+        case TextureFormat::BGRA: return VK_FORMAT_B8G8R8A8_SRGB;
+        case TextureFormat::SFLOAT32: return VK_FORMAT_D32_SFLOAT;
+        case TextureFormat::SFLOAT32_UINT8: return VK_FORMAT_D32_SFLOAT_S8_UINT;
+        case TextureFormat::UNORM24_UINT8: return VK_FORMAT_D24_UNORM_S8_UINT;
         default: ;
         }
         return VK_FORMAT_UNDEFINED;

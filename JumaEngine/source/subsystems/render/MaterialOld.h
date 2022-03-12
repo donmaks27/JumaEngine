@@ -5,7 +5,7 @@
 #include "common_header.h"
 #include "engine/EngineContextObject.h"
 
-#include "MaterialUniform.h"
+#include "material/MaterialUniform.h"
 #include "jutils/jshared_ptr.h"
 #include "jutils/jdelegate_multicast.h"
 

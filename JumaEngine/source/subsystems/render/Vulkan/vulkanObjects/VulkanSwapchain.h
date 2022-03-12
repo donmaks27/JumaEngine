@@ -25,7 +25,7 @@ namespace JumaEngine
     class VulkanRenderPass;
     class VulkanCommandBuffer;
     class VulkanSwapchainFramebuffer;
-    class Image_Vulkan;
+    class ImageOld_Vulkan;
     class VulkanSwapchain;
 
     struct VulkanSwapchainSettings

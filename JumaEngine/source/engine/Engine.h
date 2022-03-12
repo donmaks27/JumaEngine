@@ -8,12 +8,12 @@
 
 namespace JumaEngine
 {
+    class Texture;
     struct RenderOptions;
     class Shader;
     class Material;
     class VertexBuffer;
     class WindowSubsystem;
-    class RenderPrimitive;
     class RenderSubsystem;
 
     class Engine final
@@ -40,7 +40,7 @@ namespace JumaEngine
         WindowSubsystem* m_WindowSubsytem = nullptr;
         RenderSubsystem* m_RenderSubsystem = nullptr;
 
-        jshared_ptr<RenderPrimitive> m_RenderPrimitive = nullptr;
+        Texture* m_Texture = nullptr;
         Shader* m_Shader = nullptr;
         Material* m_Material = nullptr;
         VertexBuffer* m_VertexBuffer = nullptr;

@@ -11,10 +11,11 @@
 
 namespace JumaEngine
 {
+    class TextureObject;
     struct RenderOptions;
     class VertexBufferObject;
     class RenderPrimitive;
-    class Image;
+    class ImageOld;
     class VertexBufferOld;
     class MaterialOld;
     class ShaderOld;
@@ -41,12 +42,12 @@ namespace JumaEngine
         virtual ShaderObject* createShaderObject() = 0;
         virtual MaterialObject* createMaterialObject() = 0;
         virtual VertexBufferObject* createVertexBufferObject() = 0;
+        virtual TextureObject* createTextureObject() = 0;
 
         virtual jshared_ptr<VertexBufferOld> createVertexBuffer() = 0;
         virtual jshared_ptr<ShaderOld> createShaderOld() = 0;
         virtual jshared_ptr<MaterialOld> createMaterial() = 0;
-        virtual jshared_ptr<Image> createImage() = 0;
-        virtual jshared_ptr<RenderPrimitive> createRenderPrimitive() = 0;
+        virtual jshared_ptr<ImageOld> createImage() = 0;
 
     protected:
 
