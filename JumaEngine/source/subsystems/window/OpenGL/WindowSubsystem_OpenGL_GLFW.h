@@ -4,24 +4,23 @@
 
 #include "common_header.h"
 
-#if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN) && defined(JUMAENGINE_INCLUDE_WINDOW_LIB_GLFW)
+#if defined(JUMAENGINE_INCLUDE_RENDER_API_OPENGL) && defined(JUMAENGINE_INCLUDE_WINDOW_LIB_GLFW)
 
-#include "WindowSubsystem_Vulkan.h"
+#include "WindowSubsystem_OpenGL.h"
 
-#include "Window_Vulkan_GLFW.h"
 #include "jutils/jmap.h"
 
 namespace JumaEngine
 {
-    class WindowSubsystem_Vulkan_GLFW : public WindowSubsystem_Vulkan
+    class Window_OpenGL_GLFW;
+
+    class WindowSubsystem_OpenGL_GLFW : public WindowSubsystem_OpenGL
     {
-        JUMAENGINE_CLASS(WindowSubsystem_Vulkan_GLFW, WindowSubsystem_Vulkan)
+        JUMAENGINE_CLASS(WindowSubsystem_OpenGL_GLFW, WindowSubsystem_OpenGL)
 
     public:
-        WindowSubsystem_Vulkan_GLFW() = default;
-        virtual ~WindowSubsystem_Vulkan_GLFW() override = default;
-
-        virtual jarray<const char*> getVulkanInstanceExtensions() const override;
+        WindowSubsystem_OpenGL_GLFW() = default;
+        virtual ~WindowSubsystem_OpenGL_GLFW() override = default;
 
         virtual Window* createWindow(const jstring& title, const math::uvector2& size) override;
         virtual Window* findWindow(window_id_type windowID) const override;
@@ -34,7 +33,7 @@ namespace JumaEngine
 
     private:
 
-        jmap<window_id_type, Window_Vulkan_GLFW*> m_Windows;
+        jmap<window_id_type, Window_OpenGL_GLFW*> m_Windows;
 
 
         static void GLFW_ErrorCallback(int errorCode, const char* errorMessage);

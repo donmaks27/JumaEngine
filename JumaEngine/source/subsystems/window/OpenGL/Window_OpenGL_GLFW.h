@@ -4,21 +4,21 @@
 
 #include "common_header.h"
 
-#if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN) && defined(JUMAENGINE_INCLUDE_WINDOW_LIB_GLFW)
+#if defined(JUMAENGINE_INCLUDE_RENDER_API_OPENGL) && defined(JUMAENGINE_INCLUDE_WINDOW_LIB_GLFW)
 
-#include "Window_Vulkan.h"
+#include "Window_OpenGL.h"
 
 struct GLFWwindow;
 
 namespace JumaEngine
 {
-    class Window_Vulkan_GLFW : public Window_Vulkan
+    class Window_OpenGL_GLFW : public Window_OpenGL
     {
-        JUMAENGINE_CLASS(Window_Vulkan_GLFW, Window_Vulkan)
+        JUMAENGINE_CLASS(Window_OpenGL_GLFW, Window_OpenGL)
 
     public:
-        Window_Vulkan_GLFW() = default;
-        virtual ~Window_Vulkan_GLFW() override;
+        Window_OpenGL_GLFW() = default;
+        virtual ~Window_OpenGL_GLFW() override;
 
         virtual bool isValid() const override { return isValid_GLFW(); }
 

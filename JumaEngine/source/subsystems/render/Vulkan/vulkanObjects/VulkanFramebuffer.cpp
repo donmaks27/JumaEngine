@@ -5,7 +5,7 @@
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
 #include "VulkanRenderPass.h"
-#include "subsystems/render/Vulkan/ImageOld_Vulkan.h"
+#include "VulkanImage.h"
 #include "subsystems/render/Vulkan/RenderSubsystem_Vulkan.h"
 
 namespace JumaEngine
@@ -15,7 +15,7 @@ namespace JumaEngine
         clearFramebuffer();
     }
 
-    bool VulkanFramebuffer::create(VulkanRenderPass* renderPass, const math::uvector2& size, const jshared_ptr<ImageOld_Vulkan>& resultImage)
+    bool VulkanFramebuffer::create(VulkanRenderPass* renderPass, const math::uvector2& size, const jshared_ptr<VulkanImage>& resultImage)
     {
         if ((renderPass == nullptr) || !renderPass->isValid())
         {
@@ -48,12 +48,12 @@ namespace JumaEngine
             return false;
         }
 
-        jshared_ptr<ImageOld_Vulkan> image = jshared_dynamic_cast<ImageOld_Vulkan>(getRenderSubsystem()->createImage());
-        image->init(resultImage, size, ImageOld_Vulkan::getImageFormatByVulkanFormat(renderPass->getDescription().colorFormat), 1);
+        VulkanImage* image = getRenderSubsystem()->createVulkanObject<VulkanImage>();
+        image->init(resultImage, size, renderPass->getDescription().colorFormat, 1);
         return isValid() ? recreate(renderPass, size, image) : init(renderPass, size, image);
     }
 
-    bool VulkanFramebuffer::init(VulkanRenderPass* renderPass, const math::uvector2& size, const jshared_ptr<ImageOld_Vulkan>& resultImage)
+    bool VulkanFramebuffer::init(VulkanRenderPass* renderPass, const math::uvector2& size, const jshared_ptr<VulkanImage>& resultImage)
     {
         m_RenderPass = renderPass;
         m_ImagesSize = size;
@@ -67,7 +67,7 @@ namespace JumaEngine
         markAsInitialized();
         return true;
     }
-    bool VulkanFramebuffer::recreate(VulkanRenderPass* renderPass, const math::uvector2& size, const jshared_ptr<ImageOld_Vulkan>& resultImage)
+    bool VulkanFramebuffer::recreate(VulkanRenderPass* renderPass, const math::uvector2& size, const jshared_ptr<VulkanImage>& resultImage)
     {
         vkDestroyFramebuffer(getRenderSubsystem()->getDevice(), m_Framebuffer, nullptr);
         if ((m_RenderPass != renderPass) || (m_ImagesSize != size))
@@ -95,7 +95,7 @@ namespace JumaEngine
         return true;
     }
 
-    bool VulkanFramebuffer::createImages(const jshared_ptr<ImageOld_Vulkan>& resultImage)
+    bool VulkanFramebuffer::createImages(const jshared_ptr<VulkanImage>& resultImage)
     {
         m_ResultImageIndex = -1;
         m_Images.clear();
@@ -111,7 +111,7 @@ namespace JumaEngine
         for (int32 index = 0; index < imagesDescription.images.getSize(); index++)
         {
             const VulkanFramebufferImageDescription& description = imagesDescription.images[index];
-            jshared_ptr<ImageOld_Vulkan>& image = m_Images[index];
+            jshared_ptr<VulkanImage>& image = m_Images[index];
 
             if (imagesDescription.resultImageIndex == index)
             {
@@ -120,7 +120,7 @@ namespace JumaEngine
             }
             else
             {
-                image = jshared_dynamic_cast<ImageOld_Vulkan>(getRenderSubsystem()->createImage());
+                image = getRenderSubsystem()->createVulkanObject<VulkanImage>();
             }
 
             if (!image->isValid())

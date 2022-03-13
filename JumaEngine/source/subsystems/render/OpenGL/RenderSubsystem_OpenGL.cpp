@@ -6,18 +6,26 @@
 
 #include <GL/glew.h>
 
-#include "jutils/jlog.h"
-#include "engine/Engine.h"
-#include "VertexBuffer_OpenGL.h"
-#include "Shader_OpenGL.h"
-#include "Material_OpenGL.h"
-#include "Image_OpenGL.h"
-#include "RenderPrimitive_OpenGL.h"
+#include "subsystems/render/RenderOptions.h"
+#include "ShaderObject_OpenGL.h"
+#include "MaterialObject_OpenGL.h"
+#include "TextureObject_OpenGL.h"
+#include "VertexBufferObject_OpenGL.h"
 
 namespace JumaEngine
 {
     bool RenderSubsystem_OpenGL::initSubsystemInternal()
     {
+        if (!Super::initSubsystemInternal())
+        {
+            return false;
+        }
+
+        if (!createMainWindow())
+        {
+            return false;
+        }
+
         const GLenum glewInitResult = glewInit();
         if (glewInitResult != GLEW_OK)
         {
@@ -27,11 +35,16 @@ namespace JumaEngine
         return true;
     }
 
+    void RenderSubsystem_OpenGL::clearSubsystemInternal()
+    {
+        terminateMainWindow();
+
+        Super::clearSubsystemInternal();
+    }
+
     void RenderSubsystem_OpenGL::render()
     {
-        RenderOptionsOld options;
-        options.data = new RenderOptionsData();
-        options.data->invertFacesOrientation = false;
+        m_MainWindow->startRender();
 
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -44,35 +57,27 @@ namespace JumaEngine
         glCullFace(GL_BACK);
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-        callEngineRender(options);
+        constexpr RenderOptions options;
+        callEngineRender(&options);
 
-        delete options.data;
+        m_MainWindow->finishRender();
     }
 
-    jshared_ptr<VertexBufferOld> RenderSubsystem_OpenGL::createVertexBuffer()
+    ShaderObject* RenderSubsystem_OpenGL::createShaderObject()
     {
-        Engine* engine = getOwnerEngine();
-        return engine != nullptr ? engine->createObject<VertexBuffer_OpenGL>() : nullptr;
+        return new ShaderObject_OpenGL();
     }
-    jshared_ptr<Shader> RenderSubsystem_OpenGL::createShader()
+    MaterialObject* RenderSubsystem_OpenGL::createMaterialObject()
     {
-        Engine* engine = getOwnerEngine();
-        return engine != nullptr ? engine->createObject<Shader_OpenGL>() : nullptr;
+        return new MaterialObject_OpenGL();
     }
-    jshared_ptr<Material> RenderSubsystem_OpenGL::createMaterial()
+    VertexBufferObject* RenderSubsystem_OpenGL::createVertexBufferObject()
     {
-        Engine* engine = getOwnerEngine();
-        return engine != nullptr ? engine->createObject<Material_OpenGL>() : nullptr;
+        return new VertexBufferObject_OpenGL();
     }
-    jshared_ptr<Image> RenderSubsystem_OpenGL::createImage()
+    TextureObject* RenderSubsystem_OpenGL::createTextureObject()
     {
-        Engine* engine = getOwnerEngine();
-        return engine != nullptr ? engine->createObject<Image_OpenGL>() : nullptr;
-    }
-    jshared_ptr<RenderPrimitive> RenderSubsystem_OpenGL::createRenderPrimitive()
-    {
-        Engine* engine = getOwnerEngine();
-        return engine != nullptr ? engine->createObject<RenderPrimitive_OpenGL>() : nullptr;
+        return new TextureObject_OpenGL();
     }
 }
 

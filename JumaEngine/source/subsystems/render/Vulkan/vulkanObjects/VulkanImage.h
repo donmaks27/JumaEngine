@@ -38,6 +38,8 @@ namespace JumaEngine
 
         bool createSampler();
 
+        const math::uvector2& getSize() const { return m_Size; }
+
         VkImage get() const { return m_Image; }
         VkImageView getImageView() const { return m_ImageView; }
         VkSampler getSampler() const { return m_Sampler; }

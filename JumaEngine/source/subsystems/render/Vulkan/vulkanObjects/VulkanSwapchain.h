@@ -14,7 +14,6 @@
 #include "jutils/jarray.h"
 #include "jutils/jdelegate_multicast.h"
 #include "jutils/math/vector2.h"
-#include "subsystems/render/RenderOptionsOld.h"
 
 namespace JumaEngine
 {
@@ -25,7 +24,6 @@ namespace JumaEngine
     class VulkanRenderPass;
     class VulkanCommandBuffer;
     class VulkanSwapchainFramebuffer;
-    class ImageOld_Vulkan;
     class VulkanSwapchain;
 
     struct VulkanSwapchainSettings

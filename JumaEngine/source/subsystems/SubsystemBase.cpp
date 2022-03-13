@@ -13,7 +13,7 @@ namespace JumaEngine
         }
         else
         {
-            JUMA_LOG(error, JSTR("Failed to initialize subsystem ") + getClass()->getClassName());
+            JUMA_LOG(error, JSTR("Failed to initialize subsystem ") + getObjectClass()->getClassName());
         }
     }
 

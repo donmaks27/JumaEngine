@@ -31,7 +31,7 @@ namespace JumaEngine
 
     protected:
 
-        virtual void onMaterialParamChanged(const jstringID& paramName) = 0;
+        virtual void onMaterialParamChanged(const jstringID& paramName) {}
     };
 
     CREATE_JUTILS_MULTICAST_DELEGATE_OneParam(OnMaterialEvent, Material*, material);

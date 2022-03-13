@@ -1,35 +1,32 @@
-﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
+﻿// Copyright 2022 Leonov Maksim. All Rights Reserved.
 
-#include "VertexBuffer_OpenGL.h"
+#include "VertexBufferObject_OpenGL.h"
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_OPENGL)
 
 #include <GL/glew.h>
 
-#include "subsystems/render/vertexBuffer/VertexBufferData.h"
+#include "subsystems/render/vertex/VertexBufferData.h"
 
 namespace JumaEngine
 {
-    VertexBuffer_OpenGL::~VertexBuffer_OpenGL()
+    VertexBufferObject_OpenGL::~VertexBufferObject_OpenGL()
     {
-        if (isValid())
-        {
-            clearOpenGLBuffers();
-        }
+        clearOpenGL();
     }
 
-    bool VertexBuffer_OpenGL::initInternal(const VertexBufferDataBase* data)
+    bool VertexBufferObject_OpenGL::initInternal()
     {
-        const uint32 vertexSize = getVertexSize();
-        const uint32 indexCount = getIndexCount();
-        const jarray<VertexComponentDescription>& vertexComponents = getVertexComponents();
+        const VertexBufferDataBase* data = getVertexData();
+        const uint32 vertexSize = data->getVertexSize();
+        const uint32 indexCount = m_Parent->getIndexCount();
+        const jarray<VertexComponentDescription>& vertexComponents = data->getVertexComponents();
 
         glGenBuffers(1, &m_VerticesVBO);
-
         glBindBuffer(GL_ARRAY_BUFFER, m_VerticesVBO);
         glBufferData(
             GL_ARRAY_BUFFER, 
-            vertexSize * getVertexCount(), 
+            vertexSize * m_Parent->getVertexCount(), 
             data->getVertices(), 
             GL_STATIC_DRAW
         );
@@ -46,16 +43,15 @@ namespace JumaEngine
             );
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
         }
-        
+
         glGenVertexArrays(1, &m_VerticesVAO);
         glBindVertexArray(m_VerticesVAO);
-
-        const int32 vertexComponentCount = vertexComponents.getSize();
-        for (int32 vertexComponentIndex = 0; vertexComponentIndex < vertexComponentCount; vertexComponentIndex++)
+        for (uint32 index = 0, size = vertexComponents.getSize(); index < size; index++)
         {
-            const VertexComponentDescription& componentDescriprion = vertexComponents[vertexComponentIndex];
-            GLenum componentType = 0;
-            uint32 componentSize = 0;
+            const VertexComponentDescription& componentDescriprion = vertexComponents[index];
+
+            GLenum componentType;
+            uint32 componentSize;
             switch (componentDescriprion.type)
             {
             case VertexComponentType::Float: 
@@ -74,18 +70,13 @@ namespace JumaEngine
                 componentType = GL_FLOAT;
                 componentSize = 4;
                 break;
-
-            default:
-                continue;
+            default: continue;
             }
 
             glVertexAttribPointer(
                 componentDescriprion.ID, 
-                componentSize, 
-                componentType, 
-                GL_FALSE, 
-                vertexSize, 
-                reinterpret_cast<const void*>(static_cast<std::uintptr_t>(componentDescriprion.offset))
+                componentSize, componentType, GL_FALSE, 
+                vertexSize, reinterpret_cast<const void*>(static_cast<std::uintptr_t>(componentDescriprion.offset))
             );
             glEnableVertexAttribArray(componentDescriprion.ID);
         }
@@ -95,11 +86,7 @@ namespace JumaEngine
         return true;
     }
 
-    void VertexBuffer_OpenGL::clearInternal()
-    {
-        clearOpenGLBuffers();
-    }
-    void VertexBuffer_OpenGL::clearOpenGLBuffers()
+    void VertexBufferObject_OpenGL::clearOpenGL()
     {
         if (m_VerticesVAO != 0)
         {
@@ -118,25 +105,26 @@ namespace JumaEngine
         }
     }
 
-    void VertexBuffer_OpenGL::render() const
+    bool VertexBufferObject_OpenGL::render(const RenderOptions* renderOptions)
     {
-        if (!isValid())
+        if (m_VerticesVAO == 0)
         {
-            return;
+            return false;
         }
-        
+
         glBindVertexArray(m_VerticesVAO);
         if (m_IndicesVBO == 0)
         {
-            glDrawArrays(GL_TRIANGLES, 0, getVertexCount());
+            glDrawArrays(GL_TRIANGLES, 0, m_Parent->getVertexCount());
         }
         else
         {
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndicesVBO);
-            glDrawElements(GL_TRIANGLES, getIndexCount(), GL_UNSIGNED_INT, nullptr);
+            glDrawElements(GL_TRIANGLES, m_Parent->getIndexCount(), GL_UNSIGNED_INT, nullptr);
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
         }
         glBindVertexArray(0);
+        return true;
     }
 }
 

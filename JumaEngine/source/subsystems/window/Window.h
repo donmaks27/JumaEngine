@@ -34,8 +34,8 @@ namespace JumaEngine
         const jstring& getTitle() const { return m_Title; }
         const math::uvector2& getSize() const { return m_Size; }
 
-        virtual void startRender() = 0;
-        virtual void finishRender() = 0;
+        virtual void startRender() {}
+        virtual void finishRender() {}
 
     protected:
 

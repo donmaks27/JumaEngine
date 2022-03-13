@@ -5,9 +5,7 @@
 #include "common_header.h"
 #include "subsystems/SubsystemBase.h"
 
-#include "RenderOptionsOld.h"
 #include "subsystems/window/Window.h"
-#include "jutils/jshared_ptr.h"
 
 namespace JumaEngine
 {
@@ -15,10 +13,6 @@ namespace JumaEngine
     struct RenderOptions;
     class VertexBufferObject;
     class RenderPrimitive;
-    class ImageOld;
-    class VertexBufferOld;
-    class MaterialOld;
-    class ShaderOld;
     class ShaderObject;
     class MaterialObject;
 
@@ -43,11 +37,6 @@ namespace JumaEngine
         virtual MaterialObject* createMaterialObject() = 0;
         virtual VertexBufferObject* createVertexBufferObject() = 0;
         virtual TextureObject* createTextureObject() = 0;
-
-        virtual jshared_ptr<VertexBufferOld> createVertexBuffer() = 0;
-        virtual jshared_ptr<ShaderOld> createShaderOld() = 0;
-        virtual jshared_ptr<MaterialOld> createMaterial() = 0;
-        virtual jshared_ptr<ImageOld> createImage() = 0;
 
     protected:
 

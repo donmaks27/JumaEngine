@@ -73,17 +73,17 @@ public:                                                                         
 private:
 
 #define JUMAENGINE_BASE_CLASS(ClassName) DECLARE_JUMAENGINE_CLASS_OBJECT(ClassName, EngineObjectClass)  \
-    protected: virtual void __internal_engine_class_dummy_function__() const = 0;                       \
+    public: virtual const ClassType* getObjectClass() const = 0;                                        \
     private:
 
-#define JUMAENGINE_ABSTRACT_CLASS(ClassName, ParentClassName)                               \
-    DECLARE_JUMAENGINE_CLASS_OBJECT(ClassName, ParentClassName##_Class)                     \
-    typedef ParentClassName Super;                                                          \
-    protected: virtual void __internal_engine_class_dummy_function__() const override = 0;  \
+#define JUMAENGINE_ABSTRACT_CLASS(ClassName, ParentClassName)               \
+    DECLARE_JUMAENGINE_CLASS_OBJECT(ClassName, ParentClassName##_Class)     \
+    typedef ParentClassName Super;                                          \
+    public: virtual const ClassType* getObjectClass() const override = 0;   \
     private:
 
 #define JUMAENGINE_CLASS(ClassName, ParentClassName)                                        \
     DECLARE_JUMAENGINE_CLASS_OBJECT(ClassName, ParentClassName##_Class)                     \
     typedef ParentClassName Super;                                                          \
-    protected: virtual void __internal_engine_class_dummy_function__() const override {}    \
+    public: virtual const ClassType* getObjectClass() const override { return getClass(); } \
     private:

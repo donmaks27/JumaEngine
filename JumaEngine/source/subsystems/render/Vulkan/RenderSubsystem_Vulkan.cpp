@@ -12,11 +12,6 @@
 #include "vulkanObjects/VulkanCommandPool.h"
 #include "vulkanObjects/VulkanSwapchain.h"
 #include "engine/Engine.h"
-#include "ImageOld_Vulkan.h"
-#include "RenderOptionsData_Vulkan.h"
-#include "ShaderOld_Vulkan.h"
-#include "Material_Vulkan.h"
-#include "VertexBuffer_Vulkan.h"
 #include "subsystems/render/vertex/VertexBufferData.h"
 #include "subsystems/window/Vulkan/WindowSubsystem_Vulkan.h"
 #include "subsystems/window/Vulkan/Window_Vulkan.h"
@@ -481,27 +476,6 @@ namespace JumaEngine
     TextureObject* RenderSubsystem_Vulkan::createTextureObject()
     {
         return createVulkanObject<TextureObject_Vulkan>();
-    }
-
-    jshared_ptr<VertexBufferOld> RenderSubsystem_Vulkan::createVertexBuffer()
-    {
-        Engine* engine = getOwnerEngine();
-        return registerVulkanObject(engine != nullptr ? engine->createObject<VertexBuffer_Vulkan>() : nullptr);
-    }
-    jshared_ptr<ShaderOld> RenderSubsystem_Vulkan::createShaderOld()
-    {
-        Engine* engine = getOwnerEngine();
-        return registerVulkanObject(engine != nullptr ? engine->createObject<ShaderOld_Vulkan>() : nullptr);
-    }
-    jshared_ptr<MaterialOld> RenderSubsystem_Vulkan::createMaterial()
-    {
-        Engine* engine = getOwnerEngine();
-        return registerVulkanObject(engine != nullptr ? engine->createObject<Material_Vulkan>() : nullptr);
-    }
-    jshared_ptr<ImageOld> RenderSubsystem_Vulkan::createImage()
-    {
-        Engine* engine = getOwnerEngine();
-        return registerVulkanObject(engine != nullptr ? engine->createObject<ImageOld_Vulkan>() : nullptr);
     }
 
     VertexDescription_Vulkan::VertexDescription_Vulkan(const uint32 vertexSize, const jarray<VertexComponentDescription>& vertexComponents)
