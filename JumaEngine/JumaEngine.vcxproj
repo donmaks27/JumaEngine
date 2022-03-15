@@ -98,7 +98,6 @@
     <ClCompile Include="source\subsystems\render\Texture.cpp" />
     <ClCompile Include="source\subsystems\render\texture\TextureData.cpp" />
     <ClCompile Include="source\subsystems\render\VertexBuffer.cpp" />
-    <ClCompile Include="source\subsystems\render\vertex\VertexBufferOld.cpp" />
     <ClCompile Include="source\subsystems\render\Vulkan\MaterialObject_Vulkan.cpp" />
     <ClCompile Include="source\subsystems\render\Vulkan\RenderSubsystem_Vulkan.cpp" />
     <ClCompile Include="source\subsystems\render\Vulkan\TextureObject_Vulkan.cpp" />
@@ -142,6 +141,7 @@
     <ClInclude Include="source\jutils\jmap.h" />
     <ClInclude Include="source\jutils\jmap_hash.h" />
     <ClInclude Include="source\jutils\jmap_pair.h" />
+    <ClInclude Include="source\jutils\jmemory.h" />
     <ClInclude Include="source\jutils\jpool_allocator.h" />
     <ClInclude Include="source\jutils\jset.h" />
     <ClInclude Include="source\jutils\jset_hash.h" />
@@ -206,7 +206,6 @@
     <ClInclude Include="source\subsystems\render\vertex\Vertex3D.h" />
     <ClInclude Include="source\subsystems\render\vertex\Vertex3D_Normal.h" />
     <ClInclude Include="source\subsystems\render\vertex\Vertex3D_Normal_TexCoord.h" />
-    <ClInclude Include="source\subsystems\render\vertex\VertexBufferOld.h" />
     <ClInclude Include="source\subsystems\render\vertex\VertexBufferData.h" />
     <ClInclude Include="source\subsystems\render\vertex\VertexComponents.h" />
     <ClInclude Include="source\subsystems\render\vertex\VertexInfo.h" />

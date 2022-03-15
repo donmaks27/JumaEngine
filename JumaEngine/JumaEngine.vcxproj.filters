@@ -118,9 +118,6 @@
     <ClCompile Include="source\subsystems\render\Vulkan\MaterialObject_Vulkan.cpp">
       <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="source\subsystems\render\vertex\VertexBufferOld.cpp">
-      <Filter>JumaEngine\subsystems\render\vertex</Filter>
-    </ClCompile>
     <ClCompile Include="source\subsystems\render\VertexBuffer.cpp">
       <Filter>JumaEngine\subsystems\render</Filter>
     </ClCompile>
@@ -444,9 +441,6 @@
     <ClInclude Include="source\subsystems\render\vertex\VertexInfo.h">
       <Filter>JumaEngine\subsystems\render\vertex</Filter>
     </ClInclude>
-    <ClInclude Include="source\subsystems\render\vertex\VertexBufferOld.h">
-      <Filter>JumaEngine\subsystems\render\vertex</Filter>
-    </ClInclude>
     <ClInclude Include="source\subsystems\render\VertexBuffer.h">
       <Filter>JumaEngine\subsystems\render</Filter>
     </ClInclude>
@@ -509,6 +503,9 @@
     </ClInclude>
     <ClInclude Include="source\subsystems\render\OpenGL\VertexBufferObject_OpenGL.h">
       <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="source\jutils\jmemory.h">
+      <Filter>JumaEngine\jutils</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
