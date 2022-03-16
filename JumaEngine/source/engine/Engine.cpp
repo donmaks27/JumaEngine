@@ -15,6 +15,7 @@
 #include "subsystems/render/Texture.h"
 #include "subsystems/render/VertexBuffer.h"
 #include "subsystems/render/texture/TextureData.h"
+#include "subsystems/render/vertex/Vertex2D_TexCoord.h"
 #include "subsystems/window/OpenGL/WindowSubsystem_OpenGL_GLFW.h"
 #include "subsystems/window/Vulkan/WindowSubsystem_Vulkan_GLFW.h"
 
@@ -141,21 +142,43 @@ namespace JumaEngine
         m_Material->setParamValue<ShaderUniformType::Texture>(JSTR("uTexture"), m_Texture);
         m_Material->createRenderObject();
 
-        ImportedVertexBuffer defaultVertexBufferData;
-        defaultVertexBufferData.vertices = {
-            { { 0.0f, 0.0f, 0.0f } },
-            { { 0.5f, 0.0f, 0.0f } },
-            { { 0.0f, 0.5f, 0.0f } },
-            { { 0.0f, 0.5f, 0.0f } },
-            { { 0.5f, 0.0f, 0.0f } },
-            { { 0.5f, 0.5f, 0.0f } }
-        };
-        VertexBufferDataBase* vertexData = new VertexBufferData<Vertex2D>;
-        vertexData->copyFromImportedVertexBuffer(defaultVertexBufferData);
-
+        VertexBufferData<Vertex2D>* vertexData = new VertexBufferData<Vertex2D>();
+        vertexData->setVertices({
+            { { 0.0f, 0.0f } },
+            { { 0.5f, 0.0f } },
+            { { 0.0f, 0.5f } },
+            { { 0.0f, 0.5f } },
+            { { 0.5f, 0.0f } },
+            { { 0.5f, 0.5f } }
+        });
         m_VertexBuffer = createObject<VertexBuffer>();
         m_VertexBuffer->init(vertexData);
         m_VertexBuffer->createRenderObject();
+
+        m_ShaderPP = createObject<Shader>();
+        m_ShaderPP->init(
+            JSTR("content/shaders/ui_postProcess"), JSTR("content/shaders/ui_texture"),
+            { { JSTR("uTexture"), ShaderUniform{ 0, ShaderUniformType::Texture, { ShaderStage::Fragment } } } }
+        );
+        m_ShaderPP->createRenderObject();
+
+        m_MaterialPP = createObject<Material>();
+        m_MaterialPP->init(m_ShaderPP);
+        m_MaterialPP->setParamValue<ShaderUniformType::Texture>(JSTR("uTexture"), m_Texture);
+        m_MaterialPP->createRenderObject();
+
+        VertexBufferData<Vertex2D_TexCoord>* ppVertexData = new VertexBufferData<Vertex2D_TexCoord>();
+        ppVertexData->setVertices({
+            { { -1.0f, -1.0f }, { 0.0f, 0.0f } },
+            { {  1.0f, -1.0f }, { 1.0f, 0.0f } },
+            { { -1.0f,  1.0f }, { 0.0f, 1.0f } },
+            { { -1.0f,  1.0f }, { 0.0f, 1.0f } },
+            { {  1.0f, -1.0f }, { 1.0f, 0.0f } },
+            { {  1.0f,  1.0f }, { 1.0f, 1.0f } }
+        });
+        m_VertexBufferPP = createObject<VertexBuffer>();
+        m_VertexBufferPP->init(ppVertexData);
+        m_VertexBufferPP->createRenderObject();
 
         return true;
     }
@@ -177,6 +200,11 @@ namespace JumaEngine
     {
         m_RenderSubsystem->onEnginePreTerminate();
 
+        delete m_VertexBufferPP;
+        delete m_MaterialPP;
+        delete m_ShaderPP;
+        delete m_TexturePP;
+
         delete m_VertexBuffer;
         delete m_Material;
         delete m_Shader;
@@ -196,7 +224,7 @@ namespace JumaEngine
 
     void Engine::render(const RenderOptions* options)
     {
-        //m_RenderPrimitive->render(options);
-        m_Material->render(m_VertexBuffer, options);
+        //m_Material->render(m_VertexBuffer, options);
+        m_MaterialPP->render(m_VertexBufferPP, options);
     }
 }

@@ -53,8 +53,7 @@ namespace JumaEngine
         virtual const void* getVertices() const override { return vertices.getData(); }
         virtual uint32 getVertexCount() const override { return static_cast<uint32>(vertices.getSize()); }
         
-        void setVertices(std::initializer_list<VertexType> list) { vertices = list; }
-        void setVertices(const jarray<VertexType>& data) { vertices = data; }
+        void setVertices(jarray<VertexType> data) { vertices = std::move(data); }
 
         virtual void copyFromImportedVertexBuffer(const ImportedVertexBuffer& buffer) override
         {

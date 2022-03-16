@@ -50,18 +50,18 @@ namespace JumaEngine
             delete m_Image;
             return false;
         }
-        if (!m_Image->changeImageLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL))
+        /*if (!m_Image->changeImageLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL))
         {
             JUMA_LOG(error, JSTR("Failed to change image layout to VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL"));
             delete m_Image;
             return false;
-        }
-        /*if (!m_Image->generateMipmaps(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL))
+        }*/
+        if (!m_Image->generateMipmaps(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL))
         {
             JUMA_LOG(error, JSTR("Failed to generate mipmaps vulkan image"));
             delete m_Image;
             return false;
-        }*/
+        }
 
         if (!m_Image->createImageView(VK_IMAGE_ASPECT_COLOR_BIT) || !m_Image->createSampler())
         {

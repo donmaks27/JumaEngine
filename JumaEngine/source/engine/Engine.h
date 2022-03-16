@@ -44,6 +44,11 @@ namespace JumaEngine
         Material* m_Material = nullptr;
         VertexBuffer* m_VertexBuffer = nullptr;
 
+        Texture* m_TexturePP = nullptr;
+        Shader* m_ShaderPP = nullptr;
+        Material* m_MaterialPP = nullptr;
+        VertexBuffer* m_VertexBufferPP = nullptr;
+
 
         void registerEngineObject(EngineContextObject* object);
 
