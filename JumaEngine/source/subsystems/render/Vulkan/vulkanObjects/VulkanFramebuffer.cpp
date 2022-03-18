@@ -15,144 +15,150 @@ namespace JumaEngine
         clearFramebuffer();
     }
 
-    bool VulkanFramebuffer::create(VulkanRenderPass* renderPass, const math::uvector2& size, const jshared_ptr<VulkanImage>& resultImage)
-    {
-        if ((renderPass == nullptr) || !renderPass->isValid())
-        {
-            JUMA_LOG(warning, JSTR("Invalid render pass"));
-            return false;
-        }
-        if ((resultImage == nullptr) || !resultImage->isValid() || (resultImage->getSize() != size))
-        {
-            JUMA_LOG(warning, JSTR("Invalid result image"));
-            return false;
-        }
-
-        return isValid() ? recreate(renderPass, size, resultImage) : init(renderPass, size, resultImage);
-    }
     bool VulkanFramebuffer::create(VulkanRenderPass* renderPass, const math::uvector2& size, VkImage resultImage)
     {
-        if (isValid() && (m_Images[m_ResultImageIndex]->get() == resultImage))
-        {
-            return create(renderPass, size, m_Images[m_ResultImageIndex]);
-        }
-
         if ((renderPass == nullptr) || !renderPass->isValid())
         {
             JUMA_LOG(warning, JSTR("Invalid render pass"));
             return false;
         }
-        if (resultImage == nullptr)
-        {
-            JUMA_LOG(warning, JSTR("Invalid result image"));
-            return false;
-        }
-
-        VulkanImage* image = getRenderSubsystem()->createVulkanObject<VulkanImage>();
-        image->init(resultImage, size, renderPass->getDescription().colorFormat, 1);
-        return isValid() ? recreate(renderPass, size, image) : init(renderPass, size, image);
+        return isValid() ? recreate(renderPass, size, resultImage) : init(renderPass, size, resultImage);
     }
 
-    bool VulkanFramebuffer::init(VulkanRenderPass* renderPass, const math::uvector2& size, const jshared_ptr<VulkanImage>& resultImage)
+    bool VulkanFramebuffer::init(VulkanRenderPass* renderPass, const math::uvector2& size, VkImage resultImage)
     {
         m_RenderPass = renderPass;
         m_ImagesSize = size;
-        if (!createImages(resultImage) || !createFrambuffer())
+        if (!recreateImages(resultImage) || !createFrambuffer())
         {
-            m_Images.clear();
             JUMA_LOG(error, JSTR("Failed to create framebuffer"));
+            clear();
             return false;
         }
 
         markAsInitialized();
         return true;
     }
-    bool VulkanFramebuffer::recreate(VulkanRenderPass* renderPass, const math::uvector2& size, const jshared_ptr<VulkanImage>& resultImage)
+    bool VulkanFramebuffer::recreate(VulkanRenderPass* renderPass, const math::uvector2& size, VkImage resultImage)
     {
-        vkDestroyFramebuffer(getRenderSubsystem()->getDevice(), m_Framebuffer, nullptr);
         if ((m_RenderPass != renderPass) || (m_ImagesSize != size))
         {
-            m_RenderPass = renderPass;
-            m_ImagesSize = size;
-            m_Images.clear();
-            if (!createImages(resultImage))
-            {
-                JUMA_LOG(error, JSTR("Failed to create framebuffer images"));
-                return false;
-            }
+            clear();
+            return init(renderPass, size, resultImage);
+        }
+
+        vkDestroyFramebuffer(getRenderSubsystem()->getDevice(), m_Framebuffer, nullptr);
+        VulkanImage* image = m_ResolveImage != nullptr ? m_ResolveImage : m_ColorImage;
+        image->clear();
+
+        const VkFormat colorFormat = renderPass->getDescription().colorFormat;
+        if (resultImage != nullptr)
+        {
+            image->init(resultImage, m_ImagesSize, colorFormat);
         }
         else
         {
-            m_Images[m_ResultImageIndex] = resultImage;
+            image->init(
+                m_ImagesSize, 1, VK_SAMPLE_COUNT_1_BIT, colorFormat,
+                {}, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT,
+                VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY, 0
+            );
         }
+        image->createImageView(VK_IMAGE_ASPECT_COLOR_BIT);
 
         if (!createFrambuffer())
         {
-            m_Images.clear();
             JUMA_LOG(error, JSTR("Failed to create framebuffer"));
+            clear();
             return false;
         }
         return true;
     }
 
-    bool VulkanFramebuffer::createImages(const jshared_ptr<VulkanImage>& resultImage)
+    bool VulkanFramebuffer::recreateImages(VkImage resultImage)
     {
-        m_ResultImageIndex = -1;
-        m_Images.clear();
+        RenderSubsystem_Vulkan* renderSubsystem = getRenderSubsystem();
 
-        const VulkanFramebufferImagesDescription imagesDescription = m_RenderPass->getImagesDescription();
-        if (!imagesDescription.images.isValidIndex(imagesDescription.resultImageIndex))
+        const VulkanRenderPassDescription& renderPassDescription = m_RenderPass->getDescription();
+        const bool enableResolveImage = renderPassDescription.sampleCount != VK_SAMPLE_COUNT_1_BIT;
+        
+        if (m_ColorImage == nullptr)
         {
-            JUMA_LOG(error, JSTR("Invalid images description"));
-            return false;
+            m_ColorImage = renderSubsystem->createVulkanObject<VulkanImage>();
         }
-
-        m_Images.resize(imagesDescription.images.getSize());
-        for (int32 index = 0; index < imagesDescription.images.getSize(); index++)
+        else
         {
-            const VulkanFramebufferImageDescription& description = imagesDescription.images[index];
-            jshared_ptr<VulkanImage>& image = m_Images[index];
+            m_ColorImage->clear();
+        }
+        if (enableResolveImage || (resultImage == nullptr))
+        {
+            m_ColorImage->init(
+                m_ImagesSize, 1, renderPassDescription.sampleCount, renderPassDescription.colorFormat,
+                {}, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT,
+                VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY, 0
+            );
+        }
+        else
+        {
+            m_ColorImage->init(resultImage, m_ImagesSize, renderPassDescription.colorFormat);
+        }
+        m_ColorImage->createImageView(VK_IMAGE_ASPECT_COLOR_BIT);
 
-            if (imagesDescription.resultImageIndex == index)
+        if (m_DepthImage == nullptr)
+        {
+            m_DepthImage = renderSubsystem->createVulkanObject<VulkanImage>();
+        }
+        else
+        {
+            m_DepthImage->clear();
+        }
+        m_DepthImage->init(
+            m_ImagesSize, 1, renderPassDescription.sampleCount, renderPassDescription.depthFormat,
+            {}, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT,
+            VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY, 0
+        );
+        m_DepthImage->createImageView(VK_IMAGE_ASPECT_DEPTH_BIT);
+
+        if (enableResolveImage)
+        {
+            if (m_ResolveImage == nullptr)
             {
-                image = resultImage;
-                m_ResultImageIndex = index;
+                m_ResolveImage = renderSubsystem->createVulkanObject<VulkanImage>();
             }
             else
             {
-                image = getRenderSubsystem()->createVulkanObject<VulkanImage>();
+                m_ResolveImage->clear();
             }
-
-            if (!image->isValid())
+            if (resultImage != nullptr)
             {
-                image->init(
-                    m_ImagesSize, 1, description.sampleCount, description.format, {}, 
-                    (!description.depthImage ? VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT : VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT) | VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT, 
+                m_ResolveImage->init(resultImage, m_ImagesSize, renderPassDescription.colorFormat);
+            }
+            else
+            {
+                m_ResolveImage->init(
+                    m_ImagesSize, 1, VK_SAMPLE_COUNT_1_BIT, renderPassDescription.colorFormat,
+                    {}, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT,
                     VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY, 0
                 );
-                if (!image->isValid())
-                {
-                    JUMA_LOG(error, JSTR("Failed to create framebuffer image"));
-                    return false;
-                }
             }
-            if (image->getImageView() == nullptr)
-            {
-                if (!image->createImageView(!description.depthImage ? VK_IMAGE_ASPECT_COLOR_BIT : VK_IMAGE_ASPECT_DEPTH_BIT))
-                {
-                    JUMA_LOG(error, JSTR("Failed to create framebuffer image view"));
-                    return false;
-                }
-            }
+            m_ResolveImage->createImageView(VK_IMAGE_ASPECT_COLOR_BIT);
         }
-        return m_Images.isValidIndex(m_ResultImageIndex);
+        else if (m_ResolveImage != nullptr)
+        {
+            delete m_ResolveImage;
+            m_ResolveImage = nullptr;
+        }
+
+        return true;
     }
     bool VulkanFramebuffer::createFrambuffer()
     {
-        jarray<VkImageView> attachments(m_Images.getSize());
-        for (int32 index = 0; index < attachments.getSize(); index++)
+        jarray<VkImageView> attachments(m_ResolveImage != nullptr ? 3 : 2);
+        attachments[0] = m_ColorImage->getImageView();
+        attachments[1] = m_DepthImage->getImageView();
+        if (m_ResolveImage != nullptr)
         {
-            attachments[index] = m_Images[index]->getImageView();
+            attachments[2] = m_ResolveImage->getImageView();
         }
 
         VkFramebufferCreateInfo framebufferInfo{};
@@ -174,14 +180,29 @@ namespace JumaEngine
 
     void VulkanFramebuffer::clearFramebuffer()
     {
+        m_RenderPass = nullptr;
+        m_ImagesSize = { 0, 0 };
+
+        if (m_ColorImage != nullptr)
+        {
+            delete m_ColorImage;
+            m_ColorImage = nullptr;
+        }
+        if (m_DepthImage != nullptr)
+        {
+            delete m_DepthImage;
+            m_DepthImage = nullptr;
+        }
+        if (m_ResolveImage != nullptr)
+        {
+            delete m_ResolveImage;
+            m_ResolveImage = nullptr;
+        }
+
         if (m_Framebuffer != nullptr)
         {
             vkDestroyFramebuffer(getRenderSubsystem()->getDevice(), m_Framebuffer, nullptr);
-            m_Images.clear();
-
-            m_ResultImageIndex = -1;
             m_Framebuffer = nullptr;
-            m_RenderPass = nullptr;
         }
     }
 }

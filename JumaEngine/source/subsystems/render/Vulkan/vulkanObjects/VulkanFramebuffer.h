@@ -10,7 +10,6 @@
 
 #include <vulkan/vulkan_core.h>
 
-#include "jutils/jarray.h"
 #include "jutils/jshared_ptr.h"
 #include "jutils/math/vector2.h"
 
@@ -26,8 +25,7 @@ namespace JumaEngine
         VulkanFramebuffer() = default;
         virtual ~VulkanFramebuffer() override;
 
-        bool create(VulkanRenderPass* renderPass, const math::uvector2& size, const jshared_ptr<VulkanImage>& resultImage);
-        bool create(VulkanRenderPass* renderPass, const math::uvector2& size, VkImage resultImage);
+        bool create(VulkanRenderPass* renderPass, const math::uvector2& size, VkImage resultImage = nullptr);
 
         VkFramebuffer get() const { return m_Framebuffer; }
         VulkanRenderPass* getRenderPass() const { return m_RenderPass; }
@@ -45,17 +43,18 @@ namespace JumaEngine
 
         VulkanRenderPass* m_RenderPass = nullptr;
 
-        jarray<jshared_ptr<VulkanImage>> m_Images;
         math::uvector2 m_ImagesSize = { 0, 0 };
-        int32 m_ResultImageIndex = -1;
+        VulkanImage* m_ColorImage = nullptr;
+        VulkanImage* m_DepthImage = nullptr;
+        VulkanImage* m_ResolveImage = nullptr;
         
         jshared_ptr<VulkanCommandBuffer> m_CommandBuffer = nullptr;
 
         
-        bool init(VulkanRenderPass* renderPass, const math::uvector2& size, const jshared_ptr<VulkanImage>& resultImage);
-        bool recreate(VulkanRenderPass* renderPass, const math::uvector2& size, const jshared_ptr<VulkanImage>& resultImage);
+        bool init(VulkanRenderPass* renderPass, const math::uvector2& size, VkImage resultImage);
+        bool recreate(VulkanRenderPass* renderPass, const math::uvector2& size, VkImage resultImage);
 
-        bool createImages(const jshared_ptr<VulkanImage>& resultImage);
+        bool recreateImages(VkImage resultImage);
         bool createFrambuffer();
 
         void clearFramebuffer();
