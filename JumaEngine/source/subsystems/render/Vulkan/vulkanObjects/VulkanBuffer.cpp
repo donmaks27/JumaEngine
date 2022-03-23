@@ -98,16 +98,13 @@ namespace JumaEngine
         return true;
     }
 
-    bool VulkanBuffer::copyTo(const jshared_ptr<VulkanBuffer>& dstBuffer) const
+    bool VulkanBuffer::copyTo(const VulkanBuffer* dstBuffer) const
     {
         if (!isValid() || (dstBuffer == nullptr) || !dstBuffer->isValid())
         {
             return false;
         }
-        return copyTo(dstBuffer.get());
-    }
-    bool VulkanBuffer::copyTo(const VulkanBuffer* dstBuffer) const
-    {
+
         VulkanCommandPool* commandPool = getRenderSubsystem()->getCommandPool(VulkanQueueType::Transfer);
         VulkanCommandBuffer* commandBuffer = commandPool != nullptr ? commandPool->getCommandBuffer() : nullptr;
         if (commandBuffer == nullptr)
@@ -146,10 +143,11 @@ namespace JumaEngine
             return false;
         }
 
-        jshared_ptr<VulkanBuffer> stagingBuffer = getRenderSubsystem()->createVulkanObject<VulkanBuffer>();
+        VulkanBuffer* stagingBuffer = getRenderSubsystem()->createVulkanObject<VulkanBuffer>();
         stagingBuffer->init(dataSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, {}, VMA_MEMORY_USAGE_CPU_TO_GPU, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
         if (!stagingBuffer->isValid() || !stagingBuffer->setData(data, dataSize))
         {
+            delete stagingBuffer;
             return false;
         }
 
@@ -165,9 +163,12 @@ namespace JumaEngine
         }
         if (!isValid() || !stagingBuffer->copyTo(this))
         {
+            delete stagingBuffer;
             clear();
             return false;
         }
+
+        delete stagingBuffer;
         return true;
     }
 }

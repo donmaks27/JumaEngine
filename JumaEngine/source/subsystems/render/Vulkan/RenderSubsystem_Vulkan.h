@@ -14,7 +14,6 @@
 #include "jutils/jarray.h"
 #include "jutils/jmap.h"
 #include "jutils/jstringID.h"
-#include "jutils/jshared_ptr.h"
 #include "vulkanObjects/VulkanQueueType.h"
 #include "VulkanContextObject.h"
 #include "vulkanObjects/VulkanRenderPassDescription.h"
@@ -58,7 +57,7 @@ namespace JumaEngine
         bool pickDepthFormat(VkFormat& outFormat) const;
 
         uint32 getQueueFamilyIndex(const VulkanQueueType queueType) const { return m_QueueFamilyIndices[queueType]; }
-        const jshared_ptr<VulkanQueue>& getQueue(const VulkanQueueType queueType) const { return m_Queues[m_QueueFamilyIndices[queueType]]; }
+        VulkanQueue* getQueue(const VulkanQueueType queueType) const { return m_Queues[m_QueueFamilyIndices[queueType]]; }
         VulkanCommandPool* getCommandPool(const VulkanQueueType queueType) const { return m_CommandPools[queueType]; }
         VulkanSwapchain* getSwapchain() const;
 
@@ -113,7 +112,7 @@ namespace JumaEngine
         VmaAllocator_T* m_Allocator = nullptr;
 
         jmap<VulkanQueueType, uint32> m_QueueFamilyIndices;
-        jmap<uint32, jshared_ptr<VulkanQueue>> m_Queues;
+        jmap<uint32, VulkanQueue*> m_Queues;
         jmap<VulkanQueueType, VulkanCommandPool*> m_CommandPools;
 
         jmap<jstringID, VertexDescription_Vulkan> m_RegisteredVertexTypes;

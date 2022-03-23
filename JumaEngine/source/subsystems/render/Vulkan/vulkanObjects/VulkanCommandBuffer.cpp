@@ -5,7 +5,6 @@
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
 #include "VulkanQueue.h"
-#include "jutils/jshared_ptr.h"
 #include "VulkanCommandPool.h"
 #include "subsystems/render/Vulkan/RenderSubsystem_Vulkan.h"
 
@@ -29,7 +28,7 @@ namespace JumaEngine
             return false;
         }
 
-        const jshared_ptr<VulkanQueue> queue = m_CommandPool->getRenderSubsystem()->getQueue(m_CommandPool->getQueueType());
+        const VulkanQueue* queue = m_CommandPool->getRenderSubsystem()->getQueue(m_CommandPool->getQueueType());
         if ((queue == nullptr) || !queue->isValid())
         {
             return false;

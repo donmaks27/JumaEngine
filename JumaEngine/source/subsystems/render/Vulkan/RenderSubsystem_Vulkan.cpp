@@ -351,9 +351,10 @@ namespace JumaEngine
 
         for (const auto& queueFamilyIndex : uniqueQueueFamilies)
         {
-            jshared_ptr<VulkanQueue> queue = createVulkanObject<VulkanQueue>();
+            VulkanQueue* queue = createVulkanObject<VulkanQueue>();
             if (!queue->init(queueFamilyIndex, 0))
             {
+                delete queue;
                 return false;
             }
             m_Queues[queueFamilyIndex] = queue;
@@ -367,6 +368,8 @@ namespace JumaEngine
         if (!graphicsCommandPool->init(VulkanQueueType::Graphics) ||
             !transferCommandPool->init(VulkanQueueType::Transfer, VK_COMMAND_POOL_CREATE_TRANSIENT_BIT))
         {
+            delete graphicsCommandPool;
+            delete transferCommandPool;
             JUMA_LOG(error, JSTR("Failed to create command pools"));
             return false;
         }
@@ -415,6 +418,10 @@ namespace JumaEngine
                 }
                 m_CommandPools.clear();
                 m_QueueFamilyIndices.clear();
+                for (const auto& queue : m_Queues)
+                {
+                    delete queue.value;
+                }
                 m_Queues.clear();
 
                 vmaDestroyAllocator(m_Allocator);

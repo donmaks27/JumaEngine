@@ -10,7 +10,6 @@
 
 #include <vulkan/vulkan_core.h>
 
-#include "jutils/jshared_ptr.h"
 #include "jutils/jarray.h"
 #include "jutils/jdelegate_multicast.h"
 #include "jutils/math/vector2.h"

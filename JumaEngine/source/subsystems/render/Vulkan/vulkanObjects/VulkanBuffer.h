@@ -13,7 +13,6 @@
 
 #include "VulkanQueueType.h"
 #include "jutils/jset.h"
-#include "jutils/jshared_ptr.h"
 
 namespace JumaEngine
 {
@@ -33,7 +32,7 @@ namespace JumaEngine
         bool setData(const void* data) { return isValid() && setData(data, m_BufferSize); }
         bool setData(const void* data, uint64 dataSize);
 
-        bool copyTo(const jshared_ptr<VulkanBuffer>& dstBuffer) const;
+        bool copyTo(const VulkanBuffer* dstBuffer) const;
 
         bool initGPUBuffer(const void* data, uint64 dataSize, const jset<VulkanQueueType>& queues, VkBufferUsageFlags usage);
 
@@ -49,8 +48,6 @@ namespace JumaEngine
 
 
         void clearBuffer();
-
-        bool copyTo(const VulkanBuffer* dstBuffer) const;
     };
 }
 
