@@ -3,7 +3,6 @@
 #pragma once
 
 #include "common_header.h"
-#include "jutils/jshared_ptr.h"
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
@@ -96,8 +95,8 @@ namespace JumaEngine
 
         bool initInternal(const VkImageCreateInfo& imageInfo, const VmaAllocationCreateInfo& allocationInfo);
 
-        jshared_ptr<VulkanCommandBuffer> createCommandBuffer(VulkanQueueType queueType) const;
-        void submitCommandBuffer(const jshared_ptr<VulkanCommandBuffer>& commandBuffer) const;
+        VulkanCommandBuffer* createCommandBuffer(VulkanQueueType queueType) const;
+        void submitCommandBuffer(VulkanCommandBuffer* commandBuffer) const;
     };
 
     TextureFormat GetTextureFormatByVulkanFormat(const VkFormat format)

@@ -10,13 +10,12 @@
 
 #include <vulkan/vulkan_core.h>
 
-#include "jutils/jshared_ptr.h"
 #include "jutils/math/vector2.h"
 
 namespace JumaEngine
 {
-    class VulkanImage;
     class VulkanCommandBuffer;
+    class VulkanImage;
     class VulkanRenderPass;
 
     class VulkanFramebuffer : public VulkanContextObject
@@ -30,8 +29,8 @@ namespace JumaEngine
         VkFramebuffer get() const { return m_Framebuffer; }
         VulkanRenderPass* getRenderPass() const { return m_RenderPass; }
 
-        const jshared_ptr<VulkanCommandBuffer>& getRenderCommandBuffer() const { return m_CommandBuffer; }
-        void setRenderCommandBuffer(const jshared_ptr<VulkanCommandBuffer>& commandBuffer) { m_CommandBuffer = commandBuffer; }
+        VulkanCommandBuffer* getRenderCommandBuffer() const { return m_CommandBuffer; }
+        void setRenderCommandBuffer(VulkanCommandBuffer* commandBuffer);
 
     protected:
 
@@ -48,7 +47,7 @@ namespace JumaEngine
         VulkanImage* m_DepthImage = nullptr;
         VulkanImage* m_ResolveImage = nullptr;
         
-        jshared_ptr<VulkanCommandBuffer> m_CommandBuffer = nullptr;
+        VulkanCommandBuffer* m_CommandBuffer = nullptr;
 
         
         bool init(VulkanRenderPass* renderPass, const math::uvector2& size, VkImage resultImage);

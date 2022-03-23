@@ -108,9 +108,9 @@ namespace JumaEngine
     }
     bool VulkanBuffer::copyTo(const VulkanBuffer* dstBuffer) const
     {
-        const jshared_ptr<VulkanCommandPool> commandPool = getRenderSubsystem()->getCommandPool(VulkanQueueType::Transfer);
-        const jshared_ptr<VulkanCommandBuffer> commandBuffer = commandPool != nullptr ? commandPool->createCommandBuffer(true) : nullptr;
-        if ((commandBuffer == nullptr) || !commandBuffer->isValid())
+        VulkanCommandPool* commandPool = getRenderSubsystem()->getCommandPool(VulkanQueueType::Transfer);
+        VulkanCommandBuffer* commandBuffer = commandPool != nullptr ? commandPool->getCommandBuffer() : nullptr;
+        if (commandBuffer == nullptr)
         {
             return false;
         }
@@ -128,7 +128,9 @@ namespace JumaEngine
 
         vkEndCommandBuffer(commandBuffer->get());
 
-        return commandBuffer->submit(true);
+        const bool success = commandBuffer->submit(true);
+        commandBuffer->returnToCommandPool();
+        return success;
     }
 
     bool VulkanBuffer::initGPUBuffer(const void* data, const uint64 dataSize, const jset<VulkanQueueType>& queues, const VkBufferUsageFlags usage)

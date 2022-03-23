@@ -11,13 +11,12 @@
 #include <vulkan/vulkan_core.h>
 
 #include "VulkanQueueType.h"
-#include "jutils/jshared_ptr.h"
+#include "jutils/jlist.h"
 #include "jutils/jarray.h"
+#include "VulkanCommandBuffer.h"
 
 namespace JumaEngine
 {
-    class VulkanCommandBuffer;
-
     class VulkanCommandPool : public VulkanContextObject
     {
     public:
@@ -26,31 +25,28 @@ namespace JumaEngine
 
         bool init(VulkanQueueType queueType, VkCommandPoolCreateFlags flags = 0);
 
-        VulkanQueueType getQueueType() const { return m_QueueType; }
         VkCommandPool get() const { return m_CommandPool; }
+        VulkanQueueType getQueueType() const { return m_QueueType; }
 
-        jarray<jshared_ptr<VulkanCommandBuffer>> createCommandBuffers(bool primaryLevel, uint32_t buffersCount);
-        jshared_ptr<VulkanCommandBuffer> createCommandBuffer(bool primaryLevel);
-
-        void clearCommandBuffers(const jarray<jshared_ptr<VulkanCommandBuffer>>& commandBuffers);
+        VulkanCommandBuffer* getCommandBuffer();
+        void returnCommandBuffer(VulkanCommandBuffer* commandBuffer);
 
     protected:
 
-        virtual void clearInternal() override { clearCommandPool(); }
+        virtual void clearInternal() override { clearVulkan(); }
 
     private:
 
-        VulkanQueueType m_QueueType = VulkanQueueType::Graphics;
         VkCommandPool m_CommandPool = nullptr;
+        VulkanQueueType m_QueueType = VulkanQueueType::Graphics;
 
-        jarray<VulkanCommandBuffer*> m_CreatedCommandBuffers;
+        jlist<VulkanCommandBuffer> m_CommandBuffers;
+        jarray<VulkanCommandBuffer*> m_UnusedCommandBuffers;
 
 
-        jshared_ptr<VulkanCommandBuffer> createCommandBuffer(VkCommandBuffer buffer);
+        void clearVulkan();
 
-        void clearCommandPool();
-        void clearCommandBuffers(const jarray<VulkanCommandBuffer*>& commandBuffers);
-        void onCommandBufferPreClear(VulkanCommandBuffer* commandBuffer);
+        bool createCommandBuffers(bool primaryLevel, int32 count, VkCommandBuffer* commandBuffers);
     };
 }
 

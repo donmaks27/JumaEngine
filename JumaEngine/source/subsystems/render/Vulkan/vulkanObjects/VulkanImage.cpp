@@ -213,10 +213,10 @@ namespace JumaEngine
         return true;
     }
 
-    jshared_ptr<VulkanCommandBuffer> VulkanImage::createCommandBuffer(const VulkanQueueType queueType) const
+    VulkanCommandBuffer* VulkanImage::createCommandBuffer(const VulkanQueueType queueType) const
     {
-        const jshared_ptr<VulkanCommandPool>& commandPool = getRenderSubsystem()->getCommandPool(VulkanQueueType::Graphics);
-        jshared_ptr<VulkanCommandBuffer> commandBuffer = commandPool != nullptr ? commandPool->createCommandBuffer(true) : nullptr;
+        VulkanCommandPool* commandPool = getRenderSubsystem()->getCommandPool(VulkanQueueType::Graphics);
+        VulkanCommandBuffer* commandBuffer = commandPool != nullptr ? commandPool->getCommandBuffer() : nullptr;
         if (commandBuffer == nullptr)
         {
             return nullptr;
@@ -228,10 +228,11 @@ namespace JumaEngine
         vkBeginCommandBuffer(commandBuffer->get(), &beginInfo);
         return commandBuffer;
     }
-    void VulkanImage::submitCommandBuffer(const jshared_ptr<VulkanCommandBuffer>& commandBuffer) const
+    void VulkanImage::submitCommandBuffer(VulkanCommandBuffer* commandBuffer) const
     {
         vkEndCommandBuffer(commandBuffer->get());
         commandBuffer->submit(true);
+        commandBuffer->returnToCommandPool();
     }
 
     bool VulkanImage::changeImageLayout(VkCommandBuffer commandBuffer, const VkImageLayout newLayout, 
@@ -306,7 +307,7 @@ namespace JumaEngine
         const VkAccessFlags dstAccess, const VkPipelineStageFlags dstStage, 
         const uint32 mipLevel, const uint32 levelCount)
     {
-        const jshared_ptr<VulkanCommandBuffer> commandBuffer = createCommandBuffer(VulkanQueueType::Graphics);
+        VulkanCommandBuffer* commandBuffer = createCommandBuffer(VulkanQueueType::Graphics);
         if (commandBuffer == nullptr)
         {
             return false;
@@ -322,7 +323,7 @@ namespace JumaEngine
         const VkAccessFlags srcAccess, const VkPipelineStageFlags srcStage,
         const VkAccessFlags dstAccess, const VkPipelineStageFlags dstStage)
     {
-        const jshared_ptr<VulkanCommandBuffer> commandBuffer = createCommandBuffer(VulkanQueueType::Graphics);
+        VulkanCommandBuffer* commandBuffer = createCommandBuffer(VulkanQueueType::Graphics);
         if (commandBuffer == nullptr)
         {
             return false;
@@ -336,7 +337,7 @@ namespace JumaEngine
     }
     bool VulkanImage::changeImageLayout(const VkImageLayout newLayout)
     {
-        const jshared_ptr<VulkanCommandBuffer> commandBuffer = createCommandBuffer(VulkanQueueType::Graphics);
+        VulkanCommandBuffer* commandBuffer = createCommandBuffer(VulkanQueueType::Graphics);
         if (commandBuffer == nullptr)
         {
             return false;
@@ -451,7 +452,7 @@ namespace JumaEngine
     }
     bool VulkanImage::generateMipmaps(const VkImageLayout finalLayout)
     {
-        const jshared_ptr<VulkanCommandBuffer> commandBuffer = createCommandBuffer(VulkanQueueType::Graphics);
+        VulkanCommandBuffer* commandBuffer = createCommandBuffer(VulkanQueueType::Graphics);
         if (commandBuffer == nullptr)
         {
             return false;
@@ -484,7 +485,7 @@ namespace JumaEngine
             return false;
         }
 
-        const jshared_ptr<VulkanCommandBuffer> commandBuffer = createCommandBuffer(VulkanQueueType::Transfer);
+        VulkanCommandBuffer* commandBuffer = createCommandBuffer(VulkanQueueType::Transfer);
         if (commandBuffer == nullptr)
         {
             delete stagingBuffer;

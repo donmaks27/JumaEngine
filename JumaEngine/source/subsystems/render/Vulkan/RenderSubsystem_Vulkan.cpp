@@ -362,8 +362,8 @@ namespace JumaEngine
     }
     bool RenderSubsystem_Vulkan::createCommandPools()
     {
-        jshared_ptr<VulkanCommandPool> graphicsCommandPool = createVulkanObject<VulkanCommandPool>();
-        jshared_ptr<VulkanCommandPool> transferCommandPool = createVulkanObject<VulkanCommandPool>();
+        VulkanCommandPool* graphicsCommandPool = createVulkanObject<VulkanCommandPool>();
+        VulkanCommandPool* transferCommandPool = createVulkanObject<VulkanCommandPool>();
         if (!graphicsCommandPool->init(VulkanQueueType::Graphics) ||
             !transferCommandPool->init(VulkanQueueType::Transfer, VK_COMMAND_POOL_CREATE_TRANSIENT_BIT))
         {
@@ -409,6 +409,10 @@ namespace JumaEngine
                 m_RenderPasses.clear();
                 m_RenderPassTypes.clear();
 
+                for (const auto& commandPool : m_CommandPools)
+                {
+                    delete commandPool.value;
+                }
                 m_CommandPools.clear();
                 m_QueueFamilyIndices.clear();
                 m_Queues.clear();

@@ -107,7 +107,7 @@ namespace JumaEngine
         void markAsNeededToRecreate();
         bool applySettingsInternal(bool forceRecreate);
 
-        jshared_ptr<VulkanCommandBuffer> createRenderCommandBuffer(uint32 swapchainImageIndex);
+        VulkanCommandBuffer* createRenderCommandBuffer(uint32 swapchainImageIndex);
     };
 }
 

@@ -4,7 +4,6 @@
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
-#include "jutils/jlog.h"
 #include "subsystems/render/Vulkan/RenderSubsystem_Vulkan.h"
 #include "VulkanCommandBuffer.h"
 
@@ -12,16 +11,14 @@ namespace JumaEngine
 {
     VulkanCommandPool::~VulkanCommandPool()
     {
-        if (isValid())
-        {
-            clearCommandPool();
-        }
+        clearVulkan();
     }
 
     bool VulkanCommandPool::init(const VulkanQueueType queueType, const VkCommandPoolCreateFlags flags)
     {
         if (isValid())
         {
+            JUMA_LOG(warning, JSTR("Command pool already initialized"));
             return false;
         }
 
@@ -29,11 +26,11 @@ namespace JumaEngine
         VkCommandPoolCreateInfo commandPoolInfo{};
         commandPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
         commandPoolInfo.queueFamilyIndex = queueFamiyIndex;
-        commandPoolInfo.flags = flags;
+        commandPoolInfo.flags = flags | VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
         const VkResult result = vkCreateCommandPool(getRenderSubsystem()->getDevice(), &commandPoolInfo, nullptr, &m_CommandPool);
         if (result != VK_SUCCESS)
         {
-            JUMA_LOG(warning, JSTR("Failed to create command pull for queue family ") + TO_JSTR(queueFamiyIndex) + JSTR(". Code ") + TO_JSTR(result));
+            JUMA_VULKAN_ERROR_LOG(JSTR("Failed to create command pull for queue family ") + TO_JSTR(queueFamiyIndex), result);
             return false;
         }
 
@@ -42,118 +39,68 @@ namespace JumaEngine
         return true;
     }
 
-    void VulkanCommandPool::clearCommandPool()
+    void VulkanCommandPool::clearVulkan()
     {
-        clearCommandBuffers(m_CreatedCommandBuffers);
-        m_CreatedCommandBuffers.clear();
-
-        vkDestroyCommandPool(getRenderSubsystem()->getDevice(), m_CommandPool, nullptr);
-        m_CommandPool = nullptr;
+        m_UnusedCommandBuffers.clear();
+        m_CommandBuffers.clear();
+        if (m_CommandPool != nullptr)
+        {
+            vkDestroyCommandPool(getRenderSubsystem()->getDevice(), m_CommandPool, nullptr);
+        }
     }
 
-    jarray<jshared_ptr<VulkanCommandBuffer>> VulkanCommandPool::createCommandBuffers(const bool primaryLevel, const uint32_t buffersCount)
-    {
-        if (!isValid() || (buffersCount == 0))
-        {
-            return {};
-        }
-
-        jarray<VkCommandBuffer> vulkanCommandBuffers(buffersCount);
-        VkCommandBufferAllocateInfo commandBufferInfo{};
-        commandBufferInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-        commandBufferInfo.commandPool = m_CommandPool;
-        commandBufferInfo.level = primaryLevel ? VK_COMMAND_BUFFER_LEVEL_PRIMARY : VK_COMMAND_BUFFER_LEVEL_SECONDARY;
-        commandBufferInfo.commandBufferCount = buffersCount;
-        const VkResult result = vkAllocateCommandBuffers(getRenderSubsystem()->getDevice(), &commandBufferInfo, vulkanCommandBuffers.getData());
-        if (result != VK_SUCCESS)
-        {
-            JUMA_LOG(warning, JSTR("Failed to create command buffers. Code ") + TO_JSTR(result));
-            return {};
-        }
-
-        jarray<jshared_ptr<VulkanCommandBuffer>> commandBuffers;
-        for (const auto& buffer : vulkanCommandBuffers)
-        {
-            commandBuffers.add(createCommandBuffer(buffer));
-        }
-        return commandBuffers;
-    }
-    jshared_ptr<VulkanCommandBuffer> VulkanCommandPool::createCommandBuffer(const bool primaryLevel)
+    VulkanCommandBuffer* VulkanCommandPool::getCommandBuffer()
     {
         if (!isValid())
         {
             return nullptr;
         }
 
-        VkCommandBuffer vulkanCommandBuffer = nullptr;
+        if (!m_UnusedCommandBuffers.isEmpty())
+        {
+            VulkanCommandBuffer* result = m_UnusedCommandBuffers.getLast();
+            m_UnusedCommandBuffers.removeLast();
+            return result;
+        }
+
+        VulkanCommandBuffer* result = &m_CommandBuffers.addDefault();
+        if (!createCommandBuffers(true, 1, &result->m_CommandBuffer))
+        {
+            m_CommandBuffers.removeLast();
+            return nullptr;
+        }
+
+        result->m_CommandPool = this;
+        return result;
+    }
+    void VulkanCommandPool::returnCommandBuffer(VulkanCommandBuffer* commandBuffer)
+    {
+        if (isValid() && (commandBuffer != nullptr))
+        {
+            vkResetCommandBuffer(commandBuffer->get(), VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
+            m_UnusedCommandBuffers.add(commandBuffer);
+        }
+    }
+
+    bool VulkanCommandPool::createCommandBuffers(const bool primaryLevel, const int32 count, VkCommandBuffer* commandBuffers)
+    {
+        if (!isValid() || (count <= 0))
+        {
+            return false;
+        }
+
         VkCommandBufferAllocateInfo commandBufferInfo{};
         commandBufferInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
         commandBufferInfo.commandPool = m_CommandPool;
         commandBufferInfo.level = primaryLevel ? VK_COMMAND_BUFFER_LEVEL_PRIMARY : VK_COMMAND_BUFFER_LEVEL_SECONDARY;
-        commandBufferInfo.commandBufferCount = 1;
-        const VkResult result = vkAllocateCommandBuffers(getRenderSubsystem()->getDevice(), &commandBufferInfo, &vulkanCommandBuffer);
+        commandBufferInfo.commandBufferCount = static_cast<uint32>(count);
+        const VkResult result = vkAllocateCommandBuffers(getRenderSubsystem()->getDevice(), &commandBufferInfo, commandBuffers);
         if (result != VK_SUCCESS)
         {
-            JUMA_LOG(warning, JSTR("Failed to create command buffer. Code ") + TO_JSTR(result));
-            return nullptr;
+            JUMA_VULKAN_ERROR_LOG(JSTR("Failed to allocate command buffers"), result);
+            return false;
         }
-        return createCommandBuffer(vulkanCommandBuffer);
-    }
-    jshared_ptr<VulkanCommandBuffer> VulkanCommandPool::createCommandBuffer(VkCommandBuffer buffer)
-    {
-        jshared_ptr<VulkanCommandBuffer> commandBuffer = getRenderSubsystem()->createVulkanObject<VulkanCommandBuffer>();
-        m_CreatedCommandBuffers.add(commandBuffer.get());
-        commandBuffer->m_ParentCommandPool = this;
-        commandBuffer->m_CommandBuffer = buffer;
-        commandBuffer->onPreClear.bind(this, &VulkanCommandPool::onCommandBufferPreClear);
-        commandBuffer->markAsInitialized();
-        return commandBuffer;
-    }
-
-    void VulkanCommandPool::clearCommandBuffers(const jarray<jshared_ptr<VulkanCommandBuffer>>& commandBuffers)
-    {
-        if (!isValid() || commandBuffers.isEmpty())
-        {
-            return;
-        }
-
-        jarray<VulkanCommandBuffer*> buffers;
-        for (const auto& commandBuffer : commandBuffers)
-        {
-            m_CreatedCommandBuffers.remove(commandBuffer.get());
-            buffers.add(commandBuffer.get());
-        }
-        clearCommandBuffers(buffers);
-    }
-    void VulkanCommandPool::clearCommandBuffers(const jarray<VulkanCommandBuffer*>& commandBuffers)
-    {
-        if (!isValid() || commandBuffers.isEmpty())
-        {
-            return;
-        }
-
-        jarray<VkCommandBuffer> vulkanCommandBuffers;
-        for (const auto& commandBuffer : commandBuffers)
-        {
-            if ((commandBuffer != nullptr) && commandBuffer->isValid())
-            {
-                vulkanCommandBuffers.add(commandBuffer->get());
-                commandBuffer->onPreClear.unbind(this, &VulkanCommandPool::onCommandBufferPreClear);
-                commandBuffer->clear();
-            }
-        }
-        if (!vulkanCommandBuffers.isEmpty())
-        {
-            vkFreeCommandBuffers(getRenderSubsystem()->getDevice(), m_CommandPool, static_cast<uint32_t>(vulkanCommandBuffers.getSize()), vulkanCommandBuffers.getData());
-        }
-    }
-    void VulkanCommandPool::onCommandBufferPreClear(VulkanCommandBuffer* commandBuffer)
-    {
-        commandBuffer->onPreClear.unbind(this, &VulkanCommandPool::onCommandBufferPreClear);
-        m_CreatedCommandBuffers.remove(commandBuffer);
-
-        VkCommandBuffer buffer = commandBuffer->get();
-        vkFreeCommandBuffers(getRenderSubsystem()->getDevice(), m_CommandPool, 1, &buffer);
+        return true;
     }
 }
 

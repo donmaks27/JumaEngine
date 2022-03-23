@@ -4,30 +4,13 @@
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
-#include "subsystems/render/Vulkan/RenderSubsystem_Vulkan.h"
-#include "VulkanCommandPool.h"
 #include "VulkanQueue.h"
-#include "jutils/jlog.h"
 #include "jutils/jshared_ptr.h"
+#include "VulkanCommandPool.h"
+#include "subsystems/render/Vulkan/RenderSubsystem_Vulkan.h"
 
 namespace JumaEngine
 {
-    VulkanCommandBuffer::~VulkanCommandBuffer()
-    {
-        if (isValid())
-        {
-            clearCommandBuffer();
-        }
-    }
-
-    void VulkanCommandBuffer::clearCommandBuffer()
-    {
-        onPreClear.call(this);
-
-        m_ParentCommandPool = nullptr;
-        m_CommandBuffer = nullptr;
-    }
-
     bool VulkanCommandBuffer::submit(const bool waitForFinish)
     {
         if (!isValid())
@@ -46,7 +29,7 @@ namespace JumaEngine
             return false;
         }
 
-        const jshared_ptr<VulkanQueue> queue = getRenderSubsystem()->getQueue(m_ParentCommandPool->getQueueType());
+        const jshared_ptr<VulkanQueue> queue = m_CommandPool->getRenderSubsystem()->getQueue(m_CommandPool->getQueueType());
         if ((queue == nullptr) || !queue->isValid())
         {
             return false;
@@ -57,7 +40,7 @@ namespace JumaEngine
         const VkResult result = vkQueueSubmit(queue->get(), 1, &submitInfo, fenceOnFinish);
         if (result != VK_SUCCESS)
         {
-            JUMA_LOG(error, JSTR("Failed to submit command buffer. Code ") + TO_JSTR(result));
+            JUMA_VULKAN_ERROR_LOG(JSTR("Failed to submit command buffer"), result);
             return false;
         }
 
@@ -66,6 +49,14 @@ namespace JumaEngine
             vkQueueWaitIdle(queue->get());
         }
         return true;
+    }
+
+    void VulkanCommandBuffer::returnToCommandPool()
+    {
+        if (isValid())
+        {
+            m_CommandPool->returnCommandBuffer(this);
+        }
     }
 }
 

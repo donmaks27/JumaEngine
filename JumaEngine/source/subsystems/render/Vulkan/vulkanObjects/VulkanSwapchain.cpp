@@ -435,7 +435,7 @@ namespace JumaEngine
             m_SwapchainImage_RenderedFrameIndices[renderImageIndex] = -1;
         }
 
-        const jshared_ptr<VulkanCommandBuffer> commandBuffer = createRenderCommandBuffer(renderImageIndex);
+        VulkanCommandBuffer* commandBuffer = createRenderCommandBuffer(renderImageIndex);
         if (commandBuffer == nullptr)
         {
             return false;
@@ -445,17 +445,17 @@ namespace JumaEngine
         vkResetFences(device, 1, &m_Fences_RenderFinished[m_RenderedFrameIndex]);
 
         RenderOptions_Vulkan* renderOptions = reinterpret_cast<RenderOptions_Vulkan*>(options);
-        renderOptions->commandBuffer = commandBuffer.get();
+        renderOptions->commandBuffer = commandBuffer;
         renderOptions->frameIndex = m_RenderedFrameIndex;
         renderOptions->swapchainImageIndex = renderImageIndex;
         renderOptions->framebuffer = m_Framebuffers[renderImageIndex];
         return true;
     }
-    jshared_ptr<VulkanCommandBuffer> VulkanSwapchain::createRenderCommandBuffer(const uint32 swapchainImageIndex)
+    VulkanCommandBuffer* VulkanSwapchain::createRenderCommandBuffer(const uint32 swapchainImageIndex)
     {
-        const jshared_ptr<VulkanCommandPool> commandPool = getRenderSubsystem()->getCommandPool(VulkanQueueType::Graphics);
-        jshared_ptr<VulkanCommandBuffer> commandBuffer = commandPool != nullptr ? commandPool->createCommandBuffer(true) : nullptr;
-        if ((commandBuffer == nullptr) || !commandBuffer->isValid())
+        VulkanCommandPool* commandPool = getRenderSubsystem()->getCommandPool(VulkanQueueType::Graphics);
+        VulkanCommandBuffer* commandBuffer = commandPool != nullptr ? commandPool->getCommandBuffer() : nullptr;
+        if (commandBuffer == nullptr)
         {
             return nullptr;
         }
@@ -505,7 +505,7 @@ namespace JumaEngine
     {
         RenderOptions_Vulkan* renderOptions = reinterpret_cast<RenderOptions_Vulkan*>(options);
         const uint32 swapchainImageIndex = renderOptions->swapchainImageIndex;
-        const jshared_ptr<VulkanCommandBuffer>& commandBuffer = m_Framebuffers[swapchainImageIndex]->getRenderCommandBuffer();
+        VulkanCommandBuffer* commandBuffer = m_Framebuffers[swapchainImageIndex]->getRenderCommandBuffer();
 
         vkCmdEndRenderPass(commandBuffer->get());
         VkResult result = vkEndCommandBuffer(commandBuffer->get());

@@ -7,6 +7,7 @@
 #include "VulkanRenderPass.h"
 #include "VulkanImage.h"
 #include "subsystems/render/Vulkan/RenderSubsystem_Vulkan.h"
+#include "VulkanCommandBuffer.h"
 
 namespace JumaEngine
 {
@@ -176,6 +177,15 @@ namespace JumaEngine
             return false;
         }
         return true;
+    }
+
+    void VulkanFramebuffer::setRenderCommandBuffer(VulkanCommandBuffer* commandBuffer)
+    {
+        if (m_CommandBuffer != nullptr)
+        {
+            m_CommandBuffer->returnToCommandPool();
+        }
+        m_CommandBuffer = commandBuffer;
     }
 
     void VulkanFramebuffer::clearFramebuffer()

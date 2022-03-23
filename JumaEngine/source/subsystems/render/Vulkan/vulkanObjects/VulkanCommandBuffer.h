@@ -6,46 +6,33 @@
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
-#include "subsystems/render/Vulkan/VulkanContextObject.h"
-
 #include <vulkan/vulkan_core.h>
-
-#include "jutils/jdelegate_multicast.h"
 
 namespace JumaEngine
 {
-    class VulkanCommandBuffer;
     class VulkanCommandPool;
 
-    CREATE_JUTILS_MULTICAST_DELEGATE_OneParam(OnVulkanCommandBufferEvent, VulkanCommandBuffer*, buffer);
-
-    class VulkanCommandBuffer : public VulkanContextObject
+    class VulkanCommandBuffer
     {
         friend VulkanCommandPool;
 
     public:
         VulkanCommandBuffer() = default;
-        virtual ~VulkanCommandBuffer() override;
+        ~VulkanCommandBuffer() = default;
 
-        OnVulkanCommandBufferEvent onPreClear;
-
+        bool isValid() const { return m_CommandBuffer != nullptr; }
 
         VkCommandBuffer get() const { return m_CommandBuffer; }
 
         bool submit(bool waitForFinish);
         bool submit(VkSubmitInfo submitInfo, VkFence fenceOnFinish, bool waitForFinish);
 
-    protected:
-
-        virtual void clearInternal() override { clearCommandBuffer(); }
+        void returnToCommandPool();
 
     private:
 
-        VulkanCommandPool* m_ParentCommandPool = nullptr;
+        VulkanCommandPool* m_CommandPool = nullptr;
         VkCommandBuffer m_CommandBuffer = nullptr;
-
-
-        void clearCommandBuffer();
     };
 }
 

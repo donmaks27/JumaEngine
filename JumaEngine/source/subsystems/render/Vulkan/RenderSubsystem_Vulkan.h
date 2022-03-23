@@ -59,7 +59,7 @@ namespace JumaEngine
 
         uint32 getQueueFamilyIndex(const VulkanQueueType queueType) const { return m_QueueFamilyIndices[queueType]; }
         const jshared_ptr<VulkanQueue>& getQueue(const VulkanQueueType queueType) const { return m_Queues[m_QueueFamilyIndices[queueType]]; }
-        const jshared_ptr<VulkanCommandPool>& getCommandPool(const VulkanQueueType queueType) const { return m_CommandPools[queueType]; }
+        VulkanCommandPool* getCommandPool(const VulkanQueueType queueType) const { return m_CommandPools[queueType]; }
         VulkanSwapchain* getSwapchain() const;
 
         virtual void render() override;
@@ -114,7 +114,7 @@ namespace JumaEngine
 
         jmap<VulkanQueueType, uint32> m_QueueFamilyIndices;
         jmap<uint32, jshared_ptr<VulkanQueue>> m_Queues;
-        jmap<VulkanQueueType, jshared_ptr<VulkanCommandPool>> m_CommandPools;
+        jmap<VulkanQueueType, VulkanCommandPool*> m_CommandPools;
 
         jmap<jstringID, VertexDescription_Vulkan> m_RegisteredVertexTypes;
 
