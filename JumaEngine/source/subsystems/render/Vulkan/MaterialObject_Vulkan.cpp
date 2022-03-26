@@ -2,6 +2,8 @@
 
 #include "MaterialObject_Vulkan.h"
 
+#include "vulkanObjects/VulkanRenderImage.h"
+
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
 #include "RenderSubsystem_Vulkan.h"
@@ -41,7 +43,7 @@ namespace JumaEngine
 
         const Window_Vulkan* window = dynamic_cast<const Window_Vulkan*>(renderSubsystem->getMainWindow());
         const VulkanSwapchain* swapchain = window != nullptr ? window->getVulkanSwapchain() : nullptr;
-        const uint32 maxRenderedFrameCount = swapchain != nullptr ? swapchain->getMaxRenderedFrameCount() : 0;
+        const uint32 maxRenderedFrameCount = swapchain != nullptr ? static_cast<uint8>(swapchain->getMaxRenderedFrameCount()) : 0;
         if (maxRenderedFrameCount == 0)
         {
             JUMA_LOG(error, JSTR("Can't get max rendered frame count"));
@@ -546,13 +548,14 @@ namespace JumaEngine
         }
 
         const RenderOptions_Vulkan* options = reinterpret_cast<const RenderOptions_Vulkan*>(renderOptions);
-        VkCommandBuffer commandBuffer = options->commandBuffer != nullptr ? options->commandBuffer->get() : nullptr;
+        const VulkanCommandBuffer* commandBufferObject = options->renderImage != nullptr ? options->renderImage->getRenderCommandBuffer() : nullptr;
+        VkCommandBuffer commandBuffer = commandBufferObject != nullptr ? commandBufferObject->get() : nullptr;
         if (commandBuffer == nullptr)
         {
             JUMA_LOG(error, JSTR("Invalid command buffer"));
             return false;
         }
-        const VulkanRenderPass* renderPass = options->framebuffer != nullptr ? options->framebuffer->getRenderPass() : nullptr;
+        const VulkanRenderPass* renderPass = options->renderImage != nullptr ? options->renderImage->getRenderPass() : nullptr;
         if (renderPass == nullptr)
         {
             JUMA_LOG(error, JSTR("Invalid render pass"));

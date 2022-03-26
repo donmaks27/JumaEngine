@@ -32,6 +32,8 @@ namespace JumaEngine
         VulkanCommandBuffer* getRenderCommandBuffer() const { return m_CommandBuffer; }
         void setRenderCommandBuffer(VulkanCommandBuffer* commandBuffer);
 
+        VulkanCommandBuffer* createRenderCommandBuffer() const;
+
     protected:
 
         virtual void clearInternal() override { clearFramebuffer(); }

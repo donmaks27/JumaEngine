@@ -7,6 +7,7 @@
 #include "VulkanRenderPass.h"
 #include "VulkanImage.h"
 #include "subsystems/render/Vulkan/RenderSubsystem_Vulkan.h"
+#include "VulkanCommandPool.h"
 #include "VulkanCommandBuffer.h"
 
 namespace JumaEngine
@@ -214,6 +215,62 @@ namespace JumaEngine
             vkDestroyFramebuffer(getRenderSubsystem()->getDevice(), m_Framebuffer, nullptr);
             m_Framebuffer = nullptr;
         }
+    }
+
+    VulkanCommandBuffer* VulkanFramebuffer::createRenderCommandBuffer() const
+    {
+        if (!isValid())
+        {
+            return nullptr;
+        }
+
+        VulkanCommandPool* commandPool = getRenderSubsystem()->getCommandPool(VulkanQueueType::Graphics);
+        VulkanCommandBuffer* commandBuffer = commandPool != nullptr ? commandPool->getCommandBuffer() : nullptr;
+        if (commandBuffer == nullptr)
+        {
+            return nullptr;
+        }
+
+        VkCommandBufferBeginInfo beginInfo{};
+        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+        beginInfo.flags = 0;
+        beginInfo.pInheritanceInfo = nullptr;
+        const VkResult result = vkBeginCommandBuffer(commandBuffer->get(), &beginInfo);
+        if (result != VK_SUCCESS)
+        {
+            commandBuffer->returnToCommandPool();
+
+            JUMA_VULKAN_ERROR_LOG(JSTR("Failed to start render buffer record"), result);
+            return nullptr;
+        }
+
+        VkClearValue clearValues[2];
+        clearValues[0].color = { { 1.0f, 1.0f, 1.0f, 1.0f } };
+        clearValues[1].depthStencil = { 1.0f, 0 };
+        VkRenderPassBeginInfo renderPassInfo{};
+        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+        renderPassInfo.renderPass = m_RenderPass->get();
+        renderPassInfo.framebuffer = m_Framebuffer;
+        renderPassInfo.renderArea.offset = { 0, 0 };
+        renderPassInfo.renderArea.extent = { m_ImagesSize.x, m_ImagesSize.y };
+        renderPassInfo.clearValueCount = 2;
+        renderPassInfo.pClearValues = clearValues;
+        vkCmdBeginRenderPass(commandBuffer->get(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+        VkViewport viewport{};
+        viewport.x = 0.0f;
+        viewport.y = 0.0f;
+        viewport.width = static_cast<float>(m_ImagesSize.x);
+        viewport.height = static_cast<float>(m_ImagesSize.y);
+        viewport.minDepth = 0.0f;
+        viewport.maxDepth = 1.0f;
+        VkRect2D scissor{};
+        scissor.offset = { 0, 0 };
+        scissor.extent = { m_ImagesSize.x, m_ImagesSize.y };
+        vkCmdSetViewport(commandBuffer->get(), 0, 1, &viewport);
+        vkCmdSetScissor(commandBuffer->get(), 0, 1, &scissor);
+
+        return commandBuffer;
     }
 }
 
