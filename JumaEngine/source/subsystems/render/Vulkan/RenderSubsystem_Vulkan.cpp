@@ -6,11 +6,11 @@
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
-#include "MaterialObject_Vulkan.h"
+#include "MaterialRenderAPIObject_Vulkan.h"
 #include "RenderOptions_Vulkan.h"
-#include "ShaderObject_Vulkan.h"
-#include "TextureObject_Vulkan.h"
-#include "VertexBufferObject_Vulkan.h"
+#include "ShaderRenderAPIObject_Vulkan.h"
+#include "TextureRenderAPIObject_Vulkan.h"
+#include "VertexBufferRenderAPIObject_Vulkan.h"
 #include "engine/Engine.h"
 #include "jutils/jset.h"
 #include "subsystems/render/vertex/VertexBufferData.h"
@@ -483,21 +483,21 @@ namespace JumaEngine
         vkQueueWaitIdle(getQueue(VulkanQueueType::Graphics)->get());
     }
 
-    ShaderObject* RenderSubsystem_Vulkan::createShaderObject()
+    ShaderRenderAPIObject* RenderSubsystem_Vulkan::createShaderObject()
     {
-        return createVulkanObject<ShaderObject_Vulkan>();
+        return createVulkanObject<ShaderRenderAPIObject_Vulkan>();
     }
-    MaterialObject* RenderSubsystem_Vulkan::createMaterialObject()
+    MaterialRenderAPIObject* RenderSubsystem_Vulkan::createMaterialObject()
     {
-        return createVulkanObject<MaterialObject_Vulkan>();
+        return createVulkanObject<MaterialRenderAPIObject_Vulkan>();
     }
-    VertexBufferObject* RenderSubsystem_Vulkan::createVertexBufferObject()
+    VertexBufferRenderAPIObject* RenderSubsystem_Vulkan::createVertexBufferObject()
     {
-        return createVulkanObject<VertexBufferObject_Vulkan>();
+        return createVulkanObject<VertexBufferRenderAPIObject_Vulkan>();
     }
-    TextureObject* RenderSubsystem_Vulkan::createTextureObject()
+    TextureRenderAPIObject* RenderSubsystem_Vulkan::createTextureObject()
     {
-        return createVulkanObject<TextureObject_Vulkan>();
+        return createVulkanObject<TextureRenderAPIObject_Vulkan>();
     }
 
     VertexDescription_Vulkan::VertexDescription_Vulkan(const uint32 vertexSize, const jarray<VertexComponentDescription>& vertexComponents)

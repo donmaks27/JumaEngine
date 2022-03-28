@@ -98,10 +98,10 @@
     <ClCompile Include="source\subsystems\render\Texture.cpp" />
     <ClCompile Include="source\subsystems\render\texture\TextureData.cpp" />
     <ClCompile Include="source\subsystems\render\VertexBuffer.cpp" />
-    <ClCompile Include="source\subsystems\render\Vulkan\MaterialObject_Vulkan.cpp" />
+    <ClCompile Include="source\subsystems\render\Vulkan\MaterialRenderAPIObject_Vulkan.cpp" />
     <ClCompile Include="source\subsystems\render\Vulkan\RenderSubsystem_Vulkan.cpp" />
-    <ClCompile Include="source\subsystems\render\Vulkan\TextureObject_Vulkan.cpp" />
-    <ClCompile Include="source\subsystems\render\Vulkan\VertexBufferObject_Vulkan.cpp" />
+    <ClCompile Include="source\subsystems\render\Vulkan\TextureRenderAPIObject_Vulkan.cpp" />
+    <ClCompile Include="source\subsystems\render\Vulkan\VertexBufferRenderAPIObject_Vulkan.cpp" />
     <ClCompile Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanBuffer.cpp" />
     <ClCompile Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanCommandBuffer.cpp" />
     <ClCompile Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanCommandPool.cpp" />
@@ -111,7 +111,7 @@
     <ClCompile Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanRenderImage.cpp" />
     <ClCompile Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanRenderPass.cpp" />
     <ClCompile Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanSwapchain.cpp" />
-    <ClCompile Include="source\subsystems\render\Vulkan\ShaderObject_Vulkan.cpp" />
+    <ClCompile Include="source\subsystems\render\Vulkan\ShaderRenderAPIObject_Vulkan.cpp" />
     <ClCompile Include="source\subsystems\SubsystemBase.cpp" />
     <ClCompile Include="source\subsystems\window\OpenGL\WindowSubsystem_OpenGL.cpp" />
     <ClCompile Include="source\subsystems\window\OpenGL\WindowSubsystem_OpenGL_GLFW.cpp" />
@@ -194,7 +194,7 @@
     <ClInclude Include="source\subsystems\render\OpenGL\ShaderObject_OpenGL.h" />
     <ClInclude Include="source\subsystems\render\OpenGL\TextureObject_OpenGL.h" />
     <ClInclude Include="source\subsystems\render\OpenGL\VertexBufferObject_OpenGL.h" />
-    <ClInclude Include="source\subsystems\render\RenderObject.h" />
+    <ClInclude Include="source\subsystems\render\RenderAPIObject.h" />
     <ClInclude Include="source\subsystems\render\RenderOptions.h" />
     <ClInclude Include="source\subsystems\render\RenderPresentMode.h" />
     <ClInclude Include="source\subsystems\render\RenderSubsystem.h" />
@@ -212,11 +212,11 @@
     <ClInclude Include="source\subsystems\render\vertex\VertexBufferData.h" />
     <ClInclude Include="source\subsystems\render\vertex\VertexComponents.h" />
     <ClInclude Include="source\subsystems\render\vertex\VertexInfo.h" />
-    <ClInclude Include="source\subsystems\render\Vulkan\MaterialObject_Vulkan.h" />
+    <ClInclude Include="source\subsystems\render\Vulkan\MaterialRenderAPIObject_Vulkan.h" />
     <ClInclude Include="source\subsystems\render\Vulkan\RenderOptions_Vulkan.h" />
     <ClInclude Include="source\subsystems\render\Vulkan\RenderSubsystem_Vulkan.h" />
-    <ClInclude Include="source\subsystems\render\Vulkan\TextureObject_Vulkan.h" />
-    <ClInclude Include="source\subsystems\render\Vulkan\VertexBufferObject_Vulkan.h" />
+    <ClInclude Include="source\subsystems\render\Vulkan\TextureRenderAPIObject_Vulkan.h" />
+    <ClInclude Include="source\subsystems\render\Vulkan\VertexBufferRenderAPIObject_Vulkan.h" />
     <ClInclude Include="source\subsystems\render\Vulkan\vma_lib.h" />
     <ClInclude Include="source\subsystems\render\Vulkan\VulkanContextObject.h" />
     <ClInclude Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanFramebuffer.h" />
@@ -230,7 +230,7 @@
     <ClInclude Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanQueue.h" />
     <ClInclude Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanQueueType.h" />
     <ClInclude Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanSwapchain.h" />
-    <ClInclude Include="source\subsystems\render\Vulkan\ShaderObject_Vulkan.h" />
+    <ClInclude Include="source\subsystems\render\Vulkan\ShaderRenderAPIObject_Vulkan.h" />
     <ClInclude Include="source\subsystems\SubsystemBase.h" />
     <ClInclude Include="source\subsystems\window\OpenGL\WindowSubsystem_OpenGL.h" />
     <ClInclude Include="source\subsystems\window\OpenGL\WindowSubsystem_OpenGL_GLFW.h" />

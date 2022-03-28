@@ -10,7 +10,7 @@ namespace JumaEngine
 {
     Texture::~Texture()
     {
-        clear();
+        clearData();
     }
 
     bool Texture::init(const TextureData* data)
@@ -27,44 +27,22 @@ namespace JumaEngine
         }
 
         m_Data = data;
-        m_Initialized = true;
+        markAsInitialized();
         return true;
     }
 
-    void Texture::clear()
+    TextureRenderAPIObject* Texture::createRenderAPIObjectInternal()
     {
-        clearRenderObject();
+        return getOwnerEngine()->getRenderSubsystem()->createTextureObject();
+    }
+
+    void Texture::clearData()
+    {
+        clearRenderAPIObject();
         if (m_Data != nullptr)
         {
             delete m_Data;
             m_Data = nullptr;
-        }
-    }
-
-    bool Texture::createRenderObject()
-    {
-        if (!isValid())
-        {
-            JUMA_LOG(warning, JSTR("Shader not initialized"));
-            return false;
-        }
-
-        RenderSubsystem* renderSubsystem = getOwnerEngine()->getRenderSubsystem();
-        m_RenderObject = renderSubsystem->createTextureObject();
-        if (!m_RenderObject->init(this))
-        {
-            delete m_RenderObject;
-            m_RenderObject = nullptr;
-            return false;
-        }
-        return true;
-    }
-    void Texture::clearRenderObject()
-    {
-        if (m_RenderObject != nullptr)
-        {
-            delete m_RenderObject;
-            m_RenderObject = nullptr;
         }
     }
 }

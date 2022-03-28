@@ -12,7 +12,7 @@ namespace JumaEngine
 {
     Material::~Material()
     {
-        clear();
+        clearData();
     }
 
     bool Material::init(Shader* shader)
@@ -32,7 +32,7 @@ namespace JumaEngine
         createUniformValues(shader);
         m_BaseShader->onClear.bind(this, &Material::onBaseShaderClear);
 
-        m_Initialized = true;
+        markAsInitialized();
         return true;
     }
     bool Material::init(Material* baseMaterial)
@@ -53,33 +53,34 @@ namespace JumaEngine
         m_BaseMaterial->onClear.bind(this, &Material::onBaseMaterialClear);
         m_BaseMaterial->onParamChanged.bind(this, &Material::onBaseMaterialParamChanged);
 
-        m_Initialized = true;
+        markAsInitialized();
         return true;
     }
-    
-    void Material::clear()
+
+    MaterialRenderAPIObject* Material::createRenderAPIObjectInternal()
     {
-        if (isValid())
+        return getOwnerEngine()->getRenderSubsystem()->createMaterialObject();
+    }
+
+    void Material::clearData()
+    {
+        if (!isMaterialInstance())
         {
-            if (!isMaterialInstance())
-            {
-                m_BaseShader->onClear.unbind(this, &Material::onBaseShaderClear);
-            }
-            else
-            {
-                m_BaseMaterial->onParamChanged.unbind(this, &Material::onBaseMaterialParamChanged);
-                m_BaseMaterial->onClear.unbind(this, &Material::onBaseMaterialClear);
-            }
-            onClear.call(this);
-
-            clearRenderObject();
-
-            clearUniformValues();
-
-            m_BaseMaterial = nullptr;
-            m_BaseShader = nullptr;
-            m_Initialized = false;
+            m_BaseShader->onClear.unbind(this, &Material::onBaseShaderClear);
         }
+        else
+        {
+            m_BaseMaterial->onParamChanged.unbind(this, &Material::onBaseMaterialParamChanged);
+            m_BaseMaterial->onClear.unbind(this, &Material::onBaseMaterialClear);
+        }
+        onClear.call(this);
+
+        clearRenderAPIObject();
+
+        clearUniformValues();
+
+        m_BaseMaterial = nullptr;
+        m_BaseShader = nullptr;
     }
 
     void Material::createUniformValues(Shader* shader)
@@ -106,40 +107,14 @@ namespace JumaEngine
         m_UniformValues_Mat4.clear();
     }
 
-    bool Material::createRenderObject()
-    {
-        if (!isValid())
-        {
-            JUMA_LOG(warning, JSTR("Shader not initialized"));
-            return false;
-        }
-
-        RenderSubsystem* renderSubsystem = getOwnerEngine()->getRenderSubsystem();
-        m_RenderObject = renderSubsystem->createMaterialObject();
-        if (!m_RenderObject->init(this))
-        {
-            delete m_RenderObject;
-            m_RenderObject = nullptr;
-            return false;
-        }
-        return true;
-    }
-    void Material::clearRenderObject()
-    {
-        if (m_RenderObject != nullptr)
-        {
-            delete m_RenderObject;
-            m_RenderObject = nullptr;
-        }
-    }
-
     bool Material::render(VertexBuffer* vertexBuffer, const RenderOptions* renderOptions)
     {
-        if (m_RenderObject == nullptr)
+        MaterialRenderAPIObject* renderObject = getRenderAPIObject();
+        if (renderObject == nullptr)
         {
             return false;
         }
-        return m_RenderObject->render(vertexBuffer, renderOptions);
+        return renderObject->render(vertexBuffer, renderOptions);
     }
 
     ShaderUniformType Material::getParamType(const jstringID& paramName) const
@@ -190,9 +165,10 @@ namespace JumaEngine
     }
     void Material::notifyMaterialParamChanged(const jstringID& paramName)
     {
-        if (m_RenderObject != nullptr)
+        MaterialRenderAPIObject* renderObject = getRenderAPIObject();
+        if (renderObject != nullptr)
         {
-            m_RenderObject->onMaterialParamChanged(paramName);
+            renderObject->onMaterialParamChanged(paramName);
         }
         onParamChanged.call(this, paramName);
     }

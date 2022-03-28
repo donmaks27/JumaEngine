@@ -20,10 +20,10 @@ namespace JumaEngine
 
         virtual void render() override;
 
-        virtual ShaderObject* createShaderObject() override;
-        virtual MaterialObject* createMaterialObject() override;
-        virtual VertexBufferObject* createVertexBufferObject() override;
-        virtual TextureObject* createTextureObject() override;
+        virtual ShaderRenderAPIObject* createShaderObject() override;
+        virtual MaterialRenderAPIObject* createMaterialObject() override;
+        virtual VertexBufferRenderAPIObject* createVertexBufferObject() override;
+        virtual TextureRenderAPIObject* createTextureObject() override;
 
     protected:
 

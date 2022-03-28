@@ -19,18 +19,17 @@ namespace JumaEngine
     class VulkanRenderPass;
     class VulkanBuffer;
 
-    class MaterialObject_Vulkan : public MaterialObject, public VulkanContextObjectBase
+    class MaterialRenderAPIObject_Vulkan : public MaterialRenderAPIObject, public VulkanContextObjectBase
     {
     public:
-        MaterialObject_Vulkan() = default;
-        virtual ~MaterialObject_Vulkan() override;
+        MaterialRenderAPIObject_Vulkan() = default;
+        virtual ~MaterialRenderAPIObject_Vulkan() override;
 
         virtual bool render(VertexBuffer* vertexBuffer, const RenderOptions* renderOptions) override;
 
     protected:
 
         virtual bool initInternal() override;
-        virtual void clearInternal() override { clearVulkanData(); }
         
         virtual void onMaterialParamChanged(const jstringID& paramName) override;
 
@@ -82,7 +81,7 @@ namespace JumaEngine
     };
 
     template<ShaderUniformType Type>
-    bool MaterialObject_Vulkan::updateBufferUniformValue(const jstringID& name, const uint32 frameIndex, VkDescriptorBufferInfo& outInfo)
+    bool MaterialRenderAPIObject_Vulkan::updateBufferUniformValue(const jstringID& name, const uint32 frameIndex, VkDescriptorBufferInfo& outInfo)
     {
         if (m_Parent->isOverrideParam(name))
         {
@@ -90,13 +89,13 @@ namespace JumaEngine
         }
         if (m_Parent->isMaterialInstance())
         {
-            MaterialObject_Vulkan* baseMaterialObject = dynamic_cast<MaterialObject_Vulkan*>(m_Parent->getBaseMaterial()->getRenderObject());
+            MaterialRenderAPIObject_Vulkan* baseMaterialObject = dynamic_cast<MaterialRenderAPIObject_Vulkan*>(m_Parent->getBaseMaterial()->getRenderAPIObject());
             return baseMaterialObject->updateBufferUniformValue<Type>(name, frameIndex, outInfo);
         }
         return false;
     }
     template<ShaderUniformType Type>
-    bool MaterialObject_Vulkan::updateBufferUniformValueData(const jstringID& name, const uint32 frameIndex, VkDescriptorBufferInfo& outInfo)
+    bool MaterialRenderAPIObject_Vulkan::updateBufferUniformValueData(const jstringID& name, const uint32 frameIndex, VkDescriptorBufferInfo& outInfo)
     {
         jarray<UniformValue_Buffer>* buffers = m_UniformValues_Buffer.find(name);
         UniformValue_Buffer* bufferValue = buffers != nullptr ? buffers->findByIndex(static_cast<int32>(frameIndex)) : nullptr;

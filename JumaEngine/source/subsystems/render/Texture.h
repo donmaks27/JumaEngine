@@ -3,7 +3,7 @@
 #pragma once
 
 #include "common_header.h"
-#include "subsystems/render/RenderObject.h"
+#include "RenderAPIObject.h"
 #include "engine/EngineContextObject.h"
 
 namespace JumaEngine
@@ -11,45 +11,44 @@ namespace JumaEngine
     class TextureData;
     class Texture;
 
-    class TextureObject : public RenderObject<Texture>
+    class TextureRenderAPIObject : public RenderAPIObject<Texture>
     {
     public:
-        TextureObject() = default;
-        virtual ~TextureObject() override = default;
+        TextureRenderAPIObject() = default;
+        virtual ~TextureRenderAPIObject() override = default;
 
     protected:
 
         inline const TextureData* getTextureData() const;
     };
 
-    class Texture : public EngineContextObject
+    class Texture : public EngineContextObject, public RenderObject<TextureRenderAPIObject>
     {
         JUMAENGINE_CLASS(Texture, EngineContextObject)
 
-        friend TextureObject;
+        friend TextureRenderAPIObject;
 
     public:
         Texture() = default;
         virtual ~Texture() override;
 
         bool init(const TextureData* data);
-        bool isValid() const { return m_Initialized; }
-        void clear();
 
-        bool createRenderObject();
-        TextureObject* getRenderObject() const { return m_RenderObject; }
-        void clearRenderObject();
+    protected:
+
+        virtual TextureRenderAPIObject* createRenderAPIObjectInternal() override;
+
+        virtual void clearInternal() override { clearData(); }
 
     private:
 
-        bool m_Initialized = false;
-
         const TextureData* m_Data = nullptr;
 
-        TextureObject* m_RenderObject = nullptr;
+
+        void clearData();
     };
 
-    const TextureData* TextureObject::getTextureData() const
+    const TextureData* TextureRenderAPIObject::getTextureData() const
     {
         return m_Parent != nullptr ? m_Parent->m_Data : nullptr;
     }

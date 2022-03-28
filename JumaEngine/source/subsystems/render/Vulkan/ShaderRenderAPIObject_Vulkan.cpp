@@ -1,6 +1,6 @@
 ﻿// Copyright 2022 Leonov Maksim. All Rights Reserved.
 
-#include "ShaderObject_Vulkan.h"
+#include "ShaderRenderAPIObject_Vulkan.h"
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
@@ -10,12 +10,12 @@
 
 namespace JumaEngine
 {
-    ShaderObject_Vulkan::~ShaderObject_Vulkan()
+    ShaderRenderAPIObject_Vulkan::~ShaderRenderAPIObject_Vulkan()
     {
         clearVulkanData();
     }
 
-    bool ShaderObject_Vulkan::initInternal()
+    bool ShaderRenderAPIObject_Vulkan::initInternal()
     {
         if (!createShaderModule(m_Parent->getVertexShaderName() + JSTR(".vert.spv"), ShaderStage::Vertex) ||
             !createShaderModule(m_Parent->getFragmentShaderName() + JSTR(".frag.spv"), ShaderStage::Fragment))
@@ -32,7 +32,7 @@ namespace JumaEngine
         cachePipelineStageInfos();
         return true;
     }
-    bool ShaderObject_Vulkan::createShaderModule(const jstring& fileName, const ShaderStage stage, const bool optional)
+    bool ShaderRenderAPIObject_Vulkan::createShaderModule(const jstring& fileName, const ShaderStage stage, const bool optional)
     {
         std::ifstream file(*fileName, std::ios::ate | std::ios::binary);
         if (!file.is_open())
@@ -65,7 +65,7 @@ namespace JumaEngine
         m_ShaderModules[stage] = shaderModule;
         return true;
     }
-    bool ShaderObject_Vulkan::createDescriptorSetLayout(const jmap<jstringID, ShaderUniform>& uniforms)
+    bool ShaderRenderAPIObject_Vulkan::createDescriptorSetLayout(const jmap<jstringID, ShaderUniform>& uniforms)
     {
         jarray<VkDescriptorSetLayoutBinding> layoutBindings;
         layoutBindings.reserve(uniforms.getSize());
@@ -121,7 +121,7 @@ namespace JumaEngine
         }
         return true;
     }
-    bool ShaderObject_Vulkan::createPipelineLayout()
+    bool ShaderRenderAPIObject_Vulkan::createPipelineLayout()
     {
         VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
@@ -136,7 +136,7 @@ namespace JumaEngine
         }
         return true;
     }
-    void ShaderObject_Vulkan::cachePipelineStageInfos()
+    void ShaderRenderAPIObject_Vulkan::cachePipelineStageInfos()
     {
         m_PipelineStageInfos.reserve(m_ShaderModules.getSize());
         m_PipelineStageInfos.clear();
@@ -157,7 +157,7 @@ namespace JumaEngine
         }
     }
 
-    void ShaderObject_Vulkan::clearVulkanData()
+    void ShaderRenderAPIObject_Vulkan::clearVulkanData()
     {
         VkDevice device = getRenderSubsystem()->getDevice();
 

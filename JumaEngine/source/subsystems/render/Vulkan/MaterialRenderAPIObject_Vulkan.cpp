@@ -1,13 +1,13 @@
 ﻿// Copyright 2022 Leonov Maksim. All Rights Reserved.
 
-#include "MaterialObject_Vulkan.h"
+#include "MaterialRenderAPIObject_Vulkan.h"
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
 #include "RenderOptions_Vulkan.h"
 #include "RenderSubsystem_Vulkan.h"
-#include "ShaderObject_Vulkan.h"
-#include "TextureObject_Vulkan.h"
+#include "ShaderRenderAPIObject_Vulkan.h"
+#include "TextureRenderAPIObject_Vulkan.h"
 #include "subsystems/render/Shader.h"
 #include "subsystems/render/VertexBuffer.h"
 #include "vulkanObjects/VulkanBuffer.h"
@@ -18,12 +18,12 @@
 
 namespace JumaEngine
 {
-    MaterialObject_Vulkan::~MaterialObject_Vulkan()
+    MaterialRenderAPIObject_Vulkan::~MaterialRenderAPIObject_Vulkan()
     {
         clearVulkanData();
     }
 
-    bool MaterialObject_Vulkan::initInternal()
+    bool MaterialRenderAPIObject_Vulkan::initInternal()
     {
         if (!createDescriptorPool())
         {
@@ -32,7 +32,7 @@ namespace JumaEngine
         }
         return true;
     }
-    bool MaterialObject_Vulkan::createDescriptorPool()
+    bool MaterialRenderAPIObject_Vulkan::createDescriptorPool()
     {
         constexpr int8 maxRenderedFrameCount = RenderSubsystem_Vulkan::getMaxRenderFrameCount();
 
@@ -105,7 +105,7 @@ namespace JumaEngine
         return true;
     }
 
-    bool MaterialObject_Vulkan::bindDescriptorSet(VkCommandBuffer commandBuffer, const int8 frameIndex)
+    bool MaterialRenderAPIObject_Vulkan::bindDescriptorSet(VkCommandBuffer commandBuffer, const int8 frameIndex)
     {
         if (m_DescriptorPool == nullptr)
         {
@@ -116,14 +116,14 @@ namespace JumaEngine
             return false;
         }
 
-        const ShaderObject_Vulkan* shader = dynamic_cast<const ShaderObject_Vulkan*>(m_Parent->getShader()->getRenderObject());
+        const ShaderRenderAPIObject_Vulkan* shader = dynamic_cast<const ShaderRenderAPIObject_Vulkan*>(m_Parent->getShader()->getRenderAPIObject());
         vkCmdBindDescriptorSets(
             commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, shader->getPipelineLayout(),
             0, 1, &m_DescriptorSets[frameIndex].descriptorSet, 0, nullptr
         );
         return true;
     }
-    bool MaterialObject_Vulkan::updateDescriptorSet(const int8 frameIndex)
+    bool MaterialRenderAPIObject_Vulkan::updateDescriptorSet(const int8 frameIndex)
     {
         if (!createDescriptorSet(frameIndex))
         {
@@ -196,13 +196,13 @@ namespace JumaEngine
             vkUpdateDescriptorSets(getRenderSubsystem()->getDevice(), 
                static_cast<uint32>(descriptorWrites.getSize()), descriptorWrites.getData(),
                0, nullptr
-           );
+            );
         }
 
         container.valid = true;
         return true;
     }
-    bool MaterialObject_Vulkan::createDescriptorSet(const int8 frameIndex)
+    bool MaterialRenderAPIObject_Vulkan::createDescriptorSet(const int8 frameIndex)
     {
         if (!m_DescriptorSets.isValidIndex(frameIndex))
         {
@@ -215,7 +215,7 @@ namespace JumaEngine
         }
 
         const Shader* shader = m_Parent->getShader();
-        const ShaderObject_Vulkan* shader_object = dynamic_cast<const ShaderObject_Vulkan*>(shader->getRenderObject());
+        const ShaderRenderAPIObject_Vulkan* shader_object = dynamic_cast<const ShaderRenderAPIObject_Vulkan*>(shader->getRenderAPIObject());
         VkDescriptorSetLayout layout = shader_object->getDescriptorSetLayout();
 
         VkDescriptorSetAllocateInfo allocateInfo{};
@@ -232,7 +232,7 @@ namespace JumaEngine
         return true;
     }
 
-    bool MaterialObject_Vulkan::updateBufferUniformValueData(UniformValue_Buffer* bufferValue, const uint64 dataSize, const void* data, 
+    bool MaterialRenderAPIObject_Vulkan::updateBufferUniformValueData(UniformValue_Buffer* bufferValue, const uint64 dataSize, const void* data, 
         VkDescriptorBufferInfo& outInfo)
     {
         if (!bufferValue->buffer->isValid())
@@ -259,7 +259,7 @@ namespace JumaEngine
         return true;
     }
 
-    bool MaterialObject_Vulkan::updateTextureUniformValue(const jstringID& name, const int8 frameIndex, VkDescriptorImageInfo& outInfo)
+    bool MaterialRenderAPIObject_Vulkan::updateTextureUniformValue(const jstringID& name, const int8 frameIndex, VkDescriptorImageInfo& outInfo)
     {
         if (m_Parent->isOverrideParam(name))
         {
@@ -277,7 +277,7 @@ namespace JumaEngine
                         return false;
                     }
 
-                    const TextureObject_Vulkan* textureObject = dynamic_cast<const TextureObject_Vulkan*>(texture->getRenderObject());
+                    const TextureRenderAPIObject_Vulkan* textureObject = dynamic_cast<const TextureRenderAPIObject_Vulkan*>(texture->getRenderAPIObject());
                     VulkanImage* image = textureObject != nullptr ? textureObject->getImage() : nullptr;
                     if (image == nullptr)
                     {
@@ -297,13 +297,13 @@ namespace JumaEngine
         }
         if (m_Parent->isMaterialInstance())
         {
-            MaterialObject_Vulkan* baseMaterialObject = dynamic_cast<MaterialObject_Vulkan*>(m_Parent->getBaseMaterial()->getRenderObject());
+            MaterialRenderAPIObject_Vulkan* baseMaterialObject = dynamic_cast<MaterialRenderAPIObject_Vulkan*>(m_Parent->getBaseMaterial()->getRenderAPIObject());
             return baseMaterialObject->updateTextureUniformValue(name, frameIndex, outInfo);
         }
         return false;
     }
 
-    void MaterialObject_Vulkan::onMaterialParamChanged(const jstringID& paramName)
+    void MaterialRenderAPIObject_Vulkan::onMaterialParamChanged(const jstringID& paramName)
     {
         const ShaderUniformType type = m_Parent->getParamType(paramName);
         switch (type)
@@ -333,7 +333,7 @@ namespace JumaEngine
         }
     }
 
-    void MaterialObject_Vulkan::clearVulkanData()
+    void MaterialRenderAPIObject_Vulkan::clearVulkanData()
     {
         VkDevice device = getRenderSubsystem()->getDevice();
 
@@ -367,7 +367,7 @@ namespace JumaEngine
         }
     }
 
-    bool MaterialObject_Vulkan::bindRenderPipeline(VkCommandBuffer commandBuffer, const jstringID& vertexName, 
+    bool MaterialRenderAPIObject_Vulkan::bindRenderPipeline(VkCommandBuffer commandBuffer, const jstringID& vertexName, 
         const VulkanRenderPass* renderPass)
     {
         VkPipeline pipeline;
@@ -379,7 +379,7 @@ namespace JumaEngine
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
         return true;
     }
-    bool MaterialObject_Vulkan::createRenderPipeline(const jstringID& vertexName, const VulkanRenderPass* renderPass, VkPipeline& outPipeline)
+    bool MaterialRenderAPIObject_Vulkan::createRenderPipeline(const jstringID& vertexName, const VulkanRenderPass* renderPass, VkPipeline& outPipeline)
     {
         const render_pass_id_type renderPassID = renderPass != nullptr ? renderPass->getTypeID() : INVALID_RENDER_PASS_TYPE_ID;
         if (renderPassID == INVALID_RENDER_PASS_TYPE_ID)
@@ -406,7 +406,7 @@ namespace JumaEngine
         }
 
         // Shader stages
-        const ShaderObject_Vulkan* shader = dynamic_cast<const ShaderObject_Vulkan*>(m_Parent->getShader()->getRenderObject());
+        const ShaderRenderAPIObject_Vulkan* shader = dynamic_cast<const ShaderRenderAPIObject_Vulkan*>(m_Parent->getShader()->getRenderAPIObject());
         const jarray<VkPipelineShaderStageCreateInfo>& shaderStageInfos = shader->getPipelineStageInfos();
 
         // Vertex input data
@@ -524,7 +524,7 @@ namespace JumaEngine
         return true;
     }
 
-    bool MaterialObject_Vulkan::render(VertexBuffer* vertexBuffer, const RenderOptions* renderOptions)
+    bool MaterialRenderAPIObject_Vulkan::render(VertexBuffer* vertexBuffer, const RenderOptions* renderOptions)
     {
         if ((vertexBuffer == nullptr) || (renderOptions == nullptr))
         {

@@ -11,10 +11,10 @@
 namespace JumaEngine
 {
     struct RenderOptions;
-    class TextureObject;
-    class VertexBufferObject;
-    class MaterialObject;
-    class ShaderObject;
+    class TextureRenderAPIObject;
+    class VertexBufferRenderAPIObject;
+    class MaterialRenderAPIObject;
+    class ShaderRenderAPIObject;
 
     class RenderSubsystem : public SubsystemBase
     {
@@ -33,10 +33,10 @@ namespace JumaEngine
 
         virtual void onEnginePreTerminate() {}
 
-        virtual ShaderObject* createShaderObject() = 0;
-        virtual MaterialObject* createMaterialObject() = 0;
-        virtual VertexBufferObject* createVertexBufferObject() = 0;
-        virtual TextureObject* createTextureObject() = 0;
+        virtual ShaderRenderAPIObject* createShaderObject() = 0;
+        virtual MaterialRenderAPIObject* createMaterialObject() = 0;
+        virtual VertexBufferRenderAPIObject* createVertexBufferObject() = 0;
+        virtual TextureRenderAPIObject* createTextureObject() = 0;
 
         RenderPresentMode getPresentMode() const { return m_CurrentPresentMode; }
 

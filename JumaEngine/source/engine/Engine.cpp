@@ -125,7 +125,7 @@ namespace JumaEngine
 
         m_Texture = createObject<Texture>();
         m_Texture->init(textureData);
-        m_Texture->createRenderObject();
+        m_Texture->createRenderAPIObject();
 
         m_Shader = createObject<Shader>();
         m_Shader->init(
@@ -135,12 +135,12 @@ namespace JumaEngine
         /*m_Shader->init(
             JSTR("content/shaders/ui"), JSTR("content/shaders/ui")
         );*/
-        m_Shader->createRenderObject();
+        m_Shader->createRenderAPIObject();
 
         m_Material = createObject<Material>();
         m_Material->init(m_Shader);
         m_Material->setParamValue<ShaderUniformType::Texture>(JSTR("uTexture"), m_Texture);
-        m_Material->createRenderObject();
+        m_Material->createRenderAPIObject();
 
         VertexBufferData<Vertex2D>* vertexData = new VertexBufferData<Vertex2D>();
         vertexData->setVertices({
@@ -153,19 +153,19 @@ namespace JumaEngine
         });
         m_VertexBuffer = createObject<VertexBuffer>();
         m_VertexBuffer->init(vertexData);
-        m_VertexBuffer->createRenderObject();
+        m_VertexBuffer->createRenderAPIObject();
 
         m_ShaderPP = createObject<Shader>();
         m_ShaderPP->init(
             JSTR("content/shaders/ui_postProcess"), JSTR("content/shaders/ui_texture"),
             { { JSTR("uTexture"), ShaderUniform{ 0, ShaderUniformType::Texture, { ShaderStage::Fragment } } } }
         );
-        m_ShaderPP->createRenderObject();
+        m_ShaderPP->createRenderAPIObject();
 
         m_MaterialPP = createObject<Material>();
         m_MaterialPP->init(m_ShaderPP);
         m_MaterialPP->setParamValue<ShaderUniformType::Texture>(JSTR("uTexture"), m_Texture);
-        m_MaterialPP->createRenderObject();
+        m_MaterialPP->createRenderAPIObject();
 
         VertexBufferData<Vertex2D_TexCoord>* ppVertexData = new VertexBufferData<Vertex2D_TexCoord>();
         ppVertexData->setVertices({
@@ -178,7 +178,7 @@ namespace JumaEngine
         });
         m_VertexBufferPP = createObject<VertexBuffer>();
         m_VertexBufferPP->init(ppVertexData);
-        m_VertexBufferPP->createRenderObject();
+        m_VertexBufferPP->createRenderAPIObject();
 
         return true;
     }

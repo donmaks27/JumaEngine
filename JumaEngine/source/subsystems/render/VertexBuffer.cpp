@@ -31,60 +31,36 @@ namespace JumaEngine
         m_VertexCount = data->getVertexCount();
         m_IndexCount = data->getIndexCount();
 
-        m_Initialized = true;
+        markAsInitialized();
         return true;
     }
 
-    void VertexBuffer::clear()
+    VertexBufferRenderAPIObject* VertexBuffer::createRenderAPIObjectInternal()
     {
-        if (isValid())
-        {
-            clearRenderObject();
-            if (m_VertexData != nullptr)
-            {
-                delete m_VertexData;
-                m_VertexData = nullptr;
-            }
-            m_VertexCount = 0;
-            m_IndexCount = 0;
-            m_VertexName = jstringID_NONE;
-            m_Initialized = false;
-        }
+        return getOwnerEngine()->getRenderSubsystem()->createVertexBufferObject();
     }
 
-    bool VertexBuffer::createRenderObject()
+    void VertexBuffer::clearData()
     {
-        if (!isValid())
+        clearRenderAPIObject();
+        if (m_VertexData != nullptr)
         {
-            JUMA_LOG(warning, JSTR("Shader not initialized"));
-            return false;
+            delete m_VertexData;
+            m_VertexData = nullptr;
         }
 
-        RenderSubsystem* renderSubsystem = getOwnerEngine()->getRenderSubsystem();
-        m_RenderObject = renderSubsystem->createVertexBufferObject();
-        if (!m_RenderObject->init(this))
-        {
-            delete m_RenderObject;
-            m_RenderObject = nullptr;
-            return false;
-        }
-        return true;
-    }
-    void VertexBuffer::clearRenderObject()
-    {
-        if (m_RenderObject != nullptr)
-        {
-            delete m_RenderObject;
-            m_RenderObject = nullptr;
-        }
+        m_VertexCount = 0;
+        m_IndexCount = 0;
+        m_VertexName = jstringID_NONE;
     }
 
     bool VertexBuffer::render(const RenderOptions* renderOptions) const
     {
-        if (m_RenderObject == nullptr)
+        VertexBufferRenderAPIObject* renderObject = getRenderAPIObject();
+        if (renderObject == nullptr)
         {
             return false;
         }
-        return m_RenderObject->render(renderOptions);
+        return renderObject->render(renderOptions);
     }
 }

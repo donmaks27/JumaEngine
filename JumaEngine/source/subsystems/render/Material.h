@@ -3,7 +3,7 @@
 #pragma once
 
 #include "common_header.h"
-#include "RenderObject.h"
+#include "RenderAPIObject.h"
 #include "engine/EngineContextObject.h"
 
 #include "jutils/jdelegate_multicast.h"
@@ -18,13 +18,13 @@ namespace JumaEngine
     class Material;
     class VertexBuffer;
 
-    class MaterialObject : public RenderObject<Material>
+    class MaterialRenderAPIObject : public RenderAPIObject<Material>
     {
         friend Material;
 
     public:
-        MaterialObject() = default;
-        virtual ~MaterialObject() override = default;
+        MaterialRenderAPIObject() = default;
+        virtual ~MaterialRenderAPIObject() override = default;
 
         virtual bool render(VertexBuffer* vertexBuffer, const RenderOptions* renderOptions) = 0;
 
@@ -36,7 +36,7 @@ namespace JumaEngine
     CREATE_JUTILS_MULTICAST_DELEGATE_OneParam(OnMaterialEvent, Material*, material);
     CREATE_JUTILS_MULTICAST_DELEGATE_TwoParams(OnMaterialParamEvent, Material*, material, const jstringID&, paramName);
 
-    class Material final : public EngineContextObject
+    class Material final : public EngineContextObject, public RenderObject<MaterialRenderAPIObject>
     {
         JUMAENGINE_CLASS(Material, EngineContextObject)
 
@@ -50,16 +50,10 @@ namespace JumaEngine
 
         bool init(Shader* shader);
         bool init(Material* baseMaterial);
-        bool isValid() const { return m_Initialized; }
-        void clear();
 
         Shader* getShader() const { return m_BaseShader; }
         Material* getBaseMaterial() const { return m_BaseMaterial; }
         bool isMaterialInstance() const { return isValid() && (getBaseMaterial() != nullptr); }
-
-        bool createRenderObject();
-        MaterialObject* getRenderObject() const { return m_RenderObject; }
-        void clearRenderObject();
 
         bool render(VertexBuffer* vertexBuffer, const RenderOptions* renderOptions);
 
@@ -71,12 +65,16 @@ namespace JumaEngine
         bool setParamValue(const jstringID& paramName, const typename MaterialUniformInfo<Type>::value_type& value);
         void resetParamValue(const jstringID& paramName);
 
+    protected:
+
+        virtual MaterialRenderAPIObject* createRenderAPIObjectInternal() override;
+
+        virtual void clearInternal() override { clearData(); }
+
     private:
 
         using mat4_value_type = MaterialUniformInfo<ShaderUniformType::Mat4>::value_type;
         using texture_value_type = MaterialUniformInfo<ShaderUniformType::Texture>::value_type;
-
-        bool m_Initialized = false;
 
         Shader* m_BaseShader = nullptr;
         Material* m_BaseMaterial = nullptr;
@@ -84,8 +82,8 @@ namespace JumaEngine
         jmap<jstringID, mat4_value_type> m_UniformValues_Mat4;
         jmap<jstringID, texture_value_type> m_UniformValues_Texture;
 
-        MaterialObject* m_RenderObject = nullptr;
 
+        void clearData();
 
         void createUniformValues(Shader* shader);
         void clearUniformValues();
