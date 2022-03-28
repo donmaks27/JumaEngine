@@ -11,7 +11,7 @@
 
 #include <vulkan/vulkan_core.h>
 
-#include "subsystems/render/Vulkan/vulkanObjects/VulkanRenderPassDescription.h"
+#include "vulkanObjects/VulkanRenderPassDescription.h"
 
 namespace JumaEngine
 {
@@ -63,9 +63,9 @@ namespace JumaEngine
 
         bool createDescriptorPool();
 
-        bool bindDescriptorSet(VkCommandBuffer commandBuffer, uint32 frameIndex);
-        bool updateDescriptorSet(uint32 frameIndex);
-        bool createDescriptorSet(uint32 frameIndex);
+        bool bindDescriptorSet(VkCommandBuffer commandBuffer, int8 frameIndex);
+        bool updateDescriptorSet(int8 frameIndex);
+        bool createDescriptorSet(int8 frameIndex);
 
         template<ShaderUniformType Type>
         bool updateBufferUniformValue(const jstringID& name, uint32 frameIndex, VkDescriptorBufferInfo& outInfo);
@@ -73,7 +73,7 @@ namespace JumaEngine
         bool updateBufferUniformValueData(const jstringID& name, uint32 frameIndex, VkDescriptorBufferInfo& outInfo);
         bool updateBufferUniformValueData(UniformValue_Buffer* bufferValue, uint64 dataSize, const void* data, VkDescriptorBufferInfo& outInfo);
 
-        bool updateTextureUniformValue(const jstringID& name, uint32 frameIndex, VkDescriptorImageInfo& outInfo);
+        bool updateTextureUniformValue(const jstringID& name, int8 frameIndex, VkDescriptorImageInfo& outInfo);
 
         void clearVulkanData();
 
@@ -99,7 +99,7 @@ namespace JumaEngine
     bool MaterialObject_Vulkan::updateBufferUniformValueData(const jstringID& name, const uint32 frameIndex, VkDescriptorBufferInfo& outInfo)
     {
         jarray<UniformValue_Buffer>* buffers = m_UniformValues_Buffer.find(name);
-        UniformValue_Buffer* bufferValue = buffers != nullptr ? buffers->findByIndex(frameIndex) : nullptr;
+        UniformValue_Buffer* bufferValue = buffers != nullptr ? buffers->findByIndex(static_cast<int32>(frameIndex)) : nullptr;
         if (bufferValue == nullptr)
         {
             JUMA_LOG(error, JSTR("Can't find uniform value buffer, this shouldn't happen"));

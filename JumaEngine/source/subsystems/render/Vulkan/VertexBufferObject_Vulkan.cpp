@@ -4,11 +4,13 @@
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
+#include "RenderOptions_Vulkan.h"
 #include "RenderSubsystem_Vulkan.h"
+#include "jutils/jset.h"
 #include "subsystems/render/vertex/VertexBufferData.h"
 #include "vulkanObjects/VulkanBuffer.h"
-#include "RenderOptions_Vulkan.h"
 #include "vulkanObjects/VulkanCommandBuffer.h"
+#include "vulkanObjects/VulkanQueueType.h"
 #include "vulkanObjects/VulkanRenderImage.h"
 
 namespace JumaEngine

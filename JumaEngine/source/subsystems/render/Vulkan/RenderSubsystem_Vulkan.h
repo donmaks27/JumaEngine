@@ -11,17 +11,16 @@
 #include "vma_lib.h"
 #include <vulkan/vulkan_core.h>
 
-#include "jutils/jarray.h"
+#include "VulkanContextObject.h"
 #include "jutils/jmap.h"
 #include "jutils/jstringID.h"
+#include "subsystems/render/vertex/VertexComponents.h"
 #include "vulkanObjects/VulkanQueueType.h"
-#include "VulkanContextObject.h"
 #include "vulkanObjects/VulkanRenderPassDescription.h"
 
 namespace JumaEngine
 {
     class VertexBufferDataBase;
-    struct VertexComponentDescription;
     class VulkanRenderPass;
     class VulkanSwapchain;
     class VulkanCommandPool;

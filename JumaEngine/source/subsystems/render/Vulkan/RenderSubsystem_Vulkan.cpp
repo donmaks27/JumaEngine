@@ -6,21 +6,20 @@
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
-#include "jutils/jlog.h"
-#include "jutils/jset.h"
-#include "vulkanObjects/VulkanQueue.h"
-#include "vulkanObjects/VulkanCommandPool.h"
-#include "vulkanObjects/VulkanSwapchain.h"
+#include "MaterialObject_Vulkan.h"
+#include "RenderOptions_Vulkan.h"
+#include "ShaderObject_Vulkan.h"
+#include "TextureObject_Vulkan.h"
+#include "VertexBufferObject_Vulkan.h"
 #include "engine/Engine.h"
+#include "jutils/jset.h"
 #include "subsystems/render/vertex/VertexBufferData.h"
 #include "subsystems/window/Vulkan/WindowSubsystem_Vulkan.h"
 #include "subsystems/window/Vulkan/Window_Vulkan.h"
+#include "vulkanObjects/VulkanCommandPool.h"
+#include "vulkanObjects/VulkanQueue.h"
 #include "vulkanObjects/VulkanRenderPass.h"
-#include "ShaderObject_Vulkan.h"
-#include "MaterialObject_Vulkan.h"
-#include "VertexBufferObject_Vulkan.h"
-#include "RenderOptions_Vulkan.h"
-#include "TextureObject_Vulkan.h"
+#include "vulkanObjects/VulkanSwapchain.h"
 
 namespace JumaEngine
 {
@@ -96,7 +95,7 @@ namespace JumaEngine
         {
             uint32 layerCount;
             vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
-            jarray<VkLayerProperties> availableLayers(layerCount);
+            jarray<VkLayerProperties> availableLayers(static_cast<int32>(layerCount));
             vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.getData());
 
             bool layersFounded = true;
@@ -204,7 +203,7 @@ namespace JumaEngine
             JUMA_LOG(error, JSTR("Failed to find GPUs with Vulkan support"));
             return false;
         }
-        jarray<VkPhysicalDevice> devices(deviceCount);
+        jarray<VkPhysicalDevice> devices(static_cast<int32>(deviceCount));
         vkEnumeratePhysicalDevices(m_VulkanInstance, &deviceCount, devices.getData());
 
         VkSurfaceKHR surface = cast<Window_Vulkan>(m_MainWindow)->getVulkanSurface();
@@ -225,7 +224,7 @@ namespace JumaEngine
 
             uint32 extensionCount;
 		    vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
-		    jarray<VkExtensionProperties> availableExtensions(extensionCount);
+		    jarray<VkExtensionProperties> availableExtensions(static_cast<int32>(extensionCount));
 		    vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.getData());
 
             jarray<const char*> extensions = m_VulkanDeviceExtensions;
@@ -273,13 +272,13 @@ namespace JumaEngine
     }
     bool RenderSubsystem_Vulkan::getQueueFamilyIndices(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, jmap<VulkanQueueType, uint32>& outQueueIndices)
     {
-        uint32_t queueFamilyCount = 0;
+        uint32 queueFamilyCount = 0;
         vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, nullptr);
-        jarray<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
+        jarray<VkQueueFamilyProperties> queueFamilies(static_cast<int32>(queueFamilyCount));
         vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, queueFamilies.getData());
 
         jmap<VulkanQueueType, uint32> indices;
-        for (uint32_t queueFamilyIndex = 0; queueFamilyIndex < queueFamilyCount; queueFamilyIndex++)
+        for (int32 queueFamilyIndex = 0, size = static_cast<int32>(queueFamilyCount); queueFamilyIndex < size; queueFamilyIndex++)
         {
             const VkQueueFamilyProperties& properties = queueFamilies[queueFamilyIndex];
             if (!indices.contains(VulkanQueueType::Graphics) && (properties.queueFlags & VK_QUEUE_GRAPHICS_BIT))

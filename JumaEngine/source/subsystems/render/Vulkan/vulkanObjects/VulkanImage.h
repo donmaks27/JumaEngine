@@ -18,6 +18,7 @@
 namespace JumaEngine
 {
     class VulkanCommandBuffer;
+
     inline TextureFormat GetTextureFormatByVulkanFormat(VkFormat format);
     inline VkFormat GetVulkanFormatByTextureFormat(TextureFormat format);
 

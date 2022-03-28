@@ -6,9 +6,6 @@
 #include "subsystems/render/RenderObject.h"
 #include "engine/EngineContextObject.h"
 
-#include "jutils/math/vector2.h"
-#include "texture/TextureFormat.h"
-
 namespace JumaEngine
 {
     class TextureData;

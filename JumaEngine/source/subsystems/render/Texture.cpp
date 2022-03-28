@@ -1,6 +1,7 @@
 ﻿// Copyright 2022 Leonov Maksim. All Rights Reserved.
 
 #include "Texture.h"
+
 #include "RenderSubsystem.h"
 #include "engine/Engine.h"
 #include "texture/TextureData.h"

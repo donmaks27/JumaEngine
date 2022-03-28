@@ -4,12 +4,11 @@
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
-#include "subsystems/render/Vulkan/RenderSubsystem_Vulkan.h"
 #include "VulkanQueue.h"
-#include "subsystems/window/Vulkan/Window_Vulkan.h"
-#include "VulkanRenderPass.h"
-#include "subsystems/render/Vulkan/RenderOptions_Vulkan.h"
 #include "VulkanRenderImage.h"
+#include "subsystems/render/Vulkan/RenderOptions_Vulkan.h"
+#include "subsystems/render/Vulkan/RenderSubsystem_Vulkan.h"
+#include "subsystems/window/Vulkan/Window_Vulkan.h"
 
 namespace JumaEngine
 {
@@ -361,8 +360,6 @@ namespace JumaEngine
         }
 
         RenderOptions_Vulkan* renderOptions = reinterpret_cast<RenderOptions_Vulkan*>(options);
-        renderOptions->frameIndex = static_cast<uint8>(renderFrameIndex);
-        renderOptions->swapchainImageIndex = static_cast<uint8>(m_CurrentSwapchainImageIndex);
         renderOptions->renderImage = renderImage;
         return true;
     }

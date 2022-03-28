@@ -14,7 +14,6 @@
 namespace JumaEngine
 {
     class VulkanRenderImage;
-    class RenderSubsystem_Vulkan;
     class VulkanSwapchain;
 
     class Window_Vulkan : public Window, public VulkanContextObjectBase

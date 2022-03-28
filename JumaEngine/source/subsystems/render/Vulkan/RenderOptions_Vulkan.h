@@ -14,8 +14,6 @@ namespace JumaEngine
 
     struct RenderOptions_Vulkan : public RenderOptions
     {
-        uint32 frameIndex = 0;
-        uint32 swapchainImageIndex = 0;
         VulkanRenderImage* renderImage = nullptr;
     };
 }

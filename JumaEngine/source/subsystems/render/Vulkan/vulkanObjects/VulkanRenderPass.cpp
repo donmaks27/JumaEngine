@@ -121,44 +121,6 @@ namespace JumaEngine
             m_TypeID = INVALID_RENDER_PASS_TYPE_ID;
         }
     }
-
-    VulkanFramebufferImagesDescription VulkanRenderPass::getImagesDescription() const
-    {
-        if (!isValid())
-        {
-            return VulkanFramebufferImagesDescription();
-        }
-
-        VulkanFramebufferImagesDescription result;
-
-        if (m_Description.sampleCount != VK_SAMPLE_COUNT_1_BIT)
-        {
-            result.images.resize(3);
-            result.resultImageIndex = 2;
-
-            VulkanFramebufferImageDescription& resolveImage = result.images[2];
-            resolveImage.sampleCount = VK_SAMPLE_COUNT_1_BIT;
-            resolveImage.format = m_Description.colorFormat;
-            resolveImage.depthImage = false;
-        }
-        else
-        {
-            result.images.resize(2);
-            result.resultImageIndex = 0;
-        }
-
-        VulkanFramebufferImageDescription& colorImage = result.images[0];
-        colorImage.sampleCount = m_Description.sampleCount;
-        colorImage.format = m_Description.colorFormat;
-        colorImage.depthImage = false;
-
-        VulkanFramebufferImageDescription& depthImage = result.images[1];
-        depthImage.sampleCount = m_Description.sampleCount;
-        depthImage.format = m_Description.depthFormat;
-        depthImage.depthImage = true;
-
-        return result;
-    }
 }
 
 #endif

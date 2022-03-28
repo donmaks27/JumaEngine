@@ -4,21 +4,17 @@
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
+#include "RenderOptions_Vulkan.h"
 #include "RenderSubsystem_Vulkan.h"
 #include "ShaderObject_Vulkan.h"
-#include "subsystems/render/Shader.h"
-#include "subsystems/window/Vulkan/Window_Vulkan.h"
-#include "vulkanObjects/VulkanBuffer.h"
-#include "vulkanObjects/VulkanSwapchain.h"
-#include "vulkanObjects/VulkanRenderPass.h"
-#include "RenderOptions_Vulkan.h"
-#include "subsystems/render/VertexBuffer.h"
-#include "vulkanObjects/VulkanFramebuffer.h"
 #include "TextureObject_Vulkan.h"
-#include "subsystems/render/Texture.h"
-#include "vulkanObjects/VulkanImage.h"
+#include "subsystems/render/Shader.h"
+#include "subsystems/render/VertexBuffer.h"
+#include "vulkanObjects/VulkanBuffer.h"
 #include "vulkanObjects/VulkanCommandBuffer.h"
+#include "vulkanObjects/VulkanImage.h"
 #include "vulkanObjects/VulkanRenderImage.h"
+#include "vulkanObjects/VulkanRenderPass.h"
 
 namespace JumaEngine
 {
@@ -38,7 +34,7 @@ namespace JumaEngine
     }
     bool MaterialObject_Vulkan::createDescriptorPool()
     {
-        const int8 maxRenderedFrameCount = getRenderSubsystem()->getMaxRenderFrameCount();
+        constexpr int8 maxRenderedFrameCount = RenderSubsystem_Vulkan::getMaxRenderFrameCount();
 
         uint32 bufferUniformCount = 0;
         uint32 imageUniformCount = 0;
@@ -109,7 +105,7 @@ namespace JumaEngine
         return true;
     }
 
-    bool MaterialObject_Vulkan::bindDescriptorSet(VkCommandBuffer commandBuffer, const uint32 frameIndex)
+    bool MaterialObject_Vulkan::bindDescriptorSet(VkCommandBuffer commandBuffer, const int8 frameIndex)
     {
         if (m_DescriptorPool == nullptr)
         {
@@ -127,7 +123,7 @@ namespace JumaEngine
         );
         return true;
     }
-    bool MaterialObject_Vulkan::updateDescriptorSet(const uint32 frameIndex)
+    bool MaterialObject_Vulkan::updateDescriptorSet(const int8 frameIndex)
     {
         if (!createDescriptorSet(frameIndex))
         {
@@ -206,7 +202,7 @@ namespace JumaEngine
         container.valid = true;
         return true;
     }
-    bool MaterialObject_Vulkan::createDescriptorSet(const uint32 frameIndex)
+    bool MaterialObject_Vulkan::createDescriptorSet(const int8 frameIndex)
     {
         if (!m_DescriptorSets.isValidIndex(frameIndex))
         {
@@ -263,8 +259,7 @@ namespace JumaEngine
         return true;
     }
 
-    bool MaterialObject_Vulkan::updateTextureUniformValue(const jstringID& name, const uint32 frameIndex, 
-        VkDescriptorImageInfo& outInfo)
+    bool MaterialObject_Vulkan::updateTextureUniformValue(const jstringID& name, const int8 frameIndex, VkDescriptorImageInfo& outInfo)
     {
         if (m_Parent->isOverrideParam(name))
         {
@@ -552,8 +547,9 @@ namespace JumaEngine
             return false;
         }
 
+        const int8 frameIndex = getRenderSubsystem()->getRenderFrameIndex();
         if (!bindRenderPipeline(commandBuffer, vertexBuffer->getVertexName(), renderPass) ||
-            !bindDescriptorSet(commandBuffer, options->frameIndex))
+            !bindDescriptorSet(commandBuffer, frameIndex))
         {
             return false;
         }

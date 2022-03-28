@@ -8,11 +8,12 @@
 
 #include "WindowSubsystem_Vulkan.h"
 
-#include "Window_Vulkan_GLFW.h"
 #include "jutils/jmap.h"
 
 namespace JumaEngine
 {
+    class Window_Vulkan_GLFW;
+
     class WindowSubsystem_Vulkan_GLFW : public WindowSubsystem_Vulkan
     {
         JUMAENGINE_CLASS(WindowSubsystem_Vulkan_GLFW, WindowSubsystem_Vulkan)

@@ -5,8 +5,8 @@
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
 #include "RenderSubsystem_Vulkan.h"
-#include "vulkanObjects/VulkanImage.h"
 #include "subsystems/render/texture/TextureData.h"
+#include "vulkanObjects/VulkanImage.h"
 
 namespace JumaEngine
 {

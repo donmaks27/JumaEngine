@@ -29,7 +29,7 @@ namespace JumaEngine
         }
 
         glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-        GLFWwindow* window = glfwCreateWindow(size.x, size.y, *title, nullptr, nullptr);
+        GLFWwindow* window = glfwCreateWindow(static_cast<int>(size.x), static_cast<int>(size.y), *title, nullptr, nullptr);
         if (window == nullptr)
         {
             JUMA_LOG(error, JSTR("Failed to create GLFW window"));

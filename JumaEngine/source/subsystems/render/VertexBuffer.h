@@ -11,7 +11,6 @@
 namespace JumaEngine
 {
     struct RenderOptions;
-    class Material;
     class VertexBuffer;
     class VertexBufferDataBase;
 

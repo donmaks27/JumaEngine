@@ -1,6 +1,7 @@
 ﻿// Copyright 2021 Leonov Maksim. All Rights Reserved.
 
 #include "RenderSubsystem.h"
+
 #include "engine/Engine.h"
 #include "subsystems/window/WindowSubsystem.h"
 

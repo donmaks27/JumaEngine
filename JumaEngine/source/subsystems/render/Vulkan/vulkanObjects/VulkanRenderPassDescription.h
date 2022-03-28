@@ -9,24 +9,11 @@
 #include <vulkan/vulkan_core.h>
 
 #include "jutils/juid.h"
-#include "jutils/jarray.h"
 
 namespace JumaEngine
 {
     using render_pass_id_type = uint32;
     constexpr render_pass_id_type INVALID_RENDER_PASS_TYPE_ID = juid<render_pass_id_type>::invalidUID;
-
-    struct VulkanFramebufferImageDescription
-    {
-        VkSampleCountFlagBits sampleCount = VK_SAMPLE_COUNT_1_BIT;
-        VkFormat format = VK_FORMAT_UNDEFINED;
-        bool depthImage = false;
-    };
-    struct VulkanFramebufferImagesDescription
-    {
-        jarray<VulkanFramebufferImageDescription> images;
-        int32 resultImageIndex = -1;
-    };
 
     struct VulkanRenderPassDescription
     {

@@ -10,12 +10,11 @@
 
 namespace JumaEngine
 {
-    class TextureObject;
     struct RenderOptions;
+    class TextureObject;
     class VertexBufferObject;
-    class RenderPrimitive;
-    class ShaderObject;
     class MaterialObject;
+    class ShaderObject;
 
     class RenderSubsystem : public SubsystemBase
     {

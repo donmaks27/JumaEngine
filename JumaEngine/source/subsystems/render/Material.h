@@ -9,7 +9,6 @@
 #include "jutils/jdelegate_multicast.h"
 #include "jutils/jmap.h"
 #include "jutils/jstringID.h"
-#include "jutils/math/matrix4.h"
 #include "material/MaterialUniform.h"
 
 namespace JumaEngine

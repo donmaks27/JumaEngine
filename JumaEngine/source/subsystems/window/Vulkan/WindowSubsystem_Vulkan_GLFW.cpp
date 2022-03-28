@@ -2,13 +2,13 @@
 
 #include "WindowSubsystem_Vulkan_GLFW.h"
 
-#include "subsystems/render/Vulkan/RenderSubsystem_Vulkan.h"
-
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN) && defined(JUMAENGINE_INCLUDE_WINDOW_LIB_GLFW)
 
 #include <GLFW/glfw3.h>
 
+#include "Window_Vulkan_GLFW.h"
 #include "engine/Engine.h"
+#include "subsystems/render/Vulkan/RenderSubsystem_Vulkan.h"
 
 namespace JumaEngine
 {
@@ -52,9 +52,8 @@ namespace JumaEngine
         {
             return {};
         }
-
-        jarray<const char*> result(extensionsCount);
-        for (uint32 index = 0; index < extensionsCount; index++)
+        jarray<const char*> result(static_cast<int32>(extensionsCount));
+        for (int32 index = 0, size = static_cast<int32>(extensionsCount); index < size; index++)
         {
             result[index] = extenstions[index];
         }

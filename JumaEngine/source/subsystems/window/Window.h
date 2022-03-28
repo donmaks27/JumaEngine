@@ -5,8 +5,8 @@
 #include "common_header.h"
 #include "engine/EngineContextObject.h"
 
-#include "jutils/jdelegate_multicast.h"
 #include "jutils/juid.h"
+#include "jutils/jarray.h"
 #include "jutils/math/vector2.h"
 #include "subsystems/render/RenderPresentMode.h"
 
