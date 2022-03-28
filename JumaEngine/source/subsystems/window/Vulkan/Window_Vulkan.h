@@ -13,6 +13,7 @@
 
 namespace JumaEngine
 {
+    class VulkanRenderImage;
     class RenderSubsystem_Vulkan;
     class VulkanSwapchain;
 
@@ -32,13 +33,20 @@ namespace JumaEngine
         VulkanSwapchain* getVulkanSwapchain() const { return m_VulkanSwapchain; }
         void destroyVulkanSwapchain();
 
+        bool createRenderImage();
+        VulkanRenderImage* getRenderImage() const { return m_RenderImage; }
+        void destroyRenderImage();
+
     protected:
 
         VkSurfaceKHR m_VulkanSurface = nullptr;
         VulkanSwapchain* m_VulkanSwapchain = nullptr;
+        VulkanRenderImage* m_RenderImage = nullptr;
 
 
         void destroyWindow_Vulkan();
+
+        void fillSupportedPresentModes();
 
         virtual void onWindowResized(const math::uvector2& newSize) override;
     };

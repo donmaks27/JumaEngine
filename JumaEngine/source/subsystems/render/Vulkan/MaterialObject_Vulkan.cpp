@@ -2,8 +2,6 @@
 
 #include "MaterialObject_Vulkan.h"
 
-#include "vulkanObjects/VulkanRenderImage.h"
-
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
 #include "RenderSubsystem_Vulkan.h"
@@ -20,6 +18,7 @@
 #include "subsystems/render/Texture.h"
 #include "vulkanObjects/VulkanImage.h"
 #include "vulkanObjects/VulkanCommandBuffer.h"
+#include "vulkanObjects/VulkanRenderImage.h"
 
 namespace JumaEngine
 {
@@ -39,16 +38,7 @@ namespace JumaEngine
     }
     bool MaterialObject_Vulkan::createDescriptorPool()
     {
-        RenderSubsystem_Vulkan* renderSubsystem = getRenderSubsystem();
-
-        const Window_Vulkan* window = dynamic_cast<const Window_Vulkan*>(renderSubsystem->getMainWindow());
-        const VulkanSwapchain* swapchain = window != nullptr ? window->getVulkanSwapchain() : nullptr;
-        const uint32 maxRenderedFrameCount = swapchain != nullptr ? static_cast<uint8>(swapchain->getMaxRenderedFrameCount()) : 0;
-        if (maxRenderedFrameCount == 0)
-        {
-            JUMA_LOG(error, JSTR("Can't get max rendered frame count"));
-            return false;
-        }
+        const int8 maxRenderedFrameCount = getRenderSubsystem()->getMaxRenderFrameCount();
 
         uint32 bufferUniformCount = 0;
         uint32 imageUniformCount = 0;
@@ -61,10 +51,10 @@ namespace JumaEngine
                     bufferUniformCount++;
 
                     jarray<UniformValue_Buffer>& values = m_UniformValues_Buffer[uniformData.key];
-                    values.resize(static_cast<int32>(maxRenderedFrameCount));
+                    values.resize(maxRenderedFrameCount);
                     for (auto& value : values)
                     {
-                        value.buffer = renderSubsystem->createVulkanObject<VulkanBuffer>();
+                        value.buffer = getRenderSubsystem()->createVulkanObject<VulkanBuffer>();
                     }
                 }
                 break;
@@ -73,7 +63,7 @@ namespace JumaEngine
                     imageUniformCount++;
 
                     jarray<UniformValue_Image>& values = m_UniformValues_Image[uniformData.key];
-                    values.resize(static_cast<int32>(maxRenderedFrameCount));
+                    values.resize(maxRenderedFrameCount);
                 }
                 break;
 
@@ -106,7 +96,7 @@ namespace JumaEngine
         poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
         poolInfo.poolSizeCount = static_cast<uint32>(poolSizes.getSize());
         poolInfo.pPoolSizes = poolSizes.getData();
-        poolInfo.maxSets = maxRenderedFrameCount;
+        poolInfo.maxSets = static_cast<uint8>(maxRenderedFrameCount);
         poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
         const VkResult result = vkCreateDescriptorPool(getRenderSubsystem()->getDevice(), &poolInfo, nullptr, &m_DescriptorPool);
         if (result != VK_SUCCESS)
@@ -115,7 +105,7 @@ namespace JumaEngine
             return false;
         }
 
-        m_DescriptorSets.resize(static_cast<int32>(maxRenderedFrameCount));
+        m_DescriptorSets.resize(maxRenderedFrameCount);
         return true;
     }
 

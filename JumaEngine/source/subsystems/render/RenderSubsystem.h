@@ -6,6 +6,7 @@
 #include "subsystems/SubsystemBase.h"
 
 #include "subsystems/window/Window.h"
+#include "RenderPresentMode.h"
 
 namespace JumaEngine
 {
@@ -38,9 +39,13 @@ namespace JumaEngine
         virtual VertexBufferObject* createVertexBufferObject() = 0;
         virtual TextureObject* createTextureObject() = 0;
 
+        RenderPresentMode getPresentMode() const { return m_CurrentPresentMode; }
+
     protected:
 
         Window* m_MainWindow = nullptr;
+
+        RenderPresentMode m_CurrentPresentMode = RenderPresentMode::VSYNC;
 
 
         bool createMainWindow();

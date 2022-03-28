@@ -82,6 +82,11 @@ namespace JumaEngine
         virtual VertexBufferObject* createVertexBufferObject() override;
         virtual TextureObject* createTextureObject() override;
 
+        constexpr static int8 getMaxRenderFrameCount() { return 2; }
+        int8 getRenderFrameCount() const { return m_RenderFrameCount; }
+        int8 getRenderFrameIndex() const { return m_RenderFrameIndex; }
+        int8 getNextRenderFrameIndex() { return m_RenderFrameIndex = static_cast<int8>((m_RenderFrameIndex + 1) % m_RenderFrameCount); }
+
         void registerVertexType(const VertexBufferDataBase* vertexBufferData);
         const VertexDescription_Vulkan* findVertexDescription(const jstringID& vertexName) const { return m_RegisteredVertexTypes.find(vertexName); }
 
@@ -114,6 +119,9 @@ namespace JumaEngine
         jmap<VulkanQueueType, uint32> m_QueueFamilyIndices;
         jmap<uint32, VulkanQueue*> m_Queues;
         jmap<VulkanQueueType, VulkanCommandPool*> m_CommandPools;
+
+        int8 m_RenderFrameCount = 0;
+        int8 m_RenderFrameIndex = 0;
 
         jmap<jstringID, VertexDescription_Vulkan> m_RegisteredVertexTypes;
 

@@ -29,14 +29,13 @@ namespace JumaEngine
         bool init(VulkanSwapchain* swapchain);
 
         bool update();
-        bool setRenderFrameIndex(int8 renderFrameIndex);
 
         VulkanRenderPass* getRenderPass() const { return m_RenderPass; }
-        VkFence getFinishFence() const { return m_RenderFrames.isValidIndex(m_CurrentRenderFrameIndex) ? m_RenderFrames[m_CurrentRenderFrameIndex].finishFence : nullptr; }
-        VkSemaphore getFinishSemaphore() const { return m_RenderFrames.isValidIndex(m_CurrentRenderFrameIndex) ? m_RenderFrames[m_CurrentRenderFrameIndex].finishSemaphore : nullptr; }
+        VkFence getFinishFence() const;
+        VkSemaphore getFinishSemaphore() const;
 
         VulkanCommandBuffer* startRenderCommandBufferRecord();
-        VulkanCommandBuffer* getRenderCommandBuffer() const { return m_RenderFrames.isValidIndex(m_CurrentRenderFrameIndex) ? m_RenderFrames[m_CurrentRenderFrameIndex].commandBuffer : nullptr; }
+        VulkanCommandBuffer* getRenderCommandBuffer() const;
         bool submitRenderCommandBuffer();
 
     protected:
@@ -62,17 +61,15 @@ namespace JumaEngine
         VulkanRenderPass* m_RenderPass = nullptr;
         math::uvector2 m_FramebufferSize = { 0, 0 };
 
-        int8 m_CurrentFramebufferIndex = -1;
-        int8 m_CurrentRenderFrameIndex = -1;
-
 
         void clearVulkan();
-
-        int8 getDesiredRenderFrameCount() const;
 
         bool updateRenderFrameCount();
         bool updateFramebufferCount();
         bool updateDependencies();
+
+        int8 getCurrentFramebufferIndex() const;
+        int8 getCurrentRenderFrameIndex() const;
     };
 }
 

@@ -180,15 +180,6 @@ namespace JumaEngine
         return true;
     }
 
-    void VulkanFramebuffer::setRenderCommandBuffer(VulkanCommandBuffer* commandBuffer)
-    {
-        if (m_CommandBuffer != nullptr)
-        {
-            m_CommandBuffer->returnToCommandPool();
-        }
-        m_CommandBuffer = commandBuffer;
-    }
-
     void VulkanFramebuffer::clearFramebuffer()
     {
         m_RenderPass = nullptr;

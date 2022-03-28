@@ -2,19 +2,14 @@
 
 #include "VulkanSwapchain.h"
 
-#include "VulkanRenderImage.h"
-
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
 #include "subsystems/render/Vulkan/RenderSubsystem_Vulkan.h"
-#include "jutils/jlog.h"
-#include "VulkanCommandBuffer.h"
-#include "VulkanCommandPool.h"
 #include "VulkanQueue.h"
 #include "subsystems/window/Vulkan/Window_Vulkan.h"
 #include "VulkanRenderPass.h"
-#include "VulkanFramebuffer.h"
 #include "subsystems/render/Vulkan/RenderOptions_Vulkan.h"
+#include "VulkanRenderImage.h"
 
 namespace JumaEngine
 {
@@ -39,17 +34,6 @@ namespace JumaEngine
             return false;
         }
 
-        RenderSubsystem_Vulkan* renderSubsystem = getRenderSubsystem();
-        VkPhysicalDevice physicalDevice = renderSubsystem->getPhysicalDevice();
-        VkSurfaceKHR surface = window->getVulkanSurface();
-
-        // Get image count
-        VkSurfaceCapabilitiesKHR capabilities;
-        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface, &capabilities);
-        m_MaxRenderFrameCount = static_cast<int8>(capabilities.maxImageCount > 0 ? math::min(capabilities.maxImageCount, 3) : 3);
-        m_RenderFrameCount = math::min(m_MaxRenderFrameCount, 2);
-        const uint32 imageCount = static_cast<uint8>(m_MaxRenderFrameCount);
-
         // Pick surface format
         VkSurfaceFormatKHR surfaceFormat;
         if (!window->pickSurfaceFormat(surfaceFormat))
@@ -57,39 +41,32 @@ namespace JumaEngine
             JUMA_LOG(error, JSTR("Failed to pick surface format"));
             return false;
         }
-
         // Pick depth format
         VkFormat depthFormat = VK_FORMAT_UNDEFINED;
-        if (!renderSubsystem->pickDepthFormat(depthFormat))
+        if (!getRenderSubsystem()->pickDepthFormat(depthFormat))
         {
             JUMA_LOG(error, JSTR("Can't find appropriate depth format"));
             return false;
         }
 
         // Calculate swapchain size
+        VkSurfaceCapabilitiesKHR capabilities;
+        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(getRenderSubsystem()->getPhysicalDevice(), window->getVulkanSurface(), &capabilities);
         const math::uvector2 windowSize = window->getSize();
         const VkExtent2D swapchainSize = capabilities.currentExtent.width != UINT32_MAX ? capabilities.currentExtent : VkExtent2D{
 		    math::clamp(windowSize.x, capabilities.minImageExtent.width, capabilities.maxImageExtent.width),
 		    math::clamp(windowSize.y, capabilities.minImageExtent.height, capabilities.maxImageExtent.height)
 	    };
 
-        // Pick present mode
-        uint32 surfacePresentModeCount;
-	    vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &surfacePresentModeCount, nullptr);
-	    jarray<VkPresentModeKHR> surfacePresentModes(surfacePresentModeCount);
-	    vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &surfacePresentModeCount, surfacePresentModes.getData());
-        const VkPresentModeKHR presentMode = surfacePresentModes.contains(VK_PRESENT_MODE_MAILBOX_KHR) ? VK_PRESENT_MODE_MAILBOX_KHR : VK_PRESENT_MODE_FIFO_KHR;
-        
         m_Window = window;
         m_MaxSampleCount = getMaxSampleCount();
         m_CurrentSettings.sampleCount = m_MaxSampleCount;
-        m_CurrentSettings.imageCount = imageCount;
         m_CurrentSettings.surfaceFormat = surfaceFormat;
         m_CurrentSettings.depthFormat = depthFormat;
         m_CurrentSettings.size = { swapchainSize.width, swapchainSize.height };
-        m_CurrentSettings.presentMode = presentMode;
+        m_CurrentSettings.presentMode = getRenderSubsystem()->getPresentMode();
 
-        if (!updateSwapchain() || !updateRenderPass() || !updateRenderImage())
+        if (!updateSwapchain() || !updateRenderPass() || !updateSyncObjects())
         {
             clearVulkanObjects();
             m_Window = nullptr;
@@ -123,6 +100,12 @@ namespace JumaEngine
         
         VkSurfaceCapabilitiesKHR capabilities;
         vkGetPhysicalDeviceSurfaceCapabilitiesKHR(getRenderSubsystem()->getPhysicalDevice(), surface, &capabilities);
+        uint32 imageCount = getRenderSubsystem()->getPresentMode() != RenderPresentMode::TRIPLE_BUFFER ? 3 : 2;
+        if (capabilities.maxImageCount > 0)
+        {
+            imageCount = math::min(imageCount, capabilities.maxImageCount);
+        }
+        imageCount = math::max(capabilities.minImageCount, imageCount);
 
         const uint32 queueFamilyIndices[2] = {
             getRenderSubsystem()->getQueueFamilyIndex(VulkanQueueType::Graphics),
@@ -133,7 +116,7 @@ namespace JumaEngine
         VkSwapchainCreateInfoKHR swapchainInfo{};
         swapchainInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
 	    swapchainInfo.surface = surface;
-	    swapchainInfo.minImageCount = m_CurrentSettings.imageCount;
+	    swapchainInfo.minImageCount = imageCount;
 	    swapchainInfo.imageFormat = m_CurrentSettings.surfaceFormat.format;
 	    swapchainInfo.imageColorSpace = m_CurrentSettings.surfaceFormat.colorSpace;
 	    swapchainInfo.imageExtent = { m_CurrentSettings.size.x, m_CurrentSettings.size.y };
@@ -153,7 +136,7 @@ namespace JumaEngine
 	    }
 	    swapchainInfo.preTransform = capabilities.currentTransform;
 	    swapchainInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-	    swapchainInfo.presentMode = m_CurrentSettings.presentMode;
+	    swapchainInfo.presentMode = getVulkanPresentMode(m_CurrentSettings.presentMode);
 	    swapchainInfo.clipped = VK_TRUE;
 	    swapchainInfo.oldSwapchain = oldSwapchain;
         const VkResult result = vkCreateSwapchainKHR(device, &swapchainInfo, nullptr, &m_Swapchain);
@@ -167,9 +150,9 @@ namespace JumaEngine
             return false;
         }
 
-        vkGetSwapchainImagesKHR(device, m_Swapchain, &m_CurrentSettings.imageCount, nullptr);
-        m_SwapchainImages.resize(static_cast<int32>(m_CurrentSettings.imageCount));
-        vkGetSwapchainImagesKHR(device, m_Swapchain, &m_CurrentSettings.imageCount, m_SwapchainImages.getData());
+        vkGetSwapchainImagesKHR(device, m_Swapchain, &imageCount, nullptr);
+        m_SwapchainImages.resize(static_cast<int32>(imageCount));
+        vkGetSwapchainImagesKHR(device, m_Swapchain, &imageCount, m_SwapchainImages.getData());
         return true;
     }
     bool VulkanSwapchain::updateRenderPass()
@@ -187,32 +170,10 @@ namespace JumaEngine
         }
         return true;
     }
-    bool VulkanSwapchain::updateRenderImage()
-    {
-        if (m_RenderImage == nullptr)
-        {
-            m_RenderImage = getRenderSubsystem()->createVulkanObject<VulkanRenderImage>();
-            if (!m_RenderImage->init(this))
-            {
-                delete m_RenderImage;
-                m_RenderImage = nullptr;
-                
-                JUMA_LOG(error, JSTR("Failed to create swapchain render image"));
-                return false;
-            }
-        }
-        if (!updateSyncObjects() || !m_RenderImage->update())
-        {
-            JUMA_LOG(error, JSTR("Failed to update swapchain render image"));
-            return false;
-        }
-
-        m_RenderFrameIndex = -1;
-        return true;
-    }
     bool VulkanSwapchain::updateSyncObjects()
     {
-        if (m_RenderFrameAvailableSemaphores.getSize() == m_MaxRenderFrameCount)
+        constexpr int8 maxFrameCount = RenderSubsystem_Vulkan::getMaxRenderFrameCount();
+        if (m_RenderFrameAvailableSemaphores.getSize() == maxFrameCount)
         {
             return true;
         }
@@ -221,21 +182,24 @@ namespace JumaEngine
         VkSemaphoreCreateInfo semaphoreInfo{};
         semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
-        for (int32 index = m_RenderFrameAvailableSemaphores.getSize() - 1; index >= m_MaxRenderFrameCount; index--)
+        for (int32 index = m_RenderFrameAvailableSemaphores.getSize() - 1; index >= maxFrameCount; index--)
         {
             if (m_RenderFrameAvailableSemaphores[index] != nullptr)
             {
                 vkDestroySemaphore(device, m_RenderFrameAvailableSemaphores[index], nullptr);
             }
         }
-        m_RenderFrameAvailableSemaphores.resize(m_MaxRenderFrameCount);
+        m_RenderFrameAvailableSemaphores.resize(maxFrameCount);
         for (auto& semaphore : m_RenderFrameAvailableSemaphores)
         {
-            const VkResult result = vkCreateSemaphore(device, &semaphoreInfo, nullptr, &semaphore);
-            if (result != VK_SUCCESS)
+            if (semaphore == nullptr)
             {
-                JUMA_VULKAN_ERROR_LOG(JSTR("Failed to create semaphore"), result);
-                return false;
+                const VkResult result = vkCreateSemaphore(device, &semaphoreInfo, nullptr, &semaphore);
+                if (result != VK_SUCCESS)
+                {
+                    JUMA_VULKAN_ERROR_LOG(JSTR("Failed to create semaphore"), result);
+                    return false;
+                }
             }
         }
         return true;
@@ -251,11 +215,6 @@ namespace JumaEngine
     {
         VkDevice device = getRenderSubsystem()->getDevice();
 
-        if (m_RenderImage != nullptr)
-        {
-            delete m_RenderImage;
-            m_RenderImage = nullptr;
-        }
         for (const auto& semaphore : m_RenderFrameAvailableSemaphores)
         {
             if (semaphore != nullptr)
@@ -328,13 +287,12 @@ namespace JumaEngine
         m_NeedToRecreate = false;
 
         const bool sizeChanged = forceRecreate || (m_SettingForApply.size != m_CurrentSettings.size);
-        const bool imageCountChanged = forceRecreate || (m_SettingForApply.imageCount != m_CurrentSettings.imageCount);
         const bool colorFormatChanged = forceRecreate || (m_SettingForApply.surfaceFormat.format != m_CurrentSettings.surfaceFormat.format) || (m_SettingForApply.surfaceFormat.colorSpace != m_CurrentSettings.surfaceFormat.colorSpace);
         const bool depthFormatChanged = forceRecreate || (m_SettingForApply.depthFormat != m_CurrentSettings.depthFormat);
         const bool presentModeChanged = forceRecreate || (m_SettingForApply.presentMode != m_CurrentSettings.presentMode);
         const bool sampleCountChanged = forceRecreate || (m_SettingForApply.sampleCount != m_CurrentSettings.sampleCount);
 
-        const bool shouldRecreateSwapchain = sizeChanged || imageCountChanged || colorFormatChanged || presentModeChanged;
+        const bool shouldRecreateSwapchain = sizeChanged || colorFormatChanged || presentModeChanged;
         const bool shouldRecreateRenderPass = colorFormatChanged || depthFormatChanged || sampleCountChanged;
         const bool shouldRecreateRenderImage = shouldRecreateSwapchain || shouldRecreateRenderPass;
 
@@ -347,7 +305,7 @@ namespace JumaEngine
         {
             return false;
         }
-        if (shouldRecreateRenderImage && !updateRenderImage())
+        if (shouldRecreateRenderImage && !updateSyncObjects())
         {
             return false;
         }
@@ -368,43 +326,44 @@ namespace JumaEngine
 
         VkDevice device = getRenderSubsystem()->getDevice();
 
+        VulkanRenderImage* renderImage = m_Window->getRenderImage();
+        if (renderImage == nullptr)
         {
-            VkFence prevFrameFence = m_RenderImage->getFinishFence();
-            if (prevFrameFence != nullptr)
-            {
-                vkWaitForFences(device, 1, &prevFrameFence, VK_TRUE, UINT64_MAX);
-            }
+            return false;
         }
 
-        m_RenderFrameIndex = static_cast<int8>(m_RenderFrameIndex >= 0 ? (m_RenderFrameIndex + 1) % m_RenderFrameCount : 0);
+        VkFence prevFrameFence = renderImage->getFinishFence();
+        if (prevFrameFence != nullptr)
         {
-            uint32 renderImageIndex = 0;
-            const VkResult result = vkAcquireNextImageKHR(device, m_Swapchain, UINT64_MAX, m_RenderFrameAvailableSemaphores[m_RenderFrameIndex], nullptr, &renderImageIndex);
-            if ((result != VK_SUCCESS) && (result != VK_SUBOPTIMAL_KHR))
-            {
-                if (result == VK_ERROR_OUT_OF_DATE_KHR)
-                {
-                    markAsNeededToRecreate();
-                    return false;
-                }
-
-                JUMA_VULKAN_ERROR_LOG(JSTR("Failed to acquire swapchain image"), result);
-                throw std::runtime_error(JSTR("Failed to acquire swapchain image"));
-            }
-            m_CurrentSwapchainImageIndex = static_cast<int8>(renderImageIndex);
+            vkWaitForFences(device, 1, &prevFrameFence, VK_TRUE, UINT64_MAX);
         }
-        m_RenderImage->setRenderFrameIndex(m_RenderFrameIndex);
 
-        VulkanCommandBuffer* commandBuffer = m_RenderImage->startRenderCommandBufferRecord();
+        const int8 renderFrameIndex = getRenderSubsystem()->getNextRenderFrameIndex();
+        uint32 renderImageIndex = 0;
+        const VkResult result = vkAcquireNextImageKHR(device, m_Swapchain, UINT64_MAX, m_RenderFrameAvailableSemaphores[renderFrameIndex], nullptr, &renderImageIndex);
+        if ((result != VK_SUCCESS) && (result != VK_SUBOPTIMAL_KHR))
+        {
+            if (result == VK_ERROR_OUT_OF_DATE_KHR)
+            {
+                markAsNeededToRecreate();
+                return false;
+            }
+
+            JUMA_VULKAN_ERROR_LOG(JSTR("Failed to acquire swapchain image"), result);
+            throw std::runtime_error(JSTR("Failed to acquire swapchain image"));
+        }
+        m_CurrentSwapchainImageIndex = static_cast<int8>(renderImageIndex);
+
+        VulkanCommandBuffer* commandBuffer = renderImage->startRenderCommandBufferRecord();
         if (commandBuffer == nullptr)
         {
             return false;
         }
 
         RenderOptions_Vulkan* renderOptions = reinterpret_cast<RenderOptions_Vulkan*>(options);
-        renderOptions->frameIndex = static_cast<uint8>(m_RenderFrameIndex);
+        renderOptions->frameIndex = static_cast<uint8>(renderFrameIndex);
         renderOptions->swapchainImageIndex = static_cast<uint8>(m_CurrentSwapchainImageIndex);
-        renderOptions->renderImage = m_RenderImage;
+        renderOptions->renderImage = renderImage;
         return true;
     }
 
@@ -412,10 +371,11 @@ namespace JumaEngine
     {
         RenderOptions_Vulkan* renderOptions = reinterpret_cast<RenderOptions_Vulkan*>(options);
 
-        m_RenderImage->submitRenderCommandBuffer();
+        VulkanRenderImage* renderImage = m_Window->getRenderImage();
+        renderImage->submitRenderCommandBuffer();
 
         const uint32 swapchainImageIndex = static_cast<uint8>(m_CurrentSwapchainImageIndex);
-        VkSemaphore finishSemaphore = m_RenderImage->getFinishSemaphore();
+        VkSemaphore finishSemaphore = renderImage->getFinishSemaphore();
         VkPresentInfoKHR presentInfo{};
         presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
         presentInfo.waitSemaphoreCount = 1;

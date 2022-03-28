@@ -516,5 +516,8 @@
     <ClInclude Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanRenderImage.h">
       <Filter>JumaEngine\subsystems\render\Vulkan\vulkanObjects</Filter>
     </ClInclude>
+    <ClInclude Include="source\subsystems\render\RenderPresentMode.h">
+      <Filter>JumaEngine\subsystems\render</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

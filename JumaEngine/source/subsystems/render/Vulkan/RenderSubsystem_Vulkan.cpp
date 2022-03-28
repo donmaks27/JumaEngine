@@ -77,7 +77,17 @@ namespace JumaEngine
             return false;
         }
 
-        return cast<Window_Vulkan>(m_MainWindow)->createVulkanSwapchain();
+        Window_Vulkan* mainWindow = cast<Window_Vulkan>(m_MainWindow);
+        if (!mainWindow->createVulkanSwapchain())
+        {
+            return false;
+        }
+        m_RenderFrameCount = static_cast<int8>(math::clamp(mainWindow->getVulkanSwapchain()->getImageCount() - 1, 1, getMaxRenderFrameCount()));
+        if (!mainWindow->createRenderImage())
+        {
+            return false;
+        }
+        return true;
     }
     bool RenderSubsystem_Vulkan::createVulkanInstance()
     {
@@ -404,7 +414,9 @@ namespace JumaEngine
             {
                 vkDeviceWaitIdle(m_Device);
 
-                cast<Window_Vulkan>(m_MainWindow)->destroyVulkanSwapchain();
+                Window_Vulkan* mainWindow = cast<Window_Vulkan>(m_MainWindow);
+                mainWindow->destroyRenderImage();
+                mainWindow->destroyVulkanSwapchain();
                 for (const auto& renderPassTypeAndPointer : m_RenderPasses)
                 {
                     delete renderPassTypeAndPointer.value;
@@ -525,7 +537,6 @@ namespace JumaEngine
             attributes.add(attribute);
         }
     }
-
     void RenderSubsystem_Vulkan::registerVertexType(const VertexBufferDataBase* vertexBufferData)
     {
         if (vertexBufferData != nullptr)

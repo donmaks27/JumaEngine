@@ -29,9 +29,6 @@ namespace JumaEngine
         VkFramebuffer get() const { return m_Framebuffer; }
         VulkanRenderPass* getRenderPass() const { return m_RenderPass; }
 
-        VulkanCommandBuffer* getRenderCommandBuffer() const { return m_CommandBuffer; }
-        void setRenderCommandBuffer(VulkanCommandBuffer* commandBuffer);
-
         VulkanCommandBuffer* createRenderCommandBuffer() const;
 
     protected:
@@ -48,8 +45,6 @@ namespace JumaEngine
         VulkanImage* m_ColorImage = nullptr;
         VulkanImage* m_DepthImage = nullptr;
         VulkanImage* m_ResolveImage = nullptr;
-        
-        VulkanCommandBuffer* m_CommandBuffer = nullptr;
 
         
         bool init(VulkanRenderPass* renderPass, const math::uvector2& size, VkImage resultImage);

@@ -4,14 +4,15 @@
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
-#include "engine/Engine.h"
 #include "subsystems/render/Vulkan/RenderSubsystem_Vulkan.h"
 #include "subsystems/render/Vulkan/vulkanObjects/VulkanSwapchain.h"
+#include "subsystems/render/Vulkan/vulkanObjects/VulkanRenderImage.h"
 
 namespace JumaEngine
 {
     void Window_Vulkan::destroyWindow_Vulkan()
     {
+        destroyRenderImage();
         destroyVulkanSwapchain();
 
         if (m_VulkanSurface != nullptr)
@@ -36,8 +37,7 @@ namespace JumaEngine
         {
             return false;
         }
-
-        jarray<VkSurfaceFormatKHR> surfaceFormats(surfaceFormatCount);
+        jarray<VkSurfaceFormatKHR> surfaceFormats(static_cast<int32>(surfaceFormatCount));
         vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, m_VulkanSurface, &surfaceFormatCount, surfaceFormats.getData());
 
         for (const auto& surfaceFormat : surfaceFormats)
@@ -51,6 +51,31 @@ namespace JumaEngine
 
         outSurfaceFormat = surfaceFormats[0];
         return true;
+    }
+    
+    void Window_Vulkan::fillSupportedPresentModes()
+    {
+        if (m_VulkanSurface == nullptr)
+        {
+            return;
+        }
+
+        m_SupportedPresentModes = { RenderPresentMode::VSYNC };
+
+        VkPhysicalDevice physicalDevice = getRenderSubsystem()->getPhysicalDevice();
+        uint32 surfacePresentModeCount;
+	    vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, m_VulkanSurface, &surfacePresentModeCount, nullptr);
+	    jarray<VkPresentModeKHR> surfacePresentModes(static_cast<int32>(surfacePresentModeCount));
+	    vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, m_VulkanSurface, &surfacePresentModeCount, surfacePresentModes.getData());
+
+        if (surfacePresentModes.contains(VK_PRESENT_MODE_IMMEDIATE_KHR))
+        {
+            m_SupportedPresentModes.add(RenderPresentMode::IMMEDIATE);
+        }
+        if (surfacePresentModes.contains(VK_PRESENT_MODE_MAILBOX_KHR))
+        {
+            m_SupportedPresentModes.add(RenderPresentMode::TRIPLE_BUFFER);
+        }
     }
 
     bool Window_Vulkan::createVulkanSwapchain()
@@ -85,10 +110,44 @@ namespace JumaEngine
             m_VulkanSwapchain = nullptr;
         }
     }
-    
+
+    bool Window_Vulkan::createRenderImage()
+    {
+        if (!isValid())
+        {
+            JUMA_LOG(warning, JSTR("Window not initialized"));
+            return false;
+        }
+        if ((m_VulkanSwapchain == nullptr) || !m_VulkanSwapchain->isValid())
+        {
+            JUMA_LOG(warning, JSTR("Swapchain not initialized"));
+            return false;
+        }
+
+        VulkanRenderImage* renderImage = getRenderSubsystem()->createVulkanObject<VulkanRenderImage>();
+        if (!renderImage->init(m_VulkanSwapchain) || !renderImage->update())
+        {
+            JUMA_LOG(error, JSTR("Failed to create window render image"));
+            delete renderImage;
+            return false;
+        }
+
+        m_RenderImage = renderImage;
+        return true;
+    }
+    void Window_Vulkan::destroyRenderImage()
+    {
+        if (m_RenderImage != nullptr)
+        {
+            delete m_RenderImage;
+            m_RenderImage = nullptr;
+        }
+    }
+
     void Window_Vulkan::onWindowResized(const math::uvector2& newSize)
     {
         Super::onWindowResized(newSize);
+
         m_VulkanSwapchain->onWindowSizeChanged();
     }
 }

@@ -8,6 +8,7 @@
 #include "jutils/jdelegate_multicast.h"
 #include "jutils/juid.h"
 #include "jutils/math/vector2.h"
+#include "subsystems/render/RenderPresentMode.h"
 
 namespace JumaEngine
 {
@@ -34,6 +35,8 @@ namespace JumaEngine
         const jstring& getTitle() const { return m_Title; }
         const math::uvector2& getSize() const { return m_Size; }
 
+        bool isSupportPresentMode(const RenderPresentMode presentMode) const { return m_SupportedPresentModes.contains(presentMode); }
+
         virtual void startRender() {}
         virtual void finishRender() {}
 
@@ -43,6 +46,8 @@ namespace JumaEngine
 
         jstring m_Title;
         math::uvector2 m_Size = { 0, 0 };
+
+        jarray<RenderPresentMode> m_SupportedPresentModes;
 
 
         virtual void onWindowResized(const math::uvector2& newSize) { m_Size = newSize; }

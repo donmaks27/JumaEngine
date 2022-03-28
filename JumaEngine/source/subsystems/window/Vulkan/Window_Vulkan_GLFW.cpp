@@ -45,6 +45,8 @@ namespace JumaEngine
             return false;
         }
 
+        fillSupportedPresentModes();
+
         glfwSetWindowUserPointer(window, this);
         glfwSetFramebufferSizeCallback(window, Window_Vulkan_GLFW::GLFW_FramebufferResizeCallback);
 

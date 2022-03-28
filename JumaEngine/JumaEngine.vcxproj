@@ -196,6 +196,7 @@
     <ClInclude Include="source\subsystems\render\OpenGL\VertexBufferObject_OpenGL.h" />
     <ClInclude Include="source\subsystems\render\RenderObject.h" />
     <ClInclude Include="source\subsystems\render\RenderOptions.h" />
+    <ClInclude Include="source\subsystems\render\RenderPresentMode.h" />
     <ClInclude Include="source\subsystems\render\RenderSubsystem.h" />
     <ClInclude Include="source\subsystems\render\Shader.h" />
     <ClInclude Include="source\subsystems\render\Texture.h" />
