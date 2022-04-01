@@ -27,7 +27,7 @@ namespace JumaEngine
         inline const VertexBufferDataBase* getVertexData() const;
     };
 
-    class VertexBuffer final : public EngineContextObject, public RenderObject<VertexBufferRenderAPIObject>
+    class VertexBuffer final : public EngineContextObject, public RenderAPIWrapper<VertexBufferRenderAPIObject>
     {
         JUMAENGINE_CLASS(VertexBuffer, EngineContextObject)
 

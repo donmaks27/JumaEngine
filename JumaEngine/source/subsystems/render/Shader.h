@@ -24,7 +24,7 @@ namespace JumaEngine
 
     CREATE_JUTILS_MULTICAST_DELEGATE_OneParam(OnShaderEvent, Shader*, shader);
 
-    class Shader final : public EngineContextObject, public RenderObject<ShaderRenderAPIObject>
+    class Shader final : public EngineContextObject, public RenderAPIWrapper<ShaderRenderAPIObject>
     {
         JUMAENGINE_CLASS(Shader, EngineContextObject)
 

@@ -89,7 +89,7 @@ namespace JumaEngine
     {
         jstring_hash_table::CreateInstance();
 
-        m_WindowSubsytem = createObject<WindowSubsystem_Vulkan_GLFW>();
+        m_WindowSubsytem = createObject<WindowSubsystem>();
         if (m_WindowSubsytem == nullptr)
         {
             return false;
@@ -105,6 +105,7 @@ namespace JumaEngine
         {
             return false;
         }
+        m_WindowSubsytem->createRenderAPIObject();
         m_RenderSubsystem->initSubsystem();
         if (!m_RenderSubsystem->isValid())
         {

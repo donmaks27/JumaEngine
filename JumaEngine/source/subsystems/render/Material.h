@@ -36,7 +36,7 @@ namespace JumaEngine
     CREATE_JUTILS_MULTICAST_DELEGATE_OneParam(OnMaterialEvent, Material*, material);
     CREATE_JUTILS_MULTICAST_DELEGATE_TwoParams(OnMaterialParamEvent, Material*, material, const jstringID&, paramName);
 
-    class Material final : public EngineContextObject, public RenderObject<MaterialRenderAPIObject>
+    class Material final : public EngineContextObject, public RenderAPIWrapper<MaterialRenderAPIObject>
     {
         JUMAENGINE_CLASS(Material, EngineContextObject)
 

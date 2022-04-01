@@ -8,7 +8,6 @@
 #include "VulkanRenderImage.h"
 #include "subsystems/render/Vulkan/RenderOptions_Vulkan.h"
 #include "subsystems/render/Vulkan/RenderSubsystem_Vulkan.h"
-#include "subsystems/window/Vulkan/Window_Vulkan.h"
 
 namespace JumaEngine
 {
@@ -20,26 +19,19 @@ namespace JumaEngine
         }
     }
 
-    bool VulkanSwapchain::init(Window_Vulkan* window)
+    bool VulkanSwapchain::init(VkSurfaceKHR surface, const VkSurfaceFormatKHR surfaceFormat, const math::uvector2& windowSize)
     {
         if (isValid())
         {
             JUMA_LOG(error, JSTR("Swapchain already initialized"));
             return false;
         }
-        if (window == nullptr)
+        if (surface == nullptr)
         {
-            JUMA_LOG(error, JSTR("Invalid window parameter"));
+            JUMA_LOG(error, JSTR("Invalid surface parameter"));
             return false;
         }
 
-        // Pick surface format
-        VkSurfaceFormatKHR surfaceFormat;
-        if (!window->pickSurfaceFormat(surfaceFormat))
-        {
-            JUMA_LOG(error, JSTR("Failed to pick surface format"));
-            return false;
-        }
         // Pick depth format
         VkFormat depthFormat = VK_FORMAT_UNDEFINED;
         if (!getRenderSubsystem()->pickDepthFormat(depthFormat))
@@ -50,14 +42,13 @@ namespace JumaEngine
 
         // Calculate swapchain size
         VkSurfaceCapabilitiesKHR capabilities;
-        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(getRenderSubsystem()->getPhysicalDevice(), window->getVulkanSurface(), &capabilities);
-        const math::uvector2 windowSize = window->getSize();
+        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(getRenderSubsystem()->getPhysicalDevice(), surface, &capabilities);
         const VkExtent2D swapchainSize = capabilities.currentExtent.width != UINT32_MAX ? capabilities.currentExtent : VkExtent2D{
 		    math::clamp(windowSize.x, capabilities.minImageExtent.width, capabilities.maxImageExtent.width),
 		    math::clamp(windowSize.y, capabilities.minImageExtent.height, capabilities.maxImageExtent.height)
 	    };
 
-        m_Window = window;
+        m_WindowSurface = surface;
         m_MaxSampleCount = getMaxSampleCount();
         m_CurrentSettings.sampleCount = m_MaxSampleCount;
         m_CurrentSettings.surfaceFormat = surfaceFormat;
@@ -68,7 +59,7 @@ namespace JumaEngine
         if (!updateSwapchain() || !updateRenderPass() || !updateSyncObjects())
         {
             clearVulkanObjects();
-            m_Window = nullptr;
+            m_WindowSurface = nullptr;
             return false;
         }
 
@@ -95,10 +86,9 @@ namespace JumaEngine
     bool VulkanSwapchain::updateSwapchain()
     {
         VkDevice device = getRenderSubsystem()->getDevice();
-        VkSurfaceKHR surface = m_Window->getVulkanSurface();
         
         VkSurfaceCapabilitiesKHR capabilities;
-        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(getRenderSubsystem()->getPhysicalDevice(), surface, &capabilities);
+        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(getRenderSubsystem()->getPhysicalDevice(), m_WindowSurface, &capabilities);
         uint32 imageCount = getRenderSubsystem()->getPresentMode() != RenderPresentMode::TRIPLE_BUFFER ? 3 : 2;
         if (capabilities.maxImageCount > 0)
         {
@@ -114,7 +104,7 @@ namespace JumaEngine
         VkSwapchainKHR oldSwapchain = m_Swapchain;
         VkSwapchainCreateInfoKHR swapchainInfo{};
         swapchainInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-	    swapchainInfo.surface = surface;
+	    swapchainInfo.surface = m_WindowSurface;
 	    swapchainInfo.minImageCount = imageCount;
 	    swapchainInfo.imageFormat = m_CurrentSettings.surfaceFormat.format;
 	    swapchainInfo.imageColorSpace = m_CurrentSettings.surfaceFormat.colorSpace;
@@ -208,7 +198,7 @@ namespace JumaEngine
     {
         clearVulkanObjects();
 
-        m_Window = nullptr;
+        m_WindowSurface = nullptr;
     }
     void VulkanSwapchain::clearVulkanObjects()
     {
@@ -237,20 +227,19 @@ namespace JumaEngine
         }
     }
 
-    void VulkanSwapchain::onWindowSizeChanged()
+    void VulkanSwapchain::onWindowSizeChanged(const math::uvector2& newSize)
     {
         VkSurfaceCapabilitiesKHR capabilities;
-        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(getRenderSubsystem()->getPhysicalDevice(), m_Window->getVulkanSurface(), &capabilities);
+        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(getRenderSubsystem()->getPhysicalDevice(), m_WindowSurface, &capabilities);
         if (capabilities.currentExtent.width != UINT32_MAX)
         {
             m_SettingForApply.size = { capabilities.currentExtent.width, capabilities.currentExtent.height };
         }
         else
         {
-            const math::uvector2 windowSize = m_Window->getSize();
             m_SettingForApply.size = {
-		        math::clamp(windowSize.x, capabilities.minImageExtent.width, capabilities.maxImageExtent.width),
-		        math::clamp(windowSize.y, capabilities.minImageExtent.height, capabilities.maxImageExtent.height)
+		        math::clamp(newSize.x, capabilities.minImageExtent.width, capabilities.maxImageExtent.width),
+		        math::clamp(newSize.y, capabilities.minImageExtent.height, capabilities.maxImageExtent.height)
 	        };
         }
 
@@ -316,20 +305,14 @@ namespace JumaEngine
         return true;
     }
 
-    bool VulkanSwapchain::startRender(RenderOptions* options)
+    bool VulkanSwapchain::startRender(VulkanRenderImage* renderImage, RenderOptions* options)
     {
-        if (!isValid() || m_NeedToRecreate)
+        if (!isValid() || m_NeedToRecreate || (renderImage == nullptr))
         {
             return false;
         }
 
         VkDevice device = getRenderSubsystem()->getDevice();
-
-        VulkanRenderImage* renderImage = m_Window->getRenderImage();
-        if (renderImage == nullptr)
-        {
-            return false;
-        }
 
         VkFence prevFrameFence = renderImage->getFinishFence();
         if (prevFrameFence != nullptr)
@@ -364,11 +347,10 @@ namespace JumaEngine
         return true;
     }
 
-    void VulkanSwapchain::finishRender(RenderOptions* options)
+    void VulkanSwapchain::finishRender(VulkanRenderImage* renderImage, RenderOptions* options)
     {
         RenderOptions_Vulkan* renderOptions = reinterpret_cast<RenderOptions_Vulkan*>(options);
 
-        VulkanRenderImage* renderImage = m_Window->getRenderImage();
         renderImage->submitRenderCommandBuffer();
 
         const uint32 swapchainImageIndex = static_cast<uint8>(m_CurrentSwapchainImageIndex);

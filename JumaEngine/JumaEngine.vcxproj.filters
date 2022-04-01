@@ -82,15 +82,6 @@
     <ClCompile Include="source\jutils\jlog.cpp">
       <Filter>JumaEngine\jutils</Filter>
     </ClCompile>
-    <ClCompile Include="source\subsystems\window\Window.cpp">
-      <Filter>JumaEngine\subsystems\window</Filter>
-    </ClCompile>
-    <ClCompile Include="source\subsystems\window\Vulkan\Window_Vulkan.cpp">
-      <Filter>JumaEngine\subsystems\window\Vulkan</Filter>
-    </ClCompile>
-    <ClCompile Include="source\subsystems\window\Vulkan\Window_Vulkan_GLFW.cpp">
-      <Filter>JumaEngine\subsystems\window\Vulkan</Filter>
-    </ClCompile>
     <ClCompile Include="source\subsystems\window\WindowSubsystem.cpp">
       <Filter>JumaEngine\subsystems\window</Filter>
     </ClCompile>
@@ -375,15 +366,6 @@
     <ClInclude Include="source\jutils\jstringID.h">
       <Filter>JumaEngine\jutils</Filter>
     </ClInclude>
-    <ClInclude Include="source\subsystems\window\Window.h">
-      <Filter>JumaEngine\subsystems\window</Filter>
-    </ClInclude>
-    <ClInclude Include="source\subsystems\window\Vulkan\Window_Vulkan.h">
-      <Filter>JumaEngine\subsystems\window\Vulkan</Filter>
-    </ClInclude>
-    <ClInclude Include="source\subsystems\window\Vulkan\Window_Vulkan_GLFW.h">
-      <Filter>JumaEngine\subsystems\window\Vulkan</Filter>
-    </ClInclude>
     <ClInclude Include="source\subsystems\window\WindowSubsystem.h">
       <Filter>JumaEngine\subsystems\window</Filter>
     </ClInclude>
@@ -518,6 +500,21 @@
     </ClInclude>
     <ClInclude Include="source\subsystems\render\Vulkan\VertexBufferRenderAPIObject_Vulkan.h">
       <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\RenderAPI.h">
+      <Filter>JumaEngine\subsystems\render</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\window\WindowSubsystem_Implementation.h">
+      <Filter>JumaEngine\subsystems\window</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\window\WindowSubsystemInfo.h">
+      <Filter>JumaEngine\subsystems\window</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\window\Vulkan\WindowSubsystemInfo_Vulkan.h">
+      <Filter>JumaEngine\subsystems\window\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\window\WindowID.h">
+      <Filter>JumaEngine\subsystems\window</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -10,35 +10,56 @@
 
 #include "jutils/jmap.h"
 
+struct GLFWwindow;
+
 namespace JumaEngine
 {
-    class Window_Vulkan_GLFW;
-
-    class WindowSubsystem_Vulkan_GLFW : public WindowSubsystem_Vulkan
+    struct WindowDescription_Vulkan_GLFW : WindowDescription_Vulkan
     {
-        JUMAENGINE_CLASS(WindowSubsystem_Vulkan_GLFW, WindowSubsystem_Vulkan)
+        GLFWwindow* windowGLFW = nullptr;
+    };
+
+    class WindowSubsystemRenderAPIObject_Vulkan_GLFW final : public WindowSubsystemRenderAPIObject_Vulkan
+    {
+        using Super = WindowSubsystemRenderAPIObject_Vulkan;
 
     public:
-        WindowSubsystem_Vulkan_GLFW() = default;
-        virtual ~WindowSubsystem_Vulkan_GLFW() override = default;
+        WindowSubsystemRenderAPIObject_Vulkan_GLFW() = default;
+        virtual ~WindowSubsystemRenderAPIObject_Vulkan_GLFW() override;
 
         virtual jarray<const char*> getVulkanInstanceExtensions() const override;
 
-        virtual Window* createWindow(const jstring& title, const math::uvector2& size) override;
-        virtual Window* findWindow(window_id_type windowID) const override;
-        virtual void destroyWindow(window_id_type windowID) override;
+        virtual const WindowDescription_RenderAPI* findWindow(const window_id_type windowID) const override { return m_Windows.find(windowID); }
+
+        virtual bool shouldCloseWindow(window_id_type windowID) const override;
+
+        virtual void finishRender(window_id_type windowID) override;
 
     protected:
 
-        virtual bool initSubsystemInternal() override;
-        virtual void clearSubsystemInternal() override;
+        virtual bool initInternal() override;
+
+        virtual WindowDescription_RenderAPI* findWindow(const window_id_type windowID) override { return m_Windows.find(windowID); }
+
+        virtual bool createWindow(window_id_type windowID) override;
+        virtual void destroyWindow(window_id_type windowID) override;
 
     private:
 
-        jmap<window_id_type, Window_Vulkan_GLFW*> m_Windows;
+        struct WindowUserObject
+        {
+            WindowSubsystemRenderAPIObject_Vulkan_GLFW* object = nullptr;
+            window_id_type windowID = INVALID_WINDOW_ID;
+        };
+
+        jmap<window_id_type, WindowDescription_Vulkan_GLFW> m_Windows;
 
 
         static void GLFW_ErrorCallback(int errorCode, const char* errorMessage);
+        static void GLFW_FramebufferResizeCallback(GLFWwindow* windowGLFW, int width, int height);
+
+        void clearData_GLFW();
+        void destroyWindow_GLFW(window_id_type windowID, WindowDescription_Vulkan_GLFW& description);
     };
 }
 

@@ -22,7 +22,7 @@ namespace JumaEngine
         inline const TextureData* getTextureData() const;
     };
 
-    class Texture : public EngineContextObject, public RenderObject<TextureRenderAPIObject>
+    class Texture : public EngineContextObject, public RenderAPIWrapper<TextureRenderAPIObject>
     {
         JUMAENGINE_CLASS(Texture, EngineContextObject)
 

@@ -10,7 +10,7 @@ namespace JumaEngine
     class RenderAPIObject
     {
         template<typename APIObjectType>
-        friend class RenderObject;
+        friend class RenderAPIWrapperBase;
 
     public:
         RenderAPIObject() = default;
@@ -29,14 +29,14 @@ namespace JumaEngine
     private:
 
         template<typename APIObjectType>
-        bool init(RenderObject<APIObjectType>* parent)
+        bool init(RenderAPIWrapperBase<APIObjectType>* parent)
         {
             if (m_Parent != nullptr)
             {
                 JUMA_LOG(error, JSTR("Render object already initialized"));
                 return false;
             }
-            if ((parent == nullptr) || !parent->isValid())
+            if (parent == nullptr)
             {
                 JUMA_LOG(error, JSTR("Parent object not valid"));
                 return false;
@@ -54,36 +54,33 @@ namespace JumaEngine
     };
 
     template<typename APIObjectType>
-    class RenderObject
+    class RenderAPIWrapperBase
     {
     public:
 
         using RenderAPIObjectType = APIObjectType;
 
-        RenderObject() = default;
-        virtual ~RenderObject() = default;
-
-        bool isValid() const { return m_Initialized; }
-        void clear()
-        {
-            if (isValid())
-            {
-                clearInternal();
-                m_Initialized = false;
-            }
-        }
+        RenderAPIWrapperBase() = default;
+        virtual ~RenderAPIWrapperBase() = default;
 
         bool createRenderAPIObject()
         {
-            if (!isValid())
+            if (m_RenderAPIObject != nullptr)
             {
-                JUMA_LOG(warning, JSTR("Shader not initialized"));
+                JUMA_LOG(warning, JSTR("Render API object already created"));
                 return false;
             }
 
             m_RenderAPIObject = createRenderAPIObjectInternal();
+            if (m_RenderAPIObject == nullptr)
+            {
+                JUMA_LOG(error, JSTR("Failed to create render API object"));
+                return false;
+            }
+
             if (!m_RenderAPIObject->init(this))
             {
+                JUMA_LOG(error, JSTR("Failed to initialize render API object"));
                 delete m_RenderAPIObject;
                 m_RenderAPIObject = nullptr;
                 return false;
@@ -91,6 +88,8 @@ namespace JumaEngine
             return true;
         }
         APIObjectType* getRenderAPIObject() const { return m_RenderAPIObject; }
+        template<typename Type, TEMPLATE_ENABLE(is_base_and_not_same<APIObjectType, Type>)>
+        Type* getRenderAPIObject() const { return dynamic_cast<Type*>(m_RenderAPIObject); }
         void clearRenderAPIObject()
         {
             if (m_RenderAPIObject != nullptr)
@@ -102,15 +101,38 @@ namespace JumaEngine
 
     protected:
 
-        void markAsInitialized() { m_Initialized = true; }
-
         virtual APIObjectType* createRenderAPIObjectInternal() = 0;
+
+    private:
+
+        APIObjectType* m_RenderAPIObject = nullptr;
+    };
+    template<typename APIObjectType>
+    class RenderAPIWrapper : public RenderAPIWrapperBase<APIObjectType>
+    {
+    public:
+
+        RenderAPIWrapper() = default;
+        virtual ~RenderAPIWrapper() override = default;
+
+        bool isValid() const { return m_Initialized; }
+        void clear()
+        {
+            if (isValid())
+            {
+                clearInternal();
+                m_Initialized = false;
+            }
+        }
+
+    protected:
+
+        void markAsInitialized() { m_Initialized = true; }
 
         virtual void clearInternal() = 0;
 
     private:
 
         bool m_Initialized = false;
-        APIObjectType* m_RenderAPIObject = nullptr;
     };
 }

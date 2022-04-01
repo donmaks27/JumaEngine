@@ -9,18 +9,27 @@ namespace JumaEngine
 {
     bool RenderSubsystem::createMainWindow()
     {
-        if (m_MainWindow == nullptr)
+        if (m_MainWindowID == INVALID_WINDOW_ID)
         {
-            m_MainWindow = getOwnerEngine()->getWindowSubsystem()->createWindow(JSTR("JumaEngine"), { 800, 600 });
+            m_MainWindowID = getOwnerEngine()->getWindowSubsystem()->createWindow(JSTR("JumaEngine"), { 800, 600 });
         }
-        return m_MainWindow != nullptr;
+        return m_MainWindowID != INVALID_WINDOW_ID;
     }
-    void RenderSubsystem::terminateMainWindow()
+    bool RenderSubsystem::shouldCloseMainWindow() const
     {
-        if (m_MainWindow != nullptr)
+        return getOwnerEngine()->getWindowSubsystem()->shouldCloseWindow(m_MainWindowID);
+    }
+    math::uvector2 RenderSubsystem::getMainWindowSize() const
+    {
+        const WindowDescription* description = getOwnerEngine()->getWindowSubsystem()->findWindow(m_MainWindowID);
+        return description != nullptr ? description->size : math::uvector2(0);
+    }
+    void RenderSubsystem::destroyMainWindow()
+    {
+        if (m_MainWindowID != INVALID_WINDOW_ID)
         {
-            getOwnerEngine()->getWindowSubsystem()->destroyWindow(m_MainWindow->getID());
-            m_MainWindow = nullptr;
+            getOwnerEngine()->getWindowSubsystem()->destroyWindow(m_MainWindowID);
+            m_MainWindowID = INVALID_WINDOW_ID;
         }
     }
 

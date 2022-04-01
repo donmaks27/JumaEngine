@@ -58,7 +58,6 @@ namespace JumaEngine
         uint32 getQueueFamilyIndex(const VulkanQueueType queueType) const { return m_QueueFamilyIndices[queueType]; }
         VulkanQueue* getQueue(const VulkanQueueType queueType) const { return m_Queues[m_QueueFamilyIndices[queueType]]; }
         VulkanCommandPool* getCommandPool(const VulkanQueueType queueType) const { return m_CommandPools[queueType]; }
-        VulkanSwapchain* getSwapchain() const;
 
         virtual void render() override;
 

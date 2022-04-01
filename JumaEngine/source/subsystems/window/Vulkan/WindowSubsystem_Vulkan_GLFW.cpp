@@ -6,45 +6,17 @@
 
 #include <GLFW/glfw3.h>
 
-#include "Window_Vulkan_GLFW.h"
 #include "engine/Engine.h"
 #include "subsystems/render/Vulkan/RenderSubsystem_Vulkan.h"
 
 namespace JumaEngine
 {
-    bool WindowSubsystem_Vulkan_GLFW::initSubsystemInternal()
+    WindowSubsystemRenderAPIObject_Vulkan_GLFW::~WindowSubsystemRenderAPIObject_Vulkan_GLFW()
     {
-        if (!Super::initSubsystemInternal())
-        {
-            return false;
-        }
-
-        if (glfwInit() == GLFW_FALSE)
-        {
-            const char* errorStr = nullptr;
-            glfwGetError(&errorStr);
-            JUMA_LOG(error, errorStr);
-            return false;
-        }
-
-        glfwSetErrorCallback(WindowSubsystem_Vulkan_GLFW::GLFW_ErrorCallback);
-
-        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-        return true;
-    }
-    void WindowSubsystem_Vulkan_GLFW::GLFW_ErrorCallback(const int errorCode, const char* errorMessage)
-    {
-        JUMA_LOG(error, JSTR("GLFW error. Code: ") + TO_JSTR(errorCode) + JSTR(". ") + errorMessage);
+        clearData_GLFW();
     }
 
-    void WindowSubsystem_Vulkan_GLFW::clearSubsystemInternal()
-    {
-        glfwTerminate();
-
-        Super::clearSubsystemInternal();
-    }
-
-    jarray<const char*> WindowSubsystem_Vulkan_GLFW::getVulkanInstanceExtensions() const
+    jarray<const char*> WindowSubsystemRenderAPIObject_Vulkan_GLFW::getVulkanInstanceExtensions() const
     {
         uint32 extensionsCount = 0;
         const char** extenstions = glfwGetRequiredInstanceExtensions(&extensionsCount);
@@ -60,44 +32,136 @@ namespace JumaEngine
         return result;
     }
 
-    Window* WindowSubsystem_Vulkan_GLFW::createWindow(const jstring& title, const math::uvector2& size)
+    bool WindowSubsystemRenderAPIObject_Vulkan_GLFW::initInternal()
     {
-        Window_Vulkan_GLFW* window = getOwnerEngine()->createObject<Window_Vulkan_GLFW>();
+        if (!Super::initInternal())
+        {
+            return false;
+        }
+
+        if (glfwInit() == GLFW_FALSE)
+        {
+#ifndef JUTILS_LOG_DISABLED
+            const char* errorStr = nullptr;
+            glfwGetError(&errorStr);
+            JUMA_LOG(error, errorStr);
+#endif
+            return false;
+        }
+
+        glfwSetErrorCallback(WindowSubsystemRenderAPIObject_Vulkan_GLFW::GLFW_ErrorCallback);
+        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+
+        if (!createWindowsFromParent())
+        {
+            JUMA_LOG(error, JSTR("Failed to create windows from parent object"));
+            return false;
+        }
+        return true;
+    }
+    void WindowSubsystemRenderAPIObject_Vulkan_GLFW::GLFW_ErrorCallback(int errorCode, const char* errorMessage)
+    {
+        JUMA_LOG(error, JSTR("GLFW error. Code: ") + TO_JSTR(errorCode) + JSTR(". ") + errorMessage);
+    }
+
+    void WindowSubsystemRenderAPIObject_Vulkan_GLFW::clearData_GLFW()
+    {
+        for (auto& description : m_Windows)
+        {
+            destroyWindow_GLFW(description.key, description.value);
+        }
+        m_Windows.clear();
+
+        glfwTerminate();
+    }
+
+    bool WindowSubsystemRenderAPIObject_Vulkan_GLFW::createWindow(const window_id_type windowID)
+    {
+        WindowDescription* description = findParentWindow(windowID);
+        if (description == nullptr)
+        {
+            JUMA_LOG(error, JSTR("Failed to get window data"));
+            return false;
+        }
+
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+        GLFWwindow* window = glfwCreateWindow(static_cast<int>(description->size.x), static_cast<int>(description->size.y), *description->title, nullptr, nullptr);
         if (window == nullptr)
         {
-            return nullptr;
+            JUMA_LOG(error, JSTR("Failed to create GLFW window"));
+            return false;
         }
-        
-        RenderSubsystem_Vulkan* renderSubsystem = cast<RenderSubsystem_Vulkan>(getOwnerEngine()->getRenderSubsystem());
-        renderSubsystem->registerVulkanObject(window);
 
-        const window_id_type id = m_WindowIDs.getUID();
-        if (!window->initWindow(id, title, size))
+        const RenderSubsystem_Vulkan* renderSubsystem = getRenderSubsystem();
+
+        VkSurfaceKHR surface = nullptr;
+        const VkResult result = glfwCreateWindowSurface(renderSubsystem->getVulkanInstance(), window, nullptr, &surface);
+        if (result != VK_SUCCESS)
         {
-            delete window;
-            return nullptr;
+            JUMA_VULKAN_ERROR_LOG(JSTR("Failed to create window surface"), result);
+            glfwDestroyWindow(window);
+            return false;
         }
 
-        m_Windows.add(id, window);
-        return window;
+        WindowDescription_Vulkan_GLFW& windowDescription = m_Windows[windowID];
+        windowDescription.windowGLFW = window;
+        windowDescription.vulkanSurface = surface;
+        updateSupportedPresentModes(windowID, windowDescription, *description);
+
+        WindowUserObject* userObject = new WindowUserObject();
+        userObject->object = this;
+        userObject->windowID = windowID;
+        glfwSetWindowUserPointer(window, userObject);
+        glfwSetFramebufferSizeCallback(window, WindowSubsystemRenderAPIObject_Vulkan_GLFW::GLFW_FramebufferResizeCallback);
+        return true;
+    }
+    void WindowSubsystemRenderAPIObject_Vulkan_GLFW::GLFW_FramebufferResizeCallback(GLFWwindow* windowGLFW, int width, int height)
+    {
+        WindowUserObject* userObject = static_cast<WindowUserObject*>(glfwGetWindowUserPointer(windowGLFW));
+        if (userObject != nullptr)
+        {
+            userObject->object->onWindowResized(userObject->windowID, { math::max<uint32>(width, 0), math::max<uint32>(height, 0) });
+        }
     }
 
-    Window* WindowSubsystem_Vulkan_GLFW::findWindow(const window_id_type windowID) const
+    void WindowSubsystemRenderAPIObject_Vulkan_GLFW::destroyWindow(const window_id_type windowID)
     {
-        Window_Vulkan_GLFW* const* window = m_Windows.find(windowID);
-        return window != nullptr ? *window : nullptr;
+        WindowDescription_Vulkan_GLFW* description = m_Windows.find(windowID);
+        if (description == nullptr)
+        {
+            return;
+        }
+
+        destroyWindow_GLFW(windowID, *description);
+
+        m_Windows.remove(windowID);
+    }
+    void WindowSubsystemRenderAPIObject_Vulkan_GLFW::destroyWindow_GLFW(const window_id_type windowID, WindowDescription_Vulkan_GLFW& description)
+    {
+        destroyWindow_Vulkan(windowID, description);
+
+        const WindowUserObject* userObject = static_cast<WindowUserObject*>(glfwGetWindowUserPointer(description.windowGLFW));
+        glfwSetWindowUserPointer(description.windowGLFW, nullptr);
+        delete userObject;
+
+        glfwDestroyWindow(description.windowGLFW);
+        description.windowGLFW = nullptr;
     }
 
-    void WindowSubsystem_Vulkan_GLFW::destroyWindow(const window_id_type windowID)
+    bool WindowSubsystemRenderAPIObject_Vulkan_GLFW::shouldCloseWindow(const window_id_type windowID) const
     {
-        Window_Vulkan_GLFW** windowPtr = m_Windows.find(windowID);
-        Window_Vulkan_GLFW* window = windowPtr != nullptr ? *windowPtr : nullptr;
-        if (window != nullptr)
+        const WindowDescription_Vulkan_GLFW* description = m_Windows.find(windowID);
+        if ((description == nullptr) || (description->windowGLFW == nullptr))
         {
-            window->destroy();
-            delete window;
-            m_Windows.remove(windowID);
+            JUMA_LOG(warning, JSTR("Can't find window"));
+            return false;
         }
+        return glfwWindowShouldClose(description->windowGLFW) != GLFW_FALSE;
+    }
+
+    void WindowSubsystemRenderAPIObject_Vulkan_GLFW::finishRender(const window_id_type windowID)
+    {
+        glfwPollEvents();
     }
 }
 

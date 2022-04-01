@@ -5,8 +5,10 @@
 #include "common_header.h"
 #include "subsystems/SubsystemBase.h"
 
-#include "subsystems/window/Window.h"
+#include "RenderAPI.h"
 #include "RenderPresentMode.h"
+#include "jutils/math/vector2.h"
+#include "subsystems/window/WindowID.h"
 
 namespace JumaEngine
 {
@@ -23,11 +25,11 @@ namespace JumaEngine
     public:
         RenderSubsystem() = default;
         virtual ~RenderSubsystem() override = default;
-        
-        Window* getMainWindow() const { return m_MainWindow; }
-        bool shouldCloseMainWindow() const { return (m_MainWindow != nullptr) && m_MainWindow->shouldClose(); }
 
-        math::uvector2 getMainWindowSize() const { return m_MainWindow != nullptr ? m_MainWindow->getSize() : math::uvector2(0); }
+        RenderAPI getRenderAPI() const { return RenderAPI::Vulkan; }
+
+        bool shouldCloseMainWindow() const;
+        math::uvector2 getMainWindowSize() const;
 
         virtual void render() = 0;
 
@@ -42,13 +44,13 @@ namespace JumaEngine
 
     protected:
 
-        Window* m_MainWindow = nullptr;
+        window_id_type m_MainWindowID = INVALID_WINDOW_ID;
 
         RenderPresentMode m_CurrentPresentMode = RenderPresentMode::VSYNC;
 
 
         bool createMainWindow();
-        void terminateMainWindow();
+        void destroyMainWindow();
 
         void callEngineRender(const RenderOptions* options) const;
     };

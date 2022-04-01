@@ -15,11 +15,11 @@
 #include "jutils/jset.h"
 #include "subsystems/render/vertex/VertexBufferData.h"
 #include "subsystems/window/Vulkan/WindowSubsystem_Vulkan.h"
-#include "subsystems/window/Vulkan/Window_Vulkan.h"
 #include "vulkanObjects/VulkanCommandPool.h"
 #include "vulkanObjects/VulkanQueue.h"
 #include "vulkanObjects/VulkanRenderPass.h"
 #include "vulkanObjects/VulkanSwapchain.h"
+#include "vulkanObjects/VulkanRenderImage.h"
 
 namespace JumaEngine
 {
@@ -59,7 +59,7 @@ namespace JumaEngine
     void RenderSubsystem_Vulkan::clearSubsystemInternal()
     {
         clearVulkan();
-        terminateMainWindow();
+        destroyMainWindow();
 
         Super::clearSubsystemInternal();
     }
@@ -76,13 +76,15 @@ namespace JumaEngine
             return false;
         }
 
-        Window_Vulkan* mainWindow = cast<Window_Vulkan>(m_MainWindow);
-        if (!mainWindow->createVulkanSwapchain())
+        WindowSubsystemRenderAPIObject_Vulkan* windowRenderObject = getOwnerEngine()->getWindowSubsystem()->getRenderAPIObject<WindowSubsystemRenderAPIObject_Vulkan>();
+        if (!windowRenderObject->createVulkanSwapchain(m_MainWindowID))
         {
             return false;
         }
-        m_RenderFrameCount = static_cast<int8>(math::clamp(mainWindow->getVulkanSwapchain()->getImageCount() - 1, 1, getMaxRenderFrameCount()));
-        if (!mainWindow->createRenderImage())
+
+        const VulkanSwapchain* swapchain = windowRenderObject->getVulkanSwapchain(m_MainWindowID);
+        m_RenderFrameCount = static_cast<int8>(math::clamp(swapchain->getImageCount() - 1, 1, getMaxRenderFrameCount()));
+        if (!windowRenderObject->createRenderImage(m_MainWindowID))
         {
             return false;
         }
@@ -174,8 +176,13 @@ namespace JumaEngine
     }
     jarray<const char*> RenderSubsystem_Vulkan::getRequiredVulkanExtensions() const
     {
-        const WindowSubsystem_Vulkan* windowSubsystem = cast<WindowSubsystem_Vulkan>(getOwnerEngine()->getWindowSubsystem());
-        jarray<const char*> extensions = windowSubsystem->getVulkanInstanceExtensions();
+        WindowSubsystemRenderAPIObject_Vulkan* windowRenderObject = getOwnerEngine()->getWindowSubsystem()->getRenderAPIObject<WindowSubsystemRenderAPIObject_Vulkan>();
+        if (windowRenderObject == nullptr)
+        {
+            return {};
+        }
+
+        jarray<const char*> extensions = windowRenderObject->getVulkanInstanceExtensions();
 #if JDEBUG
         extensions.add(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 #endif
@@ -196,6 +203,14 @@ namespace JumaEngine
 
     bool RenderSubsystem_Vulkan::pickPhysicalDevice()
     {
+        WindowSubsystemRenderAPIObject_Vulkan* windowRenderObject = getOwnerEngine()->getWindowSubsystem()->getRenderAPIObject<WindowSubsystemRenderAPIObject_Vulkan>();
+        VkSurfaceKHR surface = windowRenderObject != nullptr ? windowRenderObject->getWindowVulkanSurface(m_MainWindowID) : nullptr;
+        if (surface == nullptr)
+        {
+            JUMA_LOG(error, JSTR("Can't get window's surface"));
+            return false;
+        }
+
         uint32 deviceCount = 0;
         vkEnumeratePhysicalDevices(m_VulkanInstance, &deviceCount, nullptr);
         if (deviceCount == 0)
@@ -206,7 +221,6 @@ namespace JumaEngine
         jarray<VkPhysicalDevice> devices(static_cast<int32>(deviceCount));
         vkEnumeratePhysicalDevices(m_VulkanInstance, &deviceCount, devices.getData());
 
-        VkSurfaceKHR surface = cast<Window_Vulkan>(m_MainWindow)->getVulkanSurface();
         for (const auto& device : devices)
         {
             VkPhysicalDeviceProperties deviceProperties;
@@ -266,6 +280,7 @@ namespace JumaEngine
 
             m_PhysicalDevice = device;
             m_QueueFamilyIndices = indices;
+            windowRenderObject->updateSupportedPresentModes(m_MainWindowID);
             return true;
         }
         return false;
@@ -407,15 +422,20 @@ namespace JumaEngine
 
     void RenderSubsystem_Vulkan::clearVulkan()
     {
+        WindowSubsystemRenderAPIObject_Vulkan* windowRenderObject = getOwnerEngine()->getWindowSubsystem()->getRenderAPIObject<WindowSubsystemRenderAPIObject_Vulkan>();
+
         if (m_VulkanInstance != nullptr)
         {
             if (m_Device != nullptr)
             {
                 vkDeviceWaitIdle(m_Device);
 
-                Window_Vulkan* mainWindow = cast<Window_Vulkan>(m_MainWindow);
-                mainWindow->destroyRenderImage();
-                mainWindow->destroyVulkanSwapchain();
+                if (windowRenderObject != nullptr)
+                {
+                    windowRenderObject->destroyVulkanSwapchain(m_MainWindowID);
+                    windowRenderObject->destroyRenderImage(m_MainWindowID);
+                }
+
                 for (const auto& renderPassTypeAndPointer : m_RenderPasses)
                 {
                     delete renderPassTypeAndPointer.value;
@@ -444,7 +464,7 @@ namespace JumaEngine
 
             m_PhysicalDevice = nullptr;
 
-            terminateMainWindow();
+            destroyMainWindow();
 
 #if JDEBUG
             DestroyDebugUtilsMessengerEXT(m_VulkanInstance, m_DebugMessenger, nullptr);
@@ -454,28 +474,26 @@ namespace JumaEngine
         }
     }
 
-    VulkanSwapchain* RenderSubsystem_Vulkan::getSwapchain() const
-    {
-        return cast<Window_Vulkan>(m_MainWindow)->getVulkanSwapchain();
-    }
-
     void RenderSubsystem_Vulkan::render()
     {
-        m_MainWindow->startRender();
+        WindowSubsystemRenderAPIObject_Vulkan* windowRenderObject = getOwnerEngine()->getWindowSubsystem()->getRenderAPIObject<WindowSubsystemRenderAPIObject_Vulkan>();
+
+        windowRenderObject->startRender(m_MainWindowID);
 
         RenderOptions_Vulkan options;
-        VulkanSwapchain* swapchain = cast<Window_Vulkan>(m_MainWindow)->getVulkanSwapchain();
-        if (swapchain->startRender(&options))
+        VulkanSwapchain* swapchain = windowRenderObject->getVulkanSwapchain(m_MainWindowID);
+        VulkanRenderImage* renderImage = windowRenderObject->getRenderImage(m_MainWindowID);
+        if (swapchain->startRender(renderImage, &options))
         {
             callEngineRender(&options);
-            swapchain->finishRender(&options);
+            swapchain->finishRender(renderImage, &options);
         }
         if (swapchain->isNeedToRecreate())
         {
             swapchain->applySettings(true);
         }
 
-        m_MainWindow->finishRender();
+        windowRenderObject->finishRender(m_MainWindowID);
     }
 
     void RenderSubsystem_Vulkan::onEnginePreTerminate()

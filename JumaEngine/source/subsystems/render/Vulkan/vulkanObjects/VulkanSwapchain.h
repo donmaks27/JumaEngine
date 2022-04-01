@@ -17,8 +17,9 @@
 
 namespace JumaEngine
 {
+    class VulkanRenderImage;
     struct RenderOptions;
-    class Window_Vulkan;
+    class WindowSubsystemRenderAPIObject_Vulkan;
     class VulkanRenderPass;
     class VulkanSwapchain;
 
@@ -35,7 +36,7 @@ namespace JumaEngine
 
     class VulkanSwapchain : public VulkanContextObject
     {
-        friend Window_Vulkan;
+        friend WindowSubsystemRenderAPIObject_Vulkan;
 
     public:
         VulkanSwapchain() = default;
@@ -44,7 +45,7 @@ namespace JumaEngine
         OnVulkanSwapchainEvent onRenderPassChanged;
 
 
-        bool init(Window_Vulkan* window);
+        bool init(VkSurfaceKHR surface, VkSurfaceFormatKHR surfaceFormat, const math::uvector2& windowSize);
 
         VkSampleCountFlagBits getSampleCount() const { return m_CurrentSettings.sampleCount; }
         VkFormat getFormat() const { return m_CurrentSettings.surfaceFormat.format; }
@@ -61,8 +62,8 @@ namespace JumaEngine
         void applySettings(bool forceRecreate = false);
         bool isNeedToRecreate() const { return m_NeedToRecreate; }
 
-        bool startRender(RenderOptions* options);
-        void finishRender(RenderOptions* options);
+        bool startRender(VulkanRenderImage* renderImage, RenderOptions* options);
+        void finishRender(VulkanRenderImage* renderImage, RenderOptions* options);
 
     protected:
 
@@ -70,7 +71,8 @@ namespace JumaEngine
 
     private:
 
-        Window_Vulkan* m_Window = nullptr;
+        VkSurfaceKHR m_WindowSurface = nullptr;
+        VulkanRenderImage* m_WindowRenderImage = nullptr;
 
         VkSwapchainKHR m_Swapchain = nullptr;
         VulkanRenderPass* m_RenderPass = nullptr;
@@ -94,7 +96,7 @@ namespace JumaEngine
 
         void clearVulkanObjects();
 
-        void onWindowSizeChanged();
+        void onWindowSizeChanged(const math::uvector2& newSize);
 
         void markAsNeededToRecreate();
         bool applySettingsInternal(bool forceRecreate);
