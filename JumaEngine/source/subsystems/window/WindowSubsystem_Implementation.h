@@ -4,20 +4,16 @@
 
 #include "common_header.h"
 
+#include "WindowSubsystemInfo.h"
 #include "Vulkan/WindowSubsystemInfo_Vulkan.h"
 
 namespace JumaEngine
 {
-    template<RenderAPI API>
-    WindowSubsystemRenderAPIObject* createWindowSubsystemRenderAPIObject()
-    {
-        return WindowSubsystemInfo<API>::createRenderAPIObject();
-    }
-    inline WindowSubsystemRenderAPIObject* createWindowSubsystemRenderAPIObject(const RenderAPI renderAPI)
+    inline WindowSubsystem_RenderAPIObject* createWindowSubsystemRenderAPIObject(const RenderAPI renderAPI)
     {
         switch (renderAPI)
         {
-        case RenderAPI::Vulkan: return createWindowSubsystemRenderAPIObject<RenderAPI::Vulkan>();
+        case RenderAPI::Vulkan: return WindowSubsystemInfo<RenderAPI::Vulkan>::createRenderAPIObject();
         default: ;
         }
         JUMA_LOG(error, JSTR("Unsupported render API"));

@@ -18,7 +18,7 @@ namespace JumaEngine
 
     void VulkanImage::clearVulkanData()
     {
-        VkDevice device = getRenderSubsystem()->getDevice();
+        VkDevice device = getRenderSubsystemObject()->getDevice();
 
         if (m_Sampler != nullptr)
         {
@@ -34,7 +34,7 @@ namespace JumaEngine
 
         if (m_Allocation != nullptr)
         {
-            vmaDestroyImage(getRenderSubsystem()->getAllocator(), m_Image, m_Allocation);
+            vmaDestroyImage(getRenderSubsystemObject()->getAllocator(), m_Image, m_Allocation);
             m_Allocation = nullptr;
         }
         m_Image = nullptr;
@@ -69,7 +69,7 @@ namespace JumaEngine
         uniqueQueueFamilies.reserve(static_cast<int32>(queues.size()));
         for (const auto& queueType : queues)
         {
-            uniqueQueueFamilies.addUnique(getRenderSubsystem()->getQueueFamilyIndex(queueType));
+            uniqueQueueFamilies.addUnique(getRenderSubsystemObject()->getQueueFamilyIndex(queueType));
         }
 
         VkImageCreateInfo imageInfo{};
@@ -107,7 +107,7 @@ namespace JumaEngine
     }
     bool VulkanImage::initInternal(const VkImageCreateInfo& imageInfo, const VmaAllocationCreateInfo& allocationInfo)
     {
-        const VkResult result = vmaCreateImage(getRenderSubsystem()->getAllocator(), &imageInfo, &allocationInfo, &m_Image, &m_Allocation, nullptr);
+        const VkResult result = vmaCreateImage(getRenderSubsystemObject()->getAllocator(), &imageInfo, &allocationInfo, &m_Image, &m_Allocation, nullptr);
         if (result != VK_SUCCESS)
         {
             JUMA_VULKAN_ERROR_LOG(JSTR("Failed to create image"), result);
@@ -167,7 +167,7 @@ namespace JumaEngine
 	    imageViewInfo.subresourceRange.levelCount = m_MipLevels;
 	    imageViewInfo.subresourceRange.baseArrayLayer = 0;
 	    imageViewInfo.subresourceRange.layerCount = 1;
-        const VkResult result = vkCreateImageView(getRenderSubsystem()->getDevice(), &imageViewInfo, nullptr, &m_ImageView);
+        const VkResult result = vkCreateImageView(getRenderSubsystemObject()->getDevice(), &imageViewInfo, nullptr, &m_ImageView);
         if (result != VK_SUCCESS)
         {
             JUMA_VULKAN_ERROR_LOG(JSTR("Failed to create image view"), result);
@@ -185,7 +185,7 @@ namespace JumaEngine
         }
 
         VkPhysicalDeviceProperties properties{};
-        vkGetPhysicalDeviceProperties(getRenderSubsystem()->getPhysicalDevice(), &properties);
+        vkGetPhysicalDeviceProperties(getRenderSubsystemObject()->getPhysicalDevice(), &properties);
 
         VkSamplerCreateInfo samplerInfo{};
         samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
@@ -204,7 +204,7 @@ namespace JumaEngine
         samplerInfo.minLod = 0.0f;
         samplerInfo.maxLod = static_cast<float>(m_MipLevels);
         samplerInfo.mipLodBias = 0.0f;
-        const VkResult result = vkCreateSampler(getRenderSubsystem()->getDevice(), &samplerInfo, nullptr, &m_Sampler);
+        const VkResult result = vkCreateSampler(getRenderSubsystemObject()->getDevice(), &samplerInfo, nullptr, &m_Sampler);
         if (result != VK_SUCCESS)
         {
             JUMA_VULKAN_ERROR_LOG(JSTR("Failed to create image sampler"), result);
@@ -215,7 +215,7 @@ namespace JumaEngine
 
     VulkanCommandBuffer* VulkanImage::createCommandBuffer(const VulkanQueueType queueType) const
     {
-        VulkanCommandPool* commandPool = getRenderSubsystem()->getCommandPool(VulkanQueueType::Graphics);
+        VulkanCommandPool* commandPool = getRenderSubsystemObject()->getCommandPool(VulkanQueueType::Graphics);
         VulkanCommandBuffer* commandBuffer = commandPool != nullptr ? commandPool->getCommandBuffer() : nullptr;
         if (commandBuffer == nullptr)
         {
@@ -364,7 +364,7 @@ namespace JumaEngine
         }
 
         VkFormatProperties formatProperties;
-        vkGetPhysicalDeviceFormatProperties(getRenderSubsystem()->getPhysicalDevice(), m_Format, &formatProperties);
+        vkGetPhysicalDeviceFormatProperties(getRenderSubsystemObject()->getPhysicalDevice(), m_Format, &formatProperties);
         if (!(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT))
         {
             return false;
@@ -473,7 +473,7 @@ namespace JumaEngine
             return false;
         }
 
-        VulkanBuffer* stagingBuffer = getRenderSubsystem()->createVulkanObject<VulkanBuffer>();
+        VulkanBuffer* stagingBuffer = getRenderSubsystemObject()->createVulkanObject<VulkanBuffer>();
         stagingBuffer->init(
             static_cast<uint32>(m_Size.x) * m_Size.y * GetTextureFormatSize(GetTextureFormatByVulkanFormat(m_Format)), 
             VK_BUFFER_USAGE_TRANSFER_SRC_BIT, {}, 

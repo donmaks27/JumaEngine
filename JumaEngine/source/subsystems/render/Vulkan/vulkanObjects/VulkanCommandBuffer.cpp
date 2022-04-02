@@ -28,7 +28,7 @@ namespace JumaEngine
             return false;
         }
 
-        const VulkanQueue* queue = m_CommandPool->getRenderSubsystem()->getQueue(m_CommandPool->getQueueType());
+        const VulkanQueue* queue = m_CommandPool->getRenderSubsystemObject()->getQueue(m_CommandPool->getQueueType());
         if ((queue == nullptr) || !queue->isValid())
         {
             return false;

@@ -30,7 +30,7 @@ namespace JumaEngine
         const math::uvector2& size = data->getSize();
         const uint32 mipLevels = static_cast<uint32>(std::floor(std::log2(math::max(size.x, size.y)))) + 1;
 
-        m_Image = getRenderSubsystem()->createVulkanObject<VulkanImage>();
+        m_Image = getRenderSubsystemObject()->createVulkanObject<VulkanImage>();
         m_Image->init(
             data->getSize(), mipLevels, VK_SAMPLE_COUNT_1_BIT, GetVulkanFormatByTextureFormat(data->getFormat()), 
             { VulkanQueueType::Graphics, VulkanQueueType::Transfer }, 

@@ -18,7 +18,7 @@ namespace JumaEngine
 
     void VulkanRenderImage::clearVulkan()
     {
-        VkDevice device = getRenderSubsystem()->getDevice();
+        VkDevice device = getRenderSubsystemObject()->getDevice();
 
         for (const auto& framebuffer : m_Framebuffers)
         {
@@ -83,7 +83,7 @@ namespace JumaEngine
     }
     bool VulkanRenderImage::updateRenderFrameCount()
     {
-        const int8 frameCount = getRenderSubsystem()->getRenderFrameCount();
+        const int8 frameCount = getRenderSubsystemObject()->getRenderFrameCount();
         if (frameCount <= 0)
         {
             JUMA_LOG(error, JSTR("Failed to get render frame count"));
@@ -95,7 +95,7 @@ namespace JumaEngine
             return true;
         }
 
-        VkDevice device = getRenderSubsystem()->getDevice();
+        VkDevice device = getRenderSubsystemObject()->getDevice();
         VkFenceCreateInfo fenceInfo{};
         fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
         fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
@@ -141,7 +141,7 @@ namespace JumaEngine
     }
     bool VulkanRenderImage::updateFramebufferCount()
     {
-        const int8 framebufferCount = m_Swapchain != nullptr ? static_cast<int8>(m_Swapchain->getImageCount()) : getRenderSubsystem()->getRenderFrameCount();
+        const int8 framebufferCount = m_Swapchain != nullptr ? static_cast<int8>(m_Swapchain->getImageCount()) : getRenderSubsystemObject()->getRenderFrameCount();
         if (framebufferCount <= 0)
         {
             JUMA_LOG(error, JSTR("Failed to get desired framebuffer count"));
@@ -164,7 +164,7 @@ namespace JumaEngine
             VulkanFramebuffer*& framebuffer = m_Framebuffers[index];
             if (framebuffer == nullptr)
             {
-                framebuffer = getRenderSubsystem()->createVulkanObject<VulkanFramebuffer>();
+                framebuffer = getRenderSubsystemObject()->createVulkanObject<VulkanFramebuffer>();
             }
             if (!framebuffer->create(m_RenderPass, m_FramebufferSize, m_Swapchain != nullptr ? m_Swapchain->getSwapchainImage(index) : nullptr))
             {
@@ -196,7 +196,7 @@ namespace JumaEngine
     }
     int8 VulkanRenderImage::getCurrentRenderFrameIndex() const
     {
-        return getRenderSubsystem()->getRenderFrameIndex();
+        return getRenderSubsystemObject()->getRenderFrameIndex();
     }
 
     VkFence VulkanRenderImage::getFinishFence() const
@@ -238,7 +238,7 @@ namespace JumaEngine
             frame.commandBuffer->returnToCommandPool();
         }
         frame.commandBuffer = commandBuffer;
-        vkResetFences(getRenderSubsystem()->getDevice(), 1, &frame.finishFence);
+        vkResetFences(getRenderSubsystemObject()->getDevice(), 1, &frame.finishFence);
 
         return commandBuffer;
     }

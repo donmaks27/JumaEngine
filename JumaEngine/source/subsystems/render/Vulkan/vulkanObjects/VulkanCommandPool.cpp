@@ -22,12 +22,12 @@ namespace JumaEngine
             return false;
         }
 
-        const uint32 queueFamiyIndex = getRenderSubsystem()->getQueueFamilyIndex(queueType);
+        const uint32 queueFamiyIndex = getRenderSubsystemObject()->getQueueFamilyIndex(queueType);
         VkCommandPoolCreateInfo commandPoolInfo{};
         commandPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
         commandPoolInfo.queueFamilyIndex = queueFamiyIndex;
         commandPoolInfo.flags = flags | VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-        const VkResult result = vkCreateCommandPool(getRenderSubsystem()->getDevice(), &commandPoolInfo, nullptr, &m_CommandPool);
+        const VkResult result = vkCreateCommandPool(getRenderSubsystemObject()->getDevice(), &commandPoolInfo, nullptr, &m_CommandPool);
         if (result != VK_SUCCESS)
         {
             JUMA_VULKAN_ERROR_LOG(JSTR("Failed to create command pull for queue family ") + TO_JSTR(queueFamiyIndex), result);
@@ -45,7 +45,7 @@ namespace JumaEngine
         m_CommandBuffers.clear();
         if (m_CommandPool != nullptr)
         {
-            vkDestroyCommandPool(getRenderSubsystem()->getDevice(), m_CommandPool, nullptr);
+            vkDestroyCommandPool(getRenderSubsystemObject()->getDevice(), m_CommandPool, nullptr);
         }
     }
 
@@ -94,7 +94,7 @@ namespace JumaEngine
         commandBufferInfo.commandPool = m_CommandPool;
         commandBufferInfo.level = primaryLevel ? VK_COMMAND_BUFFER_LEVEL_PRIMARY : VK_COMMAND_BUFFER_LEVEL_SECONDARY;
         commandBufferInfo.commandBufferCount = static_cast<uint32>(count);
-        const VkResult result = vkAllocateCommandBuffers(getRenderSubsystem()->getDevice(), &commandBufferInfo, commandBuffers);
+        const VkResult result = vkAllocateCommandBuffers(getRenderSubsystemObject()->getDevice(), &commandBufferInfo, commandBuffers);
         if (result != VK_SUCCESS)
         {
             JUMA_VULKAN_ERROR_LOG(JSTR("Failed to allocate command buffers"), result);

@@ -19,7 +19,7 @@ namespace JumaEngine
 {
     class VulkanRenderImage;
     struct RenderOptions;
-    class WindowSubsystemRenderAPIObject_Vulkan;
+    class WindowSubsystem_RenderAPIObject_Vulkan;
     class VulkanRenderPass;
     class VulkanSwapchain;
 
@@ -36,7 +36,7 @@ namespace JumaEngine
 
     class VulkanSwapchain : public VulkanContextObject
     {
-        friend WindowSubsystemRenderAPIObject_Vulkan;
+        friend WindowSubsystem_RenderAPIObject_Vulkan;
 
     public:
         VulkanSwapchain() = default;

@@ -26,13 +26,13 @@ namespace JumaEngine
     struct WindowDescription_RenderAPI
     {};
 
-    class WindowSubsystemRenderAPIObject : public RenderAPIObject<WindowSubsystem>
+    class WindowSubsystem_RenderAPIObject : public RenderAPIObject<WindowSubsystem>
     {
         friend WindowSubsystem;
 
     public:
-        WindowSubsystemRenderAPIObject() = default;
-        virtual ~WindowSubsystemRenderAPIObject() override = default;
+        WindowSubsystem_RenderAPIObject() = default;
+        virtual ~WindowSubsystem_RenderAPIObject() override = default;
 
         virtual const WindowDescription_RenderAPI* findWindow(window_id_type windowID) const = 0;
         template<typename Type, TEMPLATE_ENABLE(is_base<WindowDescription_RenderAPI, Type>)>
@@ -61,11 +61,11 @@ namespace JumaEngine
         virtual void onWindowResized(window_id_type windowID, const math::uvector2& newSize);
     };
 
-    class WindowSubsystem final : public SubsystemBase, public RenderAPIWrapperBase<WindowSubsystemRenderAPIObject>
+    class WindowSubsystem final : public SubsystemBase, public RenderAPIWrapperBase<WindowSubsystem_RenderAPIObject>
     {
         JUMAENGINE_CLASS(WindowSubsystem, SubsystemBase)
 
-        friend WindowSubsystemRenderAPIObject;
+        friend WindowSubsystem_RenderAPIObject;
 
     public:
 
@@ -82,7 +82,7 @@ namespace JumaEngine
 
     protected:
 
-        virtual WindowSubsystemRenderAPIObject* createRenderAPIObjectInternal() override;
+        virtual WindowSubsystem_RenderAPIObject* createRenderAPIObjectInternal() override;
 
         virtual void clearSubsystemInternal() override;
 

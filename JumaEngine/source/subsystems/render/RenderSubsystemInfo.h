@@ -4,15 +4,15 @@
 
 #include "common_header.h"
 
-#include "subsystems/render/RenderAPI.h"
-#include "WindowSubsystem.h"
+#include "RenderAPI.h"
+#include "RenderSubsystem.h"
 
 namespace JumaEngine
 {
     template<RenderAPI API>
-    struct WindowSubsystemInfo : std::false_type
+    struct RenderSubsystemInfo : std::false_type
     {
-        static WindowSubsystem_RenderAPIObject* createRenderAPIObject()
+        static RenderSubsystem_RenderAPIObject* createRenderAPIObject()
         {
             JUMA_LOG(error, JSTR("Unsupported render API"));
             return nullptr;

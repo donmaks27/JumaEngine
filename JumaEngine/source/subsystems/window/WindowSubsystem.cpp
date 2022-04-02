@@ -8,7 +8,7 @@
 
 namespace JumaEngine
 {
-    bool WindowSubsystemRenderAPIObject::createWindowsFromParent()
+    bool WindowSubsystem_RenderAPIObject::createWindowsFromParent()
     {
         if (m_Parent == nullptr)
         {
@@ -26,12 +26,12 @@ namespace JumaEngine
         return true;
     }
 
-    WindowDescription* WindowSubsystemRenderAPIObject::findParentWindow(const window_id_type windowID)
+    WindowDescription* WindowSubsystem_RenderAPIObject::findParentWindow(const window_id_type windowID)
     {
         return m_Parent != nullptr ? m_Parent->m_Windows.find(windowID) : nullptr;
     }
 
-    void WindowSubsystemRenderAPIObject::onWindowResized(const window_id_type windowID, const math::uvector2& newSize)
+    void WindowSubsystem_RenderAPIObject::onWindowResized(const window_id_type windowID, const math::uvector2& newSize)
     {
         WindowDescription* description = findParentWindow(windowID);
         if (description != nullptr)
@@ -40,7 +40,7 @@ namespace JumaEngine
         }
     }
 
-    WindowSubsystemRenderAPIObject* WindowSubsystem::createRenderAPIObjectInternal()
+    WindowSubsystem_RenderAPIObject* WindowSubsystem::createRenderAPIObjectInternal()
     {
         if (!isValid())
         {

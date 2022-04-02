@@ -16,7 +16,7 @@ namespace JumaEngine
     template<>
     struct WindowSubsystemInfo<RenderAPI::Vulkan> : std::true_type
     {
-        static WindowSubsystemRenderAPIObject* createRenderAPIObject() { return new WindowSubsystemRenderAPIObject_Vulkan_GLFW(); }
+        static WindowSubsystem_RenderAPIObject* createRenderAPIObject() { return new WindowSubsystem_RenderAPIObject_Vulkan_GLFW(); }
     };
 #endif
 }

@@ -14,7 +14,7 @@
 
 namespace JumaEngine
 {
-    class RenderSubsystem_Vulkan;
+    class RenderSubsystem_RenderAPIObject_Vulkan;
     class VulkanRenderImage;
     class VulkanSwapchain;
 
@@ -26,13 +26,13 @@ namespace JumaEngine
         VulkanRenderImage* renderImage = nullptr;
     };
 
-    class WindowSubsystemRenderAPIObject_Vulkan : public WindowSubsystemRenderAPIObject
+    class WindowSubsystem_RenderAPIObject_Vulkan : public WindowSubsystem_RenderAPIObject
     {
-        using Super = WindowSubsystemRenderAPIObject;
+        using Super = WindowSubsystem_RenderAPIObject;
 
     public:
-        WindowSubsystemRenderAPIObject_Vulkan() = default;
-        virtual ~WindowSubsystemRenderAPIObject_Vulkan() override = default;
+        WindowSubsystem_RenderAPIObject_Vulkan() = default;
+        virtual ~WindowSubsystem_RenderAPIObject_Vulkan() override = default;
 
         virtual jarray<const char*> getVulkanInstanceExtensions() const = 0;
 
@@ -49,7 +49,7 @@ namespace JumaEngine
 
     protected:
 
-        RenderSubsystem_Vulkan* getRenderSubsystem() const;
+        RenderSubsystem_RenderAPIObject_Vulkan* getRenderSubsystem() const;
 
         void updateSupportedPresentModes(window_id_type windowID, WindowDescription_Vulkan& description, 
             WindowDescription& parentDescription);

@@ -27,7 +27,7 @@ namespace JumaEngine
         jarray<uint32> uniqueQueueFamilies;
         for (const auto& queueType : queues)
         {
-            uniqueQueueFamilies.addUnique(getRenderSubsystem()->getQueueFamilyIndex(queueType));
+            uniqueQueueFamilies.addUnique(getRenderSubsystemObject()->getQueueFamilyIndex(queueType));
         }
         VkBufferCreateInfo bufferInfo{};
         bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -59,7 +59,7 @@ namespace JumaEngine
             return false;
         }
 
-        const VkResult result = vmaCreateBuffer(getRenderSubsystem()->getAllocator(), &bufferInfo, &allocationInfo, &m_Buffer, &m_Allocation, nullptr);
+        const VkResult result = vmaCreateBuffer(getRenderSubsystemObject()->getAllocator(), &bufferInfo, &allocationInfo, &m_Buffer, &m_Allocation, nullptr);
         if (result != VK_SUCCESS)
         {
             JUMA_LOG(error, JSTR("Failed to create buffer. Code ") + TO_JSTR(result));
@@ -73,7 +73,7 @@ namespace JumaEngine
 
     void VulkanBuffer::clearBuffer()
     {
-        vmaDestroyBuffer(getRenderSubsystem()->getAllocator(), m_Buffer, m_Allocation);
+        vmaDestroyBuffer(getRenderSubsystemObject()->getAllocator(), m_Buffer, m_Allocation);
 
         m_Buffer = nullptr;
         m_Allocation = nullptr;
@@ -88,12 +88,12 @@ namespace JumaEngine
         }
 
         void* mappedData;
-        if (vmaMapMemory(getRenderSubsystem()->getAllocator(), m_Allocation, &mappedData) != VK_SUCCESS)
+        if (vmaMapMemory(getRenderSubsystemObject()->getAllocator(), m_Allocation, &mappedData) != VK_SUCCESS)
         {
             return false;
         }
         memcpy(mappedData, data, dataSize);
-        vmaUnmapMemory(getRenderSubsystem()->getAllocator(), m_Allocation);
+        vmaUnmapMemory(getRenderSubsystemObject()->getAllocator(), m_Allocation);
         return true;
     }
 
@@ -104,7 +104,7 @@ namespace JumaEngine
             return false;
         }
 
-        VulkanCommandPool* commandPool = getRenderSubsystem()->getCommandPool(VulkanQueueType::Transfer);
+        VulkanCommandPool* commandPool = getRenderSubsystemObject()->getCommandPool(VulkanQueueType::Transfer);
         VulkanCommandBuffer* commandBuffer = commandPool != nullptr ? commandPool->getCommandBuffer() : nullptr;
         if (commandBuffer == nullptr)
         {
@@ -142,7 +142,7 @@ namespace JumaEngine
             return false;
         }
 
-        VulkanBuffer* stagingBuffer = getRenderSubsystem()->createVulkanObject<VulkanBuffer>();
+        VulkanBuffer* stagingBuffer = getRenderSubsystemObject()->createVulkanObject<VulkanBuffer>();
         stagingBuffer->init(dataSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, {}, VMA_MEMORY_USAGE_CPU_TO_GPU, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
         if (!stagingBuffer->isValid() || !stagingBuffer->setData(data, dataSize))
         {

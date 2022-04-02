@@ -98,7 +98,7 @@ namespace JumaEngine
         renderPassInfo.pSubpasses = &subpass;
         renderPassInfo.dependencyCount = 1;
         renderPassInfo.pDependencies = &dependency;
-        const VkResult result = vkCreateRenderPass(getRenderSubsystem()->getDevice(), &renderPassInfo, nullptr, &m_RenderPass);
+        const VkResult result = vkCreateRenderPass(getRenderSubsystemObject()->getDevice(), &renderPassInfo, nullptr, &m_RenderPass);
         if (result != VK_SUCCESS)
         {
             JUMA_VULKAN_ERROR_LOG(JSTR("Failed to create render pass"), result);
@@ -115,7 +115,7 @@ namespace JumaEngine
     {
         if (m_RenderPass != nullptr)
         {
-            vkDestroyRenderPass(getRenderSubsystem()->getDevice(), m_RenderPass, nullptr);
+            vkDestroyRenderPass(getRenderSubsystemObject()->getDevice(), m_RenderPass, nullptr);
             m_RenderPass = nullptr;
 
             m_TypeID = INVALID_RENDER_PASS_TYPE_ID;

@@ -22,7 +22,7 @@ namespace JumaEngine
 
     bool VertexBufferRenderAPIObject_Vulkan::initInternal()
     {
-        RenderSubsystem_Vulkan* renderSubsystem = getRenderSubsystem();
+        RenderSubsystem_RenderAPIObject_Vulkan* renderSubsystem = getRenderSubsystemObject();
         const VertexBufferDataBase* vertexData = getVertexData();
         const jset<VulkanQueueType> queues = { VulkanQueueType::Graphics, VulkanQueueType::Transfer };
 

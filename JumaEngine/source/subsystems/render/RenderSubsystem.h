@@ -4,54 +4,85 @@
 
 #include "common_header.h"
 #include "subsystems/SubsystemBase.h"
+#include "RenderAPIObject.h"
 
 #include "RenderAPI.h"
 #include "RenderPresentMode.h"
-#include "jutils/math/vector2.h"
 #include "subsystems/window/WindowID.h"
 
 namespace JumaEngine
 {
-    struct RenderOptions;
-    class TextureRenderAPIObject;
-    class VertexBufferRenderAPIObject;
-    class MaterialRenderAPIObject;
     class ShaderRenderAPIObject;
+    class MaterialRenderAPIObject;
+    class VertexBufferRenderAPIObject;
+    class TextureRenderAPIObject;
+    class RenderSubsystem;
 
-    class RenderSubsystem : public SubsystemBase
+    class RenderSubsystem_RenderAPIObject : public RenderAPIObject<RenderSubsystem>
     {
-        JUMAENGINE_ABSTRACT_CLASS(RenderSubsystem, SubsystemBase)
+        friend RenderSubsystem;
 
     public:
-        RenderSubsystem() = default;
-        virtual ~RenderSubsystem() override = default;
+        RenderSubsystem_RenderAPIObject() = default;
+        virtual ~RenderSubsystem_RenderAPIObject() override = default;
 
-        RenderAPI getRenderAPI() const { return RenderAPI::Vulkan; }
+        RenderSubsystem* getRenderSubsystem() const { return m_Parent; }
 
-        bool shouldCloseMainWindow() const;
-        math::uvector2 getMainWindowSize() const;
+    protected:
 
-        virtual void render() = 0;
+        virtual bool initInternal() override { return true; }
 
-        virtual void onEnginePreTerminate() {}
+        bool createMainWindow();
+        void destroyMainWindow();
 
         virtual ShaderRenderAPIObject* createShaderObject() = 0;
         virtual MaterialRenderAPIObject* createMaterialObject() = 0;
         virtual VertexBufferRenderAPIObject* createVertexBufferObject() = 0;
         virtual TextureRenderAPIObject* createTextureObject() = 0;
 
+        virtual void render() = 0;
+        virtual void waitForRenderFinish() {}
+    };
+
+    class RenderSubsystem final : public SubsystemBase, public RenderAPIWrapperBase<RenderSubsystem_RenderAPIObject>
+    {
+        JUMAENGINE_CLASS(RenderSubsystem, SubsystemBase)
+
+        friend RenderSubsystem_RenderAPIObject;
+
+    public:
+        RenderSubsystem() = default;
+        virtual ~RenderSubsystem() override = default;
+
+        RenderAPI getRenderAPI() const { return m_CurrentRenderAPI; }
         RenderPresentMode getPresentMode() const { return m_CurrentPresentMode; }
+
+        window_id_type getMainWindowID() const { return m_MainWindowID; }
+        bool shouldCloseMainWindow() const;
+
+        ShaderRenderAPIObject* createShaderObject();
+        MaterialRenderAPIObject* createMaterialObject();
+        VertexBufferRenderAPIObject* createVertexBufferObject();
+        TextureRenderAPIObject* createTextureObject();
+
+        void render();
+        void waitForRenderFinish();
 
     protected:
 
-        window_id_type m_MainWindowID = INVALID_WINDOW_ID;
+        virtual RenderSubsystem_RenderAPIObject* createRenderAPIObjectInternal() override;
+        
+        virtual void clearSubsystemInternal() override;
 
+    private:
+
+        RenderAPI m_CurrentRenderAPI = RenderAPI::Vulkan;
         RenderPresentMode m_CurrentPresentMode = RenderPresentMode::VSYNC;
+
+        window_id_type m_MainWindowID = INVALID_WINDOW_ID;
 
 
         bool createMainWindow();
         void destroyMainWindow();
-
-        void callEngineRender(const RenderOptions* options) const;
     };
 }

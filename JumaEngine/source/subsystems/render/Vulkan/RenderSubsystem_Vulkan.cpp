@@ -19,78 +19,131 @@
 #include "vulkanObjects/VulkanQueue.h"
 #include "vulkanObjects/VulkanRenderPass.h"
 #include "vulkanObjects/VulkanSwapchain.h"
-#include "vulkanObjects/VulkanRenderImage.h"
+
+#if JDEBUG
+VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, 
+    const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger)
+{
+    const auto func = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT"));
+    if (func != nullptr) 
+    {
+        return func(instance, pCreateInfo, pAllocator, pDebugMessenger);
+    }
+    return VK_ERROR_EXTENSION_NOT_PRESENT;
+}
+void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator)
+{
+    const auto func = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT"));
+    if (func != nullptr) 
+    {
+        func(instance, debugMessenger, pAllocator);
+    }
+}
+#endif
 
 namespace JumaEngine
 {
-#if JDEBUG
-    VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger)
+    RenderSubsystem_RenderAPIObject_Vulkan::~RenderSubsystem_RenderAPIObject_Vulkan()
     {
-        const auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
-        if (func != nullptr) 
-        {
-            return func(instance, pCreateInfo, pAllocator, pDebugMessenger);
-        }
-        return VK_ERROR_EXTENSION_NOT_PRESENT;
+        clearVulkan();
     }
-    void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator)
-    {
-        const auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
-        if (func != nullptr) 
-        {
-            func(instance, debugMessenger, pAllocator);
-        }
-    }
-#endif
 
-    bool RenderSubsystem_Vulkan::initSubsystemInternal()
+    bool RenderSubsystem_RenderAPIObject_Vulkan::initInternal()
     {
-        if (!Super::initSubsystemInternal())
+        if (!Super::initInternal())
         {
             return false;
         }
         if (!initVulkan())
         {
+            JUMA_LOG(error, JSTR("Failed to initialize render subsystem vulkan object"));
             clearVulkan();
             return false;
         }
         return true;
     }
-    void RenderSubsystem_Vulkan::clearSubsystemInternal()
-    {
-        clearVulkan();
-        destroyMainWindow();
-
-        Super::clearSubsystemInternal();
-    }
-
-    bool RenderSubsystem_Vulkan::initVulkan()
+    bool RenderSubsystem_RenderAPIObject_Vulkan::initVulkan()
     {
         if (!createVulkanInstance() || !createMainWindow())
         {
             return false;
         }
-
         if (!pickPhysicalDevice() || !createDevice() || !createCommandPools())
         {
             return false;
         }
 
-        WindowSubsystemRenderAPIObject_Vulkan* windowRenderObject = getOwnerEngine()->getWindowSubsystem()->getRenderAPIObject<WindowSubsystemRenderAPIObject_Vulkan>();
-        if (!windowRenderObject->createVulkanSwapchain(m_MainWindowID))
+        const window_id_type mainWindowID = m_Parent->getMainWindowID();
+        WindowSubsystem_RenderAPIObject_Vulkan* windowRenderObject = m_Parent->getOwnerEngine()->getWindowSubsystem()->getRenderAPIObject<WindowSubsystem_RenderAPIObject_Vulkan>();
+        if (!windowRenderObject->createVulkanSwapchain(mainWindowID))
         {
             return false;
         }
 
-        const VulkanSwapchain* swapchain = windowRenderObject->getVulkanSwapchain(m_MainWindowID);
+        const VulkanSwapchain* swapchain = windowRenderObject->getVulkanSwapchain(mainWindowID);
         m_RenderFrameCount = static_cast<int8>(math::clamp(swapchain->getImageCount() - 1, 1, getMaxRenderFrameCount()));
-        if (!windowRenderObject->createRenderImage(m_MainWindowID))
+        if (!windowRenderObject->createRenderImage(mainWindowID))
         {
             return false;
         }
         return true;
     }
-    bool RenderSubsystem_Vulkan::createVulkanInstance()
+    void RenderSubsystem_RenderAPIObject_Vulkan::clearVulkan()
+    {
+        const window_id_type mainWindowID = m_Parent->getMainWindowID();
+
+        if (m_VulkanInstance != nullptr)
+        {
+            if (m_Device != nullptr)
+            {
+                vkDeviceWaitIdle(m_Device);
+
+                WindowSubsystem_RenderAPIObject_Vulkan* windowRenderObject = m_Parent->getOwnerEngine()->getWindowSubsystem()->getRenderAPIObject<WindowSubsystem_RenderAPIObject_Vulkan>();
+                if (windowRenderObject != nullptr)
+                {
+                    windowRenderObject->destroyVulkanSwapchain(mainWindowID);
+                    windowRenderObject->destroyRenderImage(mainWindowID);
+                }
+
+                for (const auto& renderPassTypeAndPointer : m_RenderPasses)
+                {
+                    delete renderPassTypeAndPointer.value;
+                }
+                m_RenderPasses.clear();
+                m_RenderPassTypes.clear();
+
+                for (const auto& commandPool : m_CommandPools)
+                {
+                    delete commandPool.value;
+                }
+                m_CommandPools.clear();
+                m_QueueFamilyIndices.clear();
+                for (const auto& queue : m_Queues)
+                {
+                    delete queue.value;
+                }
+                m_Queues.clear();
+
+                vmaDestroyAllocator(m_Allocator);
+                m_Allocator = nullptr;
+
+                vkDestroyDevice(m_Device, nullptr);
+                m_Device = nullptr;
+            }
+
+            m_PhysicalDevice = nullptr;
+
+            destroyMainWindow();
+
+#if JDEBUG
+            DestroyDebugUtilsMessengerEXT(m_VulkanInstance, m_DebugMessenger, nullptr);
+#endif
+            vkDestroyInstance(m_VulkanInstance, nullptr);
+            m_VulkanInstance = nullptr;
+        }
+    }
+
+    bool RenderSubsystem_RenderAPIObject_Vulkan::createVulkanInstance()
     {
 #ifdef JDEBUG
         const jarray<const char*> validationLayers = { "VK_LAYER_KHRONOS_validation" };
@@ -124,6 +177,12 @@ namespace JumaEngine
                 return false;
             }
         }
+
+        VkDebugUtilsMessengerCreateInfoEXT debugMessangerInfo{};
+        debugMessangerInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+        debugMessangerInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+        debugMessangerInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+        debugMessangerInfo.pfnUserCallback = RenderSubsystem_RenderAPIObject_Vulkan::Vulkan_DebugCallback;
 #endif
 
         jarray<const char*> extensions = getRequiredVulkanExtensions();
@@ -143,17 +202,12 @@ namespace JumaEngine
         instanceInfo.ppEnabledExtensionNames = extensions.getData();
 
 #if JDEBUG
-        VkDebugUtilsMessengerCreateInfoEXT debugMessangerInfo{};
-        debugMessangerInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-        debugMessangerInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-        debugMessangerInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-        debugMessangerInfo.pfnUserCallback = Vulkan_DebugCallback;
-
         instanceInfo.enabledLayerCount = static_cast<uint32>(validationLayers.getSize());
         instanceInfo.ppEnabledLayerNames = validationLayers.getData();
         instanceInfo.pNext = &debugMessangerInfo;
 #else
         instanceInfo.enabledLayerCount = 0;
+        instanceInfo.ppEnabledLayerNames = nullptr;
         instanceInfo.pNext = nullptr;
 #endif
 
@@ -174,9 +228,9 @@ namespace JumaEngine
 #endif
         return true;
     }
-    jarray<const char*> RenderSubsystem_Vulkan::getRequiredVulkanExtensions() const
+    jarray<const char*> RenderSubsystem_RenderAPIObject_Vulkan::getRequiredVulkanExtensions() const
     {
-        WindowSubsystemRenderAPIObject_Vulkan* windowRenderObject = getOwnerEngine()->getWindowSubsystem()->getRenderAPIObject<WindowSubsystemRenderAPIObject_Vulkan>();
+        WindowSubsystem_RenderAPIObject_Vulkan* windowRenderObject = m_Parent->getOwnerEngine()->getWindowSubsystem()->getRenderAPIObject<WindowSubsystem_RenderAPIObject_Vulkan>();
         if (windowRenderObject == nullptr)
         {
             return {};
@@ -188,7 +242,8 @@ namespace JumaEngine
 #endif
         return extensions;
     }
-    VkBool32 RenderSubsystem_Vulkan::Vulkan_DebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, 
+#if JDEBUG
+    VkBool32 RenderSubsystem_RenderAPIObject_Vulkan::Vulkan_DebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, 
         VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
     {
         switch (messageSeverity)
@@ -200,11 +255,14 @@ namespace JumaEngine
         }
         return VK_FALSE;
     }
+#endif
 
-    bool RenderSubsystem_Vulkan::pickPhysicalDevice()
+    bool RenderSubsystem_RenderAPIObject_Vulkan::pickPhysicalDevice()
     {
-        WindowSubsystemRenderAPIObject_Vulkan* windowRenderObject = getOwnerEngine()->getWindowSubsystem()->getRenderAPIObject<WindowSubsystemRenderAPIObject_Vulkan>();
-        VkSurfaceKHR surface = windowRenderObject != nullptr ? windowRenderObject->getWindowVulkanSurface(m_MainWindowID) : nullptr;
+        const window_id_type mainWindowID = m_Parent->getMainWindowID();
+
+        WindowSubsystem_RenderAPIObject_Vulkan* windowRenderObject = m_Parent->getOwnerEngine()->getWindowSubsystem()->getRenderAPIObject<WindowSubsystem_RenderAPIObject_Vulkan>();
+        VkSurfaceKHR surface = windowRenderObject != nullptr ? windowRenderObject->getWindowVulkanSurface(mainWindowID) : nullptr;
         if (surface == nullptr)
         {
             JUMA_LOG(error, JSTR("Can't get window's surface"));
@@ -280,12 +338,13 @@ namespace JumaEngine
 
             m_PhysicalDevice = device;
             m_QueueFamilyIndices = indices;
-            windowRenderObject->updateSupportedPresentModes(m_MainWindowID);
+            windowRenderObject->updateSupportedPresentModes(mainWindowID);
             return true;
         }
         return false;
     }
-    bool RenderSubsystem_Vulkan::getQueueFamilyIndices(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, jmap<VulkanQueueType, uint32>& outQueueIndices)
+    bool RenderSubsystem_RenderAPIObject_Vulkan::getQueueFamilyIndices(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, 
+        jmap<VulkanQueueType, uint32>& outQueueIndices)
     {
         uint32 queueFamilyCount = 0;
         vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, nullptr);
@@ -322,7 +381,8 @@ namespace JumaEngine
 
         return false;
     }
-    bool RenderSubsystem_Vulkan::createDevice()
+
+    bool RenderSubsystem_RenderAPIObject_Vulkan::createDevice()
     {
         jset<uint32> uniqueQueueFamilies;
         for (const auto& queueTypeAndIndex : m_QueueFamilyIndices)
@@ -330,7 +390,7 @@ namespace JumaEngine
             uniqueQueueFamilies.add(queueTypeAndIndex.value);
         }
 
-        float queuePriority = 1.0f;
+        constexpr float queuePriority = 1.0f;
         jarray<VkDeviceQueueCreateInfo> queueInfos;
         for (const auto& queueFamilyIndex : uniqueQueueFamilies)
         {
@@ -385,16 +445,16 @@ namespace JumaEngine
         }
         return true;
     }
-    bool RenderSubsystem_Vulkan::createCommandPools()
+    bool RenderSubsystem_RenderAPIObject_Vulkan::createCommandPools()
     {
         VulkanCommandPool* graphicsCommandPool = createVulkanObject<VulkanCommandPool>();
         VulkanCommandPool* transferCommandPool = createVulkanObject<VulkanCommandPool>();
         if (!graphicsCommandPool->init(VulkanQueueType::Graphics) ||
             !transferCommandPool->init(VulkanQueueType::Transfer, VK_COMMAND_POOL_CREATE_TRANSIENT_BIT))
         {
+            JUMA_LOG(error, JSTR("Failed to create command pools"));
             delete graphicsCommandPool;
             delete transferCommandPool;
-            JUMA_LOG(error, JSTR("Failed to create command pools"));
             return false;
         }
         m_CommandPools = {
@@ -405,7 +465,7 @@ namespace JumaEngine
         return true;
     }
 
-    bool RenderSubsystem_Vulkan::pickDepthFormat(VkFormat& outFormat) const
+    bool RenderSubsystem_RenderAPIObject_Vulkan::pickDepthFormat(VkFormat& outFormat) const
     {
         for (const auto& format : { VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT })
         {
@@ -420,72 +480,36 @@ namespace JumaEngine
         return false;
     }
 
-    void RenderSubsystem_Vulkan::clearVulkan()
+    ShaderRenderAPIObject* RenderSubsystem_RenderAPIObject_Vulkan::createShaderObject()
     {
-        WindowSubsystemRenderAPIObject_Vulkan* windowRenderObject = getOwnerEngine()->getWindowSubsystem()->getRenderAPIObject<WindowSubsystemRenderAPIObject_Vulkan>();
-
-        if (m_VulkanInstance != nullptr)
-        {
-            if (m_Device != nullptr)
-            {
-                vkDeviceWaitIdle(m_Device);
-
-                if (windowRenderObject != nullptr)
-                {
-                    windowRenderObject->destroyVulkanSwapchain(m_MainWindowID);
-                    windowRenderObject->destroyRenderImage(m_MainWindowID);
-                }
-
-                for (const auto& renderPassTypeAndPointer : m_RenderPasses)
-                {
-                    delete renderPassTypeAndPointer.value;
-                }
-                m_RenderPasses.clear();
-                m_RenderPassTypes.clear();
-
-                for (const auto& commandPool : m_CommandPools)
-                {
-                    delete commandPool.value;
-                }
-                m_CommandPools.clear();
-                m_QueueFamilyIndices.clear();
-                for (const auto& queue : m_Queues)
-                {
-                    delete queue.value;
-                }
-                m_Queues.clear();
-
-                vmaDestroyAllocator(m_Allocator);
-                m_Allocator = nullptr;
-
-                vkDestroyDevice(m_Device, nullptr);
-                m_Device = nullptr;
-            }
-
-            m_PhysicalDevice = nullptr;
-
-            destroyMainWindow();
-
-#if JDEBUG
-            DestroyDebugUtilsMessengerEXT(m_VulkanInstance, m_DebugMessenger, nullptr);
-#endif
-            vkDestroyInstance(m_VulkanInstance, nullptr);
-            m_VulkanInstance = nullptr;
-        }
+        return createVulkanObject<ShaderRenderAPIObject_Vulkan>();
+    }
+    MaterialRenderAPIObject* RenderSubsystem_RenderAPIObject_Vulkan::createMaterialObject()
+    {
+        return createVulkanObject<MaterialRenderAPIObject_Vulkan>();
+    }
+    VertexBufferRenderAPIObject* RenderSubsystem_RenderAPIObject_Vulkan::createVertexBufferObject()
+    {
+        return createVulkanObject<VertexBufferRenderAPIObject_Vulkan>();
+    }
+    TextureRenderAPIObject* RenderSubsystem_RenderAPIObject_Vulkan::createTextureObject()
+    {
+        return createVulkanObject<TextureRenderAPIObject_Vulkan>();
     }
 
-    void RenderSubsystem_Vulkan::render()
+    void RenderSubsystem_RenderAPIObject_Vulkan::render()
     {
-        WindowSubsystemRenderAPIObject_Vulkan* windowRenderObject = getOwnerEngine()->getWindowSubsystem()->getRenderAPIObject<WindowSubsystemRenderAPIObject_Vulkan>();
+        const window_id_type mainWindowID = m_Parent->getMainWindowID();
+        WindowSubsystem_RenderAPIObject_Vulkan* windowRenderObject = m_Parent->getOwnerEngine()->getWindowSubsystem()->getRenderAPIObject<WindowSubsystem_RenderAPIObject_Vulkan>();
 
-        windowRenderObject->startRender(m_MainWindowID);
+        windowRenderObject->startRender(mainWindowID);
 
         RenderOptions_Vulkan options;
-        VulkanSwapchain* swapchain = windowRenderObject->getVulkanSwapchain(m_MainWindowID);
-        VulkanRenderImage* renderImage = windowRenderObject->getRenderImage(m_MainWindowID);
+        VulkanSwapchain* swapchain = windowRenderObject->getVulkanSwapchain(mainWindowID);
+        VulkanRenderImage* renderImage = windowRenderObject->getRenderImage(mainWindowID);
         if (swapchain->startRender(renderImage, &options))
         {
-            callEngineRender(&options);
+            m_Parent->getOwnerEngine()->render(&options);
             swapchain->finishRender(renderImage, &options);
         }
         if (swapchain->isNeedToRecreate())
@@ -493,37 +517,33 @@ namespace JumaEngine
             swapchain->applySettings(true);
         }
 
-        windowRenderObject->finishRender(m_MainWindowID);
+        windowRenderObject->finishRender(mainWindowID);
     }
-
-    void RenderSubsystem_Vulkan::onEnginePreTerminate()
+    void RenderSubsystem_RenderAPIObject_Vulkan::waitForRenderFinish()
     {
         vkQueueWaitIdle(getQueue(VulkanQueueType::Graphics)->get());
+
+        Super::waitForRenderFinish();
     }
 
-    ShaderRenderAPIObject* RenderSubsystem_Vulkan::createShaderObject()
+    void RenderSubsystem_RenderAPIObject_Vulkan::registerVertexType(const VertexBufferDataBase* vertexBufferData)
     {
-        return createVulkanObject<ShaderRenderAPIObject_Vulkan>();
-    }
-    MaterialRenderAPIObject* RenderSubsystem_Vulkan::createMaterialObject()
-    {
-        return createVulkanObject<MaterialRenderAPIObject_Vulkan>();
-    }
-    VertexBufferRenderAPIObject* RenderSubsystem_Vulkan::createVertexBufferObject()
-    {
-        return createVulkanObject<VertexBufferRenderAPIObject_Vulkan>();
-    }
-    TextureRenderAPIObject* RenderSubsystem_Vulkan::createTextureObject()
-    {
-        return createVulkanObject<TextureRenderAPIObject_Vulkan>();
-    }
+        if (vertexBufferData == nullptr)
+        {
+            return;
+        }
 
-    VertexDescription_Vulkan::VertexDescription_Vulkan(const uint32 vertexSize, const jarray<VertexComponentDescription>& vertexComponents)
-    {
-        binding.binding = 0;
-        binding.stride = vertexSize;
-        binding.inputRate = VkVertexInputRate::VK_VERTEX_INPUT_RATE_VERTEX;
+        VertexDescription_Vulkan& description = m_RegisteredVertexTypes[vertexBufferData->getVertexName()];
+        if (!description.attributes.isEmpty())
+        {
+            return;
+        }
 
+        description.binding.binding = 0;
+        description.binding.stride = vertexBufferData->getVertexSize();
+        description.binding.inputRate = VkVertexInputRate::VK_VERTEX_INPUT_RATE_VERTEX;
+
+        const jarray<VertexComponentDescription> vertexComponents = vertexBufferData->getVertexComponents();
         for (int32 index = 0, componentsCount = vertexComponents.getSize(); index < componentsCount; index++)
         {
             const VertexComponentDescription& componentDescriprion = vertexComponents[index];
@@ -548,48 +568,37 @@ namespace JumaEngine
 
             VkVertexInputAttributeDescription attribute;
             attribute.location = componentDescriprion.ID;
-            attribute.binding = binding.binding;
+            attribute.binding = description.binding.binding;
             attribute.offset = componentDescriprion.offset;
             attribute.format = format;
-            attributes.add(attribute);
-        }
-    }
-    void RenderSubsystem_Vulkan::registerVertexType(const VertexBufferDataBase* vertexBufferData)
-    {
-        if (vertexBufferData != nullptr)
-        {
-            VertexDescription_Vulkan& description = m_RegisteredVertexTypes[vertexBufferData->getVertexName()];
-            if (description.attributes.isEmpty())
-            {
-                description = VertexDescription_Vulkan(vertexBufferData->getVertexSize(), vertexBufferData->getVertexComponents());
-            }
+            description.attributes.add(attribute);
         }
     }
 
-    VulkanRenderPass* RenderSubsystem_Vulkan::createRenderPass(const VulkanRenderPassDescription& description)
+    VulkanRenderPass* RenderSubsystem_RenderAPIObject_Vulkan::createRenderPass(const VulkanRenderPassDescription& description)
     {
         if ((description.colorFormat == VK_FORMAT_UNDEFINED) || (description.depthFormat == VK_FORMAT_UNDEFINED))
         {
             return nullptr;
         }
 
-        RenderPassTypeContainer& typeContainer = m_RenderPassTypes[description];
-        if (typeContainer.id == INVALID_RENDER_PASS_TYPE_ID)
+        render_pass_id_type& renderPassID = m_RenderPassTypes[description];
+        if (renderPassID == INVALID_RENDER_PASS_TYPE_ID)
         {
-            typeContainer.id = m_RenderPassTypeIDs.getUID();
+            renderPassID = m_RenderPassTypeIDs.getUID();
         }
 
         VulkanRenderPass*& renderPass = m_RenderPasses[description];
         if (renderPass == nullptr)
         {
             renderPass = createVulkanObject<VulkanRenderPass>();
-            if (!renderPass->init(description, typeContainer.id))
+            if (!renderPass->init(description, renderPassID))
             {
+                JUMA_LOG(error, JSTR("Failed to create render pass"));
                 delete renderPass;
                 m_RenderPasses.remove(description);
                 return nullptr;
             }
-            typeContainer.count++;
         }
         return renderPass;
     }

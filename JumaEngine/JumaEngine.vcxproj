@@ -196,6 +196,8 @@
     <ClInclude Include="source\subsystems\render\RenderOptions.h" />
     <ClInclude Include="source\subsystems\render\RenderPresentMode.h" />
     <ClInclude Include="source\subsystems\render\RenderSubsystem.h" />
+    <ClInclude Include="source\subsystems\render\RenderSubsystemInfo.h" />
+    <ClInclude Include="source\subsystems\render\RenderSubsystem_Implementation.h" />
     <ClInclude Include="source\subsystems\render\Shader.h" />
     <ClInclude Include="source\subsystems\render\Texture.h" />
     <ClInclude Include="source\subsystems\render\texture\TextureData.h" />
@@ -212,6 +214,7 @@
     <ClInclude Include="source\subsystems\render\vertex\VertexInfo.h" />
     <ClInclude Include="source\subsystems\render\Vulkan\MaterialRenderAPIObject_Vulkan.h" />
     <ClInclude Include="source\subsystems\render\Vulkan\RenderOptions_Vulkan.h" />
+    <ClInclude Include="source\subsystems\render\Vulkan\RenderSubsystemInfo_Vulkan.h" />
     <ClInclude Include="source\subsystems\render\Vulkan\RenderSubsystem_Vulkan.h" />
     <ClInclude Include="source\subsystems\render\Vulkan\TextureRenderAPIObject_Vulkan.h" />
     <ClInclude Include="source\subsystems\render\Vulkan\VertexBufferRenderAPIObject_Vulkan.h" />

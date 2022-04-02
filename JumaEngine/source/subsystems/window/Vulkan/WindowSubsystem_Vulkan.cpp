@@ -11,12 +11,12 @@
 
 namespace JumaEngine
 {
-    RenderSubsystem_Vulkan* WindowSubsystemRenderAPIObject_Vulkan::getRenderSubsystem() const
+    RenderSubsystem_RenderAPIObject_Vulkan* WindowSubsystem_RenderAPIObject_Vulkan::getRenderSubsystem() const
     {
-        return dynamic_cast<RenderSubsystem_Vulkan*>(m_Parent->getOwnerEngine()->getRenderSubsystem());
+        return m_Parent->getOwnerEngine()->getRenderSubsystem()->getRenderAPIObject<RenderSubsystem_RenderAPIObject_Vulkan>();
     }
 
-    void WindowSubsystemRenderAPIObject_Vulkan::destroyWindow_Vulkan(const window_id_type windowID, WindowDescription_Vulkan& description)
+    void WindowSubsystem_RenderAPIObject_Vulkan::destroyWindow_Vulkan(const window_id_type windowID, WindowDescription_Vulkan& description)
     {
         destroyRenderImage(windowID, description);
         destroyVulkanSwapchain(windowID, description);
@@ -28,12 +28,12 @@ namespace JumaEngine
         }
     }
     
-    VkSurfaceKHR WindowSubsystemRenderAPIObject_Vulkan::getWindowVulkanSurface(const window_id_type windowID) const
+    VkSurfaceKHR WindowSubsystem_RenderAPIObject_Vulkan::getWindowVulkanSurface(const window_id_type windowID) const
     {
         const WindowDescription_Vulkan* description = findWindow<WindowDescription_Vulkan>(windowID);
         return description != nullptr ? description->vulkanSurface : nullptr;
     }
-    void WindowSubsystemRenderAPIObject_Vulkan::updateSupportedPresentModes(const window_id_type windowID)
+    void WindowSubsystem_RenderAPIObject_Vulkan::updateSupportedPresentModes(const window_id_type windowID)
     {
         WindowDescription_Vulkan* description = findWindow<WindowDescription_Vulkan>(windowID);
         WindowDescription* parentDescription = findParentWindow(windowID);
@@ -42,7 +42,7 @@ namespace JumaEngine
             updateSupportedPresentModes(windowID, *description, *parentDescription);
         }
     }
-    void WindowSubsystemRenderAPIObject_Vulkan::updateSupportedPresentModes(const window_id_type windowID, WindowDescription_Vulkan& description, 
+    void WindowSubsystem_RenderAPIObject_Vulkan::updateSupportedPresentModes(const window_id_type windowID, WindowDescription_Vulkan& description, 
         WindowDescription& parentDescription)
     {
         VkPhysicalDevice physicalDevice = getRenderSubsystem()->getPhysicalDevice();
@@ -67,7 +67,7 @@ namespace JumaEngine
         }
     }
 
-    bool WindowSubsystemRenderAPIObject_Vulkan::createVulkanSwapchain(const window_id_type windowID)
+    bool WindowSubsystem_RenderAPIObject_Vulkan::createVulkanSwapchain(const window_id_type windowID)
     {
         const WindowDescription* parentDescription = findParentWindow(windowID);
         WindowDescription_Vulkan* description = findWindow<WindowDescription_Vulkan>(windowID);
@@ -100,12 +100,12 @@ namespace JumaEngine
         description->vulkanSwapchain = swapchain;
         return true;
     }
-    VulkanSwapchain* WindowSubsystemRenderAPIObject_Vulkan::getVulkanSwapchain(const window_id_type windowID) const
+    VulkanSwapchain* WindowSubsystem_RenderAPIObject_Vulkan::getVulkanSwapchain(const window_id_type windowID) const
     {
         const WindowDescription_Vulkan* description = findWindow<WindowDescription_Vulkan>(windowID);
         return description != nullptr ? description->vulkanSwapchain : nullptr;
     }
-    void WindowSubsystemRenderAPIObject_Vulkan::destroyVulkanSwapchain(const window_id_type windowID)
+    void WindowSubsystem_RenderAPIObject_Vulkan::destroyVulkanSwapchain(const window_id_type windowID)
     {
         WindowDescription_Vulkan* description = findWindow<WindowDescription_Vulkan>(windowID);
         if (description != nullptr)
@@ -113,7 +113,7 @@ namespace JumaEngine
             destroyVulkanSwapchain(windowID, *description);
         }
     }
-    void WindowSubsystemRenderAPIObject_Vulkan::destroyVulkanSwapchain(const window_id_type windowID, WindowDescription_Vulkan& description)
+    void WindowSubsystem_RenderAPIObject_Vulkan::destroyVulkanSwapchain(const window_id_type windowID, WindowDescription_Vulkan& description)
     {
         if (description.vulkanSwapchain != nullptr)
         {
@@ -122,7 +122,7 @@ namespace JumaEngine
         }
     }
     
-    bool WindowSubsystemRenderAPIObject_Vulkan::pickSurfaceFormat(VkSurfaceKHR surface, VkSurfaceFormatKHR& outSurfaceFormat) const
+    bool WindowSubsystem_RenderAPIObject_Vulkan::pickSurfaceFormat(VkSurfaceKHR surface, VkSurfaceFormatKHR& outSurfaceFormat) const
     {
         if (surface == nullptr)
         {
@@ -154,7 +154,7 @@ namespace JumaEngine
         return true;
     }
 
-    bool WindowSubsystemRenderAPIObject_Vulkan::createRenderImage(const window_id_type windowID)
+    bool WindowSubsystem_RenderAPIObject_Vulkan::createRenderImage(const window_id_type windowID)
     {
         WindowDescription_Vulkan* description = findWindow<WindowDescription_Vulkan>(windowID);
         if (description == nullptr)
@@ -179,12 +179,12 @@ namespace JumaEngine
         description->renderImage = renderImage;
         return true;
     }
-    VulkanRenderImage* WindowSubsystemRenderAPIObject_Vulkan::getRenderImage(const window_id_type windowID) const
+    VulkanRenderImage* WindowSubsystem_RenderAPIObject_Vulkan::getRenderImage(const window_id_type windowID) const
     {
         const WindowDescription_Vulkan* description = findWindow<WindowDescription_Vulkan>(windowID);
         return description != nullptr ? description->renderImage : nullptr;
     }
-    void WindowSubsystemRenderAPIObject_Vulkan::destroyRenderImage(const window_id_type windowID)
+    void WindowSubsystem_RenderAPIObject_Vulkan::destroyRenderImage(const window_id_type windowID)
     {
         WindowDescription_Vulkan* description = findWindow<WindowDescription_Vulkan>(windowID);
         if (description == nullptr)
@@ -194,7 +194,7 @@ namespace JumaEngine
         }
         destroyRenderImage(windowID, *description);
     }
-    void WindowSubsystemRenderAPIObject_Vulkan::destroyRenderImage(const window_id_type windowID, WindowDescription_Vulkan& description)
+    void WindowSubsystem_RenderAPIObject_Vulkan::destroyRenderImage(const window_id_type windowID, WindowDescription_Vulkan& description)
     {
         if (description.renderImage != nullptr)
         {
@@ -203,7 +203,7 @@ namespace JumaEngine
         }
     }
 
-    void WindowSubsystemRenderAPIObject_Vulkan::onWindowResized(window_id_type windowID, const math::uvector2& newSize)
+    void WindowSubsystem_RenderAPIObject_Vulkan::onWindowResized(window_id_type windowID, const math::uvector2& newSize)
     {
         Super::onWindowResized(windowID, newSize);
 

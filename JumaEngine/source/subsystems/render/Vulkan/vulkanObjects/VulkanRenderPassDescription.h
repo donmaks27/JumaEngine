@@ -23,7 +23,7 @@ namespace JumaEngine
 
         bool renderToSwapchain = true;
 
-        struct CompatiblePred
+        struct CompatiblePredicate
         {
             constexpr bool operator()(const VulkanRenderPassDescription& description1, const VulkanRenderPassDescription& description2) const
             {
@@ -45,11 +45,11 @@ namespace JumaEngine
                 return false;
             }
         };
-        struct EqualPred : CompatiblePred
+        struct EqualPredicate : CompatiblePredicate
         {
             constexpr bool operator()(const VulkanRenderPassDescription& description1, const VulkanRenderPassDescription& description2) const
             {
-                if (CompatiblePred::operator()(description1, description2))
+                if (CompatiblePredicate::operator()(description1, description2))
                 {
                     return true;
                 }

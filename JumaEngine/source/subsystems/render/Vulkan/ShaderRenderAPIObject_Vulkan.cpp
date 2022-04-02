@@ -55,7 +55,7 @@ namespace JumaEngine
         shaderInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
         shaderInfo.codeSize = data.getSize();
         shaderInfo.pCode = reinterpret_cast<const uint32*>(data.getData());
-        const VkResult result = vkCreateShaderModule(getRenderSubsystem()->getDevice(), &shaderInfo, nullptr, &shaderModule);
+        const VkResult result = vkCreateShaderModule(getRenderSubsystemObject()->getDevice(), &shaderInfo, nullptr, &shaderModule);
         if (result != VK_SUCCESS)
         {
             JUMA_VULKAN_ERROR_LOG(JSTR("Failed to create shader module ") + fileName, result);
@@ -113,7 +113,7 @@ namespace JumaEngine
         layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
         layoutInfo.bindingCount = static_cast<uint32>(layoutBindings.getSize());
         layoutInfo.pBindings = layoutBindings.getData();
-        const VkResult result = vkCreateDescriptorSetLayout(getRenderSubsystem()->getDevice(), &layoutInfo, nullptr, &m_DescriptorSetLayout);
+        const VkResult result = vkCreateDescriptorSetLayout(getRenderSubsystemObject()->getDevice(), &layoutInfo, nullptr, &m_DescriptorSetLayout);
         if (result != VK_SUCCESS)
         {
             JUMA_VULKAN_ERROR_LOG(JSTR("Failed to create descriptor set layout."), result);
@@ -128,7 +128,7 @@ namespace JumaEngine
         pipelineLayoutInfo.setLayoutCount = 1;
         pipelineLayoutInfo.pSetLayouts = &m_DescriptorSetLayout;
         pipelineLayoutInfo.pushConstantRangeCount = 0;
-        const VkResult result = vkCreatePipelineLayout(getRenderSubsystem()->getDevice(), &pipelineLayoutInfo, nullptr, &m_PipelineLayout);
+        const VkResult result = vkCreatePipelineLayout(getRenderSubsystemObject()->getDevice(), &pipelineLayoutInfo, nullptr, &m_PipelineLayout);
         if (result != VK_SUCCESS)
         {
             JUMA_VULKAN_ERROR_LOG(JSTR("Failed to create pipeline layout."), result);
@@ -159,7 +159,7 @@ namespace JumaEngine
 
     void ShaderRenderAPIObject_Vulkan::clearVulkanData()
     {
-        VkDevice device = getRenderSubsystem()->getDevice();
+        VkDevice device = getRenderSubsystemObject()->getDevice();
 
         m_PipelineStageInfos.clear();
         if (m_PipelineLayout != nullptr)

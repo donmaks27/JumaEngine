@@ -52,17 +52,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="source\subsystems\render\RenderSubsystem.cpp">
-      <Filter>JumaEngine\subsystems\render</Filter>
-    </ClCompile>
     <ClCompile Include="source\subsystems\SubsystemBase.cpp">
       <Filter>JumaEngine\subsystems</Filter>
     </ClCompile>
     <ClCompile Include="source\engine\Engine.cpp">
       <Filter>JumaEngine\engine</Filter>
-    </ClCompile>
-    <ClCompile Include="source\subsystems\render\Vulkan\RenderSubsystem_Vulkan.cpp">
-      <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanBuffer.cpp">
       <Filter>JumaEngine\subsystems\render\Vulkan\vulkanObjects</Filter>
@@ -157,6 +151,12 @@
     <ClCompile Include="source\subsystems\render\Vulkan\VertexBufferRenderAPIObject_Vulkan.cpp">
       <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
     </ClCompile>
+    <ClCompile Include="source\subsystems\render\RenderSubsystem.cpp">
+      <Filter>JumaEngine\subsystems\render</Filter>
+    </ClCompile>
+    <ClCompile Include="source\subsystems\render\Vulkan\RenderSubsystem_Vulkan.cpp">
+      <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\common_header.h">
@@ -168,17 +168,11 @@
     <ClInclude Include="source\engine\EngineObjectClass.h">
       <Filter>JumaEngine\engine</Filter>
     </ClInclude>
-    <ClInclude Include="source\subsystems\render\RenderSubsystem.h">
-      <Filter>JumaEngine\subsystems\render</Filter>
-    </ClInclude>
     <ClInclude Include="source\subsystems\SubsystemBase.h">
       <Filter>JumaEngine\subsystems</Filter>
     </ClInclude>
     <ClInclude Include="source\engine\Engine.h">
       <Filter>JumaEngine\engine</Filter>
-    </ClInclude>
-    <ClInclude Include="source\subsystems\render\Vulkan\RenderSubsystem_Vulkan.h">
-      <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
     </ClInclude>
     <ClInclude Include="source\subsystems\render\Vulkan\VulkanContextObject.h">
       <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
@@ -515,6 +509,21 @@
     </ClInclude>
     <ClInclude Include="source\subsystems\window\WindowID.h">
       <Filter>JumaEngine\subsystems\window</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\RenderSubsystem.h">
+      <Filter>JumaEngine\subsystems\render</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\Vulkan\RenderSubsystem_Vulkan.h">
+      <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\RenderSubsystem_Implementation.h">
+      <Filter>JumaEngine\subsystems\render</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\RenderSubsystemInfo.h">
+      <Filter>JumaEngine\subsystems\render</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\Vulkan\RenderSubsystemInfo_Vulkan.h">
+      <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

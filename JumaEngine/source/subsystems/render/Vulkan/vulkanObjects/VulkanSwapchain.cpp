@@ -34,7 +34,7 @@ namespace JumaEngine
 
         // Pick depth format
         VkFormat depthFormat = VK_FORMAT_UNDEFINED;
-        if (!getRenderSubsystem()->pickDepthFormat(depthFormat))
+        if (!getRenderSubsystemObject()->pickDepthFormat(depthFormat))
         {
             JUMA_LOG(error, JSTR("Can't find appropriate depth format"));
             return false;
@@ -42,7 +42,7 @@ namespace JumaEngine
 
         // Calculate swapchain size
         VkSurfaceCapabilitiesKHR capabilities;
-        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(getRenderSubsystem()->getPhysicalDevice(), surface, &capabilities);
+        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(getRenderSubsystemObject()->getPhysicalDevice(), surface, &capabilities);
         const VkExtent2D swapchainSize = capabilities.currentExtent.width != UINT32_MAX ? capabilities.currentExtent : VkExtent2D{
 		    math::clamp(windowSize.x, capabilities.minImageExtent.width, capabilities.maxImageExtent.width),
 		    math::clamp(windowSize.y, capabilities.minImageExtent.height, capabilities.maxImageExtent.height)
@@ -54,7 +54,7 @@ namespace JumaEngine
         m_CurrentSettings.surfaceFormat = surfaceFormat;
         m_CurrentSettings.depthFormat = depthFormat;
         m_CurrentSettings.size = { swapchainSize.width, swapchainSize.height };
-        m_CurrentSettings.presentMode = getRenderSubsystem()->getPresentMode();
+        m_CurrentSettings.presentMode = getRenderSubsystemObject()->getRenderSubsystem()->getPresentMode();
 
         if (!updateSwapchain() || !updateRenderPass() || !updateSyncObjects())
         {
@@ -71,7 +71,7 @@ namespace JumaEngine
     VkSampleCountFlagBits VulkanSwapchain::getMaxSampleCount() const
     {
         VkPhysicalDeviceProperties deviceProperties;
-        vkGetPhysicalDeviceProperties(getRenderSubsystem()->getPhysicalDevice(), &deviceProperties);
+        vkGetPhysicalDeviceProperties(getRenderSubsystemObject()->getPhysicalDevice(), &deviceProperties);
 
         const VkSampleCountFlags counts = deviceProperties.limits.framebufferColorSampleCounts & deviceProperties.limits.framebufferDepthSampleCounts;
         if (counts & VK_SAMPLE_COUNT_64_BIT) { return VK_SAMPLE_COUNT_64_BIT; }
@@ -85,11 +85,11 @@ namespace JumaEngine
 
     bool VulkanSwapchain::updateSwapchain()
     {
-        VkDevice device = getRenderSubsystem()->getDevice();
+        VkDevice device = getRenderSubsystemObject()->getDevice();
         
         VkSurfaceCapabilitiesKHR capabilities;
-        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(getRenderSubsystem()->getPhysicalDevice(), m_WindowSurface, &capabilities);
-        uint32 imageCount = getRenderSubsystem()->getPresentMode() != RenderPresentMode::TRIPLE_BUFFER ? 3 : 2;
+        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(getRenderSubsystemObject()->getPhysicalDevice(), m_WindowSurface, &capabilities);
+        uint32 imageCount = getRenderSubsystemObject()->getRenderSubsystem()->getPresentMode() != RenderPresentMode::TRIPLE_BUFFER ? 3 : 2;
         if (capabilities.maxImageCount > 0)
         {
             imageCount = math::min(imageCount, capabilities.maxImageCount);
@@ -97,8 +97,8 @@ namespace JumaEngine
         imageCount = math::max(capabilities.minImageCount, imageCount);
 
         const uint32 queueFamilyIndices[2] = {
-            getRenderSubsystem()->getQueueFamilyIndex(VulkanQueueType::Graphics),
-            getRenderSubsystem()->getQueueFamilyIndex(VulkanQueueType::Present)
+            getRenderSubsystemObject()->getQueueFamilyIndex(VulkanQueueType::Graphics),
+            getRenderSubsystemObject()->getQueueFamilyIndex(VulkanQueueType::Present)
         };
 
         VkSwapchainKHR oldSwapchain = m_Swapchain;
@@ -151,7 +151,7 @@ namespace JumaEngine
         description.colorFormat = m_CurrentSettings.surfaceFormat.format;
         description.depthFormat = m_CurrentSettings.depthFormat;
         description.renderToSwapchain = true;
-        m_RenderPass = getRenderSubsystem()->createRenderPass(description);
+        m_RenderPass = getRenderSubsystemObject()->createRenderPass(description);
         if (m_RenderPass == nullptr)
         {
             JUMA_LOG(error, JSTR("Failed to create render pass"));
@@ -161,13 +161,13 @@ namespace JumaEngine
     }
     bool VulkanSwapchain::updateSyncObjects()
     {
-        constexpr int8 maxFrameCount = RenderSubsystem_Vulkan::getMaxRenderFrameCount();
+        constexpr int8 maxFrameCount = RenderSubsystem_RenderAPIObject_Vulkan::getMaxRenderFrameCount();
         if (m_RenderFrameAvailableSemaphores.getSize() == maxFrameCount)
         {
             return true;
         }
 
-        VkDevice device = getRenderSubsystem()->getDevice();
+        VkDevice device = getRenderSubsystemObject()->getDevice();
         VkSemaphoreCreateInfo semaphoreInfo{};
         semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
@@ -202,7 +202,7 @@ namespace JumaEngine
     }
     void VulkanSwapchain::clearVulkanObjects()
     {
-        VkDevice device = getRenderSubsystem()->getDevice();
+        VkDevice device = getRenderSubsystemObject()->getDevice();
 
         for (const auto& semaphore : m_RenderFrameAvailableSemaphores)
         {
@@ -230,7 +230,7 @@ namespace JumaEngine
     void VulkanSwapchain::onWindowSizeChanged(const math::uvector2& newSize)
     {
         VkSurfaceCapabilitiesKHR capabilities;
-        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(getRenderSubsystem()->getPhysicalDevice(), m_WindowSurface, &capabilities);
+        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(getRenderSubsystemObject()->getPhysicalDevice(), m_WindowSurface, &capabilities);
         if (capabilities.currentExtent.width != UINT32_MAX)
         {
             m_SettingForApply.size = { capabilities.currentExtent.width, capabilities.currentExtent.height };
@@ -271,7 +271,7 @@ namespace JumaEngine
     }
     bool VulkanSwapchain::applySettingsInternal(const bool forceRecreate)
     {
-        vkDeviceWaitIdle(getRenderSubsystem()->getDevice());
+        vkDeviceWaitIdle(getRenderSubsystemObject()->getDevice());
         m_NeedToRecreate = false;
 
         const bool sizeChanged = forceRecreate || (m_SettingForApply.size != m_CurrentSettings.size);
@@ -312,7 +312,7 @@ namespace JumaEngine
             return false;
         }
 
-        VkDevice device = getRenderSubsystem()->getDevice();
+        VkDevice device = getRenderSubsystemObject()->getDevice();
 
         VkFence prevFrameFence = renderImage->getFinishFence();
         if (prevFrameFence != nullptr)
@@ -320,7 +320,7 @@ namespace JumaEngine
             vkWaitForFences(device, 1, &prevFrameFence, VK_TRUE, UINT64_MAX);
         }
 
-        const int8 renderFrameIndex = getRenderSubsystem()->getNextRenderFrameIndex();
+        const int8 renderFrameIndex = getRenderSubsystemObject()->getNextRenderFrameIndex();
         uint32 renderImageIndex = 0;
         const VkResult result = vkAcquireNextImageKHR(device, m_Swapchain, UINT64_MAX, m_RenderFrameAvailableSemaphores[renderFrameIndex], nullptr, &renderImageIndex);
         if ((result != VK_SUCCESS) && (result != VK_SUBOPTIMAL_KHR))
@@ -363,7 +363,7 @@ namespace JumaEngine
         presentInfo.pSwapchains = &m_Swapchain;
         presentInfo.pImageIndices = &swapchainImageIndex;
         presentInfo.pResults = nullptr;
-        const VkResult result = vkQueuePresentKHR(getRenderSubsystem()->getQueue(VulkanQueueType::Present)->get(), &presentInfo);
+        const VkResult result = vkQueuePresentKHR(getRenderSubsystemObject()->getQueue(VulkanQueueType::Present)->get(), &presentInfo);
         if ((result == VK_ERROR_OUT_OF_DATE_KHR) || (result == VK_SUBOPTIMAL_KHR))
         {
             markAsNeededToRecreate();

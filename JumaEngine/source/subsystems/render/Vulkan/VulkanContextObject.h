@@ -8,21 +8,21 @@
 
 namespace JumaEngine
 {
-    class RenderSubsystem_Vulkan;
+    class RenderSubsystem_RenderAPIObject_Vulkan;
 
     class VulkanContextObjectBase
     {
-        friend RenderSubsystem_Vulkan;
+        friend RenderSubsystem_RenderAPIObject_Vulkan;
 
     public:
         VulkanContextObjectBase() = default;
         virtual ~VulkanContextObjectBase() = default;
 
-        RenderSubsystem_Vulkan* getRenderSubsystem() const { return m_RenderSubsystem; }
+        RenderSubsystem_RenderAPIObject_Vulkan* getRenderSubsystemObject() const { return m_RenderSubsystem; }
 
     private:
 
-        RenderSubsystem_Vulkan* m_RenderSubsystem = nullptr;
+        RenderSubsystem_RenderAPIObject_Vulkan* m_RenderSubsystem = nullptr;
     };
 
     class VulkanContextObject : public VulkanContextObjectBase

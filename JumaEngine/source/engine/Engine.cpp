@@ -4,20 +4,18 @@
 
 #include <chrono>
 
-#include "subsystems/render/vertex/Vertex2D.h"
-#include "subsystems/render/vertex/VertexBufferData.h"
-#include "subsystems/render/Vulkan/RenderSubsystem_Vulkan.h"
-#include "subsystems/render/OpenGL/RenderSubsystem_OpenGL.h"
 #include "jutils/jlog.h"
 #include "jutils/jstringID.h"
 #include "subsystems/render/Material.h"
 #include "subsystems/render/Shader.h"
 #include "subsystems/render/Texture.h"
 #include "subsystems/render/VertexBuffer.h"
+#include "subsystems/render/RenderSubsystem.h"
 #include "subsystems/render/texture/TextureData.h"
+#include "subsystems/render/vertex/Vertex2D.h"
 #include "subsystems/render/vertex/Vertex2D_TexCoord.h"
-#include "subsystems/window/OpenGL/WindowSubsystem_OpenGL_GLFW.h"
-#include "subsystems/window/Vulkan/WindowSubsystem_Vulkan_GLFW.h"
+#include "subsystems/render/vertex/VertexBufferData.h"
+#include "subsystems/window/WindowSubsystem.h"
 
 namespace JumaEngine
 {
@@ -100,17 +98,19 @@ namespace JumaEngine
             return false;
         }
 
-        m_RenderSubsystem = createObject<RenderSubsystem_Vulkan>();
+        m_RenderSubsystem = createObject<RenderSubsystem>();
         if (m_RenderSubsystem == nullptr)
         {
             return false;
         }
-        m_WindowSubsytem->createRenderAPIObject();
         m_RenderSubsystem->initSubsystem();
         if (!m_RenderSubsystem->isValid())
         {
             return false;
         }
+        
+        m_WindowSubsytem->createRenderAPIObject();
+        m_RenderSubsystem->createRenderAPIObject();
 
         TextureData* textureData = new TextureData();
         textureData->init(
@@ -199,7 +199,7 @@ namespace JumaEngine
 
     void Engine::terminate()
     {
-        m_RenderSubsystem->onEnginePreTerminate();
+        m_RenderSubsystem->waitForRenderFinish();
 
         delete m_VertexBufferPP;
         delete m_MaterialPP;

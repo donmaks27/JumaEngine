@@ -34,7 +34,7 @@ namespace JumaEngine
     }
     bool MaterialRenderAPIObject_Vulkan::createDescriptorPool()
     {
-        constexpr int8 maxRenderedFrameCount = RenderSubsystem_Vulkan::getMaxRenderFrameCount();
+        constexpr int8 maxRenderedFrameCount = RenderSubsystem_RenderAPIObject_Vulkan::getMaxRenderFrameCount();
 
         uint32 bufferUniformCount = 0;
         uint32 imageUniformCount = 0;
@@ -50,7 +50,7 @@ namespace JumaEngine
                     values.resize(maxRenderedFrameCount);
                     for (auto& value : values)
                     {
-                        value.buffer = getRenderSubsystem()->createVulkanObject<VulkanBuffer>();
+                        value.buffer = getRenderSubsystemObject()->createVulkanObject<VulkanBuffer>();
                     }
                 }
                 break;
@@ -94,7 +94,7 @@ namespace JumaEngine
         poolInfo.pPoolSizes = poolSizes.getData();
         poolInfo.maxSets = static_cast<uint8>(maxRenderedFrameCount);
         poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
-        const VkResult result = vkCreateDescriptorPool(getRenderSubsystem()->getDevice(), &poolInfo, nullptr, &m_DescriptorPool);
+        const VkResult result = vkCreateDescriptorPool(getRenderSubsystemObject()->getDevice(), &poolInfo, nullptr, &m_DescriptorPool);
         if (result != VK_SUCCESS)
         {
             JUMA_VULKAN_ERROR_LOG(JSTR("Failed to create descriptor pool"), result);
@@ -193,7 +193,7 @@ namespace JumaEngine
         }
         if (!descriptorWrites.isEmpty())
         {
-            vkUpdateDescriptorSets(getRenderSubsystem()->getDevice(), 
+            vkUpdateDescriptorSets(getRenderSubsystemObject()->getDevice(), 
                static_cast<uint32>(descriptorWrites.getSize()), descriptorWrites.getData(),
                0, nullptr
             );
@@ -223,7 +223,7 @@ namespace JumaEngine
         allocateInfo.descriptorPool = m_DescriptorPool;
         allocateInfo.descriptorSetCount = 1;
         allocateInfo.pSetLayouts = &layout;
-        const VkResult result = vkAllocateDescriptorSets(getRenderSubsystem()->getDevice(), &allocateInfo, &m_DescriptorSets[frameIndex].descriptorSet);
+        const VkResult result = vkAllocateDescriptorSets(getRenderSubsystemObject()->getDevice(), &allocateInfo, &m_DescriptorSets[frameIndex].descriptorSet);
         if (result != VK_SUCCESS)
         {
             JUMA_VULKAN_ERROR_LOG(JSTR("Failed to allocate descriptor set"), result);
@@ -335,7 +335,7 @@ namespace JumaEngine
 
     void MaterialRenderAPIObject_Vulkan::clearVulkanData()
     {
-        VkDevice device = getRenderSubsystem()->getDevice();
+        VkDevice device = getRenderSubsystemObject()->getDevice();
 
         for (auto& vertexPipelines : m_RenderPipelines)
         {
@@ -398,7 +398,7 @@ namespace JumaEngine
             }
         }
 
-        const VertexDescription_Vulkan* vertexDescription = getRenderSubsystem()->findVertexDescription(vertexName);
+        const VertexDescription_Vulkan* vertexDescription = getRenderSubsystemObject()->findVertexDescription(vertexName);
         if (vertexDescription == nullptr)
         {
             JUMA_LOG(error, JSTR("Invaid vertex description"));
@@ -512,7 +512,7 @@ namespace JumaEngine
         pipelineInfo.basePipelineIndex = -1;
 
         VkPipeline renderPipeline;
-        const VkResult result = vkCreateGraphicsPipelines(getRenderSubsystem()->getDevice(), nullptr, 1, &pipelineInfo, nullptr, &renderPipeline);
+        const VkResult result = vkCreateGraphicsPipelines(getRenderSubsystemObject()->getDevice(), nullptr, 1, &pipelineInfo, nullptr, &renderPipeline);
         if (result != VK_SUCCESS)
         {
             JUMA_VULKAN_ERROR_LOG(JSTR("Failed to create render pipeline"), result);
@@ -547,7 +547,7 @@ namespace JumaEngine
             return false;
         }
 
-        const int8 frameIndex = getRenderSubsystem()->getRenderFrameIndex();
+        const int8 frameIndex = getRenderSubsystemObject()->getRenderFrameIndex();
         if (!bindRenderPipeline(commandBuffer, vertexBuffer->getVertexName(), renderPass) ||
             !bindDescriptorSet(commandBuffer, frameIndex))
         {

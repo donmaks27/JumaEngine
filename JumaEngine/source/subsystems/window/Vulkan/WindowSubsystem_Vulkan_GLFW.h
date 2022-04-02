@@ -19,13 +19,13 @@ namespace JumaEngine
         GLFWwindow* windowGLFW = nullptr;
     };
 
-    class WindowSubsystemRenderAPIObject_Vulkan_GLFW final : public WindowSubsystemRenderAPIObject_Vulkan
+    class WindowSubsystem_RenderAPIObject_Vulkan_GLFW final : public WindowSubsystem_RenderAPIObject_Vulkan
     {
-        using Super = WindowSubsystemRenderAPIObject_Vulkan;
+        using Super = WindowSubsystem_RenderAPIObject_Vulkan;
 
     public:
-        WindowSubsystemRenderAPIObject_Vulkan_GLFW() = default;
-        virtual ~WindowSubsystemRenderAPIObject_Vulkan_GLFW() override;
+        WindowSubsystem_RenderAPIObject_Vulkan_GLFW() = default;
+        virtual ~WindowSubsystem_RenderAPIObject_Vulkan_GLFW() override;
 
         virtual jarray<const char*> getVulkanInstanceExtensions() const override;
 
@@ -48,7 +48,7 @@ namespace JumaEngine
 
         struct WindowUserObject
         {
-            WindowSubsystemRenderAPIObject_Vulkan_GLFW* object = nullptr;
+            WindowSubsystem_RenderAPIObject_Vulkan_GLFW* object = nullptr;
             window_id_type windowID = INVALID_WINDOW_ID;
         };
 

@@ -23,7 +23,7 @@ namespace JumaEngine
             return false;
         }
 
-        VkDevice device = getRenderSubsystem()->getDevice();
+        VkDevice device = getRenderSubsystemObject()->getDevice();
         if (device == nullptr)
         {
             return false;

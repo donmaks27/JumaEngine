@@ -49,7 +49,7 @@ namespace JumaEngine
             return init(renderPass, size, resultImage);
         }
 
-        vkDestroyFramebuffer(getRenderSubsystem()->getDevice(), m_Framebuffer, nullptr);
+        vkDestroyFramebuffer(getRenderSubsystemObject()->getDevice(), m_Framebuffer, nullptr);
         VulkanImage* image = m_ResolveImage != nullptr ? m_ResolveImage : m_ColorImage;
         image->clear();
 
@@ -79,7 +79,7 @@ namespace JumaEngine
 
     bool VulkanFramebuffer::recreateImages(VkImage resultImage)
     {
-        RenderSubsystem_Vulkan* renderSubsystem = getRenderSubsystem();
+        RenderSubsystem_RenderAPIObject_Vulkan* renderSubsystem = getRenderSubsystemObject();
 
         const VulkanRenderPassDescription& renderPassDescription = m_RenderPass->getDescription();
         const bool enableResolveImage = renderPassDescription.sampleCount != VK_SAMPLE_COUNT_1_BIT;
@@ -171,7 +171,7 @@ namespace JumaEngine
         framebufferInfo.width = m_ImagesSize.x;
         framebufferInfo.height = m_ImagesSize.y;
         framebufferInfo.layers = 1;
-        const VkResult result = vkCreateFramebuffer(getRenderSubsystem()->getDevice(), &framebufferInfo, nullptr, &m_Framebuffer);
+        const VkResult result = vkCreateFramebuffer(getRenderSubsystemObject()->getDevice(), &framebufferInfo, nullptr, &m_Framebuffer);
         if (result != VK_SUCCESS)
         {
             JUMA_VULKAN_ERROR_LOG(JSTR("Failed to create framebuffer"), result);
@@ -203,7 +203,7 @@ namespace JumaEngine
 
         if (m_Framebuffer != nullptr)
         {
-            vkDestroyFramebuffer(getRenderSubsystem()->getDevice(), m_Framebuffer, nullptr);
+            vkDestroyFramebuffer(getRenderSubsystemObject()->getDevice(), m_Framebuffer, nullptr);
             m_Framebuffer = nullptr;
         }
     }
@@ -215,7 +215,7 @@ namespace JumaEngine
             return nullptr;
         }
 
-        VulkanCommandPool* commandPool = getRenderSubsystem()->getCommandPool(VulkanQueueType::Graphics);
+        VulkanCommandPool* commandPool = getRenderSubsystemObject()->getCommandPool(VulkanQueueType::Graphics);
         VulkanCommandBuffer* commandBuffer = commandPool != nullptr ? commandPool->getCommandBuffer() : nullptr;
         if (commandBuffer == nullptr)
         {
