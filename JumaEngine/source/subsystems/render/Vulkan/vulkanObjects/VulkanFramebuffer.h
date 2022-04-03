@@ -28,6 +28,7 @@ namespace JumaEngine
 
         VkFramebuffer get() const { return m_Framebuffer; }
         VulkanRenderPass* getRenderPass() const { return m_RenderPass; }
+        VulkanImage* getResultImage() const { return m_ResolveImage != nullptr ? m_ResolveImage : m_ColorImage; }
 
         VulkanCommandBuffer* createRenderCommandBuffer() const;
 

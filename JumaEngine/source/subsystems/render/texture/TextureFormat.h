@@ -6,7 +6,7 @@
 
 namespace JumaEngine
 {
-    enum class TextureFormat
+    enum class TextureFormat : uint8
     {
         None,
         RGBA,

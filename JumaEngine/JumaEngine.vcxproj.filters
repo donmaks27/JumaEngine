@@ -157,6 +157,12 @@
     <ClCompile Include="source\subsystems\render\Vulkan\RenderSubsystem_Vulkan.cpp">
       <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
     </ClCompile>
+    <ClCompile Include="source\subsystems\render\RenderTarget.cpp">
+      <Filter>JumaEngine\subsystems\render</Filter>
+    </ClCompile>
+    <ClCompile Include="source\subsystems\render\Vulkan\RenderTargetRenderAPIObject_Vulkan.cpp">
+      <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\common_header.h">
@@ -523,6 +529,12 @@
       <Filter>JumaEngine\subsystems\render</Filter>
     </ClInclude>
     <ClInclude Include="source\subsystems\render\Vulkan\RenderSubsystemInfo_Vulkan.h">
+      <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\RenderTarget.h">
+      <Filter>JumaEngine\subsystems\render</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\Vulkan\RenderTargetRenderAPIObject_Vulkan.h">
       <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
     </ClInclude>
   </ItemGroup>

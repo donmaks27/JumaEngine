@@ -11,7 +11,9 @@
 #include <vulkan/vulkan_core.h>
 
 #include "jutils/jarray.h"
+#include "jutils/jmap.h"
 #include "jutils/math/vector2.h"
+#include "jutils/jstringID.h"
 
 namespace JumaEngine
 {
@@ -27,6 +29,11 @@ namespace JumaEngine
         virtual ~VulkanRenderImage() override;
 
         bool init(VulkanSwapchain* swapchain);
+        bool init(VulkanRenderPass* renderPass, const math::uvector2& framebufferSize);
+
+        void setDependency(const jstringID& name, VulkanRenderImage* renderImage);
+        void removeDependency(const jstringID& name);
+        void clearDependencies();
 
         bool update();
 
@@ -37,6 +44,8 @@ namespace JumaEngine
         VulkanCommandBuffer* startRenderCommandBufferRecord();
         VulkanCommandBuffer* getRenderCommandBuffer() const;
         bool submitRenderCommandBuffer();
+
+        VulkanFramebuffer* getFramebuffer(const int8 frameIndex) const { return m_Framebuffers.isValidIndex(frameIndex) ? m_Framebuffers[frameIndex] : nullptr; }
 
     protected:
 
@@ -60,6 +69,8 @@ namespace JumaEngine
         VulkanSwapchain* m_Swapchain = nullptr;
         VulkanRenderPass* m_RenderPass = nullptr;
         math::uvector2 m_FramebufferSize = { 0, 0 };
+
+        jmap<jstringID, VulkanRenderImage*> m_Dependencies;
 
 
         void clearVulkan();

@@ -12,6 +12,7 @@
 
 namespace JumaEngine
 {
+    class RenderTargetRenderAPIObject;
     class ShaderRenderAPIObject;
     class MaterialRenderAPIObject;
     class VertexBufferRenderAPIObject;
@@ -39,6 +40,7 @@ namespace JumaEngine
         virtual MaterialRenderAPIObject* createMaterialObject() = 0;
         virtual VertexBufferRenderAPIObject* createVertexBufferObject() = 0;
         virtual TextureRenderAPIObject* createTextureObject() = 0;
+        virtual RenderTargetRenderAPIObject* createRenderTargetObject() = 0;
 
         virtual void render() = 0;
         virtual void waitForRenderFinish() {}
@@ -64,6 +66,7 @@ namespace JumaEngine
         MaterialRenderAPIObject* createMaterialObject();
         VertexBufferRenderAPIObject* createVertexBufferObject();
         TextureRenderAPIObject* createTextureObject();
+        RenderTargetRenderAPIObject* createRenderTargetObject();
 
         void render();
         void waitForRenderFinish();

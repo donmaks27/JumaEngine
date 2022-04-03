@@ -8,10 +8,13 @@
 #include "RenderSubsystem_Vulkan.h"
 #include "ShaderRenderAPIObject_Vulkan.h"
 #include "TextureRenderAPIObject_Vulkan.h"
+#include "RenderTargetRenderAPIObject_Vulkan.h"
 #include "subsystems/render/Shader.h"
 #include "subsystems/render/VertexBuffer.h"
+#include "subsystems/render/RenderTarget.h"
 #include "vulkanObjects/VulkanBuffer.h"
 #include "vulkanObjects/VulkanCommandBuffer.h"
+#include "vulkanObjects/VulkanFramebuffer.h"
 #include "vulkanObjects/VulkanImage.h"
 #include "vulkanObjects/VulkanRenderImage.h"
 #include "vulkanObjects/VulkanRenderPass.h"
@@ -55,6 +58,7 @@ namespace JumaEngine
                 }
                 break;
             case ShaderUniformType::Texture:
+            case ShaderUniformType::RenderTarget:
                 {
                     imageUniformCount++;
 
@@ -181,6 +185,19 @@ namespace JumaEngine
                     descriptorWrite.pImageInfo = &imageInfo;
                 }
                 break;
+            case ShaderUniformType::RenderTarget:
+                {
+                    VkDescriptorImageInfo imageInfo{};
+                    if (!updateRenderTargetUniformValue(uniform.key, frameIndex, imageInfo))
+                    {
+                        continue;
+                    }
+
+                    descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                    descriptorWrite.descriptorCount = 1;
+                    descriptorWrite.pImageInfo = &imageInfo;
+                }
+                break;
 
             default: ;
             }
@@ -271,17 +288,11 @@ namespace JumaEngine
                 Texture* texture = nullptr;
                 if (m_Parent->getParamValue<ShaderUniformType::Texture>(name, texture))
                 {
-                    if (texture == nullptr)
-                    {
-                        /* TODO: Handle this case, return false for now */
-                        return false;
-                    }
-
-                    const TextureRenderAPIObject_Vulkan* textureObject = dynamic_cast<const TextureRenderAPIObject_Vulkan*>(texture->getRenderAPIObject());
+                    const TextureRenderAPIObject_Vulkan* textureObject = texture != nullptr ? texture->getRenderAPIObject<TextureRenderAPIObject_Vulkan>() : nullptr;
                     VulkanImage* image = textureObject != nullptr ? textureObject->getImage() : nullptr;
                     if (image == nullptr)
                     {
-                        /* TODO: Handle this case too, return false for now */
+                        /* TODO: Handle this case, return false for now */
                         return false;
                     }
 
@@ -295,10 +306,48 @@ namespace JumaEngine
                 }
             }
         }
-        if (m_Parent->isMaterialInstance())
+        else if (m_Parent->isMaterialInstance())
         {
             MaterialRenderAPIObject_Vulkan* baseMaterialObject = dynamic_cast<MaterialRenderAPIObject_Vulkan*>(m_Parent->getBaseMaterial()->getRenderAPIObject());
             return baseMaterialObject->updateTextureUniformValue(name, frameIndex, outInfo);
+        }
+        return false;
+    }
+    bool MaterialRenderAPIObject_Vulkan::updateRenderTargetUniformValue(const jstringID& name, const int8 frameIndex, VkDescriptorImageInfo& outInfo)
+    {
+        if (m_Parent->isOverrideParam(name))
+        {
+            jarray<UniformValue_Image>* images = m_UniformValues_Image.find(name);
+            UniformValue_Image* imageValue = images != nullptr ? images->findByIndex(frameIndex) : nullptr;
+            if (!imageValue->valid)
+            {
+                RenderTarget* renderTarget = nullptr;
+                if (m_Parent->getParamValue<ShaderUniformType::RenderTarget>(name, renderTarget))
+                {
+                    const RenderTargetRenderAPIObject_Vulkan* renderTargetObject = renderTarget != nullptr ? renderTarget->getRenderAPIObject<RenderTargetRenderAPIObject_Vulkan>() : nullptr;
+                    const VulkanRenderImage* renderImage = renderTargetObject != nullptr ? renderTargetObject->getRenderImage() : nullptr;
+                    const VulkanFramebuffer* framebuffer = renderImage != nullptr ? renderImage->getFramebuffer(frameIndex) : nullptr;
+                    VulkanImage* image = framebuffer != nullptr ? framebuffer->getResultImage() : nullptr;
+                    if (image == nullptr)
+                    {
+                        /* TODO: Handle this case, return false for now */
+                        return false;
+                    }
+
+                    imageValue->image = image;
+                    imageValue->valid = true;
+
+                    outInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                    outInfo.imageView = image->getImageView();
+                    outInfo.sampler = image->getSampler();
+                    return true;
+                }
+            }
+        }
+        else if (m_Parent->isMaterialInstance())
+        {
+            MaterialRenderAPIObject_Vulkan* baseMaterialObject = dynamic_cast<MaterialRenderAPIObject_Vulkan*>(m_Parent->getBaseMaterial()->getRenderAPIObject());
+            return baseMaterialObject->updateRenderTargetUniformValue(name, frameIndex, outInfo);
         }
         return false;
     }
@@ -317,6 +366,7 @@ namespace JumaEngine
             }
             break;
         case ShaderUniformType::Texture:
+        case ShaderUniformType::RenderTarget:
             {
                 for (auto& valueBuffer : m_UniformValues_Image[paramName])
                 {

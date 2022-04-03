@@ -11,6 +11,7 @@
 #include "ShaderRenderAPIObject_Vulkan.h"
 #include "TextureRenderAPIObject_Vulkan.h"
 #include "VertexBufferRenderAPIObject_Vulkan.h"
+#include "RenderTargetRenderAPIObject_Vulkan.h"
 #include "engine/Engine.h"
 #include "jutils/jset.h"
 #include "subsystems/render/vertex/VertexBufferData.h"
@@ -495,6 +496,10 @@ namespace JumaEngine
     TextureRenderAPIObject* RenderSubsystem_RenderAPIObject_Vulkan::createTextureObject()
     {
         return createVulkanObject<TextureRenderAPIObject_Vulkan>();
+    }
+    RenderTargetRenderAPIObject* RenderSubsystem_RenderAPIObject_Vulkan::createRenderTargetObject()
+    {
+        return createVulkanObject<RenderTargetRenderAPIObject_Vulkan>();
     }
 
     void RenderSubsystem_RenderAPIObject_Vulkan::render()

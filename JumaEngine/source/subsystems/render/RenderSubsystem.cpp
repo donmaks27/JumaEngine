@@ -72,6 +72,11 @@ namespace JumaEngine
         RenderAPIObjectType* renderObject = getRenderAPIObject();
         return renderObject != nullptr ? renderObject->createTextureObject() : nullptr;
     }
+    RenderTargetRenderAPIObject* RenderSubsystem::createRenderTargetObject()
+    {
+        RenderAPIObjectType* renderObject = getRenderAPIObject();
+        return renderObject != nullptr ? renderObject->createRenderTargetObject() : nullptr;
+    }
 
     void RenderSubsystem::render()
     {

@@ -73,6 +73,7 @@ namespace JumaEngine
         bool updateBufferUniformValueData(UniformValue_Buffer* bufferValue, uint64 dataSize, const void* data, VkDescriptorBufferInfo& outInfo);
 
         bool updateTextureUniformValue(const jstringID& name, int8 frameIndex, VkDescriptorImageInfo& outInfo);
+        bool updateRenderTargetUniformValue(const jstringID& name, int8 frameIndex, VkDescriptorImageInfo& outInfo);
 
         void clearVulkanData();
 
@@ -108,7 +109,7 @@ namespace JumaEngine
         if (!bufferValue->valid)
         {
             typename MaterialUniformInfo<Type>::value_type value;
-            if (m_Parent->getParamValue<Type>(name, value) && updateBufferUniformValueData(bufferValue, sizeof(value), &value, outInfo))
+            if (m_Parent->getParamValue<Type>(name, value) && this->updateBufferUniformValueData(bufferValue, sizeof(value), &value, outInfo))
             {
                 bufferValue->valid = true;
                 return true;

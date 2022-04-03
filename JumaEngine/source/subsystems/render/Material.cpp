@@ -3,6 +3,7 @@
 #include "Material.h"
 
 #include "RenderSubsystem.h"
+#include "RenderTarget.h"
 #include "engine/Engine.h"
 #include "Shader.h"
 #include "Texture.h"
@@ -97,6 +98,9 @@ namespace JumaEngine
             case ShaderUniformType::Texture: 
                 m_UniformValues_Texture.add(uniformName, nullptr);
                 break;
+            case ShaderUniformType::RenderTarget:
+                m_UniformValues_RenderTarget.add(uniformName, nullptr);
+                break;
 
             default: ;
             }
@@ -150,6 +154,7 @@ namespace JumaEngine
         {
         case ShaderUniformType::Mat4: return m_UniformValues_Mat4.contains(paramName);
         case ShaderUniformType::Texture: return m_UniformValues_Texture.contains(paramName);
+        case ShaderUniformType::RenderTarget: return m_UniformValues_RenderTarget.contains(paramName);
 
         default: ;
         }
@@ -193,6 +198,9 @@ namespace JumaEngine
             case ShaderUniformType::Texture:
                 paramChanged = m_UniformValues_Texture.remove(paramName);
                 break;
+            case ShaderUniformType::RenderTarget:
+                paramChanged = m_UniformValues_RenderTarget.remove(paramName);
+                break;
 
             default: ;
             }
@@ -214,6 +222,16 @@ namespace JumaEngine
             case ShaderUniformType::Texture:
                 {
                     Texture*& value = m_UniformValues_Texture[paramName];
+                    if (value != nullptr)
+                    {
+                        value = nullptr;
+                        paramChanged = true;
+                    }
+                }
+                break;
+            case ShaderUniformType::RenderTarget:
+                {
+                    RenderTarget*& value = m_UniformValues_RenderTarget[paramName];
                     if (value != nullptr)
                     {
                         value = nullptr;

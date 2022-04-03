@@ -80,6 +80,7 @@ namespace JumaEngine
         virtual MaterialRenderAPIObject* createMaterialObject() override;
         virtual VertexBufferRenderAPIObject* createVertexBufferObject() override;
         virtual TextureRenderAPIObject* createTextureObject() override;
+        virtual RenderTargetRenderAPIObject* createRenderTargetObject() override;
 
         virtual void render() override;
         virtual void waitForRenderFinish() override;

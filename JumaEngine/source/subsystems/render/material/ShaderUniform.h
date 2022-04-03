@@ -13,7 +13,8 @@ namespace JumaEngine
     {
         None,
         Mat4,
-        Texture
+        Texture,
+        RenderTarget
     };
 
     struct ShaderUniform

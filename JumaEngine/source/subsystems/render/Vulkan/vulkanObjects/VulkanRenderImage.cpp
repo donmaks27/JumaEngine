@@ -7,6 +7,7 @@
 #include "VulkanCommandBuffer.h"
 #include "VulkanFramebuffer.h"
 #include "VulkanSwapchain.h"
+#include "VulkanRenderPass.h"
 #include "subsystems/render/Vulkan/RenderSubsystem_Vulkan.h"
 
 namespace JumaEngine
@@ -43,6 +44,7 @@ namespace JumaEngine
         }
         m_RenderFrames.clear();
 
+        m_Dependencies.clear();
         m_Swapchain = nullptr;
         m_RenderPass = nullptr;
         m_FramebufferSize = { 0, 0 };
@@ -64,6 +66,46 @@ namespace JumaEngine
         m_Swapchain = swapchain;
         markAsInitialized();
         return true;
+    }
+    bool VulkanRenderImage::init(VulkanRenderPass* renderPass, const math::uvector2& framebufferSize)
+    {
+        if (isValid())
+        {
+            JUMA_LOG(warning, JSTR("Render image already initialized"));
+            return false;
+        }
+        if ((renderPass == nullptr) || !renderPass->isValid() || (framebufferSize.x == 0) || (framebufferSize.y == 0))
+        {
+            JUMA_LOG(error, JSTR("Invalid input params"));
+            return false;
+        }
+
+        m_RenderPass = renderPass;
+        m_FramebufferSize = framebufferSize;
+        markAsInitialized();
+        return true;
+    }
+
+    void VulkanRenderImage::setDependency(const jstringID& name, VulkanRenderImage* renderImage)
+    {
+        if (isValid() && (renderImage != nullptr))
+        {
+            m_Dependencies.add(name, renderImage);
+        }
+    }
+    void VulkanRenderImage::removeDependency(const jstringID& name)
+    {
+        if (isValid())
+        {
+            m_Dependencies.remove(name);
+        }
+    }
+    void VulkanRenderImage::clearDependencies()
+    {
+        if (isValid())
+        {
+            m_Dependencies.clear();
+        }
     }
 
     bool VulkanRenderImage::update()
@@ -185,6 +227,14 @@ namespace JumaEngine
             else
             {
                 m_RenderFrames[index].startSemaphores.clear();
+            }
+
+            for (const auto& dependency : m_Dependencies)
+            {
+                if ((dependency.value != nullptr) && dependency.value->isValid())
+                {
+                    m_RenderFrames[index].startSemaphores.add(dependency.value->getFinishSemaphore());
+                }
             }
         }
         return true;
