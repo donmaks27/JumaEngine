@@ -136,9 +136,6 @@
     <ClCompile Include="source\subsystems\render\OpenGL\VertexBufferObject_OpenGL.cpp">
       <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
     </ClCompile>
-    <ClCompile Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanRenderImage.cpp">
-      <Filter>JumaEngine\subsystems\render\Vulkan\vulkanObjects</Filter>
-    </ClCompile>
     <ClCompile Include="source\subsystems\render\Vulkan\MaterialRenderAPIObject_Vulkan.cpp">
       <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
     </ClCompile>
@@ -161,6 +158,15 @@
       <Filter>JumaEngine\subsystems\render</Filter>
     </ClCompile>
     <ClCompile Include="source\subsystems\render\Vulkan\RenderTargetRenderAPIObject_Vulkan.cpp">
+      <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanRenderImage.cpp">
+      <Filter>JumaEngine\subsystems\render\Vulkan\vulkanObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="source\subsystems\render\RenderPipeline.cpp">
+      <Filter>JumaEngine\subsystems\render</Filter>
+    </ClCompile>
+    <ClCompile Include="source\subsystems\render\Vulkan\RenderPipelineRenderAPIObject_Vulkan.cpp">
       <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
     </ClCompile>
   </ItemGroup>
@@ -480,9 +486,6 @@
     <ClInclude Include="source\jutils\jpool.h">
       <Filter>JumaEngine\jutils</Filter>
     </ClInclude>
-    <ClInclude Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanRenderImage.h">
-      <Filter>JumaEngine\subsystems\render\Vulkan\vulkanObjects</Filter>
-    </ClInclude>
     <ClInclude Include="source\subsystems\render\RenderPresentMode.h">
       <Filter>JumaEngine\subsystems\render</Filter>
     </ClInclude>
@@ -535,6 +538,15 @@
       <Filter>JumaEngine\subsystems\render</Filter>
     </ClInclude>
     <ClInclude Include="source\subsystems\render\Vulkan\RenderTargetRenderAPIObject_Vulkan.h">
+      <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\Vulkan\vulkanObjects\VulkanRenderImage.h">
+      <Filter>JumaEngine\subsystems\render\Vulkan\vulkanObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\RenderPipeline.h">
+      <Filter>JumaEngine\subsystems\render</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\Vulkan\RenderPipelineRenderAPIObject_Vulkan.h">
       <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
     </ClInclude>
   </ItemGroup>

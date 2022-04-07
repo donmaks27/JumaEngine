@@ -7,10 +7,13 @@
 #include "jutils/jlog.h"
 #include "jutils/jstringID.h"
 #include "subsystems/render/Material.h"
+#include "subsystems/render/RenderOptions.h"
+#include "subsystems/render/RenderPipeline.h"
 #include "subsystems/render/Shader.h"
 #include "subsystems/render/Texture.h"
 #include "subsystems/render/VertexBuffer.h"
 #include "subsystems/render/RenderSubsystem.h"
+#include "subsystems/render/RenderTarget.h"
 #include "subsystems/render/texture/TextureData.h"
 #include "subsystems/render/vertex/Vertex2D.h"
 #include "subsystems/render/vertex/Vertex2D_TexCoord.h"
@@ -156,16 +159,20 @@ namespace JumaEngine
         m_VertexBuffer->init(vertexData);
         m_VertexBuffer->createRenderAPIObject();
 
+        m_RenderTarget = createObject<RenderTarget>();
+        m_RenderTarget->init(TextureFormat::RGBA, { 800, 600 });
+        m_RenderTarget->createRenderAPIObject();
+
         m_ShaderPP = createObject<Shader>();
         m_ShaderPP->init(
             JSTR("content/shaders/ui_postProcess"), JSTR("content/shaders/ui_texture"),
-            { { JSTR("uTexture"), ShaderUniform{ 0, ShaderUniformType::Texture, { ShaderStage::Fragment } } } }
+            { { JSTR("uTexture"), ShaderUniform{ 0, ShaderUniformType::RenderTarget, { ShaderStage::Fragment } } } }
         );
         m_ShaderPP->createRenderAPIObject();
 
         m_MaterialPP = createObject<Material>();
         m_MaterialPP->init(m_ShaderPP);
-        m_MaterialPP->setParamValue<ShaderUniformType::Texture>(JSTR("uTexture"), m_Texture);
+        m_MaterialPP->setParamValue<ShaderUniformType::RenderTarget>(JSTR("uTexture"), m_RenderTarget);
         m_MaterialPP->createRenderAPIObject();
 
         VertexBufferData<Vertex2D_TexCoord>* ppVertexData = new VertexBufferData<Vertex2D_TexCoord>();
@@ -181,6 +188,11 @@ namespace JumaEngine
         m_VertexBufferPP->init(ppVertexData);
         m_VertexBufferPP->createRenderAPIObject();
 
+        RenderPipeline* renderPipeline = m_RenderSubsystem->getRenderPipeline();
+        renderPipeline->addRenderTargetPipelineStage(JSTR("MainPass"), m_RenderTarget);
+        renderPipeline->addWindowPipelineStage(JSTR("WindowPass"), m_RenderSubsystem->getMainWindowID());
+        renderPipeline->addPipelineStageDependency(JSTR("WindowPass"), JSTR("MainPass"));
+        renderPipeline->validatePipelineQueue();
         return true;
     }
 
@@ -204,13 +216,12 @@ namespace JumaEngine
         delete m_VertexBufferPP;
         delete m_MaterialPP;
         delete m_ShaderPP;
-        delete m_TexturePP;
 
+        delete m_RenderTarget;
         delete m_VertexBuffer;
         delete m_Material;
         delete m_Shader;
         delete m_Texture;
-        //m_RenderPrimitive.reset();
 
         m_RenderSubsystem->clear();
         delete m_RenderSubsystem;
@@ -225,7 +236,13 @@ namespace JumaEngine
 
     void Engine::render(const RenderOptions* options)
     {
-        //m_Material->render(m_VertexBuffer, options);
-        m_MaterialPP->render(m_VertexBufferPP, options);
+        if (options->renderTargetName == JSTR("MainPass"))
+        {
+            m_Material->render(m_VertexBuffer, options);
+        }
+        else
+        {
+            m_MaterialPP->render(m_VertexBufferPP, options);
+        }
     }
 }

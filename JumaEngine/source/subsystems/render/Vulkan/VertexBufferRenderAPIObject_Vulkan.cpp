@@ -11,7 +11,6 @@
 #include "vulkanObjects/VulkanBuffer.h"
 #include "vulkanObjects/VulkanCommandBuffer.h"
 #include "vulkanObjects/VulkanQueueType.h"
-#include "vulkanObjects/VulkanRenderImage.h"
 
 namespace JumaEngine
 {
@@ -97,15 +96,7 @@ namespace JumaEngine
         }
 
         const RenderOptions_Vulkan* options = reinterpret_cast<const RenderOptions_Vulkan*>(renderOptions);
-        const VulkanCommandBuffer* commandBufferObject = options->renderImage != nullptr ? options->renderImage->getRenderCommandBuffer() : nullptr;
-        VkCommandBuffer commandBuffer = commandBufferObject != nullptr ? commandBufferObject->get() : nullptr;
-        if (commandBuffer == nullptr)
-        {
-            JUMA_LOG(error, JSTR("Invalid command buffer"));
-            return true;
-        }
-
-        draw(commandBuffer);
+        draw(options->commandBuffer->get());
         return true;
     }
 }

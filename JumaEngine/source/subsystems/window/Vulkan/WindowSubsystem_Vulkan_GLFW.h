@@ -33,8 +33,6 @@ namespace JumaEngine
 
         virtual bool shouldCloseWindow(window_id_type windowID) const override;
 
-        virtual void finishRender(window_id_type windowID) override;
-
     protected:
 
         virtual bool initInternal() override;
@@ -43,6 +41,8 @@ namespace JumaEngine
 
         virtual bool createWindow(window_id_type windowID) override;
         virtual void destroyWindow(window_id_type windowID) override;
+
+        virtual void finishRender() override;
 
     private:
 

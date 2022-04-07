@@ -179,7 +179,7 @@ namespace JumaEngine
         description->renderImage = renderImage;
         return true;
     }
-    VulkanRenderImage* WindowSubsystem_RenderAPIObject_Vulkan::getRenderImage(const window_id_type windowID) const
+    VulkanRenderImage* WindowSubsystem_RenderAPIObject_Vulkan::getRenderImage(window_id_type windowID) const
     {
         const WindowDescription_Vulkan* description = findWindow<WindowDescription_Vulkan>(windowID);
         return description != nullptr ? description->renderImage : nullptr;
@@ -211,6 +211,20 @@ namespace JumaEngine
         if (swapchain != nullptr)
         {
             swapchain->onWindowSizeChanged(newSize);
+        }
+    }
+
+    void WindowSubsystem_RenderAPIObject_Vulkan::finishRender()
+    {
+        Super::finishRender();
+
+        for (const auto& window : m_Parent->getAllWindows())
+        {
+            VulkanSwapchain* swapchain = getVulkanSwapchain(window.key);
+            if ((swapchain != nullptr) && swapchain->isNeedToRecreate())
+            {
+                swapchain->applySettings(true);
+            }
         }
     }
 }

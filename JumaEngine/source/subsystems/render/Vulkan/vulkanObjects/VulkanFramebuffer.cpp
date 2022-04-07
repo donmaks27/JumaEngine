@@ -79,6 +79,8 @@ namespace JumaEngine
 
     bool VulkanFramebuffer::recreateImages(VkImage resultImage)
     {
+        m_OutputColorImage = resultImage == nullptr;
+
         RenderSubsystem_RenderAPIObject_Vulkan* renderSubsystem = getRenderSubsystemObject();
 
         const VulkanRenderPassDescription& renderPassDescription = m_RenderPass->getDescription();
@@ -92,19 +94,28 @@ namespace JumaEngine
         {
             m_ColorImage->clear();
         }
-        if (enableResolveImage || (resultImage == nullptr))
+        if (enableResolveImage)
         {
             m_ColorImage->init(
                 m_ImagesSize, 1, renderPassDescription.sampleCount, renderPassDescription.colorFormat,
-                {}, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT,
-                VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY, 0
+                {}, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT, VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY, 0
             );
+            m_ColorImage->createImageView(VK_IMAGE_ASPECT_COLOR_BIT);
+        }
+        else if (resultImage == nullptr)
+        {
+            m_ColorImage->init(
+                m_ImagesSize, 1, renderPassDescription.sampleCount, renderPassDescription.colorFormat,
+                {}, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY, 0
+            );
+            m_ColorImage->createImageView(VK_IMAGE_ASPECT_COLOR_BIT);
+            m_ColorImage->createSampler();
         }
         else
         {
             m_ColorImage->init(resultImage, m_ImagesSize, renderPassDescription.colorFormat);
+            m_ColorImage->createImageView(VK_IMAGE_ASPECT_COLOR_BIT);
         }
-        m_ColorImage->createImageView(VK_IMAGE_ASPECT_COLOR_BIT);
 
         if (m_DepthImage == nullptr)
         {
@@ -134,16 +145,18 @@ namespace JumaEngine
             if (resultImage != nullptr)
             {
                 m_ResolveImage->init(resultImage, m_ImagesSize, renderPassDescription.colorFormat);
+                m_ResolveImage->createImageView(VK_IMAGE_ASPECT_COLOR_BIT);
             }
             else
             {
                 m_ResolveImage->init(
                     m_ImagesSize, 1, VK_SAMPLE_COUNT_1_BIT, renderPassDescription.colorFormat,
-                    {}, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT,
+                    {}, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
                     VmaMemoryUsage::VMA_MEMORY_USAGE_GPU_ONLY, 0
                 );
+                m_ResolveImage->createImageView(VK_IMAGE_ASPECT_COLOR_BIT);
+                m_ResolveImage->createSampler();
             }
-            m_ResolveImage->createImageView(VK_IMAGE_ASPECT_COLOR_BIT);
         }
         else if (m_ResolveImage != nullptr)
         {
@@ -208,31 +221,20 @@ namespace JumaEngine
         }
     }
 
-    VulkanCommandBuffer* VulkanFramebuffer::createRenderCommandBuffer() const
+    bool VulkanFramebuffer::startRender(VulkanCommandBuffer* commandBuffer)
     {
-        if (!isValid())
+        if (!isValid() || (commandBuffer == nullptr) || !commandBuffer->isValid())
         {
-            return nullptr;
+            return false;
         }
 
-        VulkanCommandPool* commandPool = getRenderSubsystemObject()->getCommandPool(VulkanQueueType::Graphics);
-        VulkanCommandBuffer* commandBuffer = commandPool != nullptr ? commandPool->getCommandBuffer() : nullptr;
-        if (commandBuffer == nullptr)
+        if (m_OutputColorImage)
         {
-            return nullptr;
-        }
-
-        VkCommandBufferBeginInfo beginInfo{};
-        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-        beginInfo.flags = 0;
-        beginInfo.pInheritanceInfo = nullptr;
-        const VkResult result = vkBeginCommandBuffer(commandBuffer->get(), &beginInfo);
-        if (result != VK_SUCCESS)
-        {
-            commandBuffer->returnToCommandPool();
-
-            JUMA_VULKAN_ERROR_LOG(JSTR("Failed to start render buffer record"), result);
-            return nullptr;
+            VulkanImage* colorImage = m_ResolveImage != nullptr ? m_ResolveImage : m_ColorImage;
+            colorImage->changeImageLayout(commandBuffer->get(), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                0, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
+                VK_ACCESS_SHADER_WRITE_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
+            );
         }
 
         VkClearValue clearValues[2];
@@ -248,20 +250,40 @@ namespace JumaEngine
         renderPassInfo.pClearValues = clearValues;
         vkCmdBeginRenderPass(commandBuffer->get(), &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-        VkViewport viewport{};
+        VkViewport viewport;
         viewport.x = 0.0f;
         viewport.y = 0.0f;
         viewport.width = static_cast<float>(m_ImagesSize.x);
         viewport.height = static_cast<float>(m_ImagesSize.y);
         viewport.minDepth = 0.0f;
         viewport.maxDepth = 1.0f;
-        VkRect2D scissor{};
+        VkRect2D scissor;
         scissor.offset = { 0, 0 };
         scissor.extent = { m_ImagesSize.x, m_ImagesSize.y };
         vkCmdSetViewport(commandBuffer->get(), 0, 1, &viewport);
         vkCmdSetScissor(commandBuffer->get(), 0, 1, &scissor);
 
-        return commandBuffer;
+        return true;
+    }
+    bool VulkanFramebuffer::finishRender(VulkanCommandBuffer* commandBuffer)
+    {
+        if (!isValid() || (commandBuffer == nullptr) || !commandBuffer->isValid())
+        {
+            return false;
+        }
+
+        vkCmdEndRenderPass(commandBuffer->get());
+
+        if (m_OutputColorImage)
+        {
+            VulkanImage* colorImage = m_ResolveImage != nullptr ? m_ResolveImage : m_ColorImage;
+            colorImage->changeImageLayout(commandBuffer->get(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                VK_ACCESS_SHADER_WRITE_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
+                VK_ACCESS_SHADER_READ_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
+            );
+        }
+
+        return true;
     }
 }
 

@@ -7,6 +7,7 @@
 
 namespace JumaEngine
 {
+    class RenderTarget;
     class Texture;
     struct RenderOptions;
     class Shader;
@@ -43,8 +44,8 @@ namespace JumaEngine
         Shader* m_Shader = nullptr;
         Material* m_Material = nullptr;
         VertexBuffer* m_VertexBuffer = nullptr;
+        RenderTarget* m_RenderTarget = nullptr;
 
-        Texture* m_TexturePP = nullptr;
         Shader* m_ShaderPP = nullptr;
         Material* m_MaterialPP = nullptr;
         VertexBuffer* m_VertexBufferPP = nullptr;

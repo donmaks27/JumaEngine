@@ -40,9 +40,6 @@ namespace JumaEngine
 
         virtual bool shouldCloseWindow(window_id_type windowID) const = 0;
 
-        virtual void startRender(window_id_type windowID) {}
-        virtual void finishRender(window_id_type windowID) {}
-
     protected:
 
         virtual bool initInternal() override { return true; }
@@ -59,6 +56,9 @@ namespace JumaEngine
         virtual void destroyWindow(window_id_type windowID) = 0;
 
         virtual void onWindowResized(window_id_type windowID, const math::uvector2& newSize);
+
+        virtual void startRender() {}
+        virtual void finishRender() {}
     };
 
     class WindowSubsystem final : public SubsystemBase, public RenderAPIWrapperBase<WindowSubsystem_RenderAPIObject>
@@ -74,11 +74,15 @@ namespace JumaEngine
 
         const jmap<window_id_type, WindowDescription>& getAllWindows() const { return m_Windows; }
         const WindowDescription* findWindow(const window_id_type windowID) const { return m_Windows.find(windowID); }
+        bool isWindowValid(const window_id_type windowID) const { return m_Windows.contains(windowID); }
 
         window_id_type createWindow(const jstring& title, const math::uvector2& size);
         void destroyWindow(window_id_type windowID);
 
         bool shouldCloseWindow(window_id_type windowID) const;
+
+        void startRender();
+        void finishRender();
 
     protected:
 

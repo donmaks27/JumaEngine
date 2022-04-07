@@ -17,7 +17,7 @@ namespace JumaEngine
     {
     public:
         RenderTargetRenderAPIObject_Vulkan() = default;
-        virtual ~RenderTargetRenderAPIObject_Vulkan() override = default;
+        virtual ~RenderTargetRenderAPIObject_Vulkan() override;
 
         VulkanRenderImage* getRenderImage() const { return m_RenderImage; }
 
@@ -28,6 +28,9 @@ namespace JumaEngine
     private:
 
         VulkanRenderImage* m_RenderImage = nullptr;
+
+
+        void clearData();
     };
 }
 

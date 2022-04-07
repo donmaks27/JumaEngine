@@ -1,0 +1,326 @@
+﻿// Copyright 2022 Leonov Maksim. All Rights Reserved.
+
+#include "RenderPipelineRenderAPIObject_Vulkan.h"
+
+#if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
+
+#include "RenderOptions_Vulkan.h"
+#include "RenderSubsystem_Vulkan.h"
+#include "RenderTargetRenderAPIObject_Vulkan.h"
+#include "engine/Engine.h"
+#include "subsystems/window/WindowSubsystem.h"
+#include "subsystems/window/Vulkan/WindowSubsystem_Vulkan.h"
+#include "vulkanObjects/VulkanCommandPool.h"
+#include "vulkanObjects/VulkanRenderImage.h"
+#include "vulkanObjects/VulkanSwapchain.h"
+
+namespace JumaEngine
+{
+    RenderPipelineRenderAPIObject_Vulkan::~RenderPipelineRenderAPIObject_Vulkan()
+    {
+        clearData();
+    }
+
+    void RenderPipelineRenderAPIObject_Vulkan::clearData()
+    {
+        VkDevice device = getRenderSubsystemObject()->getDevice();
+
+        for (const auto& renderFrameObjects : m_RenderFramesObjects)
+        {
+            if (renderFrameObjects.commandBuffer != nullptr)
+            {
+                renderFrameObjects.commandBuffer->returnToCommandPool();
+            }
+            if (renderFrameObjects.renderFinishedSemaphore != nullptr)
+            {
+                vkDestroySemaphore(device, renderFrameObjects.renderFinishedSemaphore, nullptr);
+            }
+            if (renderFrameObjects.renderFinishedFence != nullptr)
+            {
+                vkDestroyFence(device, renderFrameObjects.renderFinishedFence, nullptr);
+            }
+        }
+        m_RenderFramesObjects.clear();
+
+        m_SwapchainImageReadySemaphores.clear();
+        m_RenderImages.clear();
+    }
+
+    bool RenderPipelineRenderAPIObject_Vulkan::initInternal()
+    {
+        update();
+        return true;
+    }
+    bool RenderPipelineRenderAPIObject_Vulkan::onRenderPipelineUpdated()
+    {
+        return update();
+    }
+    bool RenderPipelineRenderAPIObject_Vulkan::updateRenderImages()
+    {
+        if (!m_Parent->isPipelineQueueValid())
+        {
+            return false;
+        }
+
+        m_RenderImages.clear();
+        for (const auto& stageName : m_Parent->getPipelineQueue())
+        {
+            const RenderPipelineStage* stage = m_Parent->getPipelineStage(stageName);
+            if (stage == nullptr)
+            {
+                continue;
+            }
+
+            VulkanRenderImage* renderImage = nullptr;
+            switch (stage->type)
+            {
+            case RenderPipelineStageType::RenderTarget:
+                {
+                    const RenderTarget* renderTarget = m_Parent->getPipelineStageRenderTarget(stageName);
+                    const RenderTargetRenderAPIObject_Vulkan* renderObject = renderTarget != nullptr ? renderTarget->getRenderAPIObject<RenderTargetRenderAPIObject_Vulkan>() : nullptr;
+                    renderImage = renderObject != nullptr ? renderObject->getRenderImage() : nullptr;
+                }
+                break;
+
+            case RenderPipelineStageType::Window:
+                {
+                    const window_id_type windowID = m_Parent->getPipelineStageWindow(stageName);
+                    const WindowSubsystem_RenderAPIObject_Vulkan* windowSubsystem = m_Parent->getOwnerEngine()->getWindowSubsystem()->getRenderAPIObject<WindowSubsystem_RenderAPIObject_Vulkan>();
+                    renderImage = windowSubsystem != nullptr ? windowSubsystem->getRenderImage(windowID) : nullptr;
+                }
+                break;
+
+            default: continue;
+            }
+            if (renderImage != nullptr)
+            {
+                m_RenderImages.add(stageName, renderImage);
+            }
+        }
+        return true;
+    }
+    bool RenderPipelineRenderAPIObject_Vulkan::updateSyncObjects()
+    {
+        const int8 renderFrameCount = getRenderSubsystemObject()->getRenderFrameCount();
+        if (renderFrameCount <= 0)
+        {
+            JUMA_LOG(error, JSTR("Invalid render frame count"));
+            return false;
+        }
+        if (m_RenderFramesObjects.getSize() == renderFrameCount)
+        {
+            return true;
+        }
+
+        VkDevice device = getRenderSubsystemObject()->getDevice();
+        for (int32 index = m_RenderFramesObjects.getSize() - 1; index >= renderFrameCount; index--)
+        {
+            RenderFrameObjects& objects = m_RenderFramesObjects[index];
+            vkDestroyFence(device, objects.renderFinishedFence, nullptr);
+            vkDestroySemaphore(device, objects.renderFinishedSemaphore, nullptr);
+        }
+        m_RenderFramesObjects.resize(renderFrameCount);
+
+        VkFenceCreateInfo fenceInfo{};
+        fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+        fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+        VkSemaphoreCreateInfo semaphoreInfo{};
+        semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+        for (int32 index = 0; index < m_RenderFramesObjects.getSize(); index++)
+        {
+            RenderFrameObjects& objects = m_RenderFramesObjects[index];
+            if (objects.renderFinishedFence == nullptr)
+            {
+                const VkResult result = vkCreateFence(device, &fenceInfo, nullptr, &objects.renderFinishedFence);
+                if (result != VK_SUCCESS)
+                {
+                    JUMA_VULKAN_ERROR_LOG(JSTR("Failed to create fence"), result);
+                    return false;
+                }
+            }
+            if (objects.renderFinishedSemaphore == nullptr)
+            {
+                const VkResult result = vkCreateSemaphore(device, &semaphoreInfo, nullptr, &objects.renderFinishedSemaphore);
+                if (result != VK_SUCCESS)
+                {
+                    JUMA_VULKAN_ERROR_LOG(JSTR("Failed to create semaphore"), result);
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    bool RenderPipelineRenderAPIObject_Vulkan::renderPipeline()
+    {
+        getRenderSubsystemObject()->updateRenderFrameIndex();
+        return waitForRenderFinish() && acquireNextSwapchainImages() && recordRenderCommandBuffer() && submitRenderCommandBuffer();
+    }
+    bool RenderPipelineRenderAPIObject_Vulkan::waitForRenderFinish()
+    {
+        const int8 renderFrameIndex = getRenderSubsystemObject()->getRenderFrameIndex();
+        if (!m_RenderFramesObjects.isValidIndex(renderFrameIndex))
+        {
+            return false;
+        }
+
+        RenderFrameObjects& renderFrameObjects = m_RenderFramesObjects[renderFrameIndex];
+        vkWaitForFences(getRenderSubsystemObject()->getDevice(), 1, &renderFrameObjects.renderFinishedFence, VK_TRUE, UINT64_MAX);
+        if (renderFrameObjects.commandBuffer != nullptr)
+        {
+            renderFrameObjects.commandBuffer->returnToCommandPool();
+            renderFrameObjects.commandBuffer = nullptr;
+        }
+        return true;
+    }
+    bool RenderPipelineRenderAPIObject_Vulkan::acquireNextSwapchainImages()
+    {
+        m_SwapchainImageReadySemaphores.clear();
+        for (const auto& pipelineStage : m_Parent->getPipelineStages())
+        {
+            if (pipelineStage.value.type != RenderPipelineStageType::Window)
+            {
+                continue;
+            }
+
+            const window_id_type windowID = m_Parent->getPipelineStageWindow(pipelineStage.key);
+            const WindowSubsystem_RenderAPIObject_Vulkan* renderObject = m_Parent->getOwnerEngine()->getWindowSubsystem()->getRenderAPIObject<WindowSubsystem_RenderAPIObject_Vulkan>();
+            VulkanSwapchain* swapchain = renderObject != nullptr ? renderObject->getVulkanSwapchain(windowID) : nullptr;
+            if (swapchain == nullptr)
+            {
+                continue;
+            }
+
+            VkSemaphore semaphore = swapchain->acquireNextImage();
+            if (semaphore == nullptr)
+            {
+                return false;
+            }
+
+            m_SwapchainImageReadySemaphores.add(semaphore);
+        }
+        return true;
+    }
+    bool RenderPipelineRenderAPIObject_Vulkan::recordRenderCommandBuffer()
+    {
+        if (!m_Parent->isPipelineQueueValid() || m_RenderImages.isEmpty())
+        {
+            return false;
+        }
+
+        VulkanCommandPool* commandPool = getRenderSubsystemObject()->getCommandPool(VulkanQueueType::Graphics);
+        VulkanCommandBuffer* commandBuffer = commandPool != nullptr ? commandPool->getCommandBuffer() : nullptr;
+        if (commandBuffer == nullptr)
+        {
+            JUMA_LOG(error, JSTR("Failed to create render command buffer"));
+            return false;
+        }
+
+        VkCommandBufferBeginInfo beginInfo{};
+        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+        beginInfo.flags = 0;
+        beginInfo.pInheritanceInfo = nullptr;
+        VkResult result = vkBeginCommandBuffer(commandBuffer->get(), &beginInfo);
+        if (result != VK_SUCCESS)
+        {
+            JUMA_VULKAN_ERROR_LOG(JSTR("Failed to start render command buffer record"), result);
+            commandBuffer->returnToCommandPool();
+            return false;
+        }
+
+        RenderOptions_Vulkan renderOptions;
+        renderOptions.renderPipeline = m_Parent;
+        renderOptions.commandBuffer = commandBuffer;
+
+        bool hasRenderCommands = false;
+        for (const auto& stageName : m_Parent->getPipelineQueue())
+        {
+            VulkanRenderImage** renderImagePtr = m_RenderImages.find(stageName);
+            VulkanRenderImage* renderImage = renderImagePtr != nullptr ? *renderImagePtr : nullptr;
+            if ((renderImage == nullptr) || !renderImage->isValid())
+            {
+                continue;
+            }
+
+            hasRenderCommands = true;
+
+            if (!renderImage->startRender(commandBuffer))
+            {
+                JUMA_LOG(error, JSTR("Failed to start render to \"") + stageName.toString() + JSTR("\" render image"));
+                commandBuffer->returnToCommandPool();
+                return false;
+            }
+            
+            renderOptions.renderTargetName = stageName;
+            renderOptions.renderImage = renderImage;
+            renderPipelineStage(&renderOptions);
+
+            if (!renderImage->finishRender(commandBuffer))
+            {
+                JUMA_LOG(error, JSTR("Failed to finish render to \"") + stageName.toString() + JSTR("\" render image"));
+                commandBuffer->returnToCommandPool();
+                return false;
+            }
+        }
+        if (!hasRenderCommands)
+        {
+            commandBuffer->returnToCommandPool();
+            return false;
+        }
+
+        result = vkEndCommandBuffer(commandBuffer->get());
+        if (result != VK_SUCCESS)
+        {
+            JUMA_VULKAN_ERROR_LOG(JSTR("Failed to finish render command buffer record"), result);
+            commandBuffer->returnToCommandPool();
+            return false;
+        }
+
+        RenderFrameObjects& renderFrameObjects = m_RenderFramesObjects[getRenderSubsystemObject()->getRenderFrameIndex()];
+        renderFrameObjects.commandBuffer = commandBuffer;
+        return true;
+    }
+    bool RenderPipelineRenderAPIObject_Vulkan::submitRenderCommandBuffer()
+    {
+        const int8 renderFrameIndex = getRenderSubsystemObject()->getRenderFrameIndex();
+        RenderFrameObjects& renderFrameObjects = m_RenderFramesObjects[renderFrameIndex];
+        vkResetFences(getRenderSubsystemObject()->getDevice(), 1, &renderFrameObjects.renderFinishedFence);
+
+        constexpr VkPipelineStageFlags waitStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        VkSubmitInfo submitInfo{};
+        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+        submitInfo.waitSemaphoreCount = m_SwapchainImageReadySemaphores.getSize();
+        submitInfo.pWaitSemaphores = m_SwapchainImageReadySemaphores.getData();
+        submitInfo.pWaitDstStageMask = &waitStage;
+        submitInfo.signalSemaphoreCount = 1;
+        submitInfo.pSignalSemaphores = &renderFrameObjects.renderFinishedSemaphore;
+        if (!renderFrameObjects.commandBuffer->submit(submitInfo, renderFrameObjects.renderFinishedFence, false))
+        {
+            JUMA_LOG(error, JSTR("Failed to submit render command buffer"));
+            renderFrameObjects.commandBuffer->returnToCommandPool();
+            renderFrameObjects.commandBuffer = nullptr;
+            return false;
+        }
+
+        for (const auto& pipelineStage : m_Parent->getPipelineStages())
+        {
+            if (pipelineStage.value.type != RenderPipelineStageType::Window)
+            {
+                continue;
+            }
+
+            const window_id_type windowID = m_Parent->getPipelineStageWindow(pipelineStage.key);
+            const WindowSubsystem_RenderAPIObject_Vulkan* renderObject = m_Parent->getOwnerEngine()->getWindowSubsystem()->getRenderAPIObject<WindowSubsystem_RenderAPIObject_Vulkan>();
+            VulkanSwapchain* swapchain = renderObject != nullptr ? renderObject->getVulkanSwapchain(windowID) : nullptr;
+            if (swapchain == nullptr)
+            {
+                continue;
+            }
+
+            swapchain->presentCurrentImage(renderFrameObjects.renderFinishedSemaphore);
+        }
+        return true;
+    }
+}
+
+#endif

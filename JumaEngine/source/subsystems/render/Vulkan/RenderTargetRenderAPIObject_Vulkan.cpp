@@ -11,6 +11,11 @@
 
 namespace JumaEngine
 {
+    RenderTargetRenderAPIObject_Vulkan::~RenderTargetRenderAPIObject_Vulkan()
+    {
+        clearData();
+    }
+
     bool RenderTargetRenderAPIObject_Vulkan::initInternal()
     {
         const TextureFormat format = m_Parent->getFormat();
@@ -43,6 +48,15 @@ namespace JumaEngine
 
         m_RenderImage = renderImage;
         return true;
+    }
+
+    void RenderTargetRenderAPIObject_Vulkan::clearData()
+    {
+        if (m_RenderImage != nullptr)
+        {
+            delete m_RenderImage;
+            m_RenderImage = nullptr;
+        }
     }
 }
 

@@ -108,4 +108,21 @@ namespace JumaEngine
         const RenderAPIObjectType* renderObject = getRenderAPIObject();
         return (renderObject != nullptr) && renderObject->shouldCloseWindow(windowID);
     }
+
+    void WindowSubsystem::startRender()
+    {
+        RenderAPIObjectType* renderObject = getRenderAPIObject();
+        if (renderObject != nullptr)
+        {
+            renderObject->startRender();
+        }
+    }
+    void WindowSubsystem::finishRender()
+    {
+        RenderAPIObjectType* renderObject = getRenderAPIObject();
+        if (renderObject != nullptr)
+        {
+            renderObject->finishRender();
+        }
+    }
 }

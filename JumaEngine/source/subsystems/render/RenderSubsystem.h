@@ -12,6 +12,8 @@
 
 namespace JumaEngine
 {
+    class RenderPipeline;
+    class RenderPipelineRenderAPIObject;
     class RenderTargetRenderAPIObject;
     class ShaderRenderAPIObject;
     class MaterialRenderAPIObject;
@@ -41,9 +43,12 @@ namespace JumaEngine
         virtual VertexBufferRenderAPIObject* createVertexBufferObject() = 0;
         virtual TextureRenderAPIObject* createTextureObject() = 0;
         virtual RenderTargetRenderAPIObject* createRenderTargetObject() = 0;
+        virtual RenderPipelineRenderAPIObject* createRenderPipelineObject() = 0;
 
         virtual void render() = 0;
         virtual void waitForRenderFinish() {}
+
+        void clearData();
     };
 
     class RenderSubsystem final : public SubsystemBase, public RenderAPIWrapperBase<RenderSubsystem_RenderAPIObject>
@@ -59,6 +64,8 @@ namespace JumaEngine
         RenderAPI getRenderAPI() const { return m_CurrentRenderAPI; }
         RenderPresentMode getPresentMode() const { return m_CurrentPresentMode; }
 
+        RenderPipeline* getRenderPipeline() const { return m_RenderPipeline; }
+
         window_id_type getMainWindowID() const { return m_MainWindowID; }
         bool shouldCloseMainWindow() const;
 
@@ -67,6 +74,7 @@ namespace JumaEngine
         VertexBufferRenderAPIObject* createVertexBufferObject();
         TextureRenderAPIObject* createTextureObject();
         RenderTargetRenderAPIObject* createRenderTargetObject();
+        RenderPipelineRenderAPIObject* createRenderPipelineObject();
 
         void render();
         void waitForRenderFinish();
@@ -75,12 +83,15 @@ namespace JumaEngine
 
         virtual RenderSubsystem_RenderAPIObject* createRenderAPIObjectInternal() override;
         
+        virtual bool initSubsystemInternal() override;
         virtual void clearSubsystemInternal() override;
 
     private:
 
         RenderAPI m_CurrentRenderAPI = RenderAPI::Vulkan;
         RenderPresentMode m_CurrentPresentMode = RenderPresentMode::VSYNC;
+
+        RenderPipeline* m_RenderPipeline = nullptr;
 
         window_id_type m_MainWindowID = INVALID_WINDOW_ID;
 

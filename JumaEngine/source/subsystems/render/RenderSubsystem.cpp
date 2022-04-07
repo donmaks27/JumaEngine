@@ -2,12 +2,22 @@
 
 #include "RenderSubsystem.h"
 
+#include "RenderPipeline.h"
 #include "RenderSubsystem_Implementation.h"
 #include "engine/Engine.h"
 #include "subsystems/window/WindowSubsystem.h"
 
 namespace JumaEngine
 {
+    void RenderSubsystem_RenderAPIObject::clearData()
+    {
+        RenderPipeline* renderPipeline = m_Parent->getRenderPipeline();
+        if (renderPipeline != nullptr)
+        {
+            renderPipeline->clearRenderAPIObject();
+        }
+    }
+
     bool RenderSubsystem_RenderAPIObject::createMainWindow()
     {
         return m_Parent->createMainWindow();
@@ -21,9 +31,23 @@ namespace JumaEngine
     {
         return createRenderSubsystemRenderAPIObject(getRenderAPI());
     }
+    
+    bool RenderSubsystem::initSubsystemInternal()
+    {
+        if (!Super::initSubsystemInternal())
+        {
+            return false;
+        }
 
+        m_RenderPipeline = getOwnerEngine()->createObject<RenderPipeline>();
+        m_RenderPipeline->init();
+        return true;
+    }
     void RenderSubsystem::clearSubsystemInternal()
     {
+        delete m_RenderPipeline;
+        m_RenderPipeline = nullptr;
+
         clearRenderAPIObject();
         destroyMainWindow();
 
@@ -76,6 +100,11 @@ namespace JumaEngine
     {
         RenderAPIObjectType* renderObject = getRenderAPIObject();
         return renderObject != nullptr ? renderObject->createRenderTargetObject() : nullptr;
+    }
+    RenderPipelineRenderAPIObject* RenderSubsystem::createRenderPipelineObject()
+    {
+        RenderAPIObjectType* renderObject = getRenderAPIObject();
+        return renderObject != nullptr ? renderObject->createRenderPipelineObject() : nullptr;
     }
 
     void RenderSubsystem::render()

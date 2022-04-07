@@ -4,10 +4,9 @@
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
-#include "VulkanCommandBuffer.h"
+#include "VulkanCommandPool.h"
 #include "VulkanFramebuffer.h"
 #include "VulkanSwapchain.h"
-#include "VulkanRenderPass.h"
 #include "subsystems/render/Vulkan/RenderSubsystem_Vulkan.h"
 
 namespace JumaEngine
@@ -19,32 +18,12 @@ namespace JumaEngine
 
     void VulkanRenderImage::clearVulkan()
     {
-        VkDevice device = getRenderSubsystemObject()->getDevice();
-
         for (const auto& framebuffer : m_Framebuffers)
         {
             delete framebuffer;
         }
         m_Framebuffers.clear();
 
-        for (const auto& frame : m_RenderFrames)
-        {
-            if (frame.commandBuffer != nullptr)
-            {
-                frame.commandBuffer->returnToCommandPool();
-            }
-            if (frame.finishFence != nullptr)
-            {
-                vkDestroyFence(device, frame.finishFence, nullptr);
-            }
-            if (frame.finishSemaphore != nullptr)
-            {
-                vkDestroySemaphore(device, frame.finishSemaphore, nullptr);
-            }
-        }
-        m_RenderFrames.clear();
-
-        m_Dependencies.clear();
         m_Swapchain = nullptr;
         m_RenderPass = nullptr;
         m_FramebufferSize = { 0, 0 };
@@ -74,7 +53,7 @@ namespace JumaEngine
             JUMA_LOG(warning, JSTR("Render image already initialized"));
             return false;
         }
-        if ((renderPass == nullptr) || !renderPass->isValid() || (framebufferSize.x == 0) || (framebufferSize.y == 0))
+        if ((renderPass == nullptr) || (framebufferSize.x == 0) || (framebufferSize.y == 0))
         {
             JUMA_LOG(error, JSTR("Invalid input params"));
             return false;
@@ -86,26 +65,21 @@ namespace JumaEngine
         return true;
     }
 
-    void VulkanRenderImage::setDependency(const jstringID& name, VulkanRenderImage* renderImage)
+    int8 VulkanRenderImage::getFramebufferCount() const
     {
-        if (isValid() && (renderImage != nullptr))
-        {
-            m_Dependencies.add(name, renderImage);
-        }
+        return m_Swapchain != nullptr ? static_cast<int8>(m_Swapchain->getImageCount()) : getRenderFrameCount();
     }
-    void VulkanRenderImage::removeDependency(const jstringID& name)
+    int8 VulkanRenderImage::getRenderFrameCount() const
     {
-        if (isValid())
-        {
-            m_Dependencies.remove(name);
-        }
+        return getRenderSubsystemObject()->getRenderFrameCount();
     }
-    void VulkanRenderImage::clearDependencies()
+    int8 VulkanRenderImage::getCurrentFramebufferIndex() const
     {
-        if (isValid())
-        {
-            m_Dependencies.clear();
-        }
+        return m_Swapchain != nullptr ? m_Swapchain->getSwapchainImageIndex() : getCurrentRenderFrameIndex();
+    }
+    int8 VulkanRenderImage::getCurrentRenderFrameIndex() const
+    {
+        return getRenderSubsystemObject()->getRenderFrameIndex();
     }
 
     bool VulkanRenderImage::update()
@@ -116,77 +90,19 @@ namespace JumaEngine
             return false;
         }
 
-        if (!updateRenderFrameCount() || !updateFramebufferCount() || !updateDependencies())
+        if (!updateFramebufferCount())
         {
             JUMA_LOG(error, JSTR("Failed to update render image"));
             return false;
         }
         return true;
     }
-    bool VulkanRenderImage::updateRenderFrameCount()
-    {
-        const int8 frameCount = getRenderSubsystemObject()->getRenderFrameCount();
-        if (frameCount <= 0)
-        {
-            JUMA_LOG(error, JSTR("Failed to get render frame count"));
-            return false;
-        }
-
-        if (frameCount == m_RenderFrames.getSize())
-        {
-            return true;
-        }
-
-        VkDevice device = getRenderSubsystemObject()->getDevice();
-        VkFenceCreateInfo fenceInfo{};
-        fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-        fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
-        VkSemaphoreCreateInfo semaphoreInfo{};
-        semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-
-        for (int32 index = m_RenderFrames.getSize() - 1; index >= frameCount; index--)
-        {
-            RenderFrame& frameData = m_RenderFrames[index];
-            if (frameData.finishFence != nullptr)
-            {
-                vkDestroyFence(device, frameData.finishFence, nullptr);
-            }
-            if (frameData.finishSemaphore != nullptr)
-            {
-                vkDestroySemaphore(device, frameData.finishSemaphore, nullptr);
-            }
-        }
-        m_RenderFrames.resize(frameCount);
-        for (int32 index = 0; index < frameCount; index++)
-        {
-            RenderFrame& frameData = m_RenderFrames[index];
-            if (frameData.finishFence == nullptr)
-            {
-                const VkResult result = vkCreateFence(device, &fenceInfo, nullptr, &frameData.finishFence);
-                if (result != VK_SUCCESS)
-                {
-                    JUMA_VULKAN_ERROR_LOG(JSTR("Failed to create fence ") + TO_JSTR(index), result);
-                    return false;
-                }
-            }
-            if (frameData.finishSemaphore == nullptr)
-            {
-                const VkResult result = vkCreateSemaphore(device, &semaphoreInfo, nullptr, &frameData.finishSemaphore);
-                if (result != VK_SUCCESS)
-                {
-                    JUMA_VULKAN_ERROR_LOG(JSTR("Failed to create semaphore ") + TO_JSTR(index), result);
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
     bool VulkanRenderImage::updateFramebufferCount()
     {
-        const int8 framebufferCount = m_Swapchain != nullptr ? static_cast<int8>(m_Swapchain->getImageCount()) : getRenderSubsystemObject()->getRenderFrameCount();
+        const int8 framebufferCount = getFramebufferCount();
         if (framebufferCount <= 0)
         {
-            JUMA_LOG(error, JSTR("Failed to get desired framebuffer count"));
+            JUMA_LOG(error, JSTR("Failed to get framebuffer count"));
             return false;
         }
 
@@ -208,7 +124,9 @@ namespace JumaEngine
             {
                 framebuffer = getRenderSubsystemObject()->createVulkanObject<VulkanFramebuffer>();
             }
-            if (!framebuffer->create(m_RenderPass, m_FramebufferSize, m_Swapchain != nullptr ? m_Swapchain->getSwapchainImage(index) : nullptr))
+
+            VkImage image = m_Swapchain != nullptr ? m_Swapchain->getSwapchainImage(index) : nullptr;
+            if (!framebuffer->create(m_RenderPass, m_FramebufferSize, image))
             {
                 JUMA_LOG(error, JSTR("Failed to update framebuffer ") + TO_JSTR(index));
                 return false;
@@ -216,136 +134,36 @@ namespace JumaEngine
         }
         return true;
     }
-    bool VulkanRenderImage::updateDependencies()
+
+    bool VulkanRenderImage::startRender(VulkanCommandBuffer* commandBuffer)
     {
-        for (int32 index = 0; index < m_RenderFrames.getSize(); index++)
+        if (!isValid() || (commandBuffer == nullptr) || !commandBuffer->isValid())
         {
-            if (m_Swapchain != nullptr)
-            {
-                m_RenderFrames[index].startSemaphores = { m_Swapchain->getRenderFrameAvailableSemaphore(index) };
-            }
-            else
-            {
-                m_RenderFrames[index].startSemaphores.clear();
-            }
-
-            for (const auto& dependency : m_Dependencies)
-            {
-                if ((dependency.value != nullptr) && dependency.value->isValid())
-                {
-                    m_RenderFrames[index].startSemaphores.add(dependency.value->getFinishSemaphore());
-                }
-            }
+            return false;
         }
-        return true;
-    }
 
-    int8 VulkanRenderImage::getCurrentFramebufferIndex() const
-    {
-        return m_Swapchain != nullptr ? m_Swapchain->getSwapchainImageIndex() : getCurrentRenderFrameIndex();
-    }
-    int8 VulkanRenderImage::getCurrentRenderFrameIndex() const
-    {
-        return getRenderSubsystemObject()->getRenderFrameIndex();
-    }
-
-    VkFence VulkanRenderImage::getFinishFence() const
-    {
-        const int8 renderFrameIndex = getCurrentRenderFrameIndex();
-        return m_RenderFrames.isValidIndex(renderFrameIndex) ? m_RenderFrames[renderFrameIndex].finishFence : nullptr;
-    }
-    VkSemaphore VulkanRenderImage::getFinishSemaphore() const
-    {
-        const int8 renderFrameIndex = getCurrentRenderFrameIndex();
-        return m_RenderFrames.isValidIndex(renderFrameIndex) ? m_RenderFrames[renderFrameIndex].finishSemaphore : nullptr;
-    }
-
-    VulkanCommandBuffer* VulkanRenderImage::startRenderCommandBufferRecord()
-    {
-        if (!isValid())
-        {
-            JUMA_LOG(error, JSTR("Render image not initialized"));
-            return nullptr;
-        }
         const int8 framebufferIndex = getCurrentFramebufferIndex();
-        const int8 frameIndex = getCurrentRenderFrameIndex();
-        if (!m_Framebuffers.isValidIndex(framebufferIndex) || !m_RenderFrames.isValidIndex(frameIndex))
+        if (!m_Framebuffers.isValidIndex(framebufferIndex))
         {
-            JUMA_LOG(error, JSTR("Invalid render image state"));
-            return nullptr;
+            JUMA_LOG(error, JSTR("Invalid framebuffer index"));
+            return false;
         }
-
-        VulkanCommandBuffer* commandBuffer = m_Framebuffers[framebufferIndex]->createRenderCommandBuffer();
-        if (commandBuffer == nullptr)
-        {
-            JUMA_LOG(error, JSTR("Failed to create render command buffer"));
-            return nullptr;
-        }
-
-        RenderFrame& frame = m_RenderFrames[frameIndex];
-        if (frame.commandBuffer != nullptr)
-        {
-            frame.commandBuffer->returnToCommandPool();
-        }
-        frame.commandBuffer = commandBuffer;
-        vkResetFences(getRenderSubsystemObject()->getDevice(), 1, &frame.finishFence);
-
-        return commandBuffer;
+        return m_Framebuffers[framebufferIndex]->startRender(commandBuffer);
     }
-    VulkanCommandBuffer* VulkanRenderImage::getRenderCommandBuffer() const
+    bool VulkanRenderImage::finishRender(VulkanCommandBuffer* commandBuffer)
     {
-        const int8 renderFrameIndex = getCurrentRenderFrameIndex();
-        return m_RenderFrames.isValidIndex(renderFrameIndex) ? m_RenderFrames[renderFrameIndex].commandBuffer : nullptr;
-    }
-    bool VulkanRenderImage::submitRenderCommandBuffer()
-    {
-        if (!isValid())
+        if (!isValid() || (commandBuffer == nullptr) || !commandBuffer->isValid())
         {
-            JUMA_LOG(error, JSTR("Render image not initialized"));
-            return false;
-        }
-        const int8 frameIndex = getCurrentRenderFrameIndex();
-        if (!m_RenderFrames.isValidIndex(frameIndex))
-        {
-            JUMA_LOG(error, JSTR("Invalid render image state"));
             return false;
         }
 
-        RenderFrame& frame = m_RenderFrames[frameIndex];
-        if (frame.commandBuffer == nullptr)
+        const int8 framebufferIndex = getCurrentFramebufferIndex();
+        if (!m_Framebuffers.isValidIndex(framebufferIndex))
         {
-            JUMA_LOG(error, JSTR("Empty render command buffer"));
+            JUMA_LOG(error, JSTR("Invalid framebuffer index"));
             return false;
         }
-
-        vkCmdEndRenderPass(frame.commandBuffer->get());
-        const VkResult result = vkEndCommandBuffer(frame.commandBuffer->get());
-        if (result != VK_SUCCESS)
-        {
-            frame.commandBuffer->returnToCommandPool();
-            frame.commandBuffer = nullptr;
-
-            JUMA_VULKAN_ERROR_LOG(JSTR("Failed to finish record to command buffer"), result);
-            return false;
-        }
-
-        constexpr VkPipelineStageFlags waitStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-        VkSubmitInfo submitInfo{};
-        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-        submitInfo.waitSemaphoreCount = frame.startSemaphores.getSize();
-        submitInfo.pWaitSemaphores = frame.startSemaphores.getData();
-        submitInfo.pWaitDstStageMask = &waitStage;
-        submitInfo.signalSemaphoreCount = 1;
-        submitInfo.pSignalSemaphores = &frame.finishSemaphore;
-        if (!frame.commandBuffer->submit(submitInfo, frame.finishFence, false))
-        {
-            frame.commandBuffer->returnToCommandPool();
-            frame.commandBuffer = nullptr;
-
-            JUMA_LOG(error, JSTR("Failed to submit render command buffer"));
-            return false;
-        }
-        return true;
+        return m_Framebuffers[framebufferIndex]->finishRender(commandBuffer);
     }
 }
 

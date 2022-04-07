@@ -583,23 +583,11 @@ namespace JumaEngine
         }
 
         const RenderOptions_Vulkan* options = reinterpret_cast<const RenderOptions_Vulkan*>(renderOptions);
-        const VulkanCommandBuffer* commandBufferObject = options->renderImage != nullptr ? options->renderImage->getRenderCommandBuffer() : nullptr;
-        VkCommandBuffer commandBuffer = commandBufferObject != nullptr ? commandBufferObject->get() : nullptr;
-        if (commandBuffer == nullptr)
-        {
-            JUMA_LOG(error, JSTR("Invalid command buffer"));
-            return false;
-        }
-        const VulkanRenderPass* renderPass = options->renderImage != nullptr ? options->renderImage->getRenderPass() : nullptr;
-        if (renderPass == nullptr)
-        {
-            JUMA_LOG(error, JSTR("Invalid render pass"));
-            return false;
-        }
-
+        const VulkanCommandBuffer* commandBuffer = options->commandBuffer;
+        const VulkanRenderPass* renderPass = options->renderImage->getRenderPass();
         const int8 frameIndex = getRenderSubsystemObject()->getRenderFrameIndex();
-        if (!bindRenderPipeline(commandBuffer, vertexBuffer->getVertexName(), renderPass) ||
-            !bindDescriptorSet(commandBuffer, frameIndex))
+        if (!bindRenderPipeline(commandBuffer->get(), vertexBuffer->getVertexName(), renderPass) ||
+            !bindDescriptorSet(commandBuffer->get(), frameIndex))
         {
             return false;
         }

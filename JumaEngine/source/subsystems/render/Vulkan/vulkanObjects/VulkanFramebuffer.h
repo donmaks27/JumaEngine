@@ -30,7 +30,8 @@ namespace JumaEngine
         VulkanRenderPass* getRenderPass() const { return m_RenderPass; }
         VulkanImage* getResultImage() const { return m_ResolveImage != nullptr ? m_ResolveImage : m_ColorImage; }
 
-        VulkanCommandBuffer* createRenderCommandBuffer() const;
+        bool startRender(VulkanCommandBuffer* commandBuffer);
+        bool finishRender(VulkanCommandBuffer* commandBuffer);
 
     protected:
 
@@ -46,6 +47,8 @@ namespace JumaEngine
         VulkanImage* m_ColorImage = nullptr;
         VulkanImage* m_DepthImage = nullptr;
         VulkanImage* m_ResolveImage = nullptr;
+
+        bool m_OutputColorImage = false;
 
         
         bool init(VulkanRenderPass* renderPass, const math::uvector2& size, VkImage resultImage);

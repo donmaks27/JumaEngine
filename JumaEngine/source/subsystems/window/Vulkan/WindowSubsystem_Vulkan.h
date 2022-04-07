@@ -60,6 +60,8 @@ namespace JumaEngine
 
         virtual void onWindowResized(window_id_type windowID, const math::uvector2& newSize) override;
 
+        virtual void finishRender() override;
+
     private:
         
         bool pickSurfaceFormat(VkSurfaceKHR surface, VkSurfaceFormatKHR& outSurfaceFormat) const;

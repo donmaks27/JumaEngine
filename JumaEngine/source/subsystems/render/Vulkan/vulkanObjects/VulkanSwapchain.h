@@ -17,7 +17,6 @@
 
 namespace JumaEngine
 {
-    class VulkanRenderImage;
     struct RenderOptions;
     class WindowSubsystem_RenderAPIObject_Vulkan;
     class VulkanRenderPass;
@@ -62,8 +61,8 @@ namespace JumaEngine
         void applySettings(bool forceRecreate = false);
         bool isNeedToRecreate() const { return m_NeedToRecreate; }
 
-        bool startRender(VulkanRenderImage* renderImage, RenderOptions* options);
-        void finishRender(VulkanRenderImage* renderImage, RenderOptions* options);
+        VkSemaphore acquireNextImage();
+        bool presentCurrentImage(VkSemaphore waitSemaphore);
 
     protected:
 
@@ -72,7 +71,6 @@ namespace JumaEngine
     private:
 
         VkSurfaceKHR m_WindowSurface = nullptr;
-        VulkanRenderImage* m_WindowRenderImage = nullptr;
 
         VkSwapchainKHR m_Swapchain = nullptr;
         VulkanRenderPass* m_RenderPass = nullptr;

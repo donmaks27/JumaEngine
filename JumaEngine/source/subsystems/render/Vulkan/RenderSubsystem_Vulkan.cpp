@@ -11,6 +11,7 @@
 #include "ShaderRenderAPIObject_Vulkan.h"
 #include "TextureRenderAPIObject_Vulkan.h"
 #include "VertexBufferRenderAPIObject_Vulkan.h"
+#include "RenderPipelineRenderAPIObject_Vulkan.h"
 #include "RenderTargetRenderAPIObject_Vulkan.h"
 #include "engine/Engine.h"
 #include "jutils/jset.h"
@@ -87,10 +88,14 @@ namespace JumaEngine
         {
             return false;
         }
+
+        m_Parent->getRenderPipeline()->createRenderAPIObject();
         return true;
     }
     void RenderSubsystem_RenderAPIObject_Vulkan::clearVulkan()
     {
+        clearData();
+
         const window_id_type mainWindowID = m_Parent->getMainWindowID();
 
         if (m_VulkanInstance != nullptr)
@@ -501,28 +506,18 @@ namespace JumaEngine
     {
         return createVulkanObject<RenderTargetRenderAPIObject_Vulkan>();
     }
+    RenderPipelineRenderAPIObject* RenderSubsystem_RenderAPIObject_Vulkan::createRenderPipelineObject()
+    {
+        return createVulkanObject<RenderPipelineRenderAPIObject_Vulkan>();
+    }
 
     void RenderSubsystem_RenderAPIObject_Vulkan::render()
     {
-        const window_id_type mainWindowID = m_Parent->getMainWindowID();
-        WindowSubsystem_RenderAPIObject_Vulkan* windowRenderObject = m_Parent->getOwnerEngine()->getWindowSubsystem()->getRenderAPIObject<WindowSubsystem_RenderAPIObject_Vulkan>();
+        WindowSubsystem* windowSubsystem = m_Parent->getOwnerEngine()->getWindowSubsystem();
 
-        windowRenderObject->startRender(mainWindowID);
-
-        RenderOptions_Vulkan options;
-        VulkanSwapchain* swapchain = windowRenderObject->getVulkanSwapchain(mainWindowID);
-        VulkanRenderImage* renderImage = windowRenderObject->getRenderImage(mainWindowID);
-        if (swapchain->startRender(renderImage, &options))
-        {
-            m_Parent->getOwnerEngine()->render(&options);
-            swapchain->finishRender(renderImage, &options);
-        }
-        if (swapchain->isNeedToRecreate())
-        {
-            swapchain->applySettings(true);
-        }
-
-        windowRenderObject->finishRender(mainWindowID);
+        windowSubsystem->startRender();
+        m_Parent->getRenderPipeline()->render();
+        windowSubsystem->finishRender();
     }
     void RenderSubsystem_RenderAPIObject_Vulkan::waitForRenderFinish()
     {

@@ -4,10 +4,15 @@
 
 #include "common_header.h"
 
+#include "jutils/jstringID.h"
+
 namespace JumaEngine
 {
+    class RenderPipeline;
+
     struct RenderOptions
     {
-        
+        RenderPipeline* renderPipeline = nullptr;
+        jstringID renderTargetName = jstringID_NONE;
     };
 }

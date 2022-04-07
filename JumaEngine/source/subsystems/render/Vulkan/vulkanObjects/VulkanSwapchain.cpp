@@ -5,8 +5,6 @@
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
 #include "VulkanQueue.h"
-#include "VulkanRenderImage.h"
-#include "subsystems/render/Vulkan/RenderOptions_Vulkan.h"
 #include "subsystems/render/Vulkan/RenderSubsystem_Vulkan.h"
 
 namespace JumaEngine
@@ -305,60 +303,44 @@ namespace JumaEngine
         return true;
     }
 
-    bool VulkanSwapchain::startRender(VulkanRenderImage* renderImage, RenderOptions* options)
+    VkSemaphore VulkanSwapchain::acquireNextImage()
     {
-        if (!isValid() || m_NeedToRecreate || (renderImage == nullptr))
+        if (!isValid() || isNeedToRecreate())
         {
-            return false;
+            return nullptr;
         }
 
-        VkDevice device = getRenderSubsystemObject()->getDevice();
-
-        VkFence prevFrameFence = renderImage->getFinishFence();
-        if (prevFrameFence != nullptr)
+        const int8 renderFrameIndex = getRenderSubsystemObject()->getRenderFrameIndex();
+        if (!m_RenderFrameAvailableSemaphores.isValidIndex(renderFrameIndex))
         {
-            vkWaitForFences(device, 1, &prevFrameFence, VK_TRUE, UINT64_MAX);
+            return nullptr;
         }
+        VkSemaphore semaphore = m_RenderFrameAvailableSemaphores[renderFrameIndex];
 
-        const int8 renderFrameIndex = getRenderSubsystemObject()->getNextRenderFrameIndex();
         uint32 renderImageIndex = 0;
-        const VkResult result = vkAcquireNextImageKHR(device, m_Swapchain, UINT64_MAX, m_RenderFrameAvailableSemaphores[renderFrameIndex], nullptr, &renderImageIndex);
+        const VkResult result = vkAcquireNextImageKHR(getRenderSubsystemObject()->getDevice(), m_Swapchain, UINT64_MAX, semaphore, nullptr, &renderImageIndex);
         if ((result != VK_SUCCESS) && (result != VK_SUBOPTIMAL_KHR))
         {
             if (result == VK_ERROR_OUT_OF_DATE_KHR)
             {
                 markAsNeededToRecreate();
-                return false;
+                return nullptr;
             }
 
             JUMA_VULKAN_ERROR_LOG(JSTR("Failed to acquire swapchain image"), result);
             throw std::runtime_error(JSTR("Failed to acquire swapchain image"));
         }
+
         m_CurrentSwapchainImageIndex = static_cast<int8>(renderImageIndex);
-
-        VulkanCommandBuffer* commandBuffer = renderImage->startRenderCommandBufferRecord();
-        if (commandBuffer == nullptr)
-        {
-            return false;
-        }
-
-        RenderOptions_Vulkan* renderOptions = reinterpret_cast<RenderOptions_Vulkan*>(options);
-        renderOptions->renderImage = renderImage;
-        return true;
+        return semaphore;
     }
-
-    void VulkanSwapchain::finishRender(VulkanRenderImage* renderImage, RenderOptions* options)
+    bool VulkanSwapchain::presentCurrentImage(VkSemaphore waitSemaphore)
     {
-        RenderOptions_Vulkan* renderOptions = reinterpret_cast<RenderOptions_Vulkan*>(options);
-
-        renderImage->submitRenderCommandBuffer();
-
         const uint32 swapchainImageIndex = static_cast<uint8>(m_CurrentSwapchainImageIndex);
-        VkSemaphore finishSemaphore = renderImage->getFinishSemaphore();
         VkPresentInfoKHR presentInfo{};
         presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
         presentInfo.waitSemaphoreCount = 1;
-        presentInfo.pWaitSemaphores = &finishSemaphore;
+        presentInfo.pWaitSemaphores = &waitSemaphore;
         presentInfo.swapchainCount = 1;
         presentInfo.pSwapchains = &m_Swapchain;
         presentInfo.pImageIndices = &swapchainImageIndex;
@@ -367,12 +349,14 @@ namespace JumaEngine
         if ((result == VK_ERROR_OUT_OF_DATE_KHR) || (result == VK_SUBOPTIMAL_KHR))
         {
             markAsNeededToRecreate();
+            return false;
         }
-        else if (result != VK_SUCCESS)
+        if (result != VK_SUCCESS)
         {
             JUMA_VULKAN_ERROR_LOG(JSTR("Failed to present swapchain image"), result);
             throw std::runtime_error(JSTR("Failed to present swapchain image"));
         }
+        return true;
     }
 }
 
