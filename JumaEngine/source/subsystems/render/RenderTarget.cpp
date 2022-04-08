@@ -12,7 +12,7 @@ namespace JumaEngine
         clearData();
     }
 
-    RenderTargetRenderAPIObject* RenderTarget::createRenderAPIObjectInternal()
+    RenderTarget_RenderAPIObject* RenderTarget::createRenderAPIObjectInternal()
     {
         return getOwnerEngine()->getRenderSubsystem()->createRenderTargetObject();
     }

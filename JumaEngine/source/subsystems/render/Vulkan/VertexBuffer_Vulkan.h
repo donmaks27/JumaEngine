@@ -15,11 +15,11 @@ namespace JumaEngine
 {
     class VulkanBuffer;
 
-    class VertexBufferRenderAPIObject_Vulkan : public VertexBufferRenderAPIObject, public VulkanContextObjectBase
+    class VertexBuffer_RenderAPIObject_Vulkan : public VertexBuffer_RenderAPIObject, public VulkanContextObjectBase
     {
     public:
-        VertexBufferRenderAPIObject_Vulkan() = default;
-        virtual ~VertexBufferRenderAPIObject_Vulkan() override;
+        VertexBuffer_RenderAPIObject_Vulkan() = default;
+        virtual ~VertexBuffer_RenderAPIObject_Vulkan() override;
 
         virtual bool render(const RenderOptions* renderOptions) override;
 

@@ -1,6 +1,6 @@
 ﻿// Copyright 2022 Leonov Maksim. All Rights Reserved.
 
-#include "TextureRenderAPIObject_Vulkan.h"
+#include "Texture_Vulkan.h"
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
@@ -10,12 +10,12 @@
 
 namespace JumaEngine
 {
-    TextureRenderAPIObject_Vulkan::~TextureRenderAPIObject_Vulkan()
+    Texture_RenderAPIObject_Vulkan::~Texture_RenderAPIObject_Vulkan()
     {
         clearVulkanData();
     }
 
-    void TextureRenderAPIObject_Vulkan::clearVulkanData()
+    void Texture_RenderAPIObject_Vulkan::clearVulkanData()
     {
         if (m_Image != nullptr)
         {
@@ -24,7 +24,7 @@ namespace JumaEngine
         }
     }
 
-    bool TextureRenderAPIObject_Vulkan::initInternal()
+    bool Texture_RenderAPIObject_Vulkan::initInternal()
     {
         const TextureData* data = getTextureData();
         const math::uvector2& size = data->getSize();

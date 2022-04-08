@@ -15,11 +15,11 @@
 
 namespace JumaEngine
 {
-    class ShaderRenderAPIObject_Vulkan : public ShaderRenderAPIObject, public VulkanContextObjectBase
+    class Shader_RenderAPIObject_Vulkan : public Shader_RenderAPIObject, public VulkanContextObjectBase
     {
     public:
-        ShaderRenderAPIObject_Vulkan() = default;
-        virtual ~ShaderRenderAPIObject_Vulkan() override;
+        Shader_RenderAPIObject_Vulkan() = default;
+        virtual ~Shader_RenderAPIObject_Vulkan() override;
 
         VkDescriptorSetLayout getDescriptorSetLayout() const { return m_DescriptorSetLayout; }
         VkPipelineLayout getPipelineLayout() const { return m_PipelineLayout; }

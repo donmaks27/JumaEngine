@@ -35,7 +35,7 @@ namespace JumaEngine
         return true;
     }
 
-    VertexBufferRenderAPIObject* VertexBuffer::createRenderAPIObjectInternal()
+    VertexBuffer_RenderAPIObject* VertexBuffer::createRenderAPIObjectInternal()
     {
         return getOwnerEngine()->getRenderSubsystem()->createVertexBufferObject();
     }
@@ -56,7 +56,7 @@ namespace JumaEngine
 
     bool VertexBuffer::render(const RenderOptions* renderOptions) const
     {
-        VertexBufferRenderAPIObject* renderObject = getRenderAPIObject();
+        VertexBuffer_RenderAPIObject* renderObject = getRenderAPIObject();
         if (renderObject == nullptr)
         {
             return false;

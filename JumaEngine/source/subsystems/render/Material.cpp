@@ -58,7 +58,7 @@ namespace JumaEngine
         return true;
     }
 
-    MaterialRenderAPIObject* Material::createRenderAPIObjectInternal()
+    Material_RenderAPIObject* Material::createRenderAPIObjectInternal()
     {
         return getOwnerEngine()->getRenderSubsystem()->createMaterialObject();
     }
@@ -113,7 +113,7 @@ namespace JumaEngine
 
     bool Material::render(VertexBuffer* vertexBuffer, const RenderOptions* renderOptions)
     {
-        MaterialRenderAPIObject* renderObject = getRenderAPIObject();
+        Material_RenderAPIObject* renderObject = getRenderAPIObject();
         if (renderObject == nullptr)
         {
             return false;
@@ -170,7 +170,7 @@ namespace JumaEngine
     }
     void Material::notifyMaterialParamChanged(const jstringID& paramName)
     {
-        MaterialRenderAPIObject* renderObject = getRenderAPIObject();
+        Material_RenderAPIObject* renderObject = getRenderAPIObject();
         if (renderObject != nullptr)
         {
             renderObject->onMaterialParamChanged(paramName);

@@ -33,7 +33,7 @@ namespace JumaEngine
         return true;
     }
 
-    ShaderRenderAPIObject* Shader::createRenderAPIObjectInternal()
+    Shader_RenderAPIObject* Shader::createRenderAPIObjectInternal()
     {
         return getOwnerEngine()->getRenderSubsystem()->createShaderObject();
     }

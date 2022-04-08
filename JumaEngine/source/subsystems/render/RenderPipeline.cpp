@@ -9,7 +9,7 @@
 
 namespace JumaEngine
 {
-    void RenderPipelineRenderAPIObject::renderPipelineStage(RenderOptions* options)
+    void RenderPipeline_RenderAPIObject::renderPipelineStage(RenderOptions* options)
     {
         m_Parent->getOwnerEngine()->render(options);
     }
@@ -19,7 +19,7 @@ namespace JumaEngine
         clearData();
     }
 
-    RenderPipelineRenderAPIObject* RenderPipeline::createRenderAPIObjectInternal()
+    RenderPipeline_RenderAPIObject* RenderPipeline::createRenderAPIObjectInternal()
     {
         return getOwnerEngine()->getRenderSubsystem()->createRenderPipelineObject();
     }

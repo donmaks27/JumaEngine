@@ -18,13 +18,13 @@ namespace JumaEngine
     class Material;
     class VertexBuffer;
 
-    class MaterialRenderAPIObject : public RenderAPIObject<Material>
+    class Material_RenderAPIObject : public RenderAPIObject<Material>
     {
         friend Material;
 
     public:
-        MaterialRenderAPIObject() = default;
-        virtual ~MaterialRenderAPIObject() override = default;
+        Material_RenderAPIObject() = default;
+        virtual ~Material_RenderAPIObject() override = default;
 
         virtual bool render(VertexBuffer* vertexBuffer, const RenderOptions* renderOptions) = 0;
 
@@ -36,7 +36,7 @@ namespace JumaEngine
     CREATE_JUTILS_MULTICAST_DELEGATE_OneParam(OnMaterialEvent, Material*, material);
     CREATE_JUTILS_MULTICAST_DELEGATE_TwoParams(OnMaterialParamEvent, Material*, material, const jstringID&, paramName);
 
-    class Material final : public EngineContextObject, public RenderAPIWrapper<MaterialRenderAPIObject>
+    class Material final : public EngineContextObject, public RenderAPIWrapper<Material_RenderAPIObject>
     {
         JUMAENGINE_CLASS(Material, EngineContextObject)
 
@@ -87,7 +87,7 @@ namespace JumaEngine
 
     protected:
 
-        virtual MaterialRenderAPIObject* createRenderAPIObjectInternal() override;
+        virtual Material_RenderAPIObject* createRenderAPIObjectInternal() override;
 
         virtual void clearInternal() override { clearData(); }
 

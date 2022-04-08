@@ -31,7 +31,7 @@ namespace JumaEngine
         return true;
     }
 
-    TextureRenderAPIObject* Texture::createRenderAPIObjectInternal()
+    Texture_RenderAPIObject* Texture::createRenderAPIObjectInternal()
     {
         return getOwnerEngine()->getRenderSubsystem()->createTextureObject();
     }

@@ -15,16 +15,16 @@ namespace JumaEngine
 {
     class Shader;
 
-    class ShaderRenderAPIObject : public RenderAPIObject<Shader>
+    class Shader_RenderAPIObject : public RenderAPIObject<Shader>
     {
     public:
-        ShaderRenderAPIObject() = default;
-        virtual ~ShaderRenderAPIObject() override = default;
+        Shader_RenderAPIObject() = default;
+        virtual ~Shader_RenderAPIObject() override = default;
     };
 
     CREATE_JUTILS_MULTICAST_DELEGATE_OneParam(OnShaderEvent, Shader*, shader);
 
-    class Shader final : public EngineContextObject, public RenderAPIWrapper<ShaderRenderAPIObject>
+    class Shader final : public EngineContextObject, public RenderAPIWrapper<Shader_RenderAPIObject>
     {
         JUMAENGINE_CLASS(Shader, EngineContextObject)
 
@@ -43,7 +43,7 @@ namespace JumaEngine
 
     protected:
 
-        virtual ShaderRenderAPIObject* createRenderAPIObjectInternal() override;
+        virtual Shader_RenderAPIObject* createRenderAPIObjectInternal() override;
 
         virtual void clearInternal() override { clearData(); }
 

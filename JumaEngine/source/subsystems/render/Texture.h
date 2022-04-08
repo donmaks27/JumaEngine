@@ -11,22 +11,22 @@ namespace JumaEngine
     class TextureData;
     class Texture;
 
-    class TextureRenderAPIObject : public RenderAPIObject<Texture>
+    class Texture_RenderAPIObject : public RenderAPIObject<Texture>
     {
     public:
-        TextureRenderAPIObject() = default;
-        virtual ~TextureRenderAPIObject() override = default;
+        Texture_RenderAPIObject() = default;
+        virtual ~Texture_RenderAPIObject() override = default;
 
     protected:
 
         inline const TextureData* getTextureData() const;
     };
 
-    class Texture : public EngineContextObject, public RenderAPIWrapper<TextureRenderAPIObject>
+    class Texture : public EngineContextObject, public RenderAPIWrapper<Texture_RenderAPIObject>
     {
         JUMAENGINE_CLASS(Texture, EngineContextObject)
 
-        friend TextureRenderAPIObject;
+        friend Texture_RenderAPIObject;
 
     public:
         Texture() = default;
@@ -36,7 +36,7 @@ namespace JumaEngine
 
     protected:
 
-        virtual TextureRenderAPIObject* createRenderAPIObjectInternal() override;
+        virtual Texture_RenderAPIObject* createRenderAPIObjectInternal() override;
 
         virtual void clearInternal() override { clearData(); }
 
@@ -48,7 +48,7 @@ namespace JumaEngine
         void clearData();
     };
 
-    const TextureData* TextureRenderAPIObject::getTextureData() const
+    const TextureData* Texture_RenderAPIObject::getTextureData() const
     {
         return m_Parent != nullptr ? m_Parent->m_Data : nullptr;
     }

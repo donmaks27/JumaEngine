@@ -19,11 +19,11 @@ namespace JumaEngine
     class VulkanRenderPass;
     class VulkanBuffer;
 
-    class MaterialRenderAPIObject_Vulkan : public MaterialRenderAPIObject, public VulkanContextObjectBase
+    class Material_RenderAPIObject_Vulkan : public Material_RenderAPIObject, public VulkanContextObjectBase
     {
     public:
-        MaterialRenderAPIObject_Vulkan() = default;
-        virtual ~MaterialRenderAPIObject_Vulkan() override;
+        Material_RenderAPIObject_Vulkan() = default;
+        virtual ~Material_RenderAPIObject_Vulkan() override;
 
         virtual bool render(VertexBuffer* vertexBuffer, const RenderOptions* renderOptions) override;
 
@@ -82,7 +82,7 @@ namespace JumaEngine
     };
 
     template<ShaderUniformType Type>
-    bool MaterialRenderAPIObject_Vulkan::updateBufferUniformValue(const jstringID& name, const uint32 frameIndex, VkDescriptorBufferInfo& outInfo)
+    bool Material_RenderAPIObject_Vulkan::updateBufferUniformValue(const jstringID& name, const uint32 frameIndex, VkDescriptorBufferInfo& outInfo)
     {
         if (m_Parent->isOverrideParam(name))
         {
@@ -90,13 +90,13 @@ namespace JumaEngine
         }
         if (m_Parent->isMaterialInstance())
         {
-            MaterialRenderAPIObject_Vulkan* baseMaterialObject = dynamic_cast<MaterialRenderAPIObject_Vulkan*>(m_Parent->getBaseMaterial()->getRenderAPIObject());
+            Material_RenderAPIObject_Vulkan* baseMaterialObject = dynamic_cast<Material_RenderAPIObject_Vulkan*>(m_Parent->getBaseMaterial()->getRenderAPIObject());
             return baseMaterialObject->updateBufferUniformValue<Type>(name, frameIndex, outInfo);
         }
         return false;
     }
     template<ShaderUniformType Type>
-    bool MaterialRenderAPIObject_Vulkan::updateBufferUniformValueData(const jstringID& name, const uint32 frameIndex, VkDescriptorBufferInfo& outInfo)
+    bool Material_RenderAPIObject_Vulkan::updateBufferUniformValueData(const jstringID& name, const uint32 frameIndex, VkDescriptorBufferInfo& outInfo)
     {
         jarray<UniformValue_Buffer>* buffers = m_UniformValues_Buffer.find(name);
         UniformValue_Buffer* bufferValue = buffers != nullptr ? buffers->findByIndex(static_cast<int32>(frameIndex)) : nullptr;

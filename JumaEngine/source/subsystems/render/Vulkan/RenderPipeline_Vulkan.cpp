@@ -1,12 +1,12 @@
 ﻿// Copyright 2022 Leonov Maksim. All Rights Reserved.
 
-#include "RenderPipelineRenderAPIObject_Vulkan.h"
+#include "RenderPipeline_Vulkan.h"
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
 #include "RenderOptions_Vulkan.h"
 #include "RenderSubsystem_Vulkan.h"
-#include "RenderTargetRenderAPIObject_Vulkan.h"
+#include "RenderTarget_Vulkan.h"
 #include "engine/Engine.h"
 #include "subsystems/window/WindowSubsystem.h"
 #include "subsystems/window/Vulkan/WindowSubsystem_Vulkan.h"
@@ -16,12 +16,12 @@
 
 namespace JumaEngine
 {
-    RenderPipelineRenderAPIObject_Vulkan::~RenderPipelineRenderAPIObject_Vulkan()
+    RenderPipeline_RenderAPIObject_Vulkan::~RenderPipeline_RenderAPIObject_Vulkan()
     {
         clearData();
     }
 
-    void RenderPipelineRenderAPIObject_Vulkan::clearData()
+    void RenderPipeline_RenderAPIObject_Vulkan::clearData()
     {
         VkDevice device = getRenderSubsystemObject()->getDevice();
 
@@ -46,16 +46,16 @@ namespace JumaEngine
         m_RenderImages.clear();
     }
 
-    bool RenderPipelineRenderAPIObject_Vulkan::initInternal()
+    bool RenderPipeline_RenderAPIObject_Vulkan::initInternal()
     {
         update();
         return true;
     }
-    bool RenderPipelineRenderAPIObject_Vulkan::onRenderPipelineUpdated()
+    bool RenderPipeline_RenderAPIObject_Vulkan::onRenderPipelineUpdated()
     {
         return update();
     }
-    bool RenderPipelineRenderAPIObject_Vulkan::updateRenderImages()
+    bool RenderPipeline_RenderAPIObject_Vulkan::updateRenderImages()
     {
         if (!m_Parent->isPipelineQueueValid())
         {
@@ -77,7 +77,7 @@ namespace JumaEngine
             case RenderPipelineStageType::RenderTarget:
                 {
                     const RenderTarget* renderTarget = m_Parent->getPipelineStageRenderTarget(stageName);
-                    const RenderTargetRenderAPIObject_Vulkan* renderObject = renderTarget != nullptr ? renderTarget->getRenderAPIObject<RenderTargetRenderAPIObject_Vulkan>() : nullptr;
+                    const RenderTarget_RenderAPIObject_Vulkan* renderObject = renderTarget != nullptr ? renderTarget->getRenderAPIObject<RenderTarget_RenderAPIObject_Vulkan>() : nullptr;
                     renderImage = renderObject != nullptr ? renderObject->getRenderImage() : nullptr;
                 }
                 break;
@@ -99,7 +99,7 @@ namespace JumaEngine
         }
         return true;
     }
-    bool RenderPipelineRenderAPIObject_Vulkan::updateSyncObjects()
+    bool RenderPipeline_RenderAPIObject_Vulkan::updateSyncObjects()
     {
         const int8 renderFrameCount = getRenderSubsystemObject()->getRenderFrameCount();
         if (renderFrameCount <= 0)
@@ -151,12 +151,12 @@ namespace JumaEngine
         return true;
     }
 
-    bool RenderPipelineRenderAPIObject_Vulkan::renderPipeline()
+    bool RenderPipeline_RenderAPIObject_Vulkan::renderPipeline()
     {
         getRenderSubsystemObject()->updateRenderFrameIndex();
         return waitForRenderFinish() && acquireNextSwapchainImages() && recordRenderCommandBuffer() && submitRenderCommandBuffer();
     }
-    bool RenderPipelineRenderAPIObject_Vulkan::waitForRenderFinish()
+    bool RenderPipeline_RenderAPIObject_Vulkan::waitForRenderFinish()
     {
         const int8 renderFrameIndex = getRenderSubsystemObject()->getRenderFrameIndex();
         if (!m_RenderFramesObjects.isValidIndex(renderFrameIndex))
@@ -173,7 +173,7 @@ namespace JumaEngine
         }
         return true;
     }
-    bool RenderPipelineRenderAPIObject_Vulkan::acquireNextSwapchainImages()
+    bool RenderPipeline_RenderAPIObject_Vulkan::acquireNextSwapchainImages()
     {
         m_SwapchainImageReadySemaphores.clear();
         for (const auto& pipelineStage : m_Parent->getPipelineStages())
@@ -201,7 +201,7 @@ namespace JumaEngine
         }
         return true;
     }
-    bool RenderPipelineRenderAPIObject_Vulkan::recordRenderCommandBuffer()
+    bool RenderPipeline_RenderAPIObject_Vulkan::recordRenderCommandBuffer()
     {
         if (!m_Parent->isPipelineQueueValid() || m_RenderImages.isEmpty())
         {
@@ -280,7 +280,7 @@ namespace JumaEngine
         renderFrameObjects.commandBuffer = commandBuffer;
         return true;
     }
-    bool RenderPipelineRenderAPIObject_Vulkan::submitRenderCommandBuffer()
+    bool RenderPipeline_RenderAPIObject_Vulkan::submitRenderCommandBuffer()
     {
         const int8 renderFrameIndex = getRenderSubsystemObject()->getRenderFrameIndex();
         RenderFrameObjects& renderFrameObjects = m_RenderFramesObjects[renderFrameIndex];

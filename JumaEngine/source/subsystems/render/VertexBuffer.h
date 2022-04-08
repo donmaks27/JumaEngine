@@ -14,11 +14,11 @@ namespace JumaEngine
     class VertexBuffer;
     class VertexBufferDataBase;
 
-    class VertexBufferRenderAPIObject : public RenderAPIObject<VertexBuffer>
+    class VertexBuffer_RenderAPIObject : public RenderAPIObject<VertexBuffer>
     {
     public:
-        VertexBufferRenderAPIObject() = default;
-        virtual ~VertexBufferRenderAPIObject() override = default;
+        VertexBuffer_RenderAPIObject() = default;
+        virtual ~VertexBuffer_RenderAPIObject() override = default;
 
         virtual bool render(const RenderOptions* renderOptions) = 0;
 
@@ -27,11 +27,11 @@ namespace JumaEngine
         inline const VertexBufferDataBase* getVertexData() const;
     };
 
-    class VertexBuffer final : public EngineContextObject, public RenderAPIWrapper<VertexBufferRenderAPIObject>
+    class VertexBuffer final : public EngineContextObject, public RenderAPIWrapper<VertexBuffer_RenderAPIObject>
     {
         JUMAENGINE_CLASS(VertexBuffer, EngineContextObject)
 
-        friend VertexBufferRenderAPIObject;
+        friend VertexBuffer_RenderAPIObject;
 
     public:
         VertexBuffer() = default;
@@ -47,7 +47,7 @@ namespace JumaEngine
 
     protected:
 
-        virtual VertexBufferRenderAPIObject* createRenderAPIObjectInternal() override;
+        virtual VertexBuffer_RenderAPIObject* createRenderAPIObjectInternal() override;
 
         virtual void clearInternal() override { clearData(); }
 
@@ -62,7 +62,7 @@ namespace JumaEngine
         void clearData();
     };
     
-    const VertexBufferDataBase* VertexBufferRenderAPIObject::getVertexData() const
+    const VertexBufferDataBase* VertexBuffer_RenderAPIObject::getVertexData() const
     {
         return m_Parent->m_VertexData;
     }

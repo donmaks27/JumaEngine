@@ -27,13 +27,13 @@ namespace JumaEngine
         jset<jstringID> dependencies;
     };
 
-    class RenderPipelineRenderAPIObject : public RenderAPIObject<RenderPipeline>
+    class RenderPipeline_RenderAPIObject : public RenderAPIObject<RenderPipeline>
     {
         friend RenderPipeline;
 
     public:
-        RenderPipelineRenderAPIObject() = default;
-        virtual ~RenderPipelineRenderAPIObject() override = default;
+        RenderPipeline_RenderAPIObject() = default;
+        virtual ~RenderPipeline_RenderAPIObject() override = default;
 
     protected:
 
@@ -43,7 +43,7 @@ namespace JumaEngine
         void renderPipelineStage(RenderOptions* options);
     };
 
-    class RenderPipeline final : public EngineContextObject, public RenderAPIWrapper<RenderPipelineRenderAPIObject>
+    class RenderPipeline final : public EngineContextObject, public RenderAPIWrapper<RenderPipeline_RenderAPIObject>
     {
         JUMAENGINE_CLASS(RenderPipeline, EngineContextObject)
 
@@ -74,7 +74,7 @@ namespace JumaEngine
         
     protected:
 
-        virtual RenderPipelineRenderAPIObject* createRenderAPIObjectInternal() override;
+        virtual RenderPipeline_RenderAPIObject* createRenderAPIObjectInternal() override;
 
         virtual void clearInternal() override { clearData(); }
 

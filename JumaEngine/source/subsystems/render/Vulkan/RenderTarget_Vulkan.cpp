@@ -1,6 +1,6 @@
 ﻿// Copyright 2022 Leonov Maksim. All Rights Reserved.
 
-#include "RenderTargetRenderAPIObject_Vulkan.h"
+#include "RenderTarget_Vulkan.h"
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
@@ -11,12 +11,12 @@
 
 namespace JumaEngine
 {
-    RenderTargetRenderAPIObject_Vulkan::~RenderTargetRenderAPIObject_Vulkan()
+    RenderTarget_RenderAPIObject_Vulkan::~RenderTarget_RenderAPIObject_Vulkan()
     {
         clearData();
     }
 
-    bool RenderTargetRenderAPIObject_Vulkan::initInternal()
+    bool RenderTarget_RenderAPIObject_Vulkan::initInternal()
     {
         const TextureFormat format = m_Parent->getFormat();
         const VkFormat vulkanFormat = GetVulkanFormatByTextureFormat(format);
@@ -50,7 +50,7 @@ namespace JumaEngine
         return true;
     }
 
-    void RenderTargetRenderAPIObject_Vulkan::clearData()
+    void RenderTarget_RenderAPIObject_Vulkan::clearData()
     {
         if (m_RenderImage != nullptr)
         {

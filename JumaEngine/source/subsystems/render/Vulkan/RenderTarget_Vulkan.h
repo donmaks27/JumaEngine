@@ -13,11 +13,11 @@ namespace JumaEngine
 {
     class VulkanRenderImage;
 
-    class RenderTargetRenderAPIObject_Vulkan : public RenderTargetRenderAPIObject, public VulkanContextObjectBase
+    class RenderTarget_RenderAPIObject_Vulkan : public RenderTarget_RenderAPIObject, public VulkanContextObjectBase
     {
     public:
-        RenderTargetRenderAPIObject_Vulkan() = default;
-        virtual ~RenderTargetRenderAPIObject_Vulkan() override;
+        RenderTarget_RenderAPIObject_Vulkan() = default;
+        virtual ~RenderTarget_RenderAPIObject_Vulkan() override;
 
         VulkanRenderImage* getRenderImage() const { return m_RenderImage; }
 

@@ -76,12 +76,12 @@ namespace JumaEngine
 
         virtual bool initInternal() override;
 
-        virtual ShaderRenderAPIObject* createShaderObject() override;
-        virtual MaterialRenderAPIObject* createMaterialObject() override;
-        virtual VertexBufferRenderAPIObject* createVertexBufferObject() override;
-        virtual TextureRenderAPIObject* createTextureObject() override;
-        virtual RenderTargetRenderAPIObject* createRenderTargetObject() override;
-        virtual RenderPipelineRenderAPIObject* createRenderPipelineObject() override;
+        virtual Shader_RenderAPIObject* createShaderObject() override;
+        virtual Material_RenderAPIObject* createMaterialObject() override;
+        virtual VertexBuffer_RenderAPIObject* createVertexBufferObject() override;
+        virtual Texture_RenderAPIObject* createTextureObject() override;
+        virtual RenderTarget_RenderAPIObject* createRenderTargetObject() override;
+        virtual RenderPipeline_RenderAPIObject* createRenderPipelineObject() override;
 
         virtual void render() override;
         virtual void waitForRenderFinish() override;

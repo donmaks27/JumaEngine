@@ -13,11 +13,11 @@ namespace JumaEngine
 {
     class VulkanImage;
 
-    class TextureRenderAPIObject_Vulkan : public TextureRenderAPIObject, public VulkanContextObjectBase
+    class Texture_RenderAPIObject_Vulkan : public Texture_RenderAPIObject, public VulkanContextObjectBase
     {
     public:
-        TextureRenderAPIObject_Vulkan() = default;
-        virtual ~TextureRenderAPIObject_Vulkan() override;
+        Texture_RenderAPIObject_Vulkan() = default;
+        virtual ~Texture_RenderAPIObject_Vulkan() override;
 
         VulkanImage* getImage() const { return m_Image; }
 

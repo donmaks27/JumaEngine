@@ -13,12 +13,12 @@
 namespace JumaEngine
 {
     class RenderPipeline;
-    class RenderPipelineRenderAPIObject;
-    class RenderTargetRenderAPIObject;
-    class ShaderRenderAPIObject;
-    class MaterialRenderAPIObject;
-    class VertexBufferRenderAPIObject;
-    class TextureRenderAPIObject;
+    class RenderPipeline_RenderAPIObject;
+    class RenderTarget_RenderAPIObject;
+    class Shader_RenderAPIObject;
+    class Material_RenderAPIObject;
+    class VertexBuffer_RenderAPIObject;
+    class Texture_RenderAPIObject;
     class RenderSubsystem;
 
     class RenderSubsystem_RenderAPIObject : public RenderAPIObject<RenderSubsystem>
@@ -38,12 +38,12 @@ namespace JumaEngine
         bool createMainWindow();
         void destroyMainWindow();
 
-        virtual ShaderRenderAPIObject* createShaderObject() = 0;
-        virtual MaterialRenderAPIObject* createMaterialObject() = 0;
-        virtual VertexBufferRenderAPIObject* createVertexBufferObject() = 0;
-        virtual TextureRenderAPIObject* createTextureObject() = 0;
-        virtual RenderTargetRenderAPIObject* createRenderTargetObject() = 0;
-        virtual RenderPipelineRenderAPIObject* createRenderPipelineObject() = 0;
+        virtual Shader_RenderAPIObject* createShaderObject() = 0;
+        virtual Material_RenderAPIObject* createMaterialObject() = 0;
+        virtual VertexBuffer_RenderAPIObject* createVertexBufferObject() = 0;
+        virtual Texture_RenderAPIObject* createTextureObject() = 0;
+        virtual RenderTarget_RenderAPIObject* createRenderTargetObject() = 0;
+        virtual RenderPipeline_RenderAPIObject* createRenderPipelineObject() = 0;
 
         virtual void render() = 0;
         virtual void waitForRenderFinish() {}
@@ -69,12 +69,12 @@ namespace JumaEngine
         window_id_type getMainWindowID() const { return m_MainWindowID; }
         bool shouldCloseMainWindow() const;
 
-        ShaderRenderAPIObject* createShaderObject();
-        MaterialRenderAPIObject* createMaterialObject();
-        VertexBufferRenderAPIObject* createVertexBufferObject();
-        TextureRenderAPIObject* createTextureObject();
-        RenderTargetRenderAPIObject* createRenderTargetObject();
-        RenderPipelineRenderAPIObject* createRenderPipelineObject();
+        Shader_RenderAPIObject* createShaderObject();
+        Material_RenderAPIObject* createMaterialObject();
+        VertexBuffer_RenderAPIObject* createVertexBufferObject();
+        Texture_RenderAPIObject* createTextureObject();
+        RenderTarget_RenderAPIObject* createRenderTargetObject();
+        RenderPipeline_RenderAPIObject* createRenderPipelineObject();
 
         void render();
         void waitForRenderFinish();

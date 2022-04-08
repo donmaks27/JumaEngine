@@ -76,32 +76,32 @@ namespace JumaEngine
         return getOwnerEngine()->getWindowSubsystem()->shouldCloseWindow(getMainWindowID());
     }
 
-    ShaderRenderAPIObject* RenderSubsystem::createShaderObject()
+    Shader_RenderAPIObject* RenderSubsystem::createShaderObject()
     {
         RenderAPIObjectType* renderObject = getRenderAPIObject();
         return renderObject != nullptr ? renderObject->createShaderObject() : nullptr;
     }
-    MaterialRenderAPIObject* RenderSubsystem::createMaterialObject()
+    Material_RenderAPIObject* RenderSubsystem::createMaterialObject()
     {
         RenderAPIObjectType* renderObject = getRenderAPIObject();
         return renderObject != nullptr ? renderObject->createMaterialObject() : nullptr;
     }
-    VertexBufferRenderAPIObject* RenderSubsystem::createVertexBufferObject()
+    VertexBuffer_RenderAPIObject* RenderSubsystem::createVertexBufferObject()
     {
         RenderAPIObjectType* renderObject = getRenderAPIObject();
         return renderObject != nullptr ? renderObject->createVertexBufferObject() : nullptr;
     }
-    TextureRenderAPIObject* RenderSubsystem::createTextureObject()
+    Texture_RenderAPIObject* RenderSubsystem::createTextureObject()
     {
         RenderAPIObjectType* renderObject = getRenderAPIObject();
         return renderObject != nullptr ? renderObject->createTextureObject() : nullptr;
     }
-    RenderTargetRenderAPIObject* RenderSubsystem::createRenderTargetObject()
+    RenderTarget_RenderAPIObject* RenderSubsystem::createRenderTargetObject()
     {
         RenderAPIObjectType* renderObject = getRenderAPIObject();
         return renderObject != nullptr ? renderObject->createRenderTargetObject() : nullptr;
     }
-    RenderPipelineRenderAPIObject* RenderSubsystem::createRenderPipelineObject()
+    RenderPipeline_RenderAPIObject* RenderSubsystem::createRenderPipelineObject()
     {
         RenderAPIObjectType* renderObject = getRenderAPIObject();
         return renderObject != nullptr ? renderObject->createRenderPipelineObject() : nullptr;

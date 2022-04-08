@@ -16,11 +16,11 @@ namespace JumaEngine
     class VulkanCommandBuffer;
     class VulkanRenderImage;
 
-    class RenderPipelineRenderAPIObject_Vulkan : public RenderPipelineRenderAPIObject, public VulkanContextObjectBase
+    class RenderPipeline_RenderAPIObject_Vulkan : public RenderPipeline_RenderAPIObject, public VulkanContextObjectBase
     {
     public:
-        RenderPipelineRenderAPIObject_Vulkan() = default;
-        virtual ~RenderPipelineRenderAPIObject_Vulkan() override;
+        RenderPipeline_RenderAPIObject_Vulkan() = default;
+        virtual ~RenderPipeline_RenderAPIObject_Vulkan() override;
 
     protected:
 

@@ -1,6 +1,6 @@
 ﻿// Copyright 2022 Leonov Maksim. All Rights Reserved.
 
-#include "VertexBufferRenderAPIObject_Vulkan.h"
+#include "VertexBuffer_Vulkan.h"
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
@@ -14,12 +14,12 @@
 
 namespace JumaEngine
 {
-    VertexBufferRenderAPIObject_Vulkan::~VertexBufferRenderAPIObject_Vulkan()
+    VertexBuffer_RenderAPIObject_Vulkan::~VertexBuffer_RenderAPIObject_Vulkan()
     {
         clearVulkanData();
     }
 
-    bool VertexBufferRenderAPIObject_Vulkan::initInternal()
+    bool VertexBuffer_RenderAPIObject_Vulkan::initInternal()
     {
         RenderSubsystem_RenderAPIObject_Vulkan* renderSubsystem = getRenderSubsystemObject();
         const VertexBufferDataBase* vertexData = getVertexData();
@@ -56,7 +56,7 @@ namespace JumaEngine
         return true;
     }
 
-    void VertexBufferRenderAPIObject_Vulkan::clearVulkanData()
+    void VertexBuffer_RenderAPIObject_Vulkan::clearVulkanData()
     {
         if (m_IndexBuffer != nullptr)
         {
@@ -70,7 +70,7 @@ namespace JumaEngine
         }
     }
 
-    void VertexBufferRenderAPIObject_Vulkan::draw(VkCommandBuffer commandBuffer)
+    void VertexBuffer_RenderAPIObject_Vulkan::draw(VkCommandBuffer commandBuffer)
     {
         VkBuffer vertexBuffer = m_VertexBuffer->get();
         const VkDeviceSize offset = 0;
@@ -87,7 +87,7 @@ namespace JumaEngine
         }
     }
 
-    bool VertexBufferRenderAPIObject_Vulkan::render(const RenderOptions* renderOptions)
+    bool VertexBuffer_RenderAPIObject_Vulkan::render(const RenderOptions* renderOptions)
     {
         if (renderOptions == nullptr)
         {

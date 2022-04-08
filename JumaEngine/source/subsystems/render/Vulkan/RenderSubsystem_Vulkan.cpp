@@ -6,13 +6,13 @@
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
-#include "MaterialRenderAPIObject_Vulkan.h"
+#include "Material_Vulkan.h"
 #include "RenderOptions_Vulkan.h"
-#include "ShaderRenderAPIObject_Vulkan.h"
-#include "TextureRenderAPIObject_Vulkan.h"
-#include "VertexBufferRenderAPIObject_Vulkan.h"
-#include "RenderPipelineRenderAPIObject_Vulkan.h"
-#include "RenderTargetRenderAPIObject_Vulkan.h"
+#include "Shader_Vulkan.h"
+#include "Texture_Vulkan.h"
+#include "VertexBuffer_Vulkan.h"
+#include "RenderPipeline_Vulkan.h"
+#include "RenderTarget_Vulkan.h"
 #include "engine/Engine.h"
 #include "jutils/jset.h"
 #include "subsystems/render/vertex/VertexBufferData.h"
@@ -486,29 +486,29 @@ namespace JumaEngine
         return false;
     }
 
-    ShaderRenderAPIObject* RenderSubsystem_RenderAPIObject_Vulkan::createShaderObject()
+    Shader_RenderAPIObject* RenderSubsystem_RenderAPIObject_Vulkan::createShaderObject()
     {
-        return createVulkanObject<ShaderRenderAPIObject_Vulkan>();
+        return createVulkanObject<Shader_RenderAPIObject_Vulkan>();
     }
-    MaterialRenderAPIObject* RenderSubsystem_RenderAPIObject_Vulkan::createMaterialObject()
+    Material_RenderAPIObject* RenderSubsystem_RenderAPIObject_Vulkan::createMaterialObject()
     {
-        return createVulkanObject<MaterialRenderAPIObject_Vulkan>();
+        return createVulkanObject<Material_RenderAPIObject_Vulkan>();
     }
-    VertexBufferRenderAPIObject* RenderSubsystem_RenderAPIObject_Vulkan::createVertexBufferObject()
+    VertexBuffer_RenderAPIObject* RenderSubsystem_RenderAPIObject_Vulkan::createVertexBufferObject()
     {
-        return createVulkanObject<VertexBufferRenderAPIObject_Vulkan>();
+        return createVulkanObject<VertexBuffer_RenderAPIObject_Vulkan>();
     }
-    TextureRenderAPIObject* RenderSubsystem_RenderAPIObject_Vulkan::createTextureObject()
+    Texture_RenderAPIObject* RenderSubsystem_RenderAPIObject_Vulkan::createTextureObject()
     {
-        return createVulkanObject<TextureRenderAPIObject_Vulkan>();
+        return createVulkanObject<Texture_RenderAPIObject_Vulkan>();
     }
-    RenderTargetRenderAPIObject* RenderSubsystem_RenderAPIObject_Vulkan::createRenderTargetObject()
+    RenderTarget_RenderAPIObject* RenderSubsystem_RenderAPIObject_Vulkan::createRenderTargetObject()
     {
-        return createVulkanObject<RenderTargetRenderAPIObject_Vulkan>();
+        return createVulkanObject<RenderTarget_RenderAPIObject_Vulkan>();
     }
-    RenderPipelineRenderAPIObject* RenderSubsystem_RenderAPIObject_Vulkan::createRenderPipelineObject()
+    RenderPipeline_RenderAPIObject* RenderSubsystem_RenderAPIObject_Vulkan::createRenderPipelineObject()
     {
-        return createVulkanObject<RenderPipelineRenderAPIObject_Vulkan>();
+        return createVulkanObject<RenderPipeline_RenderAPIObject_Vulkan>();
     }
 
     void RenderSubsystem_RenderAPIObject_Vulkan::render()

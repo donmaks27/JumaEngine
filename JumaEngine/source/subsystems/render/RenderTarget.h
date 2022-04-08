@@ -13,14 +13,14 @@ namespace JumaEngine
 {
     class RenderTarget;
 
-    class RenderTargetRenderAPIObject : public RenderAPIObject<RenderTarget>
+    class RenderTarget_RenderAPIObject : public RenderAPIObject<RenderTarget>
     {
     public:
-        RenderTargetRenderAPIObject() = default;
-        virtual ~RenderTargetRenderAPIObject() override = default;
+        RenderTarget_RenderAPIObject() = default;
+        virtual ~RenderTarget_RenderAPIObject() override = default;
     };
 
-    class RenderTarget final : public EngineContextObject, public RenderAPIWrapper<RenderTargetRenderAPIObject>
+    class RenderTarget final : public EngineContextObject, public RenderAPIWrapper<RenderTarget_RenderAPIObject>
     {
         JUMAENGINE_CLASS(RenderTarget, EngineContextObject)
 
@@ -35,7 +35,7 @@ namespace JumaEngine
 
     protected:
 
-        virtual RenderTargetRenderAPIObject* createRenderAPIObjectInternal() override;
+        virtual RenderTarget_RenderAPIObject* createRenderAPIObjectInternal() override;
 
         virtual void clearInternal() override { clearData(); }
 
