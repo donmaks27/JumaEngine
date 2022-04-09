@@ -8,24 +8,26 @@
 
 #include "subsystems/render/Texture.h"
 
+#include "subsystems/render/texture/TextureFormat.h"
+
 namespace JumaEngine
 {
     TextureFormat GetTextureFormatByOpenGLFormat(uint32 format);
     uint32 GetOpenGLFormatByTextureFormat(TextureFormat format);
 
-    class TextureObject_OpenGL : public TextureObject
+    class Texture_RenderAPIObject_OpenGL : public Texture_RenderAPIObject
     {
     public:
-        TextureObject_OpenGL() = default;
-        virtual ~TextureObject_OpenGL() override;
+        Texture_RenderAPIObject_OpenGL() = default;
+        virtual ~Texture_RenderAPIObject_OpenGL() override;
 
-        bool bind(uint32 index) const;
+        bool bind(const uint32 index) const { return bind(m_ImageIndex, index); }
+        static bool bind(uint32 imageIndex, uint32 index);
         static void unbind(uint32 index);
 
     protected:
 
         virtual bool initInternal() override;
-        virtual void clearInternal() override { clearOpenGL(); }
 
     private:
 

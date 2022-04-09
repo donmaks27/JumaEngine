@@ -10,11 +10,11 @@
 
 namespace JumaEngine
 {
-    class ShaderObject_OpenGL : public ShaderObject
+    class Shader_RenderAPIObject_OpenGL : public Shader_RenderAPIObject
     {
     public:
-        ShaderObject_OpenGL() = default;
-        virtual ~ShaderObject_OpenGL() override;
+        Shader_RenderAPIObject_OpenGL() = default;
+        virtual ~Shader_RenderAPIObject_OpenGL() override;
 
         bool activate() const;
         static void deactivate();
@@ -22,7 +22,6 @@ namespace JumaEngine
     protected:
 
         virtual bool initInternal() override;
-        virtual void clearInternal() override { clearOpenGL(); }
 
     private:
 

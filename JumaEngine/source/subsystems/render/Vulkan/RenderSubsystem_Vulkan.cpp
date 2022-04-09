@@ -511,14 +511,6 @@ namespace JumaEngine
         return createVulkanObject<RenderPipeline_RenderAPIObject_Vulkan>();
     }
 
-    void RenderSubsystem_RenderAPIObject_Vulkan::render()
-    {
-        WindowSubsystem* windowSubsystem = m_Parent->getOwnerEngine()->getWindowSubsystem();
-
-        windowSubsystem->startRender();
-        m_Parent->getRenderPipeline()->render();
-        windowSubsystem->finishRender();
-    }
     void RenderSubsystem_RenderAPIObject_Vulkan::waitForRenderFinish()
     {
         vkQueueWaitIdle(getQueue(VulkanQueueType::Graphics)->get());

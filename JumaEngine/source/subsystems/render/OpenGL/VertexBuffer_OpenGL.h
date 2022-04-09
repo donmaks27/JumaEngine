@@ -10,18 +10,17 @@
 
 namespace JumaEngine
 {
-    class VertexBufferObject_OpenGL : public VertexBufferObject
+    class VertexBuffer_RenderAPIObject_OpenGL : public VertexBuffer_RenderAPIObject
     {
     public:
-        VertexBufferObject_OpenGL() = default;
-        virtual ~VertexBufferObject_OpenGL() override;
-
+        VertexBuffer_RenderAPIObject_OpenGL() = default;
+        virtual ~VertexBuffer_RenderAPIObject_OpenGL() override;
+        
         virtual bool render(const RenderOptions* renderOptions) override;
 
     protected:
 
         virtual bool initInternal() override;
-        virtual void clearInternal() override { clearOpenGL(); }
 
     private:
 

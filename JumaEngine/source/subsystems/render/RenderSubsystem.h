@@ -45,7 +45,6 @@ namespace JumaEngine
         virtual RenderTarget_RenderAPIObject* createRenderTargetObject() = 0;
         virtual RenderPipeline_RenderAPIObject* createRenderPipelineObject() = 0;
 
-        virtual void render() = 0;
         virtual void waitForRenderFinish() {}
 
         void clearData();
@@ -88,7 +87,7 @@ namespace JumaEngine
 
     private:
 
-        RenderAPI m_CurrentRenderAPI = RenderAPI::Vulkan;
+        RenderAPI m_CurrentRenderAPI = RenderAPI::OpenGL;
         RenderPresentMode m_CurrentPresentMode = RenderPresentMode::VSYNC;
 
         RenderPipeline* m_RenderPipeline = nullptr;

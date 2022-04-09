@@ -31,7 +31,7 @@ namespace JumaEngine
         bool init(TextureFormat format, const math::uvector2& size);
 
         TextureFormat getFormat() const { return m_Format; }
-        math::uvector2 getSize() const { return m_Size; }
+        const math::uvector2& getSize() const { return m_Size; }
 
     protected:
 

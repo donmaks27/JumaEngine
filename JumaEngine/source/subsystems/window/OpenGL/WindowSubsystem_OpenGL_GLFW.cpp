@@ -6,81 +6,144 @@
 
 #include <GLFW/glfw3.h>
 
-#include "Window_OpenGL_GLFW.h"
-#include "engine/Engine.h"
-
 namespace JumaEngine
 {
-    bool WindowSubsystem_OpenGL_GLFW::initSubsystemInternal()
+    WindowSubsystem_RenderAPIObject_OpenGL_GLFW::~WindowSubsystem_RenderAPIObject_OpenGL_GLFW()
     {
-        if (!Super::initSubsystemInternal())
+        clearData_GLFW();
+    }
+
+    bool WindowSubsystem_RenderAPIObject_OpenGL_GLFW::initInternal()
+    {
+        if (!Super::initInternal())
         {
             return false;
         }
 
         if (glfwInit() == GLFW_FALSE)
         {
+#ifndef JUTILS_LOG_DISABLED
             const char* errorStr = nullptr;
             glfwGetError(&errorStr);
             JUMA_LOG(error, errorStr);
+#endif
             return false;
         }
 
-        glfwSetErrorCallback(WindowSubsystem_OpenGL_GLFW::GLFW_ErrorCallback);
+        glfwSetErrorCallback(WindowSubsystem_RenderAPIObject_OpenGL_GLFW::GLFW_ErrorCallback);
 
         glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+        if (!createWindowsFromParent())
+        {
+            JUMA_LOG(error, JSTR("Failed to create windows from parent object"));
+            return false;
+        }
         return true;
     }
-    void WindowSubsystem_OpenGL_GLFW::GLFW_ErrorCallback(int errorCode, const char* errorMessage)
+    void WindowSubsystem_RenderAPIObject_OpenGL_GLFW::GLFW_ErrorCallback(int errorCode, const char* errorMessage)
     {
         JUMA_LOG(error, JSTR("GLFW error. Code: ") + TO_JSTR(errorCode) + JSTR(". ") + errorMessage);
     }
 
-    void WindowSubsystem_OpenGL_GLFW::clearSubsystemInternal()
+    void WindowSubsystem_RenderAPIObject_OpenGL_GLFW::clearData_GLFW()
     {
-        glfwTerminate();
+        for (auto& description : m_Windows)
+        {
+            destroyWindow_GLFW(description.key, description.value);
+        }
+        m_Windows.clear();
 
-        Super::clearSubsystemInternal();
+        glfwTerminate();
     }
 
-    Window* WindowSubsystem_OpenGL_GLFW::createWindow(const jstring& title, const math::uvector2& size)
+    bool WindowSubsystem_RenderAPIObject_OpenGL_GLFW::createWindow(const window_id_type windowID)
     {
-        Window_OpenGL_GLFW* window = getOwnerEngine()->createObject<Window_OpenGL_GLFW>();
+        WindowDescription* description = findParentWindow(windowID);
+        if (description == nullptr)
+        {
+            JUMA_LOG(error, JSTR("Failed to get window data"));
+            return false;
+        }
+
+        // TODO: Move main window to window subsystem, use it as parent window
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+        GLFWwindow* window = glfwCreateWindow(static_cast<int>(description->size.x), static_cast<int>(description->size.y), *description->title, nullptr, nullptr);
         if (window == nullptr)
         {
-            return nullptr;
+            JUMA_LOG(error, JSTR("Failed to create GLFW window"));
+            return false;
         }
 
-        const window_id_type id = m_WindowIDs.getUID();
-        if (!window->initWindow(id, title, size))
+        WindowDescription_OpenGL_GLFW& windowDescription = m_Windows[windowID];
+        windowDescription.windowGLFW = window;
+        description->supportedPresentModes = { RenderPresentMode::VSYNC };
+
+        WindowUserObject* userObject = new WindowUserObject();
+        userObject->object = this;
+        userObject->windowID = windowID;
+        glfwSetWindowUserPointer(window, userObject);
+        glfwSetFramebufferSizeCallback(window, WindowSubsystem_RenderAPIObject_OpenGL_GLFW::GLFW_FramebufferResizeCallback);
+
+        // TODO: Do this in window's thread, not here
+        glfwMakeContextCurrent(window);
+        glfwSwapInterval(1);
+        return true;
+    }
+    void WindowSubsystem_RenderAPIObject_OpenGL_GLFW::GLFW_FramebufferResizeCallback(GLFWwindow* windowGLFW, int width, int height)
+    {
+        WindowUserObject* userObject = static_cast<WindowUserObject*>(glfwGetWindowUserPointer(windowGLFW));
+        if (userObject != nullptr)
         {
-            delete window;
-            return nullptr;
+            userObject->object->onWindowResized(userObject->windowID, { math::max<uint32>(width, 0), math::max<uint32>(height, 0) });
         }
-
-        m_Windows.add(id, window);
-        return window;
     }
 
-    Window* WindowSubsystem_OpenGL_GLFW::findWindow(const window_id_type windowID) const
+    void WindowSubsystem_RenderAPIObject_OpenGL_GLFW::destroyWindow(const window_id_type windowID)
     {
-        Window_OpenGL_GLFW* const* window = m_Windows.find(windowID);
-        return window != nullptr ? *window : nullptr;
+        WindowDescription_OpenGL_GLFW* description = m_Windows.find(windowID);
+        if (description == nullptr)
+        {
+            return;
+        }
+
+        destroyWindow_GLFW(windowID, *description);
+        m_Windows.remove(windowID);
+    }
+    void WindowSubsystem_RenderAPIObject_OpenGL_GLFW::destroyWindow_GLFW(const window_id_type windowID, WindowDescription_OpenGL_GLFW& description)
+    {
+        const WindowUserObject* userObject = static_cast<WindowUserObject*>(glfwGetWindowUserPointer(description.windowGLFW));
+        glfwSetWindowUserPointer(description.windowGLFW, nullptr);
+        delete userObject;
+
+        glfwDestroyWindow(description.windowGLFW);
+        description.windowGLFW = nullptr;
     }
 
-    void WindowSubsystem_OpenGL_GLFW::destroyWindow(window_id_type windowID)
+    bool WindowSubsystem_RenderAPIObject_OpenGL_GLFW::shouldCloseWindow(const window_id_type windowID) const
     {
-        Window_OpenGL_GLFW** windowPtr = m_Windows.find(windowID);
-        Window_OpenGL_GLFW* window = windowPtr != nullptr ? *windowPtr : nullptr;
-        if (window != nullptr)
+        const WindowDescription_OpenGL_GLFW* description = m_Windows.find(windowID);
+        if ((description == nullptr) || (description->windowGLFW == nullptr))
         {
-            window->destroy();
-            delete window;
-            m_Windows.remove(windowID);
+            JUMA_LOG(warning, JSTR("Can't find window"));
+            return false;
         }
+        return glfwWindowShouldClose(description->windowGLFW) != GLFW_FALSE;
+    }
+
+    void WindowSubsystem_RenderAPIObject_OpenGL_GLFW::finishRender()
+    {
+        Super::finishRender();
+        
+        for (const auto& window : m_Windows)
+        {
+            // TODO: Again, do it in window's thread
+            glfwSwapBuffers(window.value.windowGLFW);
+        }
+        glfwPollEvents();
     }
 }
 

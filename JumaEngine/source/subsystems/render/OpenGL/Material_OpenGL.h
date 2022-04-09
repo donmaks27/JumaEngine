@@ -10,18 +10,17 @@
 
 namespace JumaEngine
 {
-    class MaterialObject_OpenGL : public MaterialObject
+    class Material_RenderAPIObject_OpenGL : public Material_RenderAPIObject
     {
     public:
-        MaterialObject_OpenGL() = default;
-        virtual ~MaterialObject_OpenGL() override = default;
+        Material_RenderAPIObject_OpenGL() = default;
+        virtual ~Material_RenderAPIObject_OpenGL() override = default;
 
         virtual bool render(VertexBuffer* vertexBuffer, const RenderOptions* renderOptions) override;
 
     protected:
 
         virtual bool initInternal() override { return true; }
-        virtual void clearInternal() override {}
 
     private:
 

@@ -1,6 +1,6 @@
 ﻿// Copyright 2022 Leonov Maksim. All Rights Reserved.
 
-#include "ShaderObject_OpenGL.h"
+#include "Shader_OpenGL.h"
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_OPENGL)
 
@@ -29,12 +29,12 @@ jutils::jarray<jutils::jstring> LoadOpenGLShaderFile(const jutils::jstring& file
 
 namespace JumaEngine
 {
-    ShaderObject_OpenGL::~ShaderObject_OpenGL()
+    Shader_RenderAPIObject_OpenGL::~Shader_RenderAPIObject_OpenGL()
     {
         clearOpenGL();
     }
 
-    bool ShaderObject_OpenGL::initInternal()
+    bool Shader_RenderAPIObject_OpenGL::initInternal()
     {
         const jarray<uint32> shaders = {
             compileShader(m_Parent->getVertexShaderName() + JSTR(".vert"), ShaderStage::Vertex),
@@ -57,7 +57,7 @@ namespace JumaEngine
         m_ShaderProgramIndex = programIndex;
         return true;
     }
-    uint32 ShaderObject_OpenGL::compileShader(const jstring& fileName, const ShaderStage stage, const bool optional) const
+    uint32 Shader_RenderAPIObject_OpenGL::compileShader(const jstring& fileName, const ShaderStage stage, const bool optional) const
     {
         GLenum stageOpenGL;
         switch (stage)
@@ -114,7 +114,7 @@ namespace JumaEngine
         }
         return shaderIndex;
     }
-    uint32 ShaderObject_OpenGL::compileShaderProgram(const jarray<uint32>& shaders) const
+    uint32 Shader_RenderAPIObject_OpenGL::compileShaderProgram(const jarray<uint32>& shaders) const
     {
         const uint32 shaderProgramIndex = glCreateProgram();
         for (const auto& shader : shaders)
@@ -144,7 +144,7 @@ namespace JumaEngine
         return shaderProgramIndex;
     }
 
-    void ShaderObject_OpenGL::clearOpenGL()
+    void Shader_RenderAPIObject_OpenGL::clearOpenGL()
     {
         if (m_ShaderProgramIndex != 0)
         {
@@ -153,7 +153,7 @@ namespace JumaEngine
         }
     }
 
-    bool ShaderObject_OpenGL::activate() const
+    bool Shader_RenderAPIObject_OpenGL::activate() const
     {
         if (m_ShaderProgramIndex != 0)
         {
@@ -162,7 +162,7 @@ namespace JumaEngine
         }
         return false;
     }
-    void ShaderObject_OpenGL::deactivate()
+    void Shader_RenderAPIObject_OpenGL::deactivate()
     {
         glUseProgram(0);
     }

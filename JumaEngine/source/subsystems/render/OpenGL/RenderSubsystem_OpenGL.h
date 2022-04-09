@@ -10,25 +10,28 @@
 
 namespace JumaEngine
 {
-    class RenderSubsystem_OpenGL : public RenderSubsystem
+    class RenderSubsystem_RenderAPIObject_OpenGL : public RenderSubsystem_RenderAPIObject
     {
-        JUMAENGINE_CLASS(RenderSubsystem_OpenGL, RenderSubsystem)
+        using Super = RenderSubsystem_RenderAPIObject;
 
     public:
-        RenderSubsystem_OpenGL() = default;
-        virtual ~RenderSubsystem_OpenGL() override = default;
-
-        virtual void render() override;
-
-        virtual ShaderRenderAPIObject* createShaderObject() override;
-        virtual MaterialRenderAPIObject* createMaterialObject() override;
-        virtual VertexBufferRenderAPIObject* createVertexBufferObject() override;
-        virtual TextureRenderAPIObject* createTextureObject() override;
+        RenderSubsystem_RenderAPIObject_OpenGL() = default;
+        virtual ~RenderSubsystem_RenderAPIObject_OpenGL() override;
 
     protected:
 
-        virtual bool initSubsystemInternal() override;
-        virtual void clearSubsystemInternal() override;
+        virtual bool initInternal() override;
+
+        virtual Shader_RenderAPIObject* createShaderObject() override;
+        virtual Material_RenderAPIObject* createMaterialObject() override;
+        virtual VertexBuffer_RenderAPIObject* createVertexBufferObject() override;
+        virtual Texture_RenderAPIObject* createTextureObject() override;
+        virtual RenderTarget_RenderAPIObject* createRenderTargetObject() override;
+        virtual RenderPipeline_RenderAPIObject* createRenderPipelineObject() override;
+
+    private:
+
+        void clearData();
     };
 }
 

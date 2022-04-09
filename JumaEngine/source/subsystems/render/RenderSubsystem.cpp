@@ -109,11 +109,15 @@ namespace JumaEngine
 
     void RenderSubsystem::render()
     {
-        RenderAPIObjectType* renderObject = getRenderAPIObject();
-        if (renderObject != nullptr)
+        WindowSubsystem* windowSubsystem = getOwnerEngine()->getWindowSubsystem();
+        if ((m_RenderPipeline == nullptr) || (windowSubsystem == nullptr))
         {
-            renderObject->render();
+            return;
         }
+
+        windowSubsystem->startRender();
+        m_RenderPipeline->render();
+        windowSubsystem->finishRender();
     }
     void RenderSubsystem::waitForRenderFinish()
     {

@@ -1,12 +1,12 @@
 ﻿// Copyright 2022 Leonov Maksim. All Rights Reserved.
 
-#include "TextureObject_OpenGL.h"
-
-#include "subsystems/render/texture/TextureData.h"
+#include "Texture_OpenGL.h"
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_OPENGL)
 
 #include <GL/glew.h>
+
+#include "subsystems/render/texture/TextureData.h"
 
 namespace JumaEngine
 {
@@ -31,12 +31,12 @@ namespace JumaEngine
         return 0;
     }
 
-    TextureObject_OpenGL::~TextureObject_OpenGL()
+    Texture_RenderAPIObject_OpenGL::~Texture_RenderAPIObject_OpenGL()
     {
         clearOpenGL();
     }
 
-    bool TextureObject_OpenGL::initInternal()
+    bool Texture_RenderAPIObject_OpenGL::initInternal()
     {
         const TextureData* data = getTextureData();
         const math::vector2& size = data->getSize();
@@ -68,7 +68,7 @@ namespace JumaEngine
         return true;
     }
 
-    void TextureObject_OpenGL::clearOpenGL()
+    void Texture_RenderAPIObject_OpenGL::clearOpenGL()
     {
         if (m_ImageIndex != 0)
         {
@@ -77,19 +77,19 @@ namespace JumaEngine
         }
     }
 
-    bool TextureObject_OpenGL::bind(const uint32 index) const
+    bool Texture_RenderAPIObject_OpenGL::bind(const uint32 imageIndex, const uint32 index)
     {
-        if (m_ImageIndex == 0)
+        if (imageIndex == 0)
         {
             return false;
         }
 
         glActiveTexture(GL_TEXTURE0 + index);
         glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, m_ImageIndex);
+        glBindTexture(GL_TEXTURE_2D, imageIndex);
         return true;
     }
-    void TextureObject_OpenGL::unbind(const uint32 index)
+    void Texture_RenderAPIObject_OpenGL::unbind(const uint32 index)
     {
         glActiveTexture(GL_TEXTURE0 + index);
         glBindTexture(GL_TEXTURE_2D, 0);

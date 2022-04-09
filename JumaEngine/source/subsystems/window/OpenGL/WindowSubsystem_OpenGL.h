@@ -10,13 +10,16 @@
 
 namespace JumaEngine
 {
-    class WindowSubsystem_OpenGL : public WindowSubsystem
+    struct WindowDescription_OpenGL : WindowDescription_RenderAPI
+    {};
+
+    class WindowSubsystem_RenderAPIObject_OpenGL : public WindowSubsystem_RenderAPIObject
     {
-        JUMAENGINE_ABSTRACT_CLASS(WindowSubsystem_OpenGL, WindowSubsystem)
+        using Super = WindowSubsystem_RenderAPIObject;
 
     public:
-        WindowSubsystem_OpenGL() = default;
-        virtual ~WindowSubsystem_OpenGL() override = default;
+        WindowSubsystem_RenderAPIObject_OpenGL() = default;
+        virtual ~WindowSubsystem_RenderAPIObject_OpenGL() override = default;
     };
 }
 

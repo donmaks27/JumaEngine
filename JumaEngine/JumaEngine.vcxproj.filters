@@ -109,12 +109,6 @@
     <ClCompile Include="source\subsystems\render\texture\TextureData.cpp">
       <Filter>JumaEngine\subsystems\render\texture</Filter>
     </ClCompile>
-    <ClCompile Include="source\subsystems\window\OpenGL\Window_OpenGL.cpp">
-      <Filter>JumaEngine\subsystems\window\OpenGL</Filter>
-    </ClCompile>
-    <ClCompile Include="source\subsystems\window\OpenGL\Window_OpenGL_GLFW.cpp">
-      <Filter>JumaEngine\subsystems\window\OpenGL</Filter>
-    </ClCompile>
     <ClCompile Include="source\subsystems\window\OpenGL\WindowSubsystem_OpenGL.cpp">
       <Filter>JumaEngine\subsystems\window\OpenGL</Filter>
     </ClCompile>
@@ -122,18 +116,6 @@
       <Filter>JumaEngine\subsystems\window\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="source\subsystems\render\OpenGL\RenderSubsystem_OpenGL.cpp">
-      <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
-    </ClCompile>
-    <ClCompile Include="source\subsystems\render\OpenGL\ShaderObject_OpenGL.cpp">
-      <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
-    </ClCompile>
-    <ClCompile Include="source\subsystems\render\OpenGL\MaterialObject_OpenGL.cpp">
-      <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
-    </ClCompile>
-    <ClCompile Include="source\subsystems\render\OpenGL\TextureObject_OpenGL.cpp">
-      <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
-    </ClCompile>
-    <ClCompile Include="source\subsystems\render\OpenGL\VertexBufferObject_OpenGL.cpp">
       <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="source\subsystems\render\RenderSubsystem.cpp">
@@ -168,6 +150,24 @@
     </ClCompile>
     <ClCompile Include="source\subsystems\render\Vulkan\RenderPipeline_Vulkan.cpp">
       <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="source\subsystems\render\OpenGL\Shader_OpenGL.cpp">
+      <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="source\subsystems\render\OpenGL\Texture_OpenGL.cpp">
+      <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="source\subsystems\render\OpenGL\VertexBuffer_OpenGL.cpp">
+      <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="source\subsystems\render\OpenGL\Material_OpenGL.cpp">
+      <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="source\subsystems\render\OpenGL\RenderTarget_OpenGL.cpp">
+      <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="source\subsystems\render\OpenGL\RenderPipeline_OpenGL.cpp">
+      <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -450,12 +450,6 @@
     <ClInclude Include="source\subsystems\render\texture\TextureData.h">
       <Filter>JumaEngine\subsystems\render\texture</Filter>
     </ClInclude>
-    <ClInclude Include="source\subsystems\window\OpenGL\Window_OpenGL.h">
-      <Filter>JumaEngine\subsystems\window\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="source\subsystems\window\OpenGL\Window_OpenGL_GLFW.h">
-      <Filter>JumaEngine\subsystems\window\OpenGL</Filter>
-    </ClInclude>
     <ClInclude Include="source\subsystems\window\OpenGL\WindowSubsystem_OpenGL.h">
       <Filter>JumaEngine\subsystems\window\OpenGL</Filter>
     </ClInclude>
@@ -463,18 +457,6 @@
       <Filter>JumaEngine\subsystems\window\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="source\subsystems\render\OpenGL\RenderSubsystem_OpenGL.h">
-      <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="source\subsystems\render\OpenGL\ShaderObject_OpenGL.h">
-      <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="source\subsystems\render\OpenGL\MaterialObject_OpenGL.h">
-      <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="source\subsystems\render\OpenGL\TextureObject_OpenGL.h">
-      <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="source\subsystems\render\OpenGL\VertexBufferObject_OpenGL.h">
       <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="source\jutils\jmemory.h">
@@ -548,6 +530,30 @@
     </ClInclude>
     <ClInclude Include="source\subsystems\render\Vulkan\RenderPipeline_Vulkan.h">
       <Filter>JumaEngine\subsystems\render\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\window\OpenGL\WindowSubsystemInfo_OpenGL.h">
+      <Filter>JumaEngine\subsystems\window\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\OpenGL\Shader_OpenGL.h">
+      <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\OpenGL\Texture_OpenGL.h">
+      <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\OpenGL\VertexBuffer_OpenGL.h">
+      <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\OpenGL\Material_OpenGL.h">
+      <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\OpenGL\RenderTarget_OpenGL.h">
+      <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\OpenGL\RenderPipeline_OpenGL.h">
+      <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\OpenGL\RenderSubsystemInfo_OpenGL.h">
+      <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

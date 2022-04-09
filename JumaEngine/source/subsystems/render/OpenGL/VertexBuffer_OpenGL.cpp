@@ -1,6 +1,6 @@
 ﻿// Copyright 2022 Leonov Maksim. All Rights Reserved.
 
-#include "VertexBufferObject_OpenGL.h"
+#include "VertexBuffer_OpenGL.h"
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_OPENGL)
 
@@ -10,15 +10,15 @@
 
 namespace JumaEngine
 {
-    VertexBufferObject_OpenGL::~VertexBufferObject_OpenGL()
+    VertexBuffer_RenderAPIObject_OpenGL::~VertexBuffer_RenderAPIObject_OpenGL()
     {
         clearOpenGL();
     }
 
-    bool VertexBufferObject_OpenGL::initInternal()
+    bool VertexBuffer_RenderAPIObject_OpenGL::initInternal()
     {
         const VertexBufferDataBase* data = getVertexData();
-        const uint32 vertexSize = data->getVertexSize();
+        const GLsizei vertexSize = static_cast<GLsizei>(data->getVertexSize());
         const uint32 indexCount = m_Parent->getIndexCount();
         const jarray<VertexComponentDescription>& vertexComponents = data->getVertexComponents();
 
@@ -51,7 +51,7 @@ namespace JumaEngine
             const VertexComponentDescription& componentDescriprion = vertexComponents[index];
 
             GLenum componentType;
-            uint32 componentSize;
+            GLint componentSize;
             switch (componentDescriprion.type)
             {
             case VertexComponentType::Float: 
@@ -86,7 +86,7 @@ namespace JumaEngine
         return true;
     }
 
-    void VertexBufferObject_OpenGL::clearOpenGL()
+    void VertexBuffer_RenderAPIObject_OpenGL::clearOpenGL()
     {
         if (m_VerticesVAO != 0)
         {
@@ -105,7 +105,7 @@ namespace JumaEngine
         }
     }
 
-    bool VertexBufferObject_OpenGL::render(const RenderOptions* renderOptions)
+    bool VertexBuffer_RenderAPIObject_OpenGL::render(const RenderOptions* renderOptions)
     {
         if (m_VerticesVAO == 0)
         {

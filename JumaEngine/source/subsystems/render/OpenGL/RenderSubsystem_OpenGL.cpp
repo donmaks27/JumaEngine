@@ -6,15 +6,75 @@
 
 #include <GL/glew.h>
 
-#include "subsystems/render/RenderOptions.h"
-#include "ShaderObject_OpenGL.h"
-#include "MaterialObject_OpenGL.h"
-#include "TextureObject_OpenGL.h"
-#include "VertexBufferObject_OpenGL.h"
+#include "Material_OpenGL.h"
+#include "RenderPipeline_OpenGL.h"
+#include "RenderTarget_OpenGL.h"
+#include "Shader_OpenGL.h"
+#include "Texture_OpenGL.h"
+#include "VertexBuffer_OpenGL.h"
 
 namespace JumaEngine
 {
-    bool RenderSubsystem_OpenGL::initSubsystemInternal()
+    RenderSubsystem_RenderAPIObject_OpenGL::~RenderSubsystem_RenderAPIObject_OpenGL()
+    {
+        clearData();
+    }
+
+    bool RenderSubsystem_RenderAPIObject_OpenGL::initInternal()
+    {
+        if (!Super::initInternal())
+        {
+            return false;
+        }
+
+        if (!createMainWindow())
+        {
+            return false;
+        }
+
+        const GLenum glewInitResult = glewInit();
+        if (glewInitResult != GLEW_OK)
+        {
+            JUMA_LOG(error, reinterpret_cast<const char*>(glewGetErrorString(glewInitResult)));
+            return false;
+        }
+
+        m_Parent->getRenderPipeline()->createRenderAPIObject();
+        return true;
+    }
+
+    void RenderSubsystem_RenderAPIObject_OpenGL::clearData()
+    {
+        destroyMainWindow();
+    }
+
+    Shader_RenderAPIObject* RenderSubsystem_RenderAPIObject_OpenGL::createShaderObject()
+    {
+        return new Shader_RenderAPIObject_OpenGL();
+    }
+    Material_RenderAPIObject* RenderSubsystem_RenderAPIObject_OpenGL::createMaterialObject()
+    {
+        return new Material_RenderAPIObject_OpenGL();
+    }
+    VertexBuffer_RenderAPIObject* RenderSubsystem_RenderAPIObject_OpenGL::createVertexBufferObject()
+    {
+        return new VertexBuffer_RenderAPIObject_OpenGL();
+    }
+    Texture_RenderAPIObject* RenderSubsystem_RenderAPIObject_OpenGL::createTextureObject()
+    {
+        return new Texture_RenderAPIObject_OpenGL();
+    }
+    RenderTarget_RenderAPIObject* RenderSubsystem_RenderAPIObject_OpenGL::createRenderTargetObject()
+    {
+        return new RenderTarget_RenderAPIObject_OpenGL();
+    }
+    RenderPipeline_RenderAPIObject* RenderSubsystem_RenderAPIObject_OpenGL::createRenderPipelineObject()
+    {
+        return new RenderPipeline_RenderAPIObject_OpenGL();
+    }
+
+
+    /*bool RenderSubsystem_OpenGL::initSubsystemInternal()
     {
         if (!Super::initSubsystemInternal())
         {
@@ -78,7 +138,7 @@ namespace JumaEngine
     TextureObject* RenderSubsystem_OpenGL::createTextureObject()
     {
         return new TextureObject_OpenGL();
-    }
+    }*/
 }
 
 #endif

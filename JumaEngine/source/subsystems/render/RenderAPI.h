@@ -8,6 +8,7 @@ namespace JumaEngine
 {
     enum class RenderAPI : uint8
     {
-        Vulkan
+        Vulkan,
+        OpenGL
     };
 }

@@ -83,7 +83,6 @@ namespace JumaEngine
         virtual RenderTarget_RenderAPIObject* createRenderTargetObject() override;
         virtual RenderPipeline_RenderAPIObject* createRenderPipelineObject() override;
 
-        virtual void render() override;
         virtual void waitForRenderFinish() override;
 
     private:

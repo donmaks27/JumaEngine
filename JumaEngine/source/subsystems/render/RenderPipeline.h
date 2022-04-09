@@ -37,7 +37,7 @@ namespace JumaEngine
 
     protected:
 
-        virtual bool onRenderPipelineUpdated() = 0;
+        virtual bool onRenderPipelineUpdated() { return true; }
 
         virtual bool renderPipeline() = 0;
         void renderPipelineStage(RenderOptions* options);

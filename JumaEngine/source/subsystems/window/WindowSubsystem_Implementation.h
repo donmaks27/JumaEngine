@@ -6,6 +6,7 @@
 
 #include "WindowSubsystemInfo.h"
 #include "Vulkan/WindowSubsystemInfo_Vulkan.h"
+#include "OpenGL/WindowSubsystemInfo_OpenGL.h"
 
 namespace JumaEngine
 {
@@ -14,6 +15,7 @@ namespace JumaEngine
         switch (renderAPI)
         {
         case RenderAPI::Vulkan: return WindowSubsystemInfo<RenderAPI::Vulkan>::createRenderAPIObject();
+        case RenderAPI::OpenGL: return WindowSubsystemInfo<RenderAPI::OpenGL>::createRenderAPIObject();
         default: ;
         }
         JUMA_LOG(error, JSTR("Unsupported render API"));
