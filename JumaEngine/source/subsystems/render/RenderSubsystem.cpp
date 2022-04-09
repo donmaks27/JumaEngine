@@ -18,15 +18,6 @@ namespace JumaEngine
         }
     }
 
-    bool RenderSubsystem_RenderAPIObject::createMainWindow()
-    {
-        return m_Parent->createMainWindow();
-    }
-    void RenderSubsystem_RenderAPIObject::destroyMainWindow()
-    {
-        return m_Parent->destroyMainWindow();
-    }
-
     RenderSubsystem_RenderAPIObject* RenderSubsystem::createRenderAPIObjectInternal()
     {
         return createRenderSubsystemRenderAPIObject(getRenderAPI());
@@ -49,31 +40,8 @@ namespace JumaEngine
         m_RenderPipeline = nullptr;
 
         clearRenderAPIObject();
-        destroyMainWindow();
 
         Super::clearSubsystemInternal();
-    }
-
-    bool RenderSubsystem::createMainWindow()
-    {
-        if (m_MainWindowID != INVALID_WINDOW_ID)
-        {
-            return true;
-        }
-        m_MainWindowID = getOwnerEngine()->getWindowSubsystem()->createWindow(JSTR("JumaEngine"), { 800, 600 });
-        return m_MainWindowID != INVALID_WINDOW_ID;
-    }
-    void RenderSubsystem::destroyMainWindow()
-    {
-        if (m_MainWindowID != INVALID_WINDOW_ID)
-        {
-            getOwnerEngine()->getWindowSubsystem()->destroyWindow(m_MainWindowID);
-            m_MainWindowID = INVALID_WINDOW_ID;
-        }
-    }
-    bool RenderSubsystem::shouldCloseMainWindow() const
-    {
-        return getOwnerEngine()->getWindowSubsystem()->shouldCloseWindow(getMainWindowID());
     }
 
     Shader_RenderAPIObject* RenderSubsystem::createShaderObject()

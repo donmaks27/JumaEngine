@@ -81,7 +81,6 @@ namespace JumaEngine
         }
         return windowID;
     }
-
     void WindowSubsystem::destroyWindow(const window_id_type windowID)
     {
         if (!isValid())
@@ -102,11 +101,46 @@ namespace JumaEngine
         }
         m_Windows.remove(windowID);
     }
-
     bool WindowSubsystem::shouldCloseWindow(const window_id_type windowID) const
     {
         const RenderAPIObjectType* renderObject = getRenderAPIObject();
         return (renderObject != nullptr) && renderObject->shouldCloseWindow(windowID);
+    }
+
+    window_id_type WindowSubsystem::createMainWindow(const jstring& title, const math::uvector2& size)
+    {
+        if (!isValid())
+        {
+            JUMA_LOG(error, JSTR("Subsystem not initialized"));
+            return INVALID_WINDOW_ID;
+        }
+        if (m_MainWindowID != INVALID_WINDOW_ID)
+        {
+            JUMA_LOG(warning, JSTR("Main window already created"));
+            return m_MainWindowID;
+        }
+
+        const window_id_type windowID = createWindow(title, size);
+        if (windowID == INVALID_WINDOW_ID)
+        {
+            JUMA_LOG(error, JSTR("Failed to create main window"));
+            return INVALID_WINDOW_ID;
+        }
+
+        m_MainWindowID = windowID;
+        return m_MainWindowID;
+    }
+    void WindowSubsystem::destroyMainWindow()
+    {
+        if (!isValid())
+        {
+            JUMA_LOG(error, JSTR("Subsystem not initialized"));
+            return;
+        }
+        if (m_MainWindowID != INVALID_WINDOW_ID)
+        {
+            destroyWindow(m_MainWindowID);
+        }
     }
 
     void WindowSubsystem::startRender()

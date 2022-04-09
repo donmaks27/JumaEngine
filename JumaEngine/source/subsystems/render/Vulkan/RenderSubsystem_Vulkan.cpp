@@ -7,7 +7,6 @@
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
 #include "Material_Vulkan.h"
-#include "RenderOptions_Vulkan.h"
 #include "Shader_Vulkan.h"
 #include "Texture_Vulkan.h"
 #include "VertexBuffer_Vulkan.h"
@@ -66,17 +65,24 @@ namespace JumaEngine
     }
     bool RenderSubsystem_RenderAPIObject_Vulkan::initVulkan()
     {
-        if (!createVulkanInstance() || !createMainWindow())
+        if (!createVulkanInstance())
         {
             return false;
         }
+
+        WindowSubsystem* windowSubsystem = m_Parent->getOwnerEngine()->getWindowSubsystem();
+        if (windowSubsystem->createMainWindow(JSTR("JumaEngine"), { 800, 600 }) == INVALID_WINDOW_ID)
+        {
+            return false;
+        }
+
         if (!pickPhysicalDevice() || !createDevice() || !createCommandPools())
         {
             return false;
         }
 
-        const window_id_type mainWindowID = m_Parent->getMainWindowID();
-        WindowSubsystem_RenderAPIObject_Vulkan* windowRenderObject = m_Parent->getOwnerEngine()->getWindowSubsystem()->getRenderAPIObject<WindowSubsystem_RenderAPIObject_Vulkan>();
+        const window_id_type mainWindowID = windowSubsystem->getMainWindowID();
+        WindowSubsystem_RenderAPIObject_Vulkan* windowRenderObject = windowSubsystem->getRenderAPIObject<WindowSubsystem_RenderAPIObject_Vulkan>();
         if (!windowRenderObject->createVulkanSwapchain(mainWindowID))
         {
             return false;
@@ -96,15 +102,15 @@ namespace JumaEngine
     {
         clearData();
 
-        const window_id_type mainWindowID = m_Parent->getMainWindowID();
-
         if (m_VulkanInstance != nullptr)
         {
+            WindowSubsystem* windowSubsystem = m_Parent->getOwnerEngine()->getWindowSubsystem();
+            const window_id_type mainWindowID = windowSubsystem->getMainWindowID();
             if (m_Device != nullptr)
             {
                 vkDeviceWaitIdle(m_Device);
 
-                WindowSubsystem_RenderAPIObject_Vulkan* windowRenderObject = m_Parent->getOwnerEngine()->getWindowSubsystem()->getRenderAPIObject<WindowSubsystem_RenderAPIObject_Vulkan>();
+                WindowSubsystem_RenderAPIObject_Vulkan* windowRenderObject = windowSubsystem->getRenderAPIObject<WindowSubsystem_RenderAPIObject_Vulkan>();
                 if (windowRenderObject != nullptr)
                 {
                     windowRenderObject->destroyVulkanSwapchain(mainWindowID);
@@ -139,7 +145,7 @@ namespace JumaEngine
 
             m_PhysicalDevice = nullptr;
 
-            destroyMainWindow();
+            windowSubsystem->destroyMainWindow();
 
 #if JDEBUG
             DestroyDebugUtilsMessengerEXT(m_VulkanInstance, m_DebugMessenger, nullptr);
@@ -265,7 +271,7 @@ namespace JumaEngine
 
     bool RenderSubsystem_RenderAPIObject_Vulkan::pickPhysicalDevice()
     {
-        const window_id_type mainWindowID = m_Parent->getMainWindowID();
+        const window_id_type mainWindowID = m_Parent->getOwnerEngine()->getWindowSubsystem()->getMainWindowID();
 
         WindowSubsystem_RenderAPIObject_Vulkan* windowRenderObject = m_Parent->getOwnerEngine()->getWindowSubsystem()->getRenderAPIObject<WindowSubsystem_RenderAPIObject_Vulkan>();
         VkSurfaceKHR surface = windowRenderObject != nullptr ? windowRenderObject->getWindowVulkanSurface(mainWindowID) : nullptr;

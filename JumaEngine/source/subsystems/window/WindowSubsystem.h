@@ -78,8 +78,12 @@ namespace JumaEngine
 
         window_id_type createWindow(const jstring& title, const math::uvector2& size);
         void destroyWindow(window_id_type windowID);
-
         bool shouldCloseWindow(window_id_type windowID) const;
+
+        window_id_type getMainWindowID() const { return m_MainWindowID; }
+        window_id_type createMainWindow(const jstring& title, const math::uvector2& size);
+        void destroyMainWindow();
+        bool shouldCloseMainWindow() const { return shouldCloseWindow(getMainWindowID()); }
 
         void startRender();
         void finishRender();
@@ -94,5 +98,7 @@ namespace JumaEngine
 
         juid<window_id_type> m_WindowIDs;
         jmap<window_id_type, WindowDescription> m_Windows;
+
+        window_id_type m_MainWindowID = INVALID_WINDOW_ID;
     };
 }

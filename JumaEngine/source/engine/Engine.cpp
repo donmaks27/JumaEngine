@@ -190,7 +190,7 @@ namespace JumaEngine
 
         RenderPipeline* renderPipeline = m_RenderSubsystem->getRenderPipeline();
         renderPipeline->addRenderTargetPipelineStage(JSTR("MainPass"), m_RenderTarget);
-        renderPipeline->addWindowPipelineStage(JSTR("WindowPass"), m_RenderSubsystem->getMainWindowID());
+        renderPipeline->addWindowPipelineStage(JSTR("WindowPass"), m_WindowSubsytem->getMainWindowID());
         renderPipeline->addPipelineStageDependency(JSTR("WindowPass"), JSTR("MainPass"));
         renderPipeline->validatePipelineQueue();
         return true;
@@ -199,7 +199,7 @@ namespace JumaEngine
     void Engine::startEngineLoop()
     {
         std::chrono::time_point<std::chrono::steady_clock> lastTimestamp = std::chrono::steady_clock::now();
-        while (!m_RenderSubsystem->shouldCloseMainWindow())
+        while (!m_WindowSubsytem->shouldCloseMainWindow())
         {
             const std::chrono::time_point<std::chrono::steady_clock> timestamp = std::chrono::steady_clock::now();
     		const double deltaTime = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(timestamp - lastTimestamp).count()) / 1000000.0;

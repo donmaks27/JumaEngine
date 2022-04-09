@@ -31,7 +31,7 @@ namespace JumaEngine
 
     private:
 
-        void clearData();
+        void clearOpenGL();
     };
 }
 

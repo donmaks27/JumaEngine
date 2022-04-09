@@ -8,7 +8,6 @@
 
 #include "RenderAPI.h"
 #include "RenderPresentMode.h"
-#include "subsystems/window/WindowID.h"
 
 namespace JumaEngine
 {
@@ -34,9 +33,6 @@ namespace JumaEngine
     protected:
 
         virtual bool initInternal() override { return true; }
-
-        bool createMainWindow();
-        void destroyMainWindow();
 
         virtual Shader_RenderAPIObject* createShaderObject() = 0;
         virtual Material_RenderAPIObject* createMaterialObject() = 0;
@@ -65,9 +61,6 @@ namespace JumaEngine
 
         RenderPipeline* getRenderPipeline() const { return m_RenderPipeline; }
 
-        window_id_type getMainWindowID() const { return m_MainWindowID; }
-        bool shouldCloseMainWindow() const;
-
         Shader_RenderAPIObject* createShaderObject();
         Material_RenderAPIObject* createMaterialObject();
         VertexBuffer_RenderAPIObject* createVertexBufferObject();
@@ -91,11 +84,5 @@ namespace JumaEngine
         RenderPresentMode m_CurrentPresentMode = RenderPresentMode::VSYNC;
 
         RenderPipeline* m_RenderPipeline = nullptr;
-
-        window_id_type m_MainWindowID = INVALID_WINDOW_ID;
-
-
-        bool createMainWindow();
-        void destroyMainWindow();
     };
 }
