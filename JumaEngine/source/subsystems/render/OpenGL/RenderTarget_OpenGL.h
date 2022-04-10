@@ -16,7 +16,7 @@ namespace JumaEngine
         RenderTarget_RenderAPIObject_OpenGL() = default;
         virtual ~RenderTarget_RenderAPIObject_OpenGL() override;
 
-        uint32 getColorImageIndex() const { return m_ColorImageIndex; }
+        uint32 getColorImageIndex() const { return m_ResolveColorAttachmentIndex == 0 ? m_ColorAttachmentIndex : m_ResolveColorAttachmentIndex; }
 
         void startRender();
         void finishRender();
@@ -28,8 +28,11 @@ namespace JumaEngine
     private:
 
         uint32 m_FramebufferIndex = 0;
-        uint32 m_ColorImageIndex = 0;
-        uint32 m_DepthRenderbufferIndex = 0;
+        uint32 m_ColorAttachmentIndex = 0;
+        uint32 m_DepthAttachmentIndex = 0;
+
+        uint32 m_ResolveFramebufferIndex = 0;
+        uint32 m_ResolveColorAttachmentIndex = 0;
 
 
         void clearData();

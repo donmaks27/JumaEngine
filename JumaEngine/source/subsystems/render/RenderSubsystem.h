@@ -8,6 +8,7 @@
 
 #include "RenderAPI.h"
 #include "RenderPresentMode.h"
+#include "texture/TextureSamples.h"
 
 namespace JumaEngine
 {
@@ -57,6 +58,8 @@ namespace JumaEngine
         virtual ~RenderSubsystem() override = default;
 
         RenderAPI getRenderAPI() const { return m_CurrentRenderAPI; }
+        TextureSamples getMaxTextureSamples() const { return m_MaxTextureSamples; }
+
         RenderPresentMode getPresentMode() const { return m_CurrentPresentMode; }
 
         RenderPipeline* getRenderPipeline() const { return m_RenderPipeline; }
@@ -81,6 +84,8 @@ namespace JumaEngine
     private:
 
         RenderAPI m_CurrentRenderAPI = RenderAPI::OpenGL;
+        TextureSamples m_MaxTextureSamples = TextureSamples::SAMPLES_64;
+
         RenderPresentMode m_CurrentPresentMode = RenderPresentMode::VSYNC;
 
         RenderPipeline* m_RenderPipeline = nullptr;

@@ -4,7 +4,6 @@
 
 #include "RenderSubsystem.h"
 #include "engine/Engine.h"
-#include "texture/TextureData.h"
 
 namespace JumaEngine
 {
@@ -13,19 +12,21 @@ namespace JumaEngine
         clearData();
     }
 
-    bool Texture::init(const TextureData* data)
+    bool Texture::init(const TextureFormat format, const math::uvector2& size, const uint8* data)
     {
         if (isValid())
         {
             JUMA_LOG(warning, JSTR("Texture already initialized"));
             return false;
         }
-        if ((data == nullptr) || !data->isValid())
+        if ((data == nullptr) || (format == TextureFormat::None) || (data == nullptr))
         {
-            JUMA_LOG(warning, JSTR("Invalid texture data"));
+            JUMA_LOG(error, JSTR("Invalid input params"));
             return false;
         }
 
+        m_Size = size;
+        m_Format = format;
         m_Data = data;
         markAsInitialized();
         return true;
@@ -39,6 +40,7 @@ namespace JumaEngine
     void Texture::clearData()
     {
         clearRenderAPIObject();
+
         if (m_Data != nullptr)
         {
             delete m_Data;

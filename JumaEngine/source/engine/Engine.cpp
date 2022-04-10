@@ -14,7 +14,6 @@
 #include "subsystems/render/VertexBuffer.h"
 #include "subsystems/render/RenderSubsystem.h"
 #include "subsystems/render/RenderTarget.h"
-#include "subsystems/render/texture/TextureData.h"
 #include "subsystems/render/vertex/Vertex2D.h"
 #include "subsystems/render/vertex/Vertex2D_TexCoord.h"
 #include "subsystems/render/vertex/VertexBufferData.h"
@@ -115,25 +114,18 @@ namespace JumaEngine
         m_WindowSubsytem->createRenderAPIObject();
         m_RenderSubsystem->createRenderAPIObject();
 
-        TextureData* textureData = new TextureData();
-        textureData->init(
-            { 2, 2 }, TextureFormat::RGBA, 
-            new uint8[16]
-            {
-                255, 0, 0, 0,
-                0, 255, 0, 0,
-                0, 0, 255, 0,
-                0, 0, 0, 0
-            }
-        );
-
         m_Texture = createObject<Texture>();
-        m_Texture->init(textureData);
+        m_Texture->init(TextureFormat::RGBA, { 2, 2 }, new uint8[16]{
+            255, 0, 0, 0,
+            0, 255, 0, 0,
+            0, 0, 255, 0,
+            0, 0, 0, 0
+        });
         m_Texture->createRenderAPIObject();
 
         m_Shader = createObject<Shader>();
         m_Shader->init(
-            JSTR("content/shaders/ui_texture"), JSTR("content/shaders/ui_texture"),
+            JSTR("content/shaders/ui_postProcess"), JSTR("content/shaders/ui_texture"),
             { { JSTR("uTexture"), ShaderUniform{ 0, ShaderUniformType::Texture, { ShaderStage::Fragment } } } }
         );
         /*m_Shader->init(
@@ -146,21 +138,21 @@ namespace JumaEngine
         m_Material->setParamValue<ShaderUniformType::Texture>(JSTR("uTexture"), m_Texture);
         m_Material->createRenderAPIObject();
 
-        VertexBufferData<Vertex2D>* vertexData = new VertexBufferData<Vertex2D>();
+        VertexBufferData<Vertex2D_TexCoord>* vertexData = new VertexBufferData<Vertex2D_TexCoord>();
         vertexData->setVertices({
-            { { 0.0f, 0.0f } },
-            { { 0.5f, 0.0f } },
-            { { 0.0f, 0.5f } },
-            { { 0.0f, 0.5f } },
-            { { 0.5f, 0.0f } },
-            { { 0.5f, 0.5f } }
+            { {  0.0f, -0.5f }, { 0.0f, 0.0f } },
+            { {  0.6f,  0.0f }, { 1.0f, 0.0f } },
+            { { -0.3f,  0.0f }, { 0.0f, 1.0f } },
+            { { -0.3f,  0.0f }, { 0.0f, 1.0f } },
+            { {  0.6f,  0.0f }, { 1.0f, 0.0f } },
+            { {  0.3f,  0.5f }, { 1.0f, 1.0f } }
         });
         m_VertexBuffer = createObject<VertexBuffer>();
         m_VertexBuffer->init(vertexData);
         m_VertexBuffer->createRenderAPIObject();
 
         m_RenderTarget = createObject<RenderTarget>();
-        m_RenderTarget->init(TextureFormat::RGBA, { 800, 600 });
+        m_RenderTarget->init(TextureFormat::RGBA, m_WindowSubsytem->findWindow(m_WindowSubsytem->getMainWindowID())->size);
         m_RenderTarget->createRenderAPIObject();
 
         m_ShaderPP = createObject<Shader>();
@@ -236,6 +228,7 @@ namespace JumaEngine
 
     void Engine::render(const RenderOptions* options)
     {
+        //m_Material->render(m_VertexBuffer, options);
         if (options->renderTargetName == JSTR("MainPass"))
         {
             m_Material->render(m_VertexBuffer, options);

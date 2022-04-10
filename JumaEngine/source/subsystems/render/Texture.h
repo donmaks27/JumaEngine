@@ -6,6 +6,9 @@
 #include "RenderAPIObject.h"
 #include "engine/EngineContextObject.h"
 
+#include "jutils/math/vector2.h"
+#include "texture/TextureFormat.h"
+
 namespace JumaEngine
 {
     class TextureData;
@@ -16,23 +19,22 @@ namespace JumaEngine
     public:
         Texture_RenderAPIObject() = default;
         virtual ~Texture_RenderAPIObject() override = default;
-
-    protected:
-
-        inline const TextureData* getTextureData() const;
     };
 
     class Texture : public EngineContextObject, public RenderAPIWrapper<Texture_RenderAPIObject>
     {
         JUMAENGINE_CLASS(Texture, EngineContextObject)
 
-        friend Texture_RenderAPIObject;
-
     public:
         Texture() = default;
         virtual ~Texture() override;
 
-        bool init(const TextureData* data);
+        bool init(TextureFormat format, const math::uvector2& size, const uint8* data);
+
+        const math::uvector2& getSize() const { return m_Size; }
+        TextureFormat getFormat() const { return m_Format; }
+
+        const uint8* getData() const { return m_Data; }
 
     protected:
 
@@ -42,14 +44,12 @@ namespace JumaEngine
 
     private:
 
-        const TextureData* m_Data = nullptr;
+        math::uvector2 m_Size = { 0, 0 };
+        TextureFormat m_Format = TextureFormat::None;
+
+        const uint8* m_Data = nullptr;
 
 
         void clearData();
     };
-
-    const TextureData* Texture_RenderAPIObject::getTextureData() const
-    {
-        return m_Parent != nullptr ? m_Parent->m_Data : nullptr;
-    }
 }

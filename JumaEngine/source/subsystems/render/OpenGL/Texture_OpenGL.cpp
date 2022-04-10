@@ -6,8 +6,6 @@
 
 #include <GL/glew.h>
 
-#include "subsystems/render/texture/TextureData.h"
-
 namespace JumaEngine
 {
     TextureFormat GetTextureFormatByOpenGLFormat(const uint32 format)
@@ -38,10 +36,9 @@ namespace JumaEngine
 
     bool Texture_RenderAPIObject_OpenGL::initInternal()
     {
-        const TextureData* data = getTextureData();
-        const math::vector2& size = data->getSize();
+        const math::vector2& size = m_Parent->getSize();
 
-        const GLenum format = GetOpenGLFormatByTextureFormat(data->getFormat());
+        const GLenum format = GetOpenGLFormatByTextureFormat(m_Parent->getFormat());
         if (format == 0)
         {
             JUMA_LOG(error, JSTR("Unsupported texture format"));
@@ -55,7 +52,7 @@ namespace JumaEngine
         glTexImage2D(
             GL_TEXTURE_2D, 0, GL_RGBA,
             static_cast<GLsizei>(size.x), static_cast<GLsizei>(size.y), 0, 
-            format, GL_UNSIGNED_BYTE, data->getData()
+            format, GL_UNSIGNED_BYTE, m_Parent->getData()
         );
         glGenerateMipmap(GL_TEXTURE_2D);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);

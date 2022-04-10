@@ -5,7 +5,6 @@
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
 #include "RenderSubsystem_Vulkan.h"
-#include "subsystems/render/texture/TextureData.h"
 #include "vulkanObjects/VulkanImage.h"
 
 namespace JumaEngine
@@ -26,13 +25,12 @@ namespace JumaEngine
 
     bool Texture_RenderAPIObject_Vulkan::initInternal()
     {
-        const TextureData* data = getTextureData();
-        const math::uvector2& size = data->getSize();
+        const math::uvector2& size = m_Parent->getSize();
         const uint32 mipLevels = static_cast<uint32>(std::floor(std::log2(math::max(size.x, size.y)))) + 1;
 
         m_Image = getRenderSubsystemObject()->createVulkanObject<VulkanImage>();
         m_Image->init(
-            data->getSize(), mipLevels, VK_SAMPLE_COUNT_1_BIT, GetVulkanFormatByTextureFormat(data->getFormat()), 
+            size, mipLevels, VK_SAMPLE_COUNT_1_BIT, GetVulkanFormatByTextureFormat(m_Parent->getFormat()), 
             { VulkanQueueType::Graphics, VulkanQueueType::Transfer }, 
             VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
             VMA_MEMORY_USAGE_GPU_ONLY, 0
@@ -44,7 +42,7 @@ namespace JumaEngine
             return false;
         }
 
-        if (!m_Image->copyDataToImage(data->getData()))
+        if (!m_Image->copyDataToImage(m_Parent->getData()))
         {
             JUMA_LOG(error, JSTR("Failed to copy data to vulkan image"));
             delete m_Image;

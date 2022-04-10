@@ -8,6 +8,7 @@
 
 #include "texture/TextureFormat.h"
 #include "jutils/math/vector2.h"
+#include "texture/TextureSamples.h"
 
 namespace JumaEngine
 {
@@ -33,6 +34,9 @@ namespace JumaEngine
         TextureFormat getFormat() const { return m_Format; }
         const math::uvector2& getSize() const { return m_Size; }
 
+        TextureSamples getTextureSamples() const { return m_TextureSamples; }
+        bool shouldResolveMultisampling() const { return m_ShouldResolveMultisampling && (m_TextureSamples != TextureSamples::SAMPLES_1); }
+        
     protected:
 
         virtual RenderTarget_RenderAPIObject* createRenderAPIObjectInternal() override;
@@ -43,6 +47,9 @@ namespace JumaEngine
 
         TextureFormat m_Format = TextureFormat::None;
         math::uvector2 m_Size = { 0, 0 };
+
+        TextureSamples m_TextureSamples = TextureSamples::SAMPLES_4;
+        bool m_ShouldResolveMultisampling = true;
 
 
         void clearData();
