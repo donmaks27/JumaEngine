@@ -108,7 +108,24 @@ namespace JumaEngine
     }
     void Material::clearUniformValues()
     {
+        for (const auto& textureValue : m_UniformValues_Texture)
+        {
+            if (textureValue.value != nullptr)
+            {
+                textureValue.value->onClear.unbind(this, &Material::onTextureCleared);
+            }
+        }
+        for (const auto& renderTargetValue : m_UniformValues_RenderTarget)
+        {
+            if (renderTargetValue.value != nullptr)
+            {
+                renderTargetValue.value->onClear.unbind(this, &Material::onRenderTargetCleared);
+            }
+        }
+
         m_UniformValues_Mat4.clear();
+        m_UniformValues_Texture.clear();
+        m_UniformValues_RenderTarget.clear();
     }
 
     bool Material::render(VertexBuffer* vertexBuffer, const RenderOptions* renderOptions)
@@ -188,28 +205,15 @@ namespace JumaEngine
     {
         bool paramChanged = false;
         const ShaderUniformType type = getParamType(paramName);
-        if (isMaterialInstance())
+        switch (type)
         {
-            switch (type)
+        case ShaderUniformType::Mat4:
             {
-            case ShaderUniformType::Mat4:
-                paramChanged = m_UniformValues_Mat4.remove(paramName);
-                break;
-            case ShaderUniformType::Texture:
-                paramChanged = m_UniformValues_Texture.remove(paramName);
-                break;
-            case ShaderUniformType::RenderTarget:
-                paramChanged = m_UniformValues_RenderTarget.remove(paramName);
-                break;
-
-            default: ;
-            }
-        }
-        else
-        {
-            switch (type)
-            {
-            case ShaderUniformType::Mat4:
+                if (isMaterialInstance())
+                {
+                    paramChanged = m_UniformValues_Mat4.remove(paramName);
+                }
+                else
                 {
                     math::matrix4& value = m_UniformValues_Mat4[paramName];
                     if (!math::isMatricesEqual(value, math::matrix4(1)))
@@ -218,34 +222,138 @@ namespace JumaEngine
                         paramChanged = true;
                     }
                 }
-                break;
-            case ShaderUniformType::Texture:
-                {
-                    Texture*& value = m_UniformValues_Texture[paramName];
-                    if (value != nullptr)
-                    {
-                        value = nullptr;
-                        paramChanged = true;
-                    }
-                }
-                break;
-            case ShaderUniformType::RenderTarget:
-                {
-                    RenderTarget*& value = m_UniformValues_RenderTarget[paramName];
-                    if (value != nullptr)
-                    {
-                        value = nullptr;
-                        paramChanged = true;
-                    }
-                }
-                break;
-
-            default: ;
             }
+            break;
+
+        case ShaderUniformType::Texture:
+            {
+                Texture** valuePtr = m_UniformValues_Texture.find(paramName);
+                if (valuePtr != nullptr)
+                {
+                    Texture* value = *valuePtr;
+                    if (value != nullptr)
+                    {
+                        value->onClear.unbind(this, &Material::onTextureCleared);
+                    }
+                    if (isMaterialInstance())
+                    {
+                        m_UniformValues_Texture.remove(paramName);
+                        paramChanged = true;
+                    }
+                    else if (value != nullptr)
+                    {
+                        *valuePtr = nullptr;
+                        paramChanged = true;
+                    }
+                }
+            }
+            break;
+
+        case ShaderUniformType::RenderTarget:
+            {
+                RenderTarget** valuePtr = m_UniformValues_RenderTarget.find(paramName);
+                if (valuePtr != nullptr)
+                {
+                    RenderTarget* value = *valuePtr;
+                    if (value != nullptr)
+                    {
+                        value->onClear.unbind(this, &Material::onRenderTargetCleared);
+                    }
+                    if (isMaterialInstance())
+                    {
+                        m_UniformValues_RenderTarget.remove(paramName);
+                        paramChanged = true;
+                    }
+                    else if (value != nullptr)
+                    {
+                        *valuePtr = nullptr;
+                        paramChanged = true;
+                    }
+                }
+            }
+            break;
+
+        default: ;
         }
         if (paramChanged)
         {
             notifyMaterialParamChanged(paramName);
+        }
+    }
+
+    bool Material::setParamValueInternal_Texture(const jstringID& paramName, const texture_value_type& value)
+    {
+        const texture_value_type* prevTexturePtr = m_UniformValues_Texture.find(paramName);
+        const texture_value_type prevTexture = prevTexturePtr != nullptr ? *prevTexturePtr : nullptr;
+        const texture_value_type newValue = (value != nullptr) && value->isValid() ? value : nullptr;
+        if (prevTexture == newValue)
+        {
+            return false;
+        }
+
+        if (prevTexture != nullptr)
+        {
+            prevTexture->onClear.unbind(this, &Material::onTextureCleared);
+        }
+        if (newValue != nullptr)
+        {
+            newValue->onClear.bind(this, &Material::onTextureCleared);
+        }
+
+        m_UniformValues_Texture[paramName] = newValue;
+        return true;
+    }
+    void Material::onTextureCleared(Texture* texture)
+    {
+        jarray<jstringID> paramNames;
+        for (const auto& textureParam : m_UniformValues_Texture)
+        {
+            if (textureParam.value == texture)
+            {
+                paramNames.add(textureParam.key);
+            }
+        }
+        for (const auto& paramName : paramNames)
+        {
+            resetParamValue(paramName);
+        }
+    }
+
+    bool Material::setParamValueInternal_RenderTarget(const jstringID& paramName, const render_target_value_type& value)
+    {
+        const render_target_value_type* prevRenderTargerPtr = m_UniformValues_RenderTarget.find(paramName);
+        const render_target_value_type prevRenderTarger = prevRenderTargerPtr != nullptr ? *prevRenderTargerPtr : nullptr;
+        const render_target_value_type newValue = (value != nullptr) && value->isValid() ? value : nullptr;
+        if (prevRenderTarger == newValue)
+        {
+            return false;
+        }
+
+        if (prevRenderTarger != nullptr)
+        {
+            prevRenderTarger->onClear.unbind(this, &Material::onRenderTargetCleared);
+        }
+        if (newValue != nullptr)
+        {
+            newValue->onClear.bind(this, &Material::onRenderTargetCleared);
+        }
+
+        m_UniformValues_RenderTarget[paramName] = newValue;
+        return true;
+    }
+    void Material::onRenderTargetCleared(RenderTarget* texture)
+    {
+        jarray<jstringID> paramNames;
+        for (const auto& textureParam : m_UniformValues_RenderTarget)
+        {
+            if (textureParam.value == texture)
+            {
+                paramNames.add(textureParam.key);
+            }
+        }
+        for (const auto& paramName : paramNames)
+        {
+            resetParamValue(paramName);
         }
     }
 }

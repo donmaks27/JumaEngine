@@ -149,7 +149,6 @@ namespace JumaEngine
         description.depthFormat = m_CurrentSettings.depthFormat;
         description.sampleCount = VK_SAMPLE_COUNT_1_BIT;
         description.shouldUseDepth = true;
-        description.shouldResolveMultisampling = false;
         description.renderToSwapchain = true;
         m_RenderPass = getRenderSubsystemObject()->getRenderPass(description);
         if (m_RenderPass == nullptr)

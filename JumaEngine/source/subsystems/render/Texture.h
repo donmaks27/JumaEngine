@@ -6,6 +6,7 @@
 #include "RenderAPIObject.h"
 #include "engine/EngineContextObject.h"
 
+#include "jutils/jdelegate_multicast.h"
 #include "jutils/math/vector2.h"
 #include "texture/TextureFormat.h"
 
@@ -21,6 +22,8 @@ namespace JumaEngine
         virtual ~Texture_RenderAPIObject() override = default;
     };
 
+    CREATE_JUTILS_MULTICAST_DELEGATE_OneParam(OnTextureEvent, Texture*, texture);
+
     class Texture : public EngineContextObject, public RenderAPIWrapper<Texture_RenderAPIObject>
     {
         JUMAENGINE_CLASS(Texture, EngineContextObject)
@@ -28,6 +31,9 @@ namespace JumaEngine
     public:
         Texture() = default;
         virtual ~Texture() override;
+
+        OnTextureEvent onClear;
+
 
         bool init(TextureFormat format, const math::uvector2& size, const uint8* data);
 
@@ -40,7 +46,7 @@ namespace JumaEngine
 
         virtual Texture_RenderAPIObject* createRenderAPIObjectInternal() override;
 
-        virtual void clearInternal() override { clearData(); }
+        virtual void clearInternal() override;
 
     private:
 

@@ -9,6 +9,10 @@ namespace JumaEngine
 {
     Texture::~Texture()
     {
+        if (isValid())
+        {
+            onClear.call(this);
+        }
         clearData();
     }
 
@@ -37,6 +41,13 @@ namespace JumaEngine
         return getOwnerEngine()->getRenderSubsystem()->createTextureObject();
     }
 
+    void Texture::clearInternal()
+    {
+        onClear.call(this);
+        onClear.clear();
+
+        clearData();
+    }
     void Texture::clearData()
     {
         clearRenderAPIObject();

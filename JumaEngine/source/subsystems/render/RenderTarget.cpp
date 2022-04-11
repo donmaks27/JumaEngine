@@ -9,6 +9,10 @@ namespace JumaEngine
 {
     RenderTarget::~RenderTarget()
     {
+        if (isValid())
+        {
+            onClear.call(this);
+        }
         clearData();
     }
 
@@ -36,6 +40,13 @@ namespace JumaEngine
         return true;
     }
 
+    void RenderTarget::clearInternal()
+    {
+        onClear.call(this);
+        onClear.clear();
+
+        clearData();
+    }
     void RenderTarget::clearData()
     {
         clearRenderAPIObject();

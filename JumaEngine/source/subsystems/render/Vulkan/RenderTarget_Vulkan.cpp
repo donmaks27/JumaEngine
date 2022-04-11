@@ -31,7 +31,6 @@ namespace JumaEngine
         renderPassDescription.depthFormat = VK_FORMAT_D32_SFLOAT;
         renderPassDescription.sampleCount = GetSampleCountByTextureSamples(m_Parent->getTextureSamples());
         renderPassDescription.shouldUseDepth = true;
-        renderPassDescription.shouldResolveMultisampling = m_Parent->shouldResolveMultisampling();
         renderPassDescription.renderToSwapchain = false;
         VulkanRenderPass* renderPass = getRenderSubsystemObject()->getRenderPass(renderPassDescription);
         if (renderPass == nullptr)

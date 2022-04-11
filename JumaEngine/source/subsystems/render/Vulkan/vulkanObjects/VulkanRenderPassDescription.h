@@ -22,10 +22,9 @@ namespace JumaEngine
         VkSampleCountFlagBits sampleCount = VK_SAMPLE_COUNT_1_BIT;
 
         bool shouldUseDepth = true;
-        bool shouldResolveMultisampling = false;
         bool renderToSwapchain = true;
 
-        bool isResolveEnabled() const { return shouldResolveMultisampling && (sampleCount != VK_SAMPLE_COUNT_1_BIT); }
+        bool isResolveEnabled() const { return sampleCount != VK_SAMPLE_COUNT_1_BIT; }
 
         struct CompatiblePredicate
         {

@@ -126,16 +126,6 @@ namespace JumaEngine
         bool getParamValueInternal<ShaderUniformType::Texture>(const jstringID& paramName, texture_value_type& outValue) const { return getParamValueInternal<ShaderUniformType::Texture>(m_UniformValues_Texture, paramName, outValue); }
         template<>
         bool getParamValueInternal<ShaderUniformType::RenderTarget>(const jstringID& paramName, render_target_value_type& outValue) const { return getParamValueInternal<ShaderUniformType::RenderTarget>(m_UniformValues_RenderTarget, paramName, outValue); }
-
-        template<ShaderUniformType Type>
-        bool setParamValueInternal(const jstringID& paramName, const typename MaterialUniformInfo<Type>::value_type& value) { return false; }
-        template<>
-        bool setParamValueInternal<ShaderUniformType::Mat4>(const jstringID& paramName, const mat4_value_type& value) { return setParamValueInternal<ShaderUniformType::Mat4>(m_UniformValues_Mat4, paramName, value); }
-        template<>
-        bool setParamValueInternal<ShaderUniformType::Texture>(const jstringID& paramName, const texture_value_type& value) { return setParamValueInternal<ShaderUniformType::Texture>(m_UniformValues_Texture, paramName, value); }
-        template<>
-        bool setParamValueInternal<ShaderUniformType::RenderTarget>(const jstringID& paramName, const render_target_value_type& value) { return setParamValueInternal<ShaderUniformType::RenderTarget>(m_UniformValues_RenderTarget, paramName, value); }
-
         template<ShaderUniformType Type>
         static bool getParamValueInternal(const jmap<jstringID, typename MaterialUniformInfo<Type>::value_type>& valuesMap, 
             const jstringID& paramName, typename MaterialUniformInfo<Type>::value_type& outValue)
@@ -148,12 +138,24 @@ namespace JumaEngine
             }
             return false;
         }
+
         template<ShaderUniformType Type>
-        static bool setParamValueInternal(jmap<jstringID, typename MaterialUniformInfo<Type>::value_type>& valuesMap, 
-            const jstringID& paramName, const typename MaterialUniformInfo<Type>::value_type& value)
+        bool setParamValueInternal(const jstringID& paramName, const typename MaterialUniformInfo<Type>::value_type& value) { return false; }
+        template<>
+        bool setParamValueInternal<ShaderUniformType::Mat4>(const jstringID& paramName, const mat4_value_type& value)
         {
-            valuesMap[paramName] = value;
+            m_UniformValues_Mat4[paramName] = value;
             return true;
         }
+        template<>
+        bool setParamValueInternal<ShaderUniformType::Texture>(const jstringID& paramName, const texture_value_type& value) { return setParamValueInternal_Texture(paramName, value); }
+        template<>
+        bool setParamValueInternal<ShaderUniformType::RenderTarget>(const jstringID& paramName, const render_target_value_type& value) { return setParamValueInternal_RenderTarget(paramName, value); }
+
+        bool setParamValueInternal_Texture(const jstringID& paramName, const texture_value_type& value);
+        void onTextureCleared(Texture* texture);
+
+        bool setParamValueInternal_RenderTarget(const jstringID& paramName, const render_target_value_type& value);
+        void onRenderTargetCleared(RenderTarget* texture);
     };
 }
