@@ -48,7 +48,7 @@ namespace JumaEngine
 
         VkSampleCountFlagBits getSampleCount() const { return m_CurrentSettings.sampleCount; }
         VkFormat getFormat() const { return m_CurrentSettings.surfaceFormat.format; }
-        math::uvector2 getSize() const { return m_CurrentSettings.size; }
+        const math::uvector2& getSize() const { return m_CurrentSettings.size; }
         int32 getImageCount() const { return m_SwapchainImages.getSize(); }
 
         VkSwapchainKHR get() const { return m_Swapchain; }

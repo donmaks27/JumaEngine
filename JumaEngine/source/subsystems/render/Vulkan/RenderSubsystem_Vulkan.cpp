@@ -573,9 +573,9 @@ namespace JumaEngine
         }
     }
 
-    VulkanRenderPass* RenderSubsystem_RenderAPIObject_Vulkan::createRenderPass(const VulkanRenderPassDescription& description)
+    VulkanRenderPass* RenderSubsystem_RenderAPIObject_Vulkan::getRenderPass(const VulkanRenderPassDescription& description)
     {
-        if ((description.colorFormat == VK_FORMAT_UNDEFINED) || (description.depthFormat == VK_FORMAT_UNDEFINED))
+        if ((description.colorFormat == VK_FORMAT_UNDEFINED) || (description.shouldUseDepth && (description.depthFormat == VK_FORMAT_UNDEFINED)))
         {
             return nullptr;
         }

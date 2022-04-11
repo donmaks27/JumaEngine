@@ -19,6 +19,8 @@ namespace JumaEngine
             m_Parent = nullptr;
         }
 
+        ParentType* getParent() const { return m_Parent; }
+
     protected:
 
         ParentType* m_Parent = nullptr;

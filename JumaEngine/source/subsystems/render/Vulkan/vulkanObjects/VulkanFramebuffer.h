@@ -10,12 +10,12 @@
 
 #include <vulkan/vulkan_core.h>
 
+#include "VulkanImage.h"
 #include "jutils/math/vector2.h"
 
 namespace JumaEngine
 {
-    class VulkanCommandBuffer;
-    class VulkanImage;
+    class VulkanSwapchain;
     class VulkanRenderPass;
 
     class VulkanFramebuffer : public VulkanContextObject
@@ -24,40 +24,38 @@ namespace JumaEngine
         VulkanFramebuffer() = default;
         virtual ~VulkanFramebuffer() override;
 
-        bool create(VulkanRenderPass* renderPass, const math::uvector2& size, VkImage resultImage = nullptr);
-
+        bool update(const VulkanSwapchain* swapchain, int8 swapchainImageIndex);
+        bool update(VulkanRenderPass* renderPass, const math::uvector2& size);
+        
         VkFramebuffer get() const { return m_Framebuffer; }
         VulkanRenderPass* getRenderPass() const { return m_RenderPass; }
-        VulkanImage* getResultImage() const { return m_ResolveImage != nullptr ? m_ResolveImage : m_ColorImage; }
-
+        math::uvector2 getSize() const { return m_ColorAttachmentImage != nullptr ? m_ColorAttachmentImage->getSize() : math::uvector2{ 0, 0 }; }
+        VulkanImage* getResultImage() const { return m_ExportAvailable ? (m_ResolveAttachmentImage != nullptr ? m_ResolveAttachmentImage : m_ColorAttachmentImage) : nullptr; }
+        
         bool startRender(VulkanCommandBuffer* commandBuffer);
         bool finishRender(VulkanCommandBuffer* commandBuffer);
 
     protected:
 
-        virtual void clearInternal() override { clearFramebuffer(); }
+        virtual void clearInternal() override { clearData(); }
 
     private:
 
         VkFramebuffer m_Framebuffer = nullptr;
 
         VulkanRenderPass* m_RenderPass = nullptr;
+        VulkanImage* m_ColorAttachmentImage = nullptr;
+        VulkanImage* m_DepthAttachmentImage = nullptr;
+        VulkanImage* m_ResolveAttachmentImage = nullptr;
+        bool m_ExportAvailable = false;
 
-        math::uvector2 m_ImagesSize = { 0, 0 };
-        VulkanImage* m_ColorImage = nullptr;
-        VulkanImage* m_DepthImage = nullptr;
-        VulkanImage* m_ResolveImage = nullptr;
 
-        bool m_OutputColorImage = false;
-
-        
-        bool init(VulkanRenderPass* renderPass, const math::uvector2& size, VkImage resultImage);
-        bool recreate(VulkanRenderPass* renderPass, const math::uvector2& size, VkImage resultImage);
-
-        bool recreateImages(VkImage resultImage);
-        bool createFrambuffer();
-
+        void clearData();
         void clearFramebuffer();
+
+        bool update(VulkanRenderPass* renderPass, const math::uvector2& size, VkImage resultImage);
+        bool recreateImages(const math::uvector2& size, VkImage resultImage);
+        bool createFramebuffer(const math::uvector2& size);
     };
 }
 

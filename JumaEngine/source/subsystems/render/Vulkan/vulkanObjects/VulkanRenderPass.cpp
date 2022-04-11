@@ -21,10 +21,11 @@ namespace JumaEngine
             return false;
         }
 
-        const bool multisampleEnabled = description.sampleCount > VK_SAMPLE_COUNT_1_BIT;
+        const bool resolveEnabled = description.isResolveEnabled();
+        const int32 attachmentCount = resolveEnabled ? (description.shouldUseDepth ? 3 : 2) : (description.shouldUseDepth ? 2 : 1);
 
         VkAttachmentDescription attachments[3];
-        const int32 attachmentCount = multisampleEnabled ? 3 : 2;
+        VkAttachmentReference attachmentRefs[3];
 
         VkAttachmentDescription& colorAttachment = attachments[0];
         colorAttachment.flags = 0;
@@ -35,29 +36,30 @@ namespace JumaEngine
         colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
         colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
         colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        if (multisampleEnabled || !description.renderToSwapchain)
+        colorAttachment.finalLayout = (description.renderToSwapchain && !resolveEnabled) ? VK_IMAGE_LAYOUT_PRESENT_SRC_KHR : VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+        VkAttachmentReference& colorAttachmentRef = attachmentRefs[0];
+        colorAttachmentRef.attachment = 0;
+        colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+        if (description.shouldUseDepth)
         {
-            colorAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+            VkAttachmentDescription& depthAttachment = attachments[1];
+            depthAttachment.flags = 0;
+            depthAttachment.format = description.depthFormat;
+            depthAttachment.samples = description.sampleCount;
+            depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+            depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+            depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+            depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+            depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+            depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+            VkAttachmentReference& depthAttachmentRef = attachmentRefs[1];
+            depthAttachmentRef.attachment = 1;
+            depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
         }
-        else
+        if (resolveEnabled)
         {
-            colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-        }
-
-        VkAttachmentDescription& depthAttachment = attachments[1];
-        depthAttachment.flags = 0;
-        depthAttachment.format = description.depthFormat;
-        depthAttachment.samples = description.sampleCount;
-        depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-        depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-        depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-        depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-        depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-
-        if (multisampleEnabled)
-        {
-            VkAttachmentDescription& colorResolveAttachment = attachments[2];
+            const int32 index = attachmentCount - 1;
+            VkAttachmentDescription& colorResolveAttachment = attachments[index];
             colorResolveAttachment.flags = 0;
             colorResolveAttachment.format = description.colorFormat;
             colorResolveAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
@@ -66,29 +68,31 @@ namespace JumaEngine
             colorResolveAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
             colorResolveAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
             colorResolveAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-            colorResolveAttachment.finalLayout = !description.renderToSwapchain ? VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL : VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+            colorResolveAttachment.finalLayout = description.renderToSwapchain ? VK_IMAGE_LAYOUT_PRESENT_SRC_KHR : VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+            VkAttachmentReference& colorResolveAttachmentRef = attachmentRefs[index];
+            colorResolveAttachmentRef.attachment = index;
+            colorResolveAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
         }
-        
-        constexpr VkAttachmentReference attachmentRefs[3] = {
-            { 0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL },
-            { 1, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL },
-            { 2, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL }
-        };
 
         VkSubpassDescription subpass{};
         subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
         subpass.colorAttachmentCount = 1;
         subpass.pColorAttachments = &attachmentRefs[0];
-        subpass.pResolveAttachments = multisampleEnabled ? &attachmentRefs[2] : nullptr;
-        subpass.pDepthStencilAttachment = &attachmentRefs[1];
-
+        subpass.pDepthStencilAttachment = description.shouldUseDepth ? &attachmentRefs[1] : nullptr;
+        subpass.pResolveAttachments = resolveEnabled ? &attachmentRefs[2] : nullptr;
         VkSubpassDependency dependency{};
         dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
         dependency.dstSubpass = 0;
-        dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+        dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
         dependency.srcAccessMask = 0;
-        dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-        dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+        dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+        if (description.shouldUseDepth)
+        {
+            dependency.srcStageMask |= VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+            dependency.dstStageMask |= VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+            dependency.dstAccessMask |= VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+        }
 
         VkRenderPassCreateInfo renderPassInfo{};
         renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;

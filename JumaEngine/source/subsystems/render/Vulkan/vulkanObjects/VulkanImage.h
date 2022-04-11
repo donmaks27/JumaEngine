@@ -13,6 +13,7 @@
 
 #include "jutils/math/vector2.h"
 #include "subsystems/render/texture/TextureFormat.h"
+#include "subsystems/render/texture/TextureSamples.h"
 #include "VulkanQueueType.h"
 
 namespace JumaEngine
@@ -21,6 +22,8 @@ namespace JumaEngine
 
     inline TextureFormat GetTextureFormatByVulkanFormat(VkFormat format);
     inline VkFormat GetVulkanFormatByTextureFormat(TextureFormat format);
+
+    inline VkSampleCountFlagBits GetSampleCountByTextureSamples(TextureSamples samples);
 
     class VulkanImage : public VulkanContextObject
     {
@@ -125,6 +128,21 @@ namespace JumaEngine
         default: ;
         }
         return VK_FORMAT_UNDEFINED;
+    }
+
+    VkSampleCountFlagBits GetSampleCountByTextureSamples(const TextureSamples samples)
+    {
+        switch (samples)
+        {
+        case TextureSamples::SAMPLES_2:  return VK_SAMPLE_COUNT_2_BIT;
+        case TextureSamples::SAMPLES_4:  return VK_SAMPLE_COUNT_4_BIT;
+        case TextureSamples::SAMPLES_8:  return VK_SAMPLE_COUNT_8_BIT;
+        case TextureSamples::SAMPLES_16: return VK_SAMPLE_COUNT_16_BIT;
+        case TextureSamples::SAMPLES_32: return VK_SAMPLE_COUNT_32_BIT;
+        case TextureSamples::SAMPLES_64: return VK_SAMPLE_COUNT_64_BIT;
+        default: ;
+        }
+        return VK_SAMPLE_COUNT_1_BIT;
     }
 }
 

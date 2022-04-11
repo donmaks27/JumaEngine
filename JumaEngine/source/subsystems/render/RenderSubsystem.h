@@ -29,8 +29,6 @@ namespace JumaEngine
         RenderSubsystem_RenderAPIObject() = default;
         virtual ~RenderSubsystem_RenderAPIObject() override = default;
 
-        RenderSubsystem* getRenderSubsystem() const { return m_Parent; }
-
     protected:
 
         virtual bool initInternal() override { return true; }
@@ -83,7 +81,7 @@ namespace JumaEngine
 
     private:
 
-        RenderAPI m_CurrentRenderAPI = RenderAPI::OpenGL;
+        RenderAPI m_CurrentRenderAPI = RenderAPI::Vulkan;
         TextureSamples m_MaxTextureSamples = TextureSamples::SAMPLES_64;
 
         RenderPresentMode m_CurrentPresentMode = RenderPresentMode::VSYNC;

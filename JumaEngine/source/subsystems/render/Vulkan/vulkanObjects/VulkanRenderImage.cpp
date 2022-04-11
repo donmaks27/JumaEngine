@@ -117,7 +117,7 @@ namespace JumaEngine
             delete m_Framebuffers[index];
         }
         m_Framebuffers.resize(framebufferCount);
-        for (int32 index = 0; index < framebufferCount; index++)
+        for (int8 index = 0; index < framebufferCount; index++)
         {
             VulkanFramebuffer*& framebuffer = m_Framebuffers[index];
             if (framebuffer == nullptr)
@@ -125,8 +125,8 @@ namespace JumaEngine
                 framebuffer = getRenderSubsystemObject()->createVulkanObject<VulkanFramebuffer>();
             }
 
-            VkImage image = m_Swapchain != nullptr ? m_Swapchain->getSwapchainImage(index) : nullptr;
-            if (!framebuffer->create(m_RenderPass, m_FramebufferSize, image))
+            const bool updated = m_Swapchain != nullptr ? framebuffer->update(m_Swapchain, index) : framebuffer->update(m_RenderPass, m_FramebufferSize);
+            if (!updated)
             {
                 JUMA_LOG(error, JSTR("Failed to update framebuffer ") + TO_JSTR(index));
                 return false;

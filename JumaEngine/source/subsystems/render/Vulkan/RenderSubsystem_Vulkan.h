@@ -70,7 +70,7 @@ namespace JumaEngine
         void registerVertexType(const VertexBufferDataBase* vertexBufferData);
         const VertexDescription_Vulkan* findVertexDescription(const jstringID& vertexName) const { return m_RegisteredVertexTypes.find(vertexName); }
         
-        VulkanRenderPass* createRenderPass(const VulkanRenderPassDescription& description);
+        VulkanRenderPass* getRenderPass(const VulkanRenderPassDescription& description);
 
     protected:
 

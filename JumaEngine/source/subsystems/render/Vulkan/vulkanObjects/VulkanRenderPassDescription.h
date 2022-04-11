@@ -17,32 +17,40 @@ namespace JumaEngine
 
     struct VulkanRenderPassDescription
     {
-        VkSampleCountFlagBits sampleCount = VK_SAMPLE_COUNT_1_BIT;
         VkFormat colorFormat = VK_FORMAT_UNDEFINED;
         VkFormat depthFormat = VK_FORMAT_UNDEFINED;
+        VkSampleCountFlagBits sampleCount = VK_SAMPLE_COUNT_1_BIT;
 
+        bool shouldUseDepth = true;
+        bool shouldResolveMultisampling = false;
         bool renderToSwapchain = true;
+
+        bool isResolveEnabled() const { return shouldResolveMultisampling && (sampleCount != VK_SAMPLE_COUNT_1_BIT); }
 
         struct CompatiblePredicate
         {
             constexpr bool operator()(const VulkanRenderPassDescription& description1, const VulkanRenderPassDescription& description2) const
             {
-                if (description1.sampleCount < description2.sampleCount)
+                if (description1.colorFormat != description2.colorFormat)
                 {
-                    return true;
+                    return description1.colorFormat < description2.colorFormat;
                 }
-                if (description1.sampleCount == description2.sampleCount)
+                if (description1.shouldUseDepth != description2.shouldUseDepth)
                 {
-                    if (description1.colorFormat < description2.colorFormat)
-                    {
-                        return true;
-                    }
-                    if (description1.colorFormat == description2.colorFormat)
+                    return description2.shouldUseDepth;
+                }
+                if (description1.shouldUseDepth)
+                {
+                    if (description1.depthFormat != description2.depthFormat)
                     {
                         return description1.depthFormat < description2.depthFormat;
                     }
                 }
-                return false;
+                if (description1.sampleCount != description2.sampleCount)
+                {
+                    return description1.sampleCount < description2.sampleCount;
+                }
+                return !description1.isResolveEnabled() && description2.isResolveEnabled();
             }
         };
         struct EqualPredicate : CompatiblePredicate
@@ -53,11 +61,7 @@ namespace JumaEngine
                 {
                     return true;
                 }
-                if (description1.depthFormat == description2.depthFormat)
-                {
-                    return !description1.renderToSwapchain && description2.renderToSwapchain;
-                }
-                return false;
+                return !description1.renderToSwapchain && description2.renderToSwapchain;
             }
         };
     };

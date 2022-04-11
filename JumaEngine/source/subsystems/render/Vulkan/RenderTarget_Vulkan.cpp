@@ -29,9 +29,11 @@ namespace JumaEngine
         VulkanRenderPassDescription renderPassDescription;
         renderPassDescription.colorFormat = vulkanFormat;
         renderPassDescription.depthFormat = VK_FORMAT_D32_SFLOAT;
+        renderPassDescription.sampleCount = GetSampleCountByTextureSamples(m_Parent->getTextureSamples());
+        renderPassDescription.shouldUseDepth = true;
+        renderPassDescription.shouldResolveMultisampling = m_Parent->shouldResolveMultisampling();
         renderPassDescription.renderToSwapchain = false;
-        renderPassDescription.sampleCount = VK_SAMPLE_COUNT_1_BIT;
-        VulkanRenderPass* renderPass = getRenderSubsystemObject()->createRenderPass(renderPassDescription);
+        VulkanRenderPass* renderPass = getRenderSubsystemObject()->getRenderPass(renderPassDescription);
         if (renderPass == nullptr)
         {
             JUMA_LOG(error, JSTR("Failed to get render pass"));

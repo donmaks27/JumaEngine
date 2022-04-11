@@ -52,7 +52,7 @@ namespace JumaEngine
         m_CurrentSettings.surfaceFormat = surfaceFormat;
         m_CurrentSettings.depthFormat = depthFormat;
         m_CurrentSettings.size = { swapchainSize.width, swapchainSize.height };
-        m_CurrentSettings.presentMode = getRenderSubsystemObject()->getRenderSubsystem()->getPresentMode();
+        m_CurrentSettings.presentMode = getRenderSubsystemObject()->getParent()->getPresentMode();
 
         if (!updateSwapchain() || !updateRenderPass() || !updateSyncObjects())
         {
@@ -87,7 +87,7 @@ namespace JumaEngine
         
         VkSurfaceCapabilitiesKHR capabilities;
         vkGetPhysicalDeviceSurfaceCapabilitiesKHR(getRenderSubsystemObject()->getPhysicalDevice(), m_WindowSurface, &capabilities);
-        uint32 imageCount = getRenderSubsystemObject()->getRenderSubsystem()->getPresentMode() != RenderPresentMode::TRIPLE_BUFFER ? 3 : 2;
+        uint32 imageCount = getRenderSubsystemObject()->getParent()->getPresentMode() != RenderPresentMode::TRIPLE_BUFFER ? 3 : 2;
         if (capabilities.maxImageCount > 0)
         {
             imageCount = math::min(imageCount, capabilities.maxImageCount);
@@ -145,11 +145,13 @@ namespace JumaEngine
     bool VulkanSwapchain::updateRenderPass()
     {
         VulkanRenderPassDescription description;
-        description.sampleCount = m_CurrentSettings.sampleCount;
         description.colorFormat = m_CurrentSettings.surfaceFormat.format;
         description.depthFormat = m_CurrentSettings.depthFormat;
+        description.sampleCount = VK_SAMPLE_COUNT_1_BIT;
+        description.shouldUseDepth = true;
+        description.shouldResolveMultisampling = false;
         description.renderToSwapchain = true;
-        m_RenderPass = getRenderSubsystemObject()->createRenderPass(description);
+        m_RenderPass = getRenderSubsystemObject()->getRenderPass(description);
         if (m_RenderPass == nullptr)
         {
             JUMA_LOG(error, JSTR("Failed to create render pass"));
