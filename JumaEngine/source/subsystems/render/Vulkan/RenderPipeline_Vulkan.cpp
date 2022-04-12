@@ -43,7 +43,6 @@ namespace JumaEngine
         m_RenderFramesObjects.clear();
 
         m_SwapchainImageReadySemaphores.clear();
-        m_RenderImages.clear();
     }
 
     bool RenderPipeline_RenderAPIObject_Vulkan::initInternal()
@@ -54,50 +53,6 @@ namespace JumaEngine
     bool RenderPipeline_RenderAPIObject_Vulkan::onRenderPipelineUpdated()
     {
         return update();
-    }
-    bool RenderPipeline_RenderAPIObject_Vulkan::updateRenderImages()
-    {
-        if (!m_Parent->isPipelineQueueValid())
-        {
-            return false;
-        }
-
-        m_RenderImages.clear();
-        for (const auto& stageName : m_Parent->getPipelineQueue())
-        {
-            const RenderPipelineStage* stage = m_Parent->getPipelineStage(stageName);
-            if (stage == nullptr)
-            {
-                continue;
-            }
-
-            VulkanRenderImage* renderImage = nullptr;
-            switch (stage->type)
-            {
-            case RenderPipelineStageType::RenderTarget:
-                {
-                    const RenderTarget* renderTarget = m_Parent->getPipelineStageRenderTarget(stageName);
-                    const RenderTarget_RenderAPIObject_Vulkan* renderObject = renderTarget != nullptr ? renderTarget->getRenderAPIObject<RenderTarget_RenderAPIObject_Vulkan>() : nullptr;
-                    renderImage = renderObject != nullptr ? renderObject->getRenderImage() : nullptr;
-                }
-                break;
-
-            case RenderPipelineStageType::Window:
-                {
-                    const window_id_type windowID = m_Parent->getPipelineStageWindow(stageName);
-                    const WindowSubsystem_RenderAPIObject_Vulkan* windowSubsystem = m_Parent->getOwnerEngine()->getWindowSubsystem()->getRenderAPIObject<WindowSubsystem_RenderAPIObject_Vulkan>();
-                    renderImage = windowSubsystem != nullptr ? windowSubsystem->getRenderImage(windowID) : nullptr;
-                }
-                break;
-
-            default: continue;
-            }
-            if (renderImage != nullptr)
-            {
-                m_RenderImages.add(stageName, renderImage);
-            }
-        }
-        return true;
     }
     bool RenderPipeline_RenderAPIObject_Vulkan::updateSyncObjects()
     {
@@ -178,12 +133,12 @@ namespace JumaEngine
         m_SwapchainImageReadySemaphores.clear();
         for (const auto& pipelineStage : m_Parent->getPipelineStages())
         {
-            if (pipelineStage.value.type != RenderPipelineStageType::Window)
+            if (!pipelineStage.value.renderTarget->isWindowRenderTarget())
             {
                 continue;
             }
 
-            const window_id_type windowID = m_Parent->getPipelineStageWindow(pipelineStage.key);
+            const window_id_type windowID = pipelineStage.value.renderTarget->getWindowID();
             const WindowSubsystem_RenderAPIObject_Vulkan* renderObject = m_Parent->getOwnerEngine()->getWindowSubsystem()->getRenderAPIObject<WindowSubsystem_RenderAPIObject_Vulkan>();
             VulkanSwapchain* swapchain = renderObject != nullptr ? renderObject->getVulkanSwapchain(windowID) : nullptr;
             if (swapchain == nullptr)
@@ -203,7 +158,7 @@ namespace JumaEngine
     }
     bool RenderPipeline_RenderAPIObject_Vulkan::recordRenderCommandBuffer()
     {
-        if (!m_Parent->isPipelineQueueValid() || m_RenderImages.isEmpty())
+        if (!m_Parent->isPipelineQueueValid())
         {
             return false;
         }
@@ -235,27 +190,28 @@ namespace JumaEngine
         bool hasRenderCommands = false;
         for (const auto& stageName : m_Parent->getPipelineQueue())
         {
-            VulkanRenderImage** renderImagePtr = m_RenderImages.find(stageName);
-            VulkanRenderImage* renderImage = renderImagePtr != nullptr ? *renderImagePtr : nullptr;
-            if ((renderImage == nullptr) || !renderImage->isValid())
+            const RenderPipelineStage* stage = m_Parent->getPipelineStage(stageName);
+            const RenderTarget* renderTarget = stage != nullptr ? stage->renderTarget : nullptr;
+            RenderTarget_RenderAPIObject_Vulkan* renderTargetObject = renderTarget != nullptr ? renderTarget->getRenderAPIObject<RenderTarget_RenderAPIObject_Vulkan>() : nullptr;
+            if (renderTargetObject == nullptr)
             {
                 continue;
             }
 
-            hasRenderCommands = true;
-
-            if (!renderImage->startRender(commandBuffer))
+            if (!renderTargetObject->startRender(commandBuffer))
             {
                 JUMA_LOG(error, JSTR("Failed to start render to \"") + stageName.toString() + JSTR("\" render image"));
                 commandBuffer->returnToCommandPool();
                 return false;
             }
-            
+            hasRenderCommands = true;
+
             renderOptions.renderTargetName = stageName;
-            renderOptions.renderImage = renderImage;
+            renderOptions.renderTarget = renderTarget;
+            renderOptions.renderPass = renderTargetObject->getRenderPass();
             renderPipelineStage(&renderOptions);
 
-            if (!renderImage->finishRender(commandBuffer))
+            if (!renderTargetObject->finishRender(commandBuffer))
             {
                 JUMA_LOG(error, JSTR("Failed to finish render to \"") + stageName.toString() + JSTR("\" render image"));
                 commandBuffer->returnToCommandPool();
@@ -304,12 +260,12 @@ namespace JumaEngine
 
         for (const auto& pipelineStage : m_Parent->getPipelineStages())
         {
-            if (pipelineStage.value.type != RenderPipelineStageType::Window)
+            if (!pipelineStage.value.renderTarget->isWindowRenderTarget())
             {
                 continue;
             }
 
-            const window_id_type windowID = m_Parent->getPipelineStageWindow(pipelineStage.key);
+            const window_id_type windowID = pipelineStage.value.renderTarget->getWindowID();
             const WindowSubsystem_RenderAPIObject_Vulkan* renderObject = m_Parent->getOwnerEngine()->getWindowSubsystem()->getRenderAPIObject<WindowSubsystem_RenderAPIObject_Vulkan>();
             VulkanSwapchain* swapchain = renderObject != nullptr ? renderObject->getVulkanSwapchain(windowID) : nullptr;
             if (swapchain == nullptr)

@@ -325,8 +325,7 @@ namespace JumaEngine
                 if (m_Parent->getParamValue<ShaderUniformType::RenderTarget>(name, renderTarget))
                 {
                     const RenderTarget_RenderAPIObject_Vulkan* renderTargetObject = renderTarget != nullptr ? renderTarget->getRenderAPIObject<RenderTarget_RenderAPIObject_Vulkan>() : nullptr;
-                    const VulkanRenderImage* renderImage = renderTargetObject != nullptr ? renderTargetObject->getRenderImage() : nullptr;
-                    const VulkanFramebuffer* framebuffer = renderImage != nullptr ? renderImage->getFramebuffer(frameIndex) : nullptr;
+                    const VulkanFramebuffer* framebuffer = renderTargetObject != nullptr ? renderTargetObject->getFramebuffer(frameIndex) : nullptr;
                     VulkanImage* image = framebuffer != nullptr ? framebuffer->getResultImage() : nullptr;
                     if (image == nullptr)
                     {
@@ -584,9 +583,8 @@ namespace JumaEngine
 
         const RenderOptions_Vulkan* options = reinterpret_cast<const RenderOptions_Vulkan*>(renderOptions);
         const VulkanCommandBuffer* commandBuffer = options->commandBuffer;
-        const VulkanRenderPass* renderPass = options->renderImage->getRenderPass();
         const int8 frameIndex = getRenderSubsystemObject()->getRenderFrameIndex();
-        if (!bindRenderPipeline(commandBuffer->get(), vertexBuffer->getVertexName(), renderPass) ||
+        if (!bindRenderPipeline(commandBuffer->get(), vertexBuffer->getVertexName(), options->renderPass) ||
             !bindDescriptorSet(commandBuffer->get(), frameIndex))
         {
             return false;

@@ -90,10 +90,6 @@ namespace JumaEngine
 
         const VulkanSwapchain* swapchain = windowRenderObject->getVulkanSwapchain(mainWindowID);
         m_RenderFrameCount = static_cast<int8>(math::clamp(swapchain->getImageCount() - 1, 1, getMaxRenderFrameCount()));
-        if (!windowRenderObject->createRenderImage(mainWindowID))
-        {
-            return false;
-        }
 
         m_Parent->getRenderPipeline()->createRenderAPIObject();
         return true;
@@ -114,7 +110,6 @@ namespace JumaEngine
                 if (windowRenderObject != nullptr)
                 {
                     windowRenderObject->destroyVulkanSwapchain(mainWindowID);
-                    windowRenderObject->destroyRenderImage(mainWindowID);
                 }
 
                 for (const auto& renderPassTypeAndPointer : m_RenderPasses)

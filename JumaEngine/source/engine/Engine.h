@@ -44,7 +44,9 @@ namespace JumaEngine
         Shader* m_Shader = nullptr;
         Material* m_Material = nullptr;
         VertexBuffer* m_VertexBuffer = nullptr;
+
         RenderTarget* m_RenderTarget = nullptr;
+        RenderTarget* m_WindowRenderTarget = nullptr;
 
         Shader* m_ShaderPP = nullptr;
         Material* m_MaterialPP = nullptr;

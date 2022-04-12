@@ -9,6 +9,7 @@
 #include "texture/TextureFormat.h"
 #include "jutils/jdelegate_multicast.h"
 #include "jutils/math/vector2.h"
+#include "subsystems/window/WindowID.h"
 #include "texture/TextureSamples.h"
 
 namespace JumaEngine
@@ -35,14 +36,18 @@ namespace JumaEngine
         OnRenderTargetEvent onClear;
 
 
-        bool init(TextureFormat format, const math::uvector2& size);
+        bool init(TextureFormat format, const math::uvector2& size, TextureSamples samples);
+        bool init(window_id_type windowID, TextureSamples samples);
+
+        window_id_type getWindowID() const { return m_WindowID; }
+        bool isWindowRenderTarget() const { return getWindowID() != INVALID_WINDOW_ID; }
+
+        TextureSamples getTextureSamples() const { return m_TextureSamples; }
+        bool shouldResolveMultisampling() const { return m_TextureSamples != TextureSamples::SAMPLES_1; }
 
         TextureFormat getFormat() const { return m_Format; }
         const math::uvector2& getSize() const { return m_Size; }
 
-        TextureSamples getTextureSamples() const { return m_TextureSamples; }
-        bool shouldResolveMultisampling() const { return m_TextureSamples != TextureSamples::SAMPLES_1; }
-        
     protected:
 
         virtual RenderTarget_RenderAPIObject* createRenderAPIObjectInternal() override;
@@ -51,9 +56,13 @@ namespace JumaEngine
 
     private:
 
-        TextureFormat m_Format = TextureFormat::None;
+        window_id_type m_WindowID = INVALID_WINDOW_ID;
+
+        // Ignore it if window ID is valid
         math::uvector2 m_Size = { 0, 0 };
-        TextureSamples m_TextureSamples = TextureSamples::SAMPLES_4;
+        TextureFormat m_Format = TextureFormat::None;
+
+        TextureSamples m_TextureSamples = TextureSamples::SAMPLES_1;
 
 
         void clearData();

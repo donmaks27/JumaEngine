@@ -14,7 +14,6 @@
 namespace JumaEngine
 {
     class VulkanCommandBuffer;
-    class VulkanRenderImage;
 
     class RenderPipeline_RenderAPIObject_Vulkan : public RenderPipeline_RenderAPIObject, public VulkanContextObjectBase
     {
@@ -39,16 +38,13 @@ namespace JumaEngine
             VulkanCommandBuffer* commandBuffer = nullptr;
         };
 
-        jmap<jstringID, VulkanRenderImage*> m_RenderImages;
-
         jarray<RenderFrameObjects> m_RenderFramesObjects;
         jarray<VkSemaphore> m_SwapchainImageReadySemaphores;
 
 
         void clearData();
 
-        bool update() { return updateRenderImages() && updateSyncObjects(); }
-        bool updateRenderImages();
+        bool update() { return updateSyncObjects(); }
         bool updateSyncObjects();
 
         bool waitForRenderFinish();

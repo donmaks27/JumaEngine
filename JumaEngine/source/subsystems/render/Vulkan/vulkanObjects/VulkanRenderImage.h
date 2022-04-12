@@ -8,8 +8,6 @@
 
 #include "subsystems/render/Vulkan/VulkanContextObject.h"
 
-#include <vulkan/vulkan_core.h>
-
 #include "jutils/jarray.h"
 #include "jutils/math/vector2.h"
 

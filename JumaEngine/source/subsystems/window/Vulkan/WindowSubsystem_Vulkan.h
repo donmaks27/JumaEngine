@@ -23,7 +23,6 @@ namespace JumaEngine
         VkSurfaceKHR vulkanSurface = nullptr;
 
         VulkanSwapchain* vulkanSwapchain = nullptr;
-        VulkanRenderImage* renderImage = nullptr;
     };
 
     class WindowSubsystem_RenderAPIObject_Vulkan : public WindowSubsystem_RenderAPIObject
@@ -43,10 +42,6 @@ namespace JumaEngine
         VulkanSwapchain* getVulkanSwapchain(window_id_type windowID) const;
         void destroyVulkanSwapchain(window_id_type windowID);
 
-        bool createRenderImage(window_id_type windowID);
-        VulkanRenderImage* getRenderImage(window_id_type windowID) const;
-        void destroyRenderImage(window_id_type windowID);
-
     protected:
 
         RenderSubsystem_RenderAPIObject_Vulkan* getRenderSubsystem() const;
@@ -56,7 +51,6 @@ namespace JumaEngine
 
         void destroyWindow_Vulkan(window_id_type windowID, WindowDescription_Vulkan& description);
         void destroyVulkanSwapchain(window_id_type windowID, WindowDescription_Vulkan& description);
-        void destroyRenderImage(window_id_type windowID, WindowDescription_Vulkan& description);
 
         virtual void onWindowResized(window_id_type windowID, const math::uvector2& newSize) override;
 

@@ -29,8 +29,6 @@ namespace JumaEngine
         clearRenderAPIObject();
 
         m_PipelineStagesQueue.clear();
-        m_PipelineStages_Window.clear();
-        m_PipelineStages_RenderTarget.clear();
         m_PipelineStages.clear();
         m_PipelineQueueValid = false;
     }
@@ -48,45 +46,7 @@ namespace JumaEngine
         return true;
     }
 
-    window_id_type RenderPipeline::getPipelineStageWindow(const jstringID& name) const
-    {
-        const window_id_type* windowID = m_PipelineStages_Window.find(name);
-        return windowID != nullptr ? *windowID : INVALID_WINDOW_ID;
-    }
-    RenderTarget* RenderPipeline::getPipelineStageRenderTarget(const jstringID& name) const
-    {
-        RenderTarget* const* renderTarget = m_PipelineStages_RenderTarget.find(name);
-        return renderTarget != nullptr ? *renderTarget : nullptr;
-    }
-
-    bool RenderPipeline::addWindowPipelineStage(const jstringID& name, const window_id_type windowID)
-    {
-        if (!isValid())
-        {
-            JUMA_LOG(error, JSTR("Render pipeline not initialized"));
-            return false;
-        }
-        if ((name == jstringID_NONE) || !getOwnerEngine()->getWindowSubsystem()->isWindowValid(windowID))
-        {
-            JUMA_LOG(error, JSTR("Invalid input params"));
-            return false;
-        }
-
-        if (m_PipelineStages.contains(name))
-        {
-            JUMA_LOG(error, JSTR("Stage already exists"));
-            return false;
-        }
-
-        RenderPipelineStage& newStage = m_PipelineStages.add(name, RenderPipelineStage());
-        newStage.type = RenderPipelineStageType::Window;
-        m_PipelineStages_Window.add(name, windowID);
-        m_PipelineStagesQueue.add(name);
-
-        m_PipelineQueueValid = false;
-        return true;
-    }
-    bool RenderPipeline::addRenderTargetPipelineStage(const jstringID& name, RenderTarget* renderTarget)
+    bool RenderPipeline::addPipelineStage(const jstringID& name, RenderTarget* renderTarget)
     {
         if (!isValid())
         {
@@ -105,9 +65,8 @@ namespace JumaEngine
             return false;
         }
 
-        RenderPipelineStage& newStage = m_PipelineStages.add(name, RenderPipelineStage());
-        newStage.type = RenderPipelineStageType::RenderTarget;
-        m_PipelineStages_RenderTarget.add(name, renderTarget);
+        RenderPipelineStage& newStage = m_PipelineStages.add(name);
+        newStage.renderTarget = renderTarget;
         m_PipelineStagesQueue.add(name);
 
         m_PipelineQueueValid = false;
@@ -133,13 +92,7 @@ namespace JumaEngine
                 pipelineStage.value.dependencies.remove(name);
             }
         }
-        switch (stage->type)
-        {
-        case RenderPipelineStageType::RenderTarget: m_PipelineStages_RenderTarget.remove(name); break;
-        case RenderPipelineStageType::Window:       m_PipelineStages_Window.remove(name); break;
-        default: ;
-        }
-        m_PipelineStages.remove(name);
+        m_PipelineStagesQueue.remove(name);
 
         m_PipelineQueueValid = false;
         return true;
@@ -175,7 +128,7 @@ namespace JumaEngine
             JUMA_LOG(error, JSTR("There is no stage ") + dependencyName.toString());
             return false;
         }
-        if (dependencyStage->type == RenderPipelineStageType::Window)
+        if (dependencyStage->renderTarget->isWindowRenderTarget())
         {
             JUMA_LOG(error, JSTR("You can't set window stage as dependency"));
             return false;
@@ -205,7 +158,6 @@ namespace JumaEngine
         {
             m_PipelineQueueValid = false;
         }
-
         return true;
     }
 
@@ -234,6 +186,7 @@ namespace JumaEngine
                     break;
                 }
             }
+
             if (nextStageName == jstringID_NONE)
             {
                 JUMA_LOG(error, JSTR("Failed to validate render pipeline stages queue"));

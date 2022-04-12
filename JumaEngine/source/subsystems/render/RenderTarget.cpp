@@ -4,6 +4,7 @@
 
 #include "RenderSubsystem.h"
 #include "engine/Engine.h"
+#include "subsystems/window/WindowSubsystem.h"
 
 namespace JumaEngine
 {
@@ -21,7 +22,7 @@ namespace JumaEngine
         return getOwnerEngine()->getRenderSubsystem()->createRenderTargetObject();
     }
 
-    bool RenderTarget::init(const TextureFormat format, const math::uvector2& size)
+    bool RenderTarget::init(const TextureFormat format, const math::uvector2& size, const TextureSamples samples)
     {
         if (isValid())
         {
@@ -36,6 +37,25 @@ namespace JumaEngine
 
         m_Format = format;
         m_Size = size;
+        m_TextureSamples = samples;
+        markAsInitialized();
+        return true;
+    }
+    bool RenderTarget::init(const window_id_type windowID, const TextureSamples samples)
+    {
+        if (isValid())
+        {
+            JUMA_LOG(warning, JSTR("Render target already initiaized"));
+            return false;
+        }
+        if (!getOwnerEngine()->getWindowSubsystem()->isWindowValid(windowID))
+        {
+            JUMA_LOG(error, JSTR("Invalid window ID"));
+            return false;
+        }
+
+        m_WindowID = windowID;
+        m_TextureSamples = samples;
         markAsInitialized();
         return true;
     }
@@ -51,7 +71,9 @@ namespace JumaEngine
     {
         clearRenderAPIObject();
 
-        m_Size = { 0, 0 };
         m_Format = TextureFormat::None;
+        m_Size = { 0, 0 };
+        m_TextureSamples = TextureSamples::SAMPLES_1;
+        m_WindowID = INVALID_WINDOW_ID;
     }
 }

@@ -9,10 +9,12 @@
 namespace JumaEngine
 {
     class RenderPipeline;
+    class RenderTarget;
 
     struct RenderOptions
     {
-        RenderPipeline* renderPipeline = nullptr;
+        const RenderPipeline* renderPipeline = nullptr;
         jstringID renderTargetName = jstringID_NONE;
+        const RenderTarget* renderTarget = nullptr;
     };
 }

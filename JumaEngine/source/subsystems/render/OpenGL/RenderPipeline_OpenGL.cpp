@@ -34,26 +34,14 @@ namespace JumaEngine
         for (const auto& stageName : m_Parent->getPipelineQueue())
         {
             const RenderPipelineStage* stage = m_Parent->getPipelineStage(stageName);
-            if (stage == nullptr)
+            const RenderTarget* renderTarget = stage != nullptr ? stage->renderTarget : nullptr;
+            RenderTarget_RenderAPIObject_OpenGL* renderTargetObject = renderTarget != nullptr ? renderTarget->getRenderAPIObject<RenderTarget_RenderAPIObject_OpenGL>() : nullptr;
+            if (renderTargetObject == nullptr)
             {
                 continue;
             }
 
-            RenderTarget_RenderAPIObject_OpenGL* renderTargetObject = nullptr;
-            if (stage->type == RenderPipelineStageType::RenderTarget)
-            {
-                const RenderTarget* renderTarget = m_Parent->getPipelineStageRenderTarget(stageName);
-                renderTargetObject = renderTarget != nullptr ? renderTarget->getRenderAPIObject<RenderTarget_RenderAPIObject_OpenGL>() : nullptr;
-                if (renderTargetObject == nullptr)
-                {
-                    continue;
-                }
-            }
-
-            if (renderTargetObject != nullptr)
-            {
-                renderTargetObject->startRender();
-            }
+            renderTargetObject->startRender();
 
             glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);

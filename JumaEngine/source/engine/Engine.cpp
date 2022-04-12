@@ -152,8 +152,12 @@ namespace JumaEngine
         m_VertexBuffer->createRenderAPIObject();
 
         m_RenderTarget = createObject<RenderTarget>();
-        m_RenderTarget->init(TextureFormat::RGBA, m_WindowSubsytem->findWindow(m_WindowSubsytem->getMainWindowID())->size);
+        m_RenderTarget->init(TextureFormat::RGBA, m_WindowSubsytem->findWindow(m_WindowSubsytem->getMainWindowID())->size, TextureSamples::SAMPLES_1);
         m_RenderTarget->createRenderAPIObject();
+
+        m_WindowRenderTarget = createObject<RenderTarget>();
+        m_WindowRenderTarget->init(m_WindowSubsytem->getMainWindowID(), TextureSamples::SAMPLES_1);
+        m_WindowRenderTarget->createRenderAPIObject();
 
         m_ShaderPP = createObject<Shader>();
         m_ShaderPP->init(
@@ -181,8 +185,10 @@ namespace JumaEngine
         m_VertexBufferPP->createRenderAPIObject();
 
         RenderPipeline* renderPipeline = m_RenderSubsystem->getRenderPipeline();
-        renderPipeline->addRenderTargetPipelineStage(JSTR("MainPass"), m_RenderTarget);
-        renderPipeline->addWindowPipelineStage(JSTR("WindowPass"), m_WindowSubsytem->getMainWindowID());
+        renderPipeline->addPipelineStage(JSTR("MainPass"), m_RenderTarget);
+        renderPipeline->addPipelineStage(JSTR("WindowPass"), m_WindowRenderTarget);
+        /*renderPipeline->addRenderTargetPipelineStage(JSTR("MainPass"), m_RenderTarget);
+        renderPipeline->addWindowPipelineStage(JSTR("WindowPass"), m_WindowSubsytem->getMainWindowID());*/
         renderPipeline->addPipelineStageDependency(JSTR("WindowPass"), JSTR("MainPass"));
         renderPipeline->validatePipelineQueue();
         return true;
@@ -209,6 +215,7 @@ namespace JumaEngine
         delete m_MaterialPP;
         delete m_ShaderPP;
 
+        delete m_WindowRenderTarget;
         delete m_RenderTarget;
         delete m_VertexBuffer;
         delete m_Material;

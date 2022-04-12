@@ -5,9 +5,13 @@
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
 #include "RenderSubsystem_Vulkan.h"
+#include "engine/Engine.h"
+#include "subsystems/window/WindowSubsystem.h"
+#include "subsystems/window/Vulkan/WindowSubsystem_Vulkan.h"
 #include "vulkanObjects/VulkanImage.h"
 #include "vulkanObjects/VulkanRenderImage.h"
 #include "vulkanObjects/VulkanRenderPassDescription.h"
+#include "vulkanObjects/VulkanSwapchain.h"
 
 namespace JumaEngine
 {
@@ -16,7 +20,28 @@ namespace JumaEngine
         clearData();
     }
 
-    bool RenderTarget_RenderAPIObject_Vulkan::initInternal()
+    bool RenderTarget_RenderAPIObject_Vulkan::initWindowRenderTarget()
+    {
+        const WindowSubsystem_RenderAPIObject_Vulkan* windowSubsystemObject = m_Parent->getOwnerEngine()->getWindowSubsystem()->getRenderAPIObject<WindowSubsystem_RenderAPIObject_Vulkan>();
+        VulkanSwapchain* swapchain = windowSubsystemObject != nullptr ? windowSubsystemObject->getVulkanSwapchain(m_Parent->getWindowID()) : nullptr;
+        if ((swapchain == nullptr) || !swapchain->isValid())
+        {
+            JUMA_LOG(error, JSTR("Invalid window's swapchain"));
+            return false;
+        }
+
+        VulkanRenderImage* renderImage = getRenderSubsystemObject()->createVulkanObject<VulkanRenderImage>();
+        if (!renderImage->init(swapchain) || !renderImage->update())
+        {
+            JUMA_LOG(error, JSTR("Failed to initialize render image"));
+            delete renderImage;
+            return false;
+        }
+
+        m_RenderImage = renderImage;
+        return true;
+    }
+    bool RenderTarget_RenderAPIObject_Vulkan::initRenderTarget()
     {
         const TextureFormat format = m_Parent->getFormat();
         const VkFormat vulkanFormat = GetVulkanFormatByTextureFormat(format);
@@ -58,6 +83,24 @@ namespace JumaEngine
             delete m_RenderImage;
             m_RenderImage = nullptr;
         }
+    }
+
+    VulkanRenderPass* RenderTarget_RenderAPIObject_Vulkan::getRenderPass() const
+    {
+        return m_RenderImage->getRenderPass();
+    }
+    VulkanFramebuffer* RenderTarget_RenderAPIObject_Vulkan::getFramebuffer(const int8 frameIndex) const
+    {
+        return m_RenderImage->getFramebuffer(frameIndex);
+    }
+
+    bool RenderTarget_RenderAPIObject_Vulkan::startRender(VulkanCommandBuffer* commandBuffer)
+    {
+        return m_RenderImage->startRender(commandBuffer);
+    }
+    bool RenderTarget_RenderAPIObject_Vulkan::finishRender(VulkanCommandBuffer* commandBuffer)
+    {
+        return m_RenderImage->finishRender(commandBuffer);
     }
 }
 

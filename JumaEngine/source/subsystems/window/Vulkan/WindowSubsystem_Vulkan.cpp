@@ -18,7 +18,6 @@ namespace JumaEngine
 
     void WindowSubsystem_RenderAPIObject_Vulkan::destroyWindow_Vulkan(const window_id_type windowID, WindowDescription_Vulkan& description)
     {
-        destroyRenderImage(windowID, description);
         destroyVulkanSwapchain(windowID, description);
 
         if (description.vulkanSurface != nullptr)
@@ -152,55 +151,6 @@ namespace JumaEngine
         }
         outSurfaceFormat = surfaceFormats[0];
         return true;
-    }
-
-    bool WindowSubsystem_RenderAPIObject_Vulkan::createRenderImage(const window_id_type windowID)
-    {
-        WindowDescription_Vulkan* description = findWindow<WindowDescription_Vulkan>(windowID);
-        if (description == nullptr)
-        {
-            JUMA_LOG(error, JSTR("Can't find window"));
-            return false;
-        }
-        if ((description->vulkanSwapchain == nullptr) || !description->vulkanSwapchain->isValid())
-        {
-            JUMA_LOG(error, JSTR("Swapchain not initialized"));
-            return false;
-        }
-
-        VulkanRenderImage* renderImage = getRenderSubsystem()->createVulkanObject<VulkanRenderImage>();
-        if (!renderImage->init(description->vulkanSwapchain) || !renderImage->update())
-        {
-            JUMA_LOG(error, JSTR("Failed to create window render image"));
-            delete renderImage;
-            return false;
-        }
-
-        description->renderImage = renderImage;
-        return true;
-    }
-    VulkanRenderImage* WindowSubsystem_RenderAPIObject_Vulkan::getRenderImage(window_id_type windowID) const
-    {
-        const WindowDescription_Vulkan* description = findWindow<WindowDescription_Vulkan>(windowID);
-        return description != nullptr ? description->renderImage : nullptr;
-    }
-    void WindowSubsystem_RenderAPIObject_Vulkan::destroyRenderImage(const window_id_type windowID)
-    {
-        WindowDescription_Vulkan* description = findWindow<WindowDescription_Vulkan>(windowID);
-        if (description == nullptr)
-        {
-            JUMA_LOG(warning, JSTR("Can't find window"));
-            return;
-        }
-        destroyRenderImage(windowID, *description);
-    }
-    void WindowSubsystem_RenderAPIObject_Vulkan::destroyRenderImage(const window_id_type windowID, WindowDescription_Vulkan& description)
-    {
-        if (description.renderImage != nullptr)
-        {
-            delete description.renderImage;
-            description.renderImage = nullptr;
-        }
     }
 
     void WindowSubsystem_RenderAPIObject_Vulkan::onWindowResized(window_id_type windowID, const math::uvector2& newSize)
