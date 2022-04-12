@@ -11,7 +11,6 @@
 #include "subsystems/window/WindowSubsystem.h"
 #include "subsystems/window/Vulkan/WindowSubsystem_Vulkan.h"
 #include "vulkanObjects/VulkanCommandPool.h"
-#include "vulkanObjects/VulkanRenderImage.h"
 #include "vulkanObjects/VulkanSwapchain.h"
 
 namespace JumaEngine

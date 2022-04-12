@@ -17,6 +17,7 @@
 #include "jutils/jstringID.h"
 #include "vulkanObjects/VulkanQueueType.h"
 #include "vulkanObjects/VulkanRenderPassDescription.h"
+#include "subsystems/render/texture/TextureSamples.h"
 
 namespace JumaEngine
 {
@@ -125,6 +126,8 @@ namespace JumaEngine
 
         bool createDevice();
         bool createCommandPools();
+
+        TextureSamples getMaxSampleCount() const;
     };
 }
 

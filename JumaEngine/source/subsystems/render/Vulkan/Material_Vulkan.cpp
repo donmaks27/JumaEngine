@@ -16,7 +16,6 @@
 #include "vulkanObjects/VulkanCommandBuffer.h"
 #include "vulkanObjects/VulkanFramebuffer.h"
 #include "vulkanObjects/VulkanImage.h"
-#include "vulkanObjects/VulkanRenderImage.h"
 #include "vulkanObjects/VulkanRenderPass.h"
 
 namespace JumaEngine

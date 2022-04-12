@@ -30,14 +30,6 @@ namespace JumaEngine
             return false;
         }
 
-        // Pick depth format
-        VkFormat depthFormat = VK_FORMAT_UNDEFINED;
-        if (!getRenderSubsystemObject()->pickDepthFormat(depthFormat))
-        {
-            JUMA_LOG(error, JSTR("Can't find appropriate depth format"));
-            return false;
-        }
-
         // Calculate swapchain size
         VkSurfaceCapabilitiesKHR capabilities;
         vkGetPhysicalDeviceSurfaceCapabilitiesKHR(getRenderSubsystemObject()->getPhysicalDevice(), surface, &capabilities);
@@ -47,14 +39,11 @@ namespace JumaEngine
 	    };
 
         m_WindowSurface = surface;
-        m_MaxSampleCount = getMaxSampleCount();
-        m_CurrentSettings.sampleCount = m_MaxSampleCount;
         m_CurrentSettings.surfaceFormat = surfaceFormat;
-        m_CurrentSettings.depthFormat = depthFormat;
         m_CurrentSettings.size = { swapchainSize.width, swapchainSize.height };
         m_CurrentSettings.presentMode = getRenderSubsystemObject()->getParent()->getPresentMode();
 
-        if (!updateSwapchain() || !updateRenderPass() || !updateSyncObjects())
+        if (!updateSwapchain() || !updateSyncObjects())
         {
             clearVulkanObjects();
             m_WindowSurface = nullptr;
@@ -64,21 +53,6 @@ namespace JumaEngine
         m_SettingForApply = m_CurrentSettings;
         markAsInitialized();
         return true;
-    }
-
-    VkSampleCountFlagBits VulkanSwapchain::getMaxSampleCount() const
-    {
-        VkPhysicalDeviceProperties deviceProperties;
-        vkGetPhysicalDeviceProperties(getRenderSubsystemObject()->getPhysicalDevice(), &deviceProperties);
-
-        const VkSampleCountFlags counts = deviceProperties.limits.framebufferColorSampleCounts & deviceProperties.limits.framebufferDepthSampleCounts;
-        if (counts & VK_SAMPLE_COUNT_64_BIT) { return VK_SAMPLE_COUNT_64_BIT; }
-        if (counts & VK_SAMPLE_COUNT_32_BIT) { return VK_SAMPLE_COUNT_32_BIT; }
-        if (counts & VK_SAMPLE_COUNT_16_BIT) { return VK_SAMPLE_COUNT_16_BIT; }
-        if (counts & VK_SAMPLE_COUNT_8_BIT) { return VK_SAMPLE_COUNT_8_BIT; }
-        if (counts & VK_SAMPLE_COUNT_4_BIT) { return VK_SAMPLE_COUNT_4_BIT; }
-        if (counts & VK_SAMPLE_COUNT_2_BIT) { return VK_SAMPLE_COUNT_2_BIT; }
-        return VK_SAMPLE_COUNT_1_BIT;
     }
 
     bool VulkanSwapchain::updateSwapchain()
@@ -123,7 +97,7 @@ namespace JumaEngine
 	    }
 	    swapchainInfo.preTransform = capabilities.currentTransform;
 	    swapchainInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-	    swapchainInfo.presentMode = getVulkanPresentMode(m_CurrentSettings.presentMode);
+	    swapchainInfo.presentMode = GetVulkanPresentModeByRenderPresentMode(m_CurrentSettings.presentMode);
 	    swapchainInfo.clipped = VK_TRUE;
 	    swapchainInfo.oldSwapchain = oldSwapchain;
         const VkResult result = vkCreateSwapchainKHR(device, &swapchainInfo, nullptr, &m_Swapchain);
@@ -140,22 +114,6 @@ namespace JumaEngine
         vkGetSwapchainImagesKHR(device, m_Swapchain, &imageCount, nullptr);
         m_SwapchainImages.resize(static_cast<int32>(imageCount));
         vkGetSwapchainImagesKHR(device, m_Swapchain, &imageCount, m_SwapchainImages.getData());
-        return true;
-    }
-    bool VulkanSwapchain::updateRenderPass()
-    {
-        VulkanRenderPassDescription description;
-        description.colorFormat = m_CurrentSettings.surfaceFormat.format;
-        description.depthFormat = m_CurrentSettings.depthFormat;
-        description.sampleCount = VK_SAMPLE_COUNT_1_BIT;
-        description.shouldUseDepth = true;
-        description.renderToSwapchain = true;
-        m_RenderPass = getRenderSubsystemObject()->getRenderPass(description);
-        if (m_RenderPass == nullptr)
-        {
-            JUMA_LOG(error, JSTR("Failed to create render pass"));
-            return false;
-        }
         return true;
     }
     bool VulkanSwapchain::updateSyncObjects()
@@ -211,12 +169,6 @@ namespace JumaEngine
             }
         }
         m_RenderFrameAvailableSemaphores.clear();
-
-        if (m_RenderPass != nullptr)
-        {
-            m_RenderPass = nullptr;
-            onRenderPassChanged.call(this);
-        }
 
         m_SwapchainImages.clear();
         if (m_Swapchain != nullptr)
@@ -275,31 +227,18 @@ namespace JumaEngine
 
         const bool sizeChanged = forceRecreate || (m_SettingForApply.size != m_CurrentSettings.size);
         const bool colorFormatChanged = forceRecreate || (m_SettingForApply.surfaceFormat.format != m_CurrentSettings.surfaceFormat.format) || (m_SettingForApply.surfaceFormat.colorSpace != m_CurrentSettings.surfaceFormat.colorSpace);
-        const bool depthFormatChanged = forceRecreate || (m_SettingForApply.depthFormat != m_CurrentSettings.depthFormat);
         const bool presentModeChanged = forceRecreate || (m_SettingForApply.presentMode != m_CurrentSettings.presentMode);
-        const bool sampleCountChanged = forceRecreate || (m_SettingForApply.sampleCount != m_CurrentSettings.sampleCount);
 
         const bool shouldRecreateSwapchain = sizeChanged || colorFormatChanged || presentModeChanged;
-        const bool shouldRecreateRenderPass = colorFormatChanged || depthFormatChanged || sampleCountChanged;
-        const bool shouldRecreateRenderImage = shouldRecreateSwapchain || shouldRecreateRenderPass;
 
         m_CurrentSettings = m_SettingForApply;
         if (shouldRecreateSwapchain && !updateSwapchain())
         {
             return false;
         }
-        if (shouldRecreateRenderPass && !updateRenderPass())
+        if (!updateSyncObjects())
         {
             return false;
-        }
-        if (shouldRecreateRenderImage && !updateSyncObjects())
-        {
-            return false;
-        }
-
-        if (shouldRecreateRenderPass)
-        {
-            onRenderPassChanged.call(this);
         }
         return true;
     }

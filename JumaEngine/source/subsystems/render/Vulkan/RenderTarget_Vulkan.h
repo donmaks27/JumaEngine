@@ -11,6 +11,7 @@
 
 namespace JumaEngine
 {
+    class VulkanSwapchain;
     class VulkanFramebuffer;
     class VulkanRenderPass;
     class VulkanCommandBuffer;
@@ -22,25 +23,33 @@ namespace JumaEngine
         RenderTarget_RenderAPIObject_Vulkan() = default;
         virtual ~RenderTarget_RenderAPIObject_Vulkan() override;
 
-        VulkanRenderPass* getRenderPass() const;
-        VulkanFramebuffer* getFramebuffer(int8 frameIndex) const;
+        VulkanRenderPass* getRenderPass() const { return m_RenderPass; }
+        VulkanFramebuffer* getFramebuffer(const int8 frameIndex) const { return m_Framebuffers.isValidIndex(frameIndex) ? m_Framebuffers[frameIndex] : nullptr; }
 
         bool startRender(VulkanCommandBuffer* commandBuffer);
         bool finishRender(VulkanCommandBuffer* commandBuffer);
 
     protected:
 
-        virtual bool initInternal() override { return m_Parent->isWindowRenderTarget() ? initWindowRenderTarget() : initRenderTarget(); }
+        virtual bool initInternal() override;
 
     private:
 
-        VulkanRenderImage* m_RenderImage = nullptr;
+        VulkanSwapchain* m_Swapchain = nullptr;
+        VulkanRenderPass* m_RenderPass = nullptr;
+        jarray<VulkanFramebuffer*> m_Framebuffers;
 
 
         void clearData();
 
         bool initWindowRenderTarget();
         bool initRenderTarget();
+
+        bool updateFramebuffers();
+        int8 getFramebufferCount() const;
+        int8 getRenderFrameCount() const;
+        int8 getCurrentFramebufferIndex() const;
+        int8 getCurrentRenderFrameIndex() const;
     };
 }
 

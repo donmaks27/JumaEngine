@@ -24,7 +24,7 @@ namespace JumaEngine
         VulkanFramebuffer() = default;
         virtual ~VulkanFramebuffer() override;
 
-        bool update(const VulkanSwapchain* swapchain, int8 swapchainImageIndex);
+        bool update(VulkanRenderPass* renderPass, const VulkanSwapchain* swapchain, int8 swapchainImageIndex);
         bool update(VulkanRenderPass* renderPass, const math::uvector2& size);
         
         VkFramebuffer get() const { return m_Framebuffer; }

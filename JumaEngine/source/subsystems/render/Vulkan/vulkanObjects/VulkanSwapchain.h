@@ -12,26 +12,22 @@
 
 #include "subsystems/render/RenderPresentMode.h"
 #include "jutils/jarray.h"
-#include "jutils/jdelegate_multicast.h"
 #include "jutils/math/vector2.h"
 
 namespace JumaEngine
 {
     struct RenderOptions;
     class WindowSubsystem_RenderAPIObject_Vulkan;
-    class VulkanRenderPass;
     class VulkanSwapchain;
+
+    constexpr VkPresentModeKHR GetVulkanPresentModeByRenderPresentMode(RenderPresentMode presentMode);
 
     struct VulkanSwapchainSettings
     {
-        VkSampleCountFlagBits sampleCount = VK_SAMPLE_COUNT_1_BIT;
         VkSurfaceFormatKHR surfaceFormat = { VK_FORMAT_R8G8B8_SRGB, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR };
-        VkFormat depthFormat = VK_FORMAT_D32_SFLOAT;
         math::uvector2 size = { 0, 0 };
         RenderPresentMode presentMode = RenderPresentMode::VSYNC;
     };
-
-    CREATE_JUTILS_MULTICAST_DELEGATE_OneParam(OnVulkanSwapchainEvent, VulkanSwapchain*, swapchain);
 
     class VulkanSwapchain : public VulkanContextObject
     {
@@ -41,18 +37,13 @@ namespace JumaEngine
         VulkanSwapchain() = default;
         virtual ~VulkanSwapchain() override;
 
-        OnVulkanSwapchainEvent onRenderPassChanged;
-
-
         bool init(VkSurfaceKHR surface, VkSurfaceFormatKHR surfaceFormat, const math::uvector2& windowSize);
 
-        VkSampleCountFlagBits getSampleCount() const { return m_CurrentSettings.sampleCount; }
         VkFormat getFormat() const { return m_CurrentSettings.surfaceFormat.format; }
         const math::uvector2& getSize() const { return m_CurrentSettings.size; }
         int32 getImageCount() const { return m_SwapchainImages.getSize(); }
 
         VkSwapchainKHR get() const { return m_Swapchain; }
-        VulkanRenderPass* getRenderPass() const { return m_RenderPass; }
         VkImage getSwapchainImage(const int32 imageIndex) const { return m_SwapchainImages.isValidIndex(imageIndex) ? m_SwapchainImages[imageIndex] : nullptr; }
         int8 getSwapchainImageIndex() const { return m_CurrentSwapchainImageIndex; }
 
@@ -73,23 +64,17 @@ namespace JumaEngine
         VkSurfaceKHR m_WindowSurface = nullptr;
 
         VkSwapchainKHR m_Swapchain = nullptr;
-        VulkanRenderPass* m_RenderPass = nullptr;
         jarray<VkImage> m_SwapchainImages;
         int8 m_CurrentSwapchainImageIndex = -1;
 
         jarray<VkSemaphore> m_RenderFrameAvailableSemaphores;
 
-        VkSampleCountFlagBits m_MaxSampleCount = VK_SAMPLE_COUNT_1_BIT;
         VulkanSwapchainSettings m_CurrentSettings;
         VulkanSwapchainSettings m_SettingForApply;
         bool m_NeedToRecreate = false;
 
 
-        VkSampleCountFlagBits getMaxSampleCount() const;
-        static constexpr VkPresentModeKHR getVulkanPresentMode(RenderPresentMode presentMode);
-
         bool updateSwapchain();
-        bool updateRenderPass();
         bool updateSyncObjects();
 
         void clearVulkanObjects();
@@ -100,7 +85,7 @@ namespace JumaEngine
         bool applySettingsInternal(bool forceRecreate);
     };
 
-    constexpr VkPresentModeKHR VulkanSwapchain::getVulkanPresentMode(const RenderPresentMode presentMode)
+    constexpr VkPresentModeKHR GetVulkanPresentModeByRenderPresentMode(RenderPresentMode presentMode)
     {
         switch (presentMode)
         {

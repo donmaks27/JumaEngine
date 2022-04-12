@@ -7,7 +7,6 @@
 #include "engine/Engine.h"
 #include "subsystems/render/Vulkan/RenderSubsystem_Vulkan.h"
 #include "subsystems/render/Vulkan/vulkanObjects/VulkanSwapchain.h"
-#include "subsystems/render/Vulkan/vulkanObjects/VulkanRenderImage.h"
 
 namespace JumaEngine
 {

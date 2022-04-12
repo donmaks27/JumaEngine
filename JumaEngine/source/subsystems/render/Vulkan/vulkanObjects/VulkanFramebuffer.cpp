@@ -48,19 +48,18 @@ namespace JumaEngine
         }
     }
 
-    bool VulkanFramebuffer::update(const VulkanSwapchain* swapchain, const int8 swapchainImageIndex)
+    bool VulkanFramebuffer::update(VulkanRenderPass* renderPass, const VulkanSwapchain* swapchain, const int8 swapchainImageIndex)
     {
+        if ((renderPass == nullptr) || !renderPass->isValid() || !renderPass->getDescription().renderToSwapchain)
+        {
+            JUMA_LOG(error, JSTR("Invalid render pass"));
+            return false;
+        }
+
         VkImage swapchainImage = swapchain != nullptr ? swapchain->getSwapchainImage(swapchainImageIndex) : nullptr;
         if (swapchainImage == nullptr)
         {
             JUMA_LOG(error, JSTR("Failed to get swapchain image"));
-            return false;
-        }
-
-        VulkanRenderPass* renderPass = swapchain->getRenderPass();
-        if ((renderPass == nullptr) || !renderPass->isValid() || !renderPass->getDescription().renderToSwapchain)
-        {
-            JUMA_LOG(error, JSTR("Invalid render pass"));
             return false;
         }
 
