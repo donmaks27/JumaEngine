@@ -43,6 +43,7 @@ namespace JumaEngine
         }
 
         m_Parent->getRenderPipeline()->createRenderAPIObject();
+        m_Parent->getDefaultTexture()->createRenderAPIObject();
         return true;
     }
 

@@ -10,6 +10,8 @@
 #include "Shader_OpenGL.h"
 #include "Texture_OpenGL.h"
 #include "VertexBuffer_OpenGL.h"
+#include "engine/Engine.h"
+#include "subsystems/render/RenderSubsystem.h"
 
 namespace JumaEngine
 {
@@ -59,26 +61,36 @@ namespace JumaEngine
             case ShaderUniformType::Texture:
                 {
                     Texture* value = nullptr;
-                    if (m_Parent->getParamValue<ShaderUniformType::Texture>(uniform.key, value) && (value != nullptr))
+                    m_Parent->getParamValue<ShaderUniformType::Texture>(uniform.key, value);
+                    const Texture_RenderAPIObject_OpenGL* textureObject = value != nullptr ? value->getRenderAPIObject<Texture_RenderAPIObject_OpenGL>() : nullptr;
+                    if (textureObject == nullptr)
                     {
-                        const Texture_RenderAPIObject_OpenGL* textureObject = value->getRenderAPIObject<Texture_RenderAPIObject_OpenGL>();
-                        if ((textureObject != nullptr) && textureObject->bind(uniform.value.location))
-                        {
-                            m_ActivatedImageCount = math::max(m_ActivatedImageCount, uniform.value.location + 1);
-                        }
+                        const Texture* defaultTexture = m_Parent->getOwnerEngine()->getRenderSubsystem()->getDefaultTexture();
+                        textureObject = defaultTexture != nullptr ? defaultTexture->getRenderAPIObject<Texture_RenderAPIObject_OpenGL>() : nullptr;
+                    }
+                    if ((textureObject != nullptr) && textureObject->bind(uniform.value.location))
+                    {
+                        m_ActivatedImageCount = math::max(m_ActivatedImageCount, uniform.value.location + 1);
                     }
                 }
                 break;
             case ShaderUniformType::RenderTarget:
                 {
                     RenderTarget* value = nullptr;
-                    if (m_Parent->getParamValue<ShaderUniformType::RenderTarget>(uniform.key, value) && (value != nullptr))
+                    m_Parent->getParamValue<ShaderUniformType::RenderTarget>(uniform.key, value);
+                    const RenderTarget_RenderAPIObject_OpenGL* renderTargetObject = value != nullptr ? value->getRenderAPIObject<RenderTarget_RenderAPIObject_OpenGL>() : nullptr;
+                    if (renderTargetObject == nullptr)
                     {
-                        const RenderTarget_RenderAPIObject_OpenGL* renderTargetObject = value->getRenderAPIObject<RenderTarget_RenderAPIObject_OpenGL>();
-                        if ((renderTargetObject != nullptr) && Texture_RenderAPIObject_OpenGL::bind(renderTargetObject->getColorImageIndex(), uniform.value.location))
+                        const Texture* defaultTexture = m_Parent->getOwnerEngine()->getRenderSubsystem()->getDefaultTexture();
+                        const Texture_RenderAPIObject_OpenGL* textureObject = defaultTexture != nullptr ? defaultTexture->getRenderAPIObject<Texture_RenderAPIObject_OpenGL>() : nullptr;
+                        if ((textureObject != nullptr) && textureObject->bind(uniform.value.location))
                         {
                             m_ActivatedImageCount = math::max(m_ActivatedImageCount, uniform.value.location + 1);
                         }
+                    }
+                    else if (Texture_RenderAPIObject_OpenGL::bind(renderTargetObject->getColorImageIndex(), uniform.value.location))
+                    {
+                        m_ActivatedImageCount = math::max(m_ActivatedImageCount, uniform.value.location + 1);
                     }
                 }
                 break;

@@ -4,6 +4,7 @@
 
 #include "RenderPipeline.h"
 #include "RenderSubsystem_Implementation.h"
+#include "Texture.h"
 #include "engine/Engine.h"
 #include "subsystems/window/WindowSubsystem.h"
 
@@ -15,6 +16,11 @@ namespace JumaEngine
         if (renderPipeline != nullptr)
         {
             renderPipeline->clearRenderAPIObject();
+        }
+        Texture* defaultTexture = m_Parent->getDefaultTexture();
+        if (defaultTexture != nullptr)
+        {
+            defaultTexture->clearRenderAPIObject();
         }
     }
 
@@ -30,6 +36,9 @@ namespace JumaEngine
             return false;
         }
 
+        m_DefaultTexture = getOwnerEngine()->createObject<Texture>();
+        m_DefaultTexture->init(TextureFormat::RGBA, { 1, 1 }, new uint8[4]{ 255, 0, 255, 0 });
+
         m_RenderPipeline = getOwnerEngine()->createObject<RenderPipeline>();
         m_RenderPipeline->init();
         return true;
@@ -38,6 +47,9 @@ namespace JumaEngine
     {
         delete m_RenderPipeline;
         m_RenderPipeline = nullptr;
+
+        delete m_DefaultTexture;
+        m_DefaultTexture = nullptr;
 
         clearRenderAPIObject();
 

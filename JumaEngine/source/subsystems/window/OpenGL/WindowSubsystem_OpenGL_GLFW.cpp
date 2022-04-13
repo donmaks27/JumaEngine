@@ -70,9 +70,12 @@ namespace JumaEngine
             return false;
         }
 
-        // TODO: Move main window to window subsystem, use it as parent window
+        const window_id_type mainWindowID = m_Parent->getMainWindowID();
+        const WindowDescription_OpenGL_GLFW* mainWindow = mainWindowID != windowID ? m_Windows.find(m_Parent->getMainWindowID()) : nullptr;
+        GLFWwindow* mainWindowGLFW = mainWindow != nullptr ? mainWindow->windowGLFW : nullptr;
+
         glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-        GLFWwindow* window = glfwCreateWindow(static_cast<int>(description->size.x), static_cast<int>(description->size.y), *description->title, nullptr, nullptr);
+        GLFWwindow* window = glfwCreateWindow(static_cast<int>(description->size.x), static_cast<int>(description->size.y), *description->title, nullptr, mainWindowGLFW);
         if (window == nullptr)
         {
             JUMA_LOG(error, JSTR("Failed to create GLFW window"));

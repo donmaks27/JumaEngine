@@ -11,6 +11,7 @@
 
 namespace JumaEngine
 {
+    class Texture;
     class RenderPipeline;
     class RenderPipeline_RenderAPIObject;
     class RenderTarget_RenderAPIObject;
@@ -58,6 +59,7 @@ namespace JumaEngine
 
         RenderPresentMode getPresentMode() const { return m_CurrentPresentMode; }
 
+        Texture* getDefaultTexture() const { return m_DefaultTexture; }
         RenderPipeline* getRenderPipeline() const { return m_RenderPipeline; }
 
         Shader_RenderAPIObject* createShaderObject();
@@ -83,6 +85,7 @@ namespace JumaEngine
 
         RenderPresentMode m_CurrentPresentMode = RenderPresentMode::VSYNC;
 
+        Texture* m_DefaultTexture = nullptr;
         RenderPipeline* m_RenderPipeline = nullptr;
     };
 }

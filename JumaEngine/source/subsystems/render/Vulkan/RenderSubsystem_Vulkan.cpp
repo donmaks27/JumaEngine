@@ -92,6 +92,7 @@ namespace JumaEngine
         m_RenderFrameCount = static_cast<int8>(math::clamp(swapchain->getImageCount() - 1, 1, getMaxRenderFrameCount()));
 
         m_Parent->getRenderPipeline()->createRenderAPIObject();
+        m_Parent->getDefaultTexture()->createRenderAPIObject();
         return true;
     }
     void RenderSubsystem_RenderAPIObject_Vulkan::clearVulkan()

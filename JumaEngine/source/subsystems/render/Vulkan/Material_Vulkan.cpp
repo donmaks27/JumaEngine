@@ -291,8 +291,14 @@ namespace JumaEngine
                     VulkanImage* image = textureObject != nullptr ? textureObject->getImage() : nullptr;
                     if (image == nullptr)
                     {
-                        /* TODO: Handle this case, return false for now */
-                        return false;
+                        const Texture* defaultTexture = getRenderSubsystemObject()->getParent()->getDefaultTexture();
+                        const Texture_RenderAPIObject_Vulkan* defaultTextureObject = defaultTexture != nullptr ? defaultTexture->getRenderAPIObject<Texture_RenderAPIObject_Vulkan>() : nullptr;
+                        image = defaultTextureObject != nullptr ? defaultTextureObject->getImage() : nullptr;
+                        if (image == nullptr)
+                        {
+                            JUMA_LOG(error, JSTR("Invalid default texture"));
+                            return false;
+                        }
                     }
 
                     imageValue->image = image;
@@ -328,8 +334,14 @@ namespace JumaEngine
                     VulkanImage* image = framebuffer != nullptr ? framebuffer->getResultImage() : nullptr;
                     if (image == nullptr)
                     {
-                        /* TODO: Handle this case, return false for now */
-                        return false;
+                        const Texture* defaultTexture = getRenderSubsystemObject()->getParent()->getDefaultTexture();
+                        const Texture_RenderAPIObject_Vulkan* defaultTextureObject = defaultTexture != nullptr ? defaultTexture->getRenderAPIObject<Texture_RenderAPIObject_Vulkan>() : nullptr;
+                        image = defaultTextureObject != nullptr ? defaultTextureObject->getImage() : nullptr;
+                        if (image == nullptr)
+                        {
+                            JUMA_LOG(error, JSTR("Invalid default texture"));
+                            return false;
+                        }
                     }
 
                     imageValue->image = image;
