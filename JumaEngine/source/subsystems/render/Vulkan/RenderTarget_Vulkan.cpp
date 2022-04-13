@@ -130,19 +130,21 @@ namespace JumaEngine
     }
     int8 RenderTarget_RenderAPIObject_Vulkan::getFramebufferCount() const
     {
-        return m_Swapchain != nullptr ? static_cast<int8>(m_Swapchain->getImageCount()) : getRenderFrameCount();
-    }
-    int8 RenderTarget_RenderAPIObject_Vulkan::getRenderFrameCount() const
-    {
-        return getRenderSubsystemObject()->getRenderFrameCount();
+        return static_cast<int8>(m_Swapchain != nullptr ? m_Swapchain->getImageCount() : 1);
     }
     int8 RenderTarget_RenderAPIObject_Vulkan::getCurrentFramebufferIndex() const
     {
-        return m_Swapchain != nullptr ? m_Swapchain->getSwapchainImageIndex() : getCurrentRenderFrameIndex();
+        return static_cast<int8>(m_Swapchain != nullptr ? m_Swapchain->getSwapchainImageIndex() : 0);
     }
-    int8 RenderTarget_RenderAPIObject_Vulkan::getCurrentRenderFrameIndex() const
+
+    VulkanFramebuffer* RenderTarget_RenderAPIObject_Vulkan::getFramebuffer() const
     {
-        return getRenderSubsystemObject()->getRenderFrameIndex();
+        if (m_Framebuffers.getSize() == 1)
+        {
+            return m_Framebuffers[0];
+        }
+        const int8 index = static_cast<int8>(m_Swapchain != nullptr ? m_Swapchain->getSwapchainImageIndex() : -1);
+        return m_Framebuffers.isValidIndex(index) ? m_Framebuffers[index] : nullptr;
     }
 
     bool RenderTarget_RenderAPIObject_Vulkan::startRender(VulkanCommandBuffer* commandBuffer)

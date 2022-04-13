@@ -52,28 +52,28 @@ namespace JumaEngine
         };
 
         VkDescriptorPool m_DescriptorPool = nullptr;
-        jarray<DescriptorSetContainer> m_DescriptorSets;
+        DescriptorSetContainer m_DescriptorSet;
 
-        jmap<jstringID, jarray<UniformValue_Buffer>> m_UniformValues_Buffer;
-        jmap<jstringID, jarray<UniformValue_Image>> m_UniformValues_Image;
+        jmap<jstringID, UniformValue_Buffer> m_UniformValues_Buffer;
+        jmap<jstringID, UniformValue_Image> m_UniformValues_Image;
 
         jmap<jstringID, jmap<render_pass_id_type, VkPipeline>> m_RenderPipelines;
 
 
         bool createDescriptorPool();
 
-        bool bindDescriptorSet(VkCommandBuffer commandBuffer, int8 frameIndex);
-        bool updateDescriptorSet(int8 frameIndex);
-        bool createDescriptorSet(int8 frameIndex);
+        bool bindDescriptorSet(VkCommandBuffer commandBuffer);
+        bool updateDescriptorSet();
+        bool createDescriptorSet();
 
         template<ShaderUniformType Type>
-        bool updateBufferUniformValue(const jstringID& name, uint32 frameIndex, VkDescriptorBufferInfo& outInfo);
+        bool updateBufferUniformValue(const jstringID& name, VkDescriptorBufferInfo& outInfo);
         template<ShaderUniformType Type>
-        bool updateBufferUniformValueData(const jstringID& name, uint32 frameIndex, VkDescriptorBufferInfo& outInfo);
+        bool updateBufferUniformValueData(const jstringID& name, VkDescriptorBufferInfo& outInfo);
         bool updateBufferUniformValueData(UniformValue_Buffer* bufferValue, uint64 dataSize, const void* data, VkDescriptorBufferInfo& outInfo);
 
-        bool updateTextureUniformValue(const jstringID& name, int8 frameIndex, VkDescriptorImageInfo& outInfo);
-        bool updateRenderTargetUniformValue(const jstringID& name, int8 frameIndex, VkDescriptorImageInfo& outInfo);
+        bool updateTextureUniformValue(const jstringID& name, VkDescriptorImageInfo& outInfo);
+        bool updateRenderTargetUniformValue(const jstringID& name, VkDescriptorImageInfo& outInfo);
 
         void clearVulkanData();
 
@@ -82,24 +82,23 @@ namespace JumaEngine
     };
 
     template<ShaderUniformType Type>
-    bool Material_RenderAPIObject_Vulkan::updateBufferUniformValue(const jstringID& name, const uint32 frameIndex, VkDescriptorBufferInfo& outInfo)
+    bool Material_RenderAPIObject_Vulkan::updateBufferUniformValue(const jstringID& name, VkDescriptorBufferInfo& outInfo)
     {
         if (m_Parent->isOverrideParam(name))
         {
-            return updateBufferUniformValueData<Type>(name, frameIndex, outInfo);
+            return updateBufferUniformValueData<Type>(name, outInfo);
         }
         if (m_Parent->isMaterialInstance())
         {
             Material_RenderAPIObject_Vulkan* baseMaterialObject = dynamic_cast<Material_RenderAPIObject_Vulkan*>(m_Parent->getBaseMaterial()->getRenderAPIObject());
-            return baseMaterialObject->updateBufferUniformValue<Type>(name, frameIndex, outInfo);
+            return baseMaterialObject->updateBufferUniformValue<Type>(name, outInfo);
         }
         return false;
     }
     template<ShaderUniformType Type>
-    bool Material_RenderAPIObject_Vulkan::updateBufferUniformValueData(const jstringID& name, const uint32 frameIndex, VkDescriptorBufferInfo& outInfo)
+    bool Material_RenderAPIObject_Vulkan::updateBufferUniformValueData(const jstringID& name, VkDescriptorBufferInfo& outInfo)
     {
-        jarray<UniformValue_Buffer>* buffers = m_UniformValues_Buffer.find(name);
-        UniformValue_Buffer* bufferValue = buffers != nullptr ? buffers->findByIndex(static_cast<int32>(frameIndex)) : nullptr;
+        UniformValue_Buffer* bufferValue = m_UniformValues_Buffer.find(name);
         if (bufferValue == nullptr)
         {
             JUMA_LOG(error, JSTR("Can't find uniform value buffer, this shouldn't happen"));

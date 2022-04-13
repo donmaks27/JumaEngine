@@ -20,10 +20,10 @@ namespace JumaEngine
 {
     class VulkanCommandBuffer;
 
-    inline TextureFormat GetTextureFormatByVulkanFormat(VkFormat format);
-    inline VkFormat GetVulkanFormatByTextureFormat(TextureFormat format);
+    constexpr TextureFormat GetTextureFormatByVulkanFormat(VkFormat format);
+    constexpr VkFormat GetVulkanFormatByTextureFormat(TextureFormat format);
 
-    inline VkSampleCountFlagBits GetSampleCountByTextureSamples(TextureSamples samples);
+    constexpr VkSampleCountFlagBits GetSampleCountByTextureSamples(TextureSamples samples);
 
     class VulkanImage : public VulkanContextObject
     {
@@ -103,7 +103,7 @@ namespace JumaEngine
         void submitCommandBuffer(VulkanCommandBuffer* commandBuffer) const;
     };
 
-    TextureFormat GetTextureFormatByVulkanFormat(const VkFormat format)
+    constexpr TextureFormat GetTextureFormatByVulkanFormat(const VkFormat format)
     {
         switch (format)
         {
@@ -116,7 +116,7 @@ namespace JumaEngine
         }
         return TextureFormat::None;
     }
-    VkFormat GetVulkanFormatByTextureFormat(const TextureFormat format)
+    constexpr VkFormat GetVulkanFormatByTextureFormat(const TextureFormat format)
     {
         switch (format)
         {
@@ -130,7 +130,7 @@ namespace JumaEngine
         return VK_FORMAT_UNDEFINED;
     }
 
-    VkSampleCountFlagBits GetSampleCountByTextureSamples(const TextureSamples samples)
+    constexpr VkSampleCountFlagBits GetSampleCountByTextureSamples(const TextureSamples samples)
     {
         switch (samples)
         {

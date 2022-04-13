@@ -84,7 +84,7 @@ namespace JumaEngine
 
         WindowDescription_OpenGL_GLFW& windowDescription = m_Windows[windowID];
         windowDescription.windowGLFW = window;
-        description->supportedPresentModes = { RenderPresentMode::VSYNC };
+        description->supportedPresentModes = { RenderPresentMode::VSYNC, RenderPresentMode::IMMEDIATE };
 
         WindowUserObject* userObject = new WindowUserObject();
         userObject->object = this;

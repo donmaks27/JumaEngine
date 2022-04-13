@@ -30,16 +30,10 @@ namespace JumaEngine
 
     private:
 
-        struct RenderFrameObjects
-        {
-            VkFence renderFinishedFence = nullptr;
-            VkSemaphore renderFinishedSemaphore = nullptr;
-
-            VulkanCommandBuffer* commandBuffer = nullptr;
-        };
-
-        jarray<RenderFrameObjects> m_RenderFramesObjects;
         jarray<VkSemaphore> m_SwapchainImageReadySemaphores;
+        VkFence m_RenderFinishedFence = nullptr;
+        VkSemaphore m_RenderFinishedSemaphore = nullptr;
+        VulkanCommandBuffer* m_RenderCommandBuffer = nullptr;
 
 
         void clearData();

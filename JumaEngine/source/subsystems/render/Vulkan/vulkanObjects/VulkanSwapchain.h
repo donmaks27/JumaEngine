@@ -24,7 +24,6 @@ namespace JumaEngine
 
     struct VulkanSwapchainSettings
     {
-        VkSurfaceFormatKHR surfaceFormat = { VK_FORMAT_R8G8B8_SRGB, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR };
         math::uvector2 size = { 0, 0 };
         RenderPresentMode presentMode = RenderPresentMode::VSYNC;
     };
@@ -39,7 +38,7 @@ namespace JumaEngine
 
         bool init(VkSurfaceKHR surface, VkSurfaceFormatKHR surfaceFormat, const math::uvector2& windowSize);
 
-        VkFormat getFormat() const { return m_CurrentSettings.surfaceFormat.format; }
+        VkFormat getFormat() const { return m_SwapchainImagesFormat.format; }
         const math::uvector2& getSize() const { return m_CurrentSettings.size; }
         int32 getImageCount() const { return m_SwapchainImages.getSize(); }
 
@@ -47,12 +46,12 @@ namespace JumaEngine
         VkImage getSwapchainImage(const int32 imageIndex) const { return m_SwapchainImages.isValidIndex(imageIndex) ? m_SwapchainImages[imageIndex] : nullptr; }
         int8 getSwapchainImageIndex() const { return m_CurrentSwapchainImageIndex; }
 
-        VkSemaphore getRenderFrameAvailableSemaphore(const int32 renderFrameIndex) const { return m_RenderFrameAvailableSemaphores.isValidIndex(renderFrameIndex) ? m_RenderFrameAvailableSemaphores[renderFrameIndex] : nullptr; }
+        VkSemaphore getRenderAvailableSemaphore() const { return m_RenderAvailableSemaphore; }
         
         void applySettings(bool forceRecreate = false);
         bool isNeedToRecreate() const { return m_NeedToRecreate; }
 
-        VkSemaphore acquireNextImage();
+        bool acquireNextImage();
         bool presentCurrentImage(VkSemaphore waitSemaphore);
 
     protected:
@@ -64,10 +63,11 @@ namespace JumaEngine
         VkSurfaceKHR m_WindowSurface = nullptr;
 
         VkSwapchainKHR m_Swapchain = nullptr;
+        VkSurfaceFormatKHR m_SwapchainImagesFormat = { VK_FORMAT_R8G8B8_SRGB, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR };
         jarray<VkImage> m_SwapchainImages;
         int8 m_CurrentSwapchainImageIndex = -1;
 
-        jarray<VkSemaphore> m_RenderFrameAvailableSemaphores;
+        VkSemaphore m_RenderAvailableSemaphore;
 
         VulkanSwapchainSettings m_CurrentSettings;
         VulkanSwapchainSettings m_SettingForApply;

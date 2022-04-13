@@ -24,22 +24,21 @@ namespace JumaEngine
     {
         VkDevice device = getRenderSubsystemObject()->getDevice();
 
-        for (const auto& renderFrameObjects : m_RenderFramesObjects)
+        if (m_RenderFinishedFence != nullptr)
         {
-            if (renderFrameObjects.commandBuffer != nullptr)
-            {
-                renderFrameObjects.commandBuffer->returnToCommandPool();
-            }
-            if (renderFrameObjects.renderFinishedSemaphore != nullptr)
-            {
-                vkDestroySemaphore(device, renderFrameObjects.renderFinishedSemaphore, nullptr);
-            }
-            if (renderFrameObjects.renderFinishedFence != nullptr)
-            {
-                vkDestroyFence(device, renderFrameObjects.renderFinishedFence, nullptr);
-            }
+            vkDestroyFence(device, m_RenderFinishedFence, nullptr);
+            m_RenderFinishedFence = nullptr;
         }
-        m_RenderFramesObjects.clear();
+        if (m_RenderFinishedSemaphore != nullptr)
+        {
+            vkDestroySemaphore(device, m_RenderFinishedSemaphore, nullptr);
+            m_RenderFinishedFence = nullptr;
+        }
+        if (m_RenderCommandBuffer != nullptr)
+        {
+            m_RenderCommandBuffer->returnToCommandPool();
+            m_RenderCommandBuffer = nullptr;
+        }
 
         m_SwapchainImageReadySemaphores.clear();
     }
@@ -55,51 +54,28 @@ namespace JumaEngine
     }
     bool RenderPipeline_RenderAPIObject_Vulkan::updateSyncObjects()
     {
-        const int8 renderFrameCount = getRenderSubsystemObject()->getRenderFrameCount();
-        if (renderFrameCount <= 0)
-        {
-            JUMA_LOG(error, JSTR("Invalid render frame count"));
-            return false;
-        }
-        if (m_RenderFramesObjects.getSize() == renderFrameCount)
-        {
-            return true;
-        }
-
         VkDevice device = getRenderSubsystemObject()->getDevice();
-        for (int32 index = m_RenderFramesObjects.getSize() - 1; index >= renderFrameCount; index--)
+        if (m_RenderFinishedFence == nullptr)
         {
-            RenderFrameObjects& objects = m_RenderFramesObjects[index];
-            vkDestroyFence(device, objects.renderFinishedFence, nullptr);
-            vkDestroySemaphore(device, objects.renderFinishedSemaphore, nullptr);
-        }
-        m_RenderFramesObjects.resize(renderFrameCount);
-
-        VkFenceCreateInfo fenceInfo{};
-        fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-        fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
-        VkSemaphoreCreateInfo semaphoreInfo{};
-        semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-        for (int32 index = 0; index < m_RenderFramesObjects.getSize(); index++)
-        {
-            RenderFrameObjects& objects = m_RenderFramesObjects[index];
-            if (objects.renderFinishedFence == nullptr)
+            VkFenceCreateInfo fenceInfo{};
+            fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+            fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+            const VkResult result = vkCreateFence(device, &fenceInfo, nullptr, &m_RenderFinishedFence);
+            if (result != VK_SUCCESS)
             {
-                const VkResult result = vkCreateFence(device, &fenceInfo, nullptr, &objects.renderFinishedFence);
-                if (result != VK_SUCCESS)
-                {
-                    JUMA_VULKAN_ERROR_LOG(JSTR("Failed to create fence"), result);
-                    return false;
-                }
+                JUMA_VULKAN_ERROR_LOG(JSTR("Failed to create fence"), result);
+                return false;
             }
-            if (objects.renderFinishedSemaphore == nullptr)
+        }
+        if (m_RenderFinishedSemaphore == nullptr)
+        {
+            VkSemaphoreCreateInfo semaphoreInfo{};
+            semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+            const VkResult result = vkCreateSemaphore(device, &semaphoreInfo, nullptr, &m_RenderFinishedSemaphore);
+            if (result != VK_SUCCESS)
             {
-                const VkResult result = vkCreateSemaphore(device, &semaphoreInfo, nullptr, &objects.renderFinishedSemaphore);
-                if (result != VK_SUCCESS)
-                {
-                    JUMA_VULKAN_ERROR_LOG(JSTR("Failed to create semaphore"), result);
-                    return false;
-                }
+                JUMA_VULKAN_ERROR_LOG(JSTR("Failed to create semaphore"), result);
+                return false;
             }
         }
         return true;
@@ -107,23 +83,15 @@ namespace JumaEngine
 
     bool RenderPipeline_RenderAPIObject_Vulkan::renderPipeline()
     {
-        getRenderSubsystemObject()->updateRenderFrameIndex();
         return waitForRenderFinish() && acquireNextSwapchainImages() && recordRenderCommandBuffer() && submitRenderCommandBuffer();
     }
     bool RenderPipeline_RenderAPIObject_Vulkan::waitForRenderFinish()
     {
-        const int8 renderFrameIndex = getRenderSubsystemObject()->getRenderFrameIndex();
-        if (!m_RenderFramesObjects.isValidIndex(renderFrameIndex))
+        vkWaitForFences(getRenderSubsystemObject()->getDevice(), 1, &m_RenderFinishedFence, VK_TRUE, UINT64_MAX);
+        if (m_RenderCommandBuffer != nullptr)
         {
-            return false;
-        }
-
-        RenderFrameObjects& renderFrameObjects = m_RenderFramesObjects[renderFrameIndex];
-        vkWaitForFences(getRenderSubsystemObject()->getDevice(), 1, &renderFrameObjects.renderFinishedFence, VK_TRUE, UINT64_MAX);
-        if (renderFrameObjects.commandBuffer != nullptr)
-        {
-            renderFrameObjects.commandBuffer->returnToCommandPool();
-            renderFrameObjects.commandBuffer = nullptr;
+            m_RenderCommandBuffer->returnToCommandPool();
+            m_RenderCommandBuffer = nullptr;
         }
         return true;
     }
@@ -145,13 +113,11 @@ namespace JumaEngine
                 continue;
             }
 
-            VkSemaphore semaphore = swapchain->acquireNextImage();
-            if (semaphore == nullptr)
+            if (!swapchain->acquireNextImage())
             {
                 return false;
             }
-
-            m_SwapchainImageReadySemaphores.add(semaphore);
+            m_SwapchainImageReadySemaphores.add(swapchain->getRenderAvailableSemaphore());
         }
         return true;
     }
@@ -231,15 +197,12 @@ namespace JumaEngine
             return false;
         }
 
-        RenderFrameObjects& renderFrameObjects = m_RenderFramesObjects[getRenderSubsystemObject()->getRenderFrameIndex()];
-        renderFrameObjects.commandBuffer = commandBuffer;
+        m_RenderCommandBuffer = commandBuffer;
         return true;
     }
     bool RenderPipeline_RenderAPIObject_Vulkan::submitRenderCommandBuffer()
     {
-        const int8 renderFrameIndex = getRenderSubsystemObject()->getRenderFrameIndex();
-        RenderFrameObjects& renderFrameObjects = m_RenderFramesObjects[renderFrameIndex];
-        vkResetFences(getRenderSubsystemObject()->getDevice(), 1, &renderFrameObjects.renderFinishedFence);
+        vkResetFences(getRenderSubsystemObject()->getDevice(), 1, &m_RenderFinishedFence);
 
         constexpr VkPipelineStageFlags waitStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
         VkSubmitInfo submitInfo{};
@@ -248,12 +211,12 @@ namespace JumaEngine
         submitInfo.pWaitSemaphores = m_SwapchainImageReadySemaphores.getData();
         submitInfo.pWaitDstStageMask = &waitStage;
         submitInfo.signalSemaphoreCount = 1;
-        submitInfo.pSignalSemaphores = &renderFrameObjects.renderFinishedSemaphore;
-        if (!renderFrameObjects.commandBuffer->submit(submitInfo, renderFrameObjects.renderFinishedFence, false))
+        submitInfo.pSignalSemaphores = &m_RenderFinishedSemaphore;
+        if (!m_RenderCommandBuffer->submit(submitInfo, m_RenderFinishedFence, false))
         {
             JUMA_LOG(error, JSTR("Failed to submit render command buffer"));
-            renderFrameObjects.commandBuffer->returnToCommandPool();
-            renderFrameObjects.commandBuffer = nullptr;
+            m_RenderCommandBuffer->returnToCommandPool();
+            m_RenderCommandBuffer = nullptr;
             return false;
         }
 
@@ -272,7 +235,7 @@ namespace JumaEngine
                 continue;
             }
 
-            swapchain->presentCurrentImage(renderFrameObjects.renderFinishedSemaphore);
+            swapchain->presentCurrentImage(m_RenderFinishedSemaphore);
         }
         return true;
     }

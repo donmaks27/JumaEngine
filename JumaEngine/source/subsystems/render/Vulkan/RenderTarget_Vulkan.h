@@ -24,7 +24,7 @@ namespace JumaEngine
         virtual ~RenderTarget_RenderAPIObject_Vulkan() override;
 
         VulkanRenderPass* getRenderPass() const { return m_RenderPass; }
-        VulkanFramebuffer* getFramebuffer(const int8 frameIndex) const { return m_Framebuffers.isValidIndex(frameIndex) ? m_Framebuffers[frameIndex] : nullptr; }
+        VulkanFramebuffer* getFramebuffer() const;
 
         bool startRender(VulkanCommandBuffer* commandBuffer);
         bool finishRender(VulkanCommandBuffer* commandBuffer);
@@ -47,9 +47,7 @@ namespace JumaEngine
 
         bool updateFramebuffers();
         int8 getFramebufferCount() const;
-        int8 getRenderFrameCount() const;
         int8 getCurrentFramebufferIndex() const;
-        int8 getCurrentRenderFrameIndex() const;
     };
 }
 
