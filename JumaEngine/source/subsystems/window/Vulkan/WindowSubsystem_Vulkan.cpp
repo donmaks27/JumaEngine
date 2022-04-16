@@ -163,9 +163,9 @@ namespace JumaEngine
         }
     }
 
-    void WindowSubsystem_RenderAPIObject_Vulkan::finishRender()
+    void WindowSubsystem_RenderAPIObject_Vulkan::onFinishRender()
     {
-        Super::finishRender();
+        Super::onFinishRender();
 
         for (const auto& window : m_Parent->getAllWindows())
         {

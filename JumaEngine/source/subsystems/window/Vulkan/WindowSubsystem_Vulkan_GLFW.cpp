@@ -159,9 +159,9 @@ namespace JumaEngine
         return glfwWindowShouldClose(description->windowGLFW) != GLFW_FALSE;
     }
 
-    void WindowSubsystem_RenderAPIObject_Vulkan_GLFW::finishRender()
+    void WindowSubsystem_RenderAPIObject_Vulkan_GLFW::onFinishRender()
     {
-        Super::finishRender();
+        Super::onFinishRender();
 
         glfwPollEvents();
     }

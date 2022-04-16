@@ -8,9 +8,11 @@
 
 #include "subsystems/render/VertexBuffer.h"
 
+#include "OpenGLContextObject.h"
+
 namespace JumaEngine
 {
-    class VertexBuffer_RenderAPIObject_OpenGL : public VertexBuffer_RenderAPIObject
+    class VertexBuffer_RenderAPIObject_OpenGL : public VertexBuffer_RenderAPIObject, public OpenGLContextObject
     {
     public:
         VertexBuffer_RenderAPIObject_OpenGL() = default;

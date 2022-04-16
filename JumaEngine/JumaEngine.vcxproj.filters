@@ -555,5 +555,8 @@
     <ClInclude Include="source\engine\ActionTask.h">
       <Filter>JumaEngine\engine</Filter>
     </ClInclude>
+    <ClInclude Include="source\subsystems\render\OpenGL\OpenGLContextObject.h">
+      <Filter>JumaEngine\subsystems\render\OpenGL</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

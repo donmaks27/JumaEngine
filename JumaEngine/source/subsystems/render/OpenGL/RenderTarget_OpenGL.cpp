@@ -8,6 +8,7 @@
 
 #include "Texture_OpenGL.h"
 #include "engine/Engine.h"
+#include "subsystems/window/WindowSubsystem.h"
 
 namespace JumaEngine
 {
@@ -168,6 +169,11 @@ namespace JumaEngine
 
     void RenderTarget_RenderAPIObject_OpenGL::startRender()
     {
+        if (m_Parent->isWindowRenderTarget())
+        {
+            m_Parent->getOwnerEngine()->getWindowSubsystem()->onStartWindowRender(m_Parent->getWindowID());
+        }
+
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FramebufferIndex);
     }
     void RenderTarget_RenderAPIObject_OpenGL::finishRender()
@@ -185,6 +191,11 @@ namespace JumaEngine
             );
         }
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        if (m_Parent->isWindowRenderTarget())
+        {
+            m_Parent->getOwnerEngine()->getWindowSubsystem()->onFinishWindowRender(m_Parent->getWindowID());
+        }
     }
 }
 

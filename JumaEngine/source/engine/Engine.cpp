@@ -187,13 +187,19 @@ namespace JumaEngine
         m_VertexBufferPP = createObject<VertexBuffer>();
         m_VertexBufferPP->init(ppVertexData);
         m_VertexBufferPP->createRenderAPIObject();
+        
+        const window_id_type secondWindowID = m_WindowSubsytem->createWindow(JSTR("Second window"), { 800, 600 });
+
+        m_SecondWindowRenderTarget = createObject<RenderTarget>();
+        m_SecondWindowRenderTarget->init(secondWindowID, TextureSamples::SAMPLES_1);
+        m_SecondWindowRenderTarget->createRenderAPIObject();
 
         RenderPipeline* renderPipeline = m_RenderSubsystem->getRenderPipeline();
         renderPipeline->addPipelineStage(JSTR("MainPass"), m_RenderTarget);
         renderPipeline->addPipelineStage(JSTR("WindowPass"), m_WindowRenderTarget);
-        /*renderPipeline->addRenderTargetPipelineStage(JSTR("MainPass"), m_RenderTarget);
-        renderPipeline->addWindowPipelineStage(JSTR("WindowPass"), m_WindowSubsytem->getMainWindowID());*/
+        renderPipeline->addPipelineStage(JSTR("WindowPass2"), m_SecondWindowRenderTarget);
         renderPipeline->addPipelineStageDependency(JSTR("WindowPass"), JSTR("MainPass"));
+        renderPipeline->addPipelineStageDependency(JSTR("WindowPass2"), JSTR("MainPass"));
         renderPipeline->validatePipelineQueue();
         return true;
     }
@@ -219,6 +225,7 @@ namespace JumaEngine
         delete m_MaterialPP;
         delete m_ShaderPP;
 
+        delete m_SecondWindowRenderTarget;
         delete m_WindowRenderTarget;
         delete m_RenderTarget;
         delete m_VertexBuffer;
@@ -243,7 +250,6 @@ namespace JumaEngine
 
     void Engine::render(const RenderOptions* options)
     {
-        //m_Material->render(m_VertexBuffer, options);
         if (options->renderTargetName == JSTR("MainPass"))
         {
             m_Material->render(m_VertexBuffer, options);

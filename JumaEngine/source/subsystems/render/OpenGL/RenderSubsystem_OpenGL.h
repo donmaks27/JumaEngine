@@ -8,8 +8,12 @@
 
 #include "subsystems/render/RenderSubsystem.h"
 
+#include "OpenGLContextObject.h"
+
 namespace JumaEngine
 {
+    class WindowSubsystem_RenderAPIObject_OpenGL;
+
     class RenderSubsystem_RenderAPIObject_OpenGL : public RenderSubsystem_RenderAPIObject
     {
         using Super = RenderSubsystem_RenderAPIObject;
@@ -17,6 +21,19 @@ namespace JumaEngine
     public:
         RenderSubsystem_RenderAPIObject_OpenGL() = default;
         virtual ~RenderSubsystem_RenderAPIObject_OpenGL() override;
+
+        template<typename T, TEMPLATE_ENABLE(is_base_and_not_same<OpenGLContextObject, T>)>
+        T* createOpenGLObject() { return this->registerOpenGLObject(new T()); }
+        template<typename T, TEMPLATE_ENABLE(is_base_and_not_same<OpenGLContextObject, T>)>
+        T* registerOpenGLObject(T* openGLContextObject)
+        {
+            if (openGLContextObject != nullptr)
+            {
+                openGLContextObject->m_RenderSubsystem = this;
+                openGLContextObject->m_WindowSubsystem = m_WindowSubsystem;
+            }
+            return openGLContextObject;
+        }
 
     protected:
 
@@ -30,6 +47,9 @@ namespace JumaEngine
         virtual RenderPipeline_RenderAPIObject* createRenderPipelineObject() override;
 
     private:
+
+        WindowSubsystem_RenderAPIObject_OpenGL* m_WindowSubsystem = nullptr;
+
 
         void clearOpenGL();
     };

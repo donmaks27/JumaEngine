@@ -22,4 +22,10 @@ namespace JumaEngine
         VertexComponentType type = VertexComponentType::None;
         uint32 offset = 0;
     };
+
+    struct VertexDescription
+    {
+        uint32 size = 0;
+        jarray<VertexComponentDescription> components;
+    };
 }

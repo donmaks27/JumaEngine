@@ -143,20 +143,36 @@ namespace JumaEngine
         }
     }
 
-    void WindowSubsystem::startRender()
+    void WindowSubsystem::onStartRender()
     {
         RenderAPIObjectType* renderObject = getRenderAPIObject();
         if (renderObject != nullptr)
         {
-            renderObject->startRender();
+            renderObject->onStartRender();
         }
     }
-    void WindowSubsystem::finishRender()
+    void WindowSubsystem::onStartWindowRender(const window_id_type windowID)
     {
         RenderAPIObjectType* renderObject = getRenderAPIObject();
         if (renderObject != nullptr)
         {
-            renderObject->finishRender();
+            renderObject->onStartWindowRender(windowID);
+        }
+    }
+    void WindowSubsystem::onFinishWindowRender(const window_id_type windowID)
+    {
+        RenderAPIObjectType* renderObject = getRenderAPIObject();
+        if (renderObject != nullptr)
+        {
+            renderObject->onFinishWindowRender(windowID);
+        }
+    }
+    void WindowSubsystem::onFinishRender()
+    {
+        RenderAPIObjectType* renderObject = getRenderAPIObject();
+        if (renderObject != nullptr)
+        {
+            renderObject->onFinishRender();
         }
     }
 }

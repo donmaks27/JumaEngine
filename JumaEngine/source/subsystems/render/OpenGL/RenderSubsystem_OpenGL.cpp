@@ -14,6 +14,7 @@
 #include "VertexBuffer_OpenGL.h"
 #include "engine/Engine.h"
 #include "subsystems/window/WindowSubsystem.h"
+#include "subsystems/window/OpenGL/WindowSubsystem_OpenGL.h"
 
 namespace JumaEngine
 {
@@ -30,17 +31,19 @@ namespace JumaEngine
         }
 
         WindowSubsystem* windowSubsystem = m_Parent->getOwnerEngine()->getWindowSubsystem();
+        m_WindowSubsystem = windowSubsystem->getRenderAPIObject<WindowSubsystem_RenderAPIObject_OpenGL>();
+
         if (windowSubsystem->createMainWindow(JSTR("JumaEngine"), { 800, 600 }) == INVALID_WINDOW_ID)
         {
             return false;
         }
 
-        const GLenum glewInitResult = glewInit();
+        /*const GLenum glewInitResult = glewInit();
         if (glewInitResult != GLEW_OK)
         {
             JUMA_LOG(error, reinterpret_cast<const char*>(glewGetErrorString(glewInitResult)));
             return false;
-        }
+        }*/
 
         m_Parent->getRenderPipeline()->createRenderAPIObject();
         m_Parent->getDefaultTexture()->createRenderAPIObject();
@@ -65,7 +68,7 @@ namespace JumaEngine
     }
     VertexBuffer_RenderAPIObject* RenderSubsystem_RenderAPIObject_OpenGL::createVertexBufferObject()
     {
-        return new VertexBuffer_RenderAPIObject_OpenGL();
+        return createOpenGLObject<VertexBuffer_RenderAPIObject_OpenGL>();
     }
     Texture_RenderAPIObject* RenderSubsystem_RenderAPIObject_OpenGL::createTextureObject()
     {

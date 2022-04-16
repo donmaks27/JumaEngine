@@ -50,6 +50,7 @@ namespace JumaEngine
 
         RenderTarget* m_RenderTarget = nullptr;
         RenderTarget* m_WindowRenderTarget = nullptr;
+        RenderTarget* m_SecondWindowRenderTarget = nullptr;
 
         Shader* m_ShaderPP = nullptr;
         Material* m_MaterialPP = nullptr;

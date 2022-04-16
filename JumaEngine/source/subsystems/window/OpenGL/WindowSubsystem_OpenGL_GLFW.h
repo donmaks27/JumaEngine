@@ -14,6 +14,13 @@ struct GLFWwindow;
 
 namespace JumaEngine
 {
+    class WindowSubsystem_RenderAPIObject_OpenGL_GLFW;
+
+    struct WindowData_OpenGL_GLFW : WindowData_OpenGL
+    {
+        WindowSubsystem_RenderAPIObject_OpenGL_GLFW* windowSubsystemObject = nullptr;
+        GLFWwindow* windowGLFW = nullptr;
+    };
     struct WindowDescription_OpenGL_GLFW : WindowDescription_OpenGL
     {
         GLFWwindow* windowGLFW = nullptr;
@@ -40,15 +47,13 @@ namespace JumaEngine
         virtual bool createWindow(window_id_type windowID) override;
         virtual void destroyWindow(window_id_type windowID) override;
 
-        virtual void finishRender() override;
+        virtual void initWindowThread(WindowData_OpenGL* windowData) override;
+        virtual void finishWindowThread(WindowData_OpenGL* windowData) override;
+
+        virtual void onFinishWindowRender(window_id_type windowID) override;
+        virtual void onFinishRender() override;
 
     private:
-
-        struct WindowUserObject
-        {
-            WindowSubsystem_RenderAPIObject_OpenGL_GLFW* object = nullptr;
-            window_id_type windowID = INVALID_WINDOW_ID;
-        };
 
         jmap<window_id_type, WindowDescription_OpenGL_GLFW> m_Windows;
 

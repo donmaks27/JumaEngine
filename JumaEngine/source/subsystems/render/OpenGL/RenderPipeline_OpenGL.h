@@ -10,6 +10,9 @@
 
 namespace JumaEngine
 {
+    class WindowSubsystem;
+    class RenderTarget_RenderAPIObject_OpenGL;
+
     class RenderPipeline_RenderAPIObject_OpenGL : public RenderPipeline_RenderAPIObject
     {
     public:
@@ -25,6 +28,8 @@ namespace JumaEngine
     private:
 
         void clearData();
+
+        void callRenderForRenderTarget(RenderTarget_RenderAPIObject_OpenGL* renderTargetObject, RenderOptions options);
     };
 }
 

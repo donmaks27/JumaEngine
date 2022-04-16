@@ -42,7 +42,7 @@ namespace JumaEngine
         virtual bool createWindow(window_id_type windowID) override;
         virtual void destroyWindow(window_id_type windowID) override;
 
-        virtual void finishRender() override;
+        virtual void onFinishRender() override;
 
     private:
 

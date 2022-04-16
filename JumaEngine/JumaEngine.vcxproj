@@ -192,6 +192,7 @@
     <ClInclude Include="source\subsystems\render\material\ShaderStage.h" />
     <ClInclude Include="source\subsystems\render\material\ShaderUniform.h" />
     <ClInclude Include="source\subsystems\render\OpenGL\Material_OpenGL.h" />
+    <ClInclude Include="source\subsystems\render\OpenGL\OpenGLContextObject.h" />
     <ClInclude Include="source\subsystems\render\OpenGL\RenderPipeline_OpenGL.h" />
     <ClInclude Include="source\subsystems\render\OpenGL\RenderSubsystemInfo_OpenGL.h" />
     <ClInclude Include="source\subsystems\render\OpenGL\RenderSubsystem_OpenGL.h" />

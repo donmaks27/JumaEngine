@@ -54,7 +54,7 @@ namespace JumaEngine
 
         virtual void onWindowResized(window_id_type windowID, const math::uvector2& newSize) override;
 
-        virtual void finishRender() override;
+        virtual void onFinishRender() override;
 
     private:
         

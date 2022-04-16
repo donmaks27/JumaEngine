@@ -95,9 +95,9 @@ namespace JumaEngine
             return;
         }
 
-        windowSubsystem->startRender();
+        windowSubsystem->onStartRender();
         m_RenderPipeline->render();
-        windowSubsystem->finishRender();
+        windowSubsystem->onFinishRender();
     }
     void RenderSubsystem::waitForRenderFinish()
     {

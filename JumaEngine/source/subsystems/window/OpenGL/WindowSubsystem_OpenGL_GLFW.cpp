@@ -6,6 +6,8 @@
 
 #include <GLFW/glfw3.h>
 
+#include "engine/Engine.h"
+
 namespace JumaEngine
 {
     WindowSubsystem_RenderAPIObject_OpenGL_GLFW::~WindowSubsystem_RenderAPIObject_OpenGL_GLFW()
@@ -70,40 +72,63 @@ namespace JumaEngine
             return false;
         }
 
-        const window_id_type mainWindowID = m_Parent->getMainWindowID();
-        const WindowDescription_OpenGL_GLFW* mainWindow = mainWindowID != windowID ? m_Windows.find(m_Parent->getMainWindowID()) : nullptr;
-        GLFWwindow* mainWindowGLFW = mainWindow != nullptr ? mainWindow->windowGLFW : nullptr;
+        GLFWwindow* mainWindowGLFW = nullptr;
+        if (!m_Windows.isEmpty())
+        {
+            const window_id_type mainWindowID = m_Parent->getMainWindowID();
+            const WindowDescription_OpenGL_GLFW* mainWindow = mainWindowID != windowID ? m_Windows.find(m_Parent->getMainWindowID()) : nullptr;
+            mainWindowGLFW = mainWindow != nullptr ? mainWindow->windowGLFW : nullptr;
+        }
+        const bool isMainWindow = mainWindowGLFW == nullptr;
 
         glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-        GLFWwindow* window = glfwCreateWindow(static_cast<int>(description->size.x), static_cast<int>(description->size.y), *description->title, nullptr, mainWindowGLFW);
+        GLFWwindow* window = glfwCreateWindow(
+            static_cast<int>(description->size.x), static_cast<int>(description->size.y), 
+            *description->title, nullptr, mainWindowGLFW
+        );
         if (window == nullptr)
         {
             JUMA_LOG(error, JSTR("Failed to create GLFW window"));
             return false;
         }
 
-        WindowDescription_OpenGL_GLFW& windowDescription = m_Windows[windowID];
-        windowDescription.windowGLFW = window;
         description->supportedPresentModes = { RenderPresentMode::VSYNC, RenderPresentMode::IMMEDIATE };
 
-        WindowUserObject* userObject = new WindowUserObject();
-        userObject->object = this;
-        userObject->windowID = windowID;
-        glfwSetWindowUserPointer(window, userObject);
+        WindowData_OpenGL_GLFW* windowData = new WindowData_OpenGL_GLFW();
+        windowData->windowSubsystemObject = this;
+        windowData->windowID = windowID;
+        windowData->windowGLFW = window;
+
+        WindowDescription_OpenGL_GLFW& windowDescription = m_Windows[windowID];
+        windowDescription.windowGLFW = window;
+        windowDescription.windowData = windowData;
+        glfwSetWindowUserPointer(window, windowDescription.windowData);
         glfwSetFramebufferSizeCallback(window, WindowSubsystem_RenderAPIObject_OpenGL_GLFW::GLFW_FramebufferResizeCallback);
 
-        // TODO: Do this in window's thread, not here
-        glfwMakeContextCurrent(window);
-        glfwSwapInterval(1);
+        startWindowThread(windowData, isMainWindow);
         return true;
     }
     void WindowSubsystem_RenderAPIObject_OpenGL_GLFW::GLFW_FramebufferResizeCallback(GLFWwindow* windowGLFW, int width, int height)
     {
-        WindowUserObject* userObject = static_cast<WindowUserObject*>(glfwGetWindowUserPointer(windowGLFW));
+        WindowData_OpenGL_GLFW* userObject = static_cast<WindowData_OpenGL_GLFW*>(glfwGetWindowUserPointer(windowGLFW));
         if (userObject != nullptr)
         {
-            userObject->object->onWindowResized(userObject->windowID, { math::max<uint32>(width, 0), math::max<uint32>(height, 0) });
+            userObject->windowSubsystemObject->onWindowResized(userObject->windowID, { math::max<uint32>(width, 0), math::max<uint32>(height, 0) });
         }
+    }
+    void WindowSubsystem_RenderAPIObject_OpenGL_GLFW::initWindowThread(WindowData_OpenGL* windowData)
+    {
+        GLFWwindow* window = reinterpret_cast<WindowData_OpenGL_GLFW*>(windowData)->windowGLFW;
+        glfwMakeContextCurrent(window);
+        glfwSwapInterval(1);
+
+        Super::initWindowThread(windowData);
+    }
+    void WindowSubsystem_RenderAPIObject_OpenGL_GLFW::finishWindowThread(WindowData_OpenGL* windowData)
+    {
+        Super::finishWindowThread(windowData);
+
+        glfwMakeContextCurrent(nullptr);
     }
 
     void WindowSubsystem_RenderAPIObject_OpenGL_GLFW::destroyWindow(const window_id_type windowID)
@@ -119,9 +144,19 @@ namespace JumaEngine
     }
     void WindowSubsystem_RenderAPIObject_OpenGL_GLFW::destroyWindow_GLFW(const window_id_type windowID, WindowDescription_OpenGL_GLFW& description)
     {
-        const WindowUserObject* userObject = static_cast<WindowUserObject*>(glfwGetWindowUserPointer(description.windowGLFW));
+        if (description.windowData->windowAsyncTaskID != INVALID_ASYNC_TASK_ID)
+        {
+            description.windowData->shouldExitFromWindowThread = true;
+            m_Parent->getOwnerEngine()->getAsyncTasksSubsystem()->waitForTaskFinished(description.windowData->windowAsyncTaskID);
+        }
+        else
+        {
+            finishWindowThread(description.windowData);
+        }
+
         glfwSetWindowUserPointer(description.windowGLFW, nullptr);
-        delete userObject;
+        delete description.windowData;
+        description.windowData = nullptr;
 
         glfwDestroyWindow(description.windowGLFW);
         description.windowGLFW = nullptr;
@@ -138,15 +173,20 @@ namespace JumaEngine
         return glfwWindowShouldClose(description->windowGLFW) != GLFW_FALSE;
     }
 
-    void WindowSubsystem_RenderAPIObject_OpenGL_GLFW::finishRender()
+    void WindowSubsystem_RenderAPIObject_OpenGL_GLFW::onFinishWindowRender(const window_id_type windowID)
     {
-        Super::finishRender();
-        
-        for (const auto& window : m_Windows)
+        Super::onFinishWindowRender(windowID);
+
+        WindowDescription_OpenGL_GLFW* description = m_Windows.find(windowID);
+        if (description != nullptr)
         {
-            // TODO: Again, do it in window's thread
-            glfwSwapBuffers(window.value.windowGLFW);
+            glfwSwapBuffers(description->windowGLFW);
         }
+    }
+    void WindowSubsystem_RenderAPIObject_OpenGL_GLFW::onFinishRender()
+    {
+        Super::onFinishRender();
+        
         glfwPollEvents();
     }
 }

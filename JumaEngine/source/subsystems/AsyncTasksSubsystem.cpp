@@ -34,7 +34,7 @@ namespace JumaEngine
     }
     void AsyncTasksSubsystem::startAyncTaskInternal(const async_task_id_type taskID, ActionTask task)
     {
-        task.call();
+        task.execute();
 
         m_AsyncTasksMutex.lock();
         m_AsyncTasks[taskID].finished = true;

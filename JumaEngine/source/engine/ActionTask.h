@@ -54,7 +54,7 @@ namespace JumaEngine
         bool isStarted() const { return m_Started; }
         bool isFinished() const { return m_Finished; }
 
-        bool call()
+        bool execute()
         {
             if (!isValid())
             {
@@ -70,6 +70,14 @@ namespace JumaEngine
             m_TaskFunction->call();
             m_Finished = true;
             return true;
+        }
+
+        void waitForFinish() const
+        {
+            if (isValid())
+            {
+                while (!m_Finished.load()) {}
+            }
         }
 
     private:
@@ -98,7 +106,7 @@ namespace JumaEngine
             {
                 if ((object != nullptr) && (function != nullptr))
                 {
-                    std::apply(object->*function, arguments);
+                    std::apply(function, std::tuple_cat(std::make_tuple(object), arguments));
                 }
             }
 

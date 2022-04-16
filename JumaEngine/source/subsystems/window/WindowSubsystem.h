@@ -57,8 +57,10 @@ namespace JumaEngine
 
         virtual void onWindowResized(window_id_type windowID, const math::uvector2& newSize);
 
-        virtual void startRender() {}
-        virtual void finishRender() {}
+        virtual void onStartRender() {}
+        virtual void onStartWindowRender(window_id_type windowID) {}
+        virtual void onFinishWindowRender(window_id_type windowID) {}
+        virtual void onFinishRender() {}
     };
 
     class WindowSubsystem final : public SubsystemBase, public RenderAPIWrapperBase<WindowSubsystem_RenderAPIObject>
@@ -85,8 +87,10 @@ namespace JumaEngine
         void destroyMainWindow();
         bool shouldCloseMainWindow() const { return shouldCloseWindow(getMainWindowID()); }
 
-        void startRender();
-        void finishRender();
+        void onStartRender();
+        void onStartWindowRender(window_id_type windowID);
+        void onFinishWindowRender(window_id_type windowID);
+        void onFinishRender();
 
     protected:
 
