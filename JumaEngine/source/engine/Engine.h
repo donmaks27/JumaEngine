@@ -7,6 +7,7 @@
 
 namespace JumaEngine
 {
+    class AsyncTasksSubsystem;
     class RenderTarget;
     class Texture;
     struct RenderOptions;
@@ -30,6 +31,7 @@ namespace JumaEngine
         
         void render(const RenderOptions* options);
 
+        AsyncTasksSubsystem* getAsyncTasksSubsystem() const { return m_AsyncTasksSubsystem; }
         WindowSubsystem* getWindowSubsystem() const { return m_WindowSubsytem; }
         RenderSubsystem* getRenderSubsystem() const { return m_RenderSubsystem; }
 
@@ -37,6 +39,7 @@ namespace JumaEngine
 
         bool m_Started = false;
 
+        AsyncTasksSubsystem* m_AsyncTasksSubsystem = nullptr;
         WindowSubsystem* m_WindowSubsytem = nullptr;
         RenderSubsystem* m_RenderSubsystem = nullptr;
 

@@ -4,8 +4,10 @@
 
 #include <chrono>
 
+#include "ActionTask.h"
 #include "jutils/jlog.h"
 #include "jutils/jstringID.h"
+#include "subsystems/AsyncTasksSubsystem.h"
 #include "subsystems/render/Material.h"
 #include "subsystems/render/RenderOptions.h"
 #include "subsystems/render/RenderPipeline.h"
@@ -14,7 +16,6 @@
 #include "subsystems/render/VertexBuffer.h"
 #include "subsystems/render/RenderSubsystem.h"
 #include "subsystems/render/RenderTarget.h"
-#include "subsystems/render/vertex/Vertex2D.h"
 #include "subsystems/render/vertex/Vertex2D_TexCoord.h"
 #include "subsystems/render/vertex/VertexBufferData.h"
 #include "subsystems/window/WindowSubsystem.h"
@@ -88,6 +89,9 @@ namespace JumaEngine
     bool Engine::initEngine()
     {
         jstring_hash_table::CreateInstance();
+
+        m_AsyncTasksSubsystem = createObject<AsyncTasksSubsystem>();
+        m_AsyncTasksSubsystem->initSubsystem();
 
         m_WindowSubsytem = createObject<WindowSubsystem>();
         if (m_WindowSubsytem == nullptr)
@@ -229,6 +233,10 @@ namespace JumaEngine
         m_WindowSubsytem->clear();
         delete m_WindowSubsytem;
         m_WindowSubsytem = nullptr;
+
+        m_AsyncTasksSubsystem->clear();
+        delete m_AsyncTasksSubsystem;
+        m_AsyncTasksSubsystem = nullptr;
 
         jstring_hash_table::ClearInstance();
     }

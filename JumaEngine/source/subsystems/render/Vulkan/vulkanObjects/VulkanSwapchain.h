@@ -67,7 +67,7 @@ namespace JumaEngine
         jarray<VkImage> m_SwapchainImages;
         int8 m_CurrentSwapchainImageIndex = -1;
 
-        VkSemaphore m_RenderAvailableSemaphore;
+        VkSemaphore m_RenderAvailableSemaphore = nullptr;
 
         VulkanSwapchainSettings m_CurrentSettings;
         VulkanSwapchainSettings m_SettingForApply;

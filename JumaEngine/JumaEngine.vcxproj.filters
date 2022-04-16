@@ -163,6 +163,9 @@
     <ClCompile Include="source\subsystems\render\RenderPipeline.cpp">
       <Filter>JumaEngine\subsystems\render</Filter>
     </ClCompile>
+    <ClCompile Include="source\subsystems\AsyncTasksSubsystem.cpp">
+      <Filter>JumaEngine\subsystems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\common_header.h">
@@ -545,6 +548,12 @@
     </ClInclude>
     <ClInclude Include="source\subsystems\render\RenderPipeline.h">
       <Filter>JumaEngine\subsystems\render</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\AsyncTasksSubsystem.h">
+      <Filter>JumaEngine\subsystems</Filter>
+    </ClInclude>
+    <ClInclude Include="source\engine\ActionTask.h">
+      <Filter>JumaEngine\engine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
