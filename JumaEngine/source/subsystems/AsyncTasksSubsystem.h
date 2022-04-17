@@ -6,6 +6,7 @@
 #include "subsystems/SubsystemBase.h"
 
 #include <thread>
+#include <atomic>
 #include <shared_mutex>
 
 #include "engine/ActionTask.h"
@@ -38,8 +39,23 @@ namespace JumaEngine
 
         struct AsyncTask
         {
+            AsyncTask() = default;
+            AsyncTask(AsyncTask&& task) noexcept
+                : thread(std::move(task.thread))
+                , finished(task.finished.load())
+            {}
+            AsyncTask(const AsyncTask&) = delete;
+
+            AsyncTask& operator=(AsyncTask&& task) noexcept
+            {
+                thread = std::move(task.thread);
+                finished = task.finished.load();
+                return *this;
+            }
+            AsyncTask& operator=(const AsyncTask&) = delete;
+
             std::thread thread;
-            bool finished = false;
+            std::atomic_bool finished = false;
         };
 
         juid<async_task_id_type> m_AsyncTaskIDs;

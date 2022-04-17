@@ -38,7 +38,7 @@ namespace JumaEngine
 
         RenderOptions options;
         options.renderPipeline = m_Parent;
-        jarray<const ActionTask*> windowRenderTasks;
+        jarray<WindowThreadTask_OpenGL*> windowRenderTasks;
         for (const auto& stageName : m_Parent->getPipelineQueue())
         {
             const RenderPipelineStage* stage = m_Parent->getPipelineStage(stageName);
@@ -68,7 +68,8 @@ namespace JumaEngine
         {
             if (windowRenderTask != nullptr)
             {
-                windowRenderTask->waitForFinish();
+                while (!windowRenderTask->finished) {}
+                windowRenderTask->handled = true;
             }
         }
         windowSubsystem->onFinishRender();

@@ -13,13 +13,28 @@
 
 namespace JumaEngine
 {
+    struct WindowThreadTask_OpenGL
+    {
+        WindowThreadTask_OpenGL() = default;
+        WindowThreadTask_OpenGL(ActionTask&& task) noexcept
+            : task(std::move(task))
+        {}
+        WindowThreadTask_OpenGL(WindowThreadTask_OpenGL&& task) noexcept
+            : task(std::move(task.task)), finished(task.finished.load()), handled(task.handled.load())
+        {}
+        WindowThreadTask_OpenGL(const WindowThreadTask_OpenGL&) = delete;
+
+        ActionTask task;
+        std::atomic_bool finished = false;
+        std::atomic_bool handled = false;
+    };
     struct WindowData_OpenGL
     {
         window_id_type windowID = INVALID_WINDOW_ID;
         async_task_id_type windowAsyncTaskID = INVALID_ASYNC_TASK_ID;
 
         std::shared_mutex windowTasksMutex;
-        jlist<ActionTask> windowTasks;
+        jlist<WindowThreadTask_OpenGL> windowTasks;
 
         std::atomic_bool shouldExitFromWindowThread = false;
     };
@@ -36,7 +51,7 @@ namespace JumaEngine
         WindowSubsystem_RenderAPIObject_OpenGL() = default;
         virtual ~WindowSubsystem_RenderAPIObject_OpenGL() override = default;
 
-        const ActionTask* submitTaskForWindow(window_id_type windowID, ActionTask&& task);
+        WindowThreadTask_OpenGL* submitTaskForWindow(window_id_type windowID, ActionTask&& task);
 
     protected:
 

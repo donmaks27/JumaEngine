@@ -4,8 +4,6 @@
 
 #include "common_header.h"
 
-#include <atomic>
-
 namespace JumaEngine
 {
     class ActionTask final
@@ -22,37 +20,25 @@ namespace JumaEngine
         {}
         ActionTask(const ActionTask&) = delete;
         ActionTask(ActionTask&& task) noexcept
+            : m_TaskFunction(task.m_TaskFunction)
         {
-            if (task.isValid())
-            {
-                const bool alreadyStarted = task.m_Started.exchange(true);
-                if (!alreadyStarted)
-                {
-                    m_TaskFunction = task.m_TaskFunction;
-                    task.m_TaskFunction = nullptr;
-                    task.m_Started = false;
-                }
-            }
+            task.m_TaskFunction = nullptr;
         }
         ~ActionTask()
         {
-            if (isValid())
-            {
-                const bool alreadyStarted = m_Started.exchange(true);
-                if (alreadyStarted)
-                {
-                    while(!m_Finished.load()) {}
-                }
-                delete m_TaskFunction;
-            }
+            clear();
         }
 
         ActionTask& operator=(const ActionTask&) = delete;
-        ActionTask& operator=(ActionTask&& task) = delete;
+        ActionTask& operator=(ActionTask&& task) noexcept
+        {
+            clear();
+            m_TaskFunction = task.m_TaskFunction;
+            task.m_TaskFunction = nullptr;
+            return *this;
+        }
 
         bool isValid() const { return m_TaskFunction != nullptr; }
-        bool isStarted() const { return m_Started; }
-        bool isFinished() const { return m_Finished; }
 
         bool execute()
         {
@@ -60,23 +46,16 @@ namespace JumaEngine
             {
                 return false;
             }
-
-            const bool alreadyStarted = m_Started.exchange(true);
-            if (alreadyStarted)
-            {
-                return false;
-            }
-
             m_TaskFunction->call();
-            m_Finished = true;
             return true;
         }
 
-        void waitForFinish() const
+        void clear()
         {
             if (isValid())
             {
-                while (!m_Finished.load()) {}
+                delete m_TaskFunction;
+                m_TaskFunction = nullptr;
             }
         }
 
@@ -98,23 +77,22 @@ namespace JumaEngine
 
         public:
             ActionTaskFunction_ClassMethod(class_type* objectPtr, function_type functionPtr, Args... args)
-                : object(objectPtr), function(functionPtr), arguments(args...)
+                : function(functionPtr), arguments(objectPtr, args...)
             {}
             virtual ~ActionTaskFunction_ClassMethod() override = default;
 
             virtual void call() override
             {
-                if ((object != nullptr) && (function != nullptr))
+                if (function != nullptr)
                 {
-                    std::apply(function, std::tuple_cat(std::make_tuple(object), arguments));
+                    std::apply(function, arguments);
                 }
             }
 
         private:
 
-            class_type* object = nullptr;
             function_type function = nullptr;
-            std::tuple<Args...> arguments = std::tuple();
+            std::tuple<class_type*, Args...> arguments = std::tuple();
         };
         template<typename Function, typename... Args>
         class ActionTaskFunction_Raw : public ActionTaskFunction
@@ -123,7 +101,7 @@ namespace JumaEngine
 
         public:
             ActionTaskFunction_Raw(function_type&& func, Args... args)
-                : function(std::forward<Function>(func)), arguments(args...)
+                : function(std::forward<function_type>(func)), arguments(args...)
             {}
             virtual ~ActionTaskFunction_Raw() override = default;
 
@@ -136,7 +114,5 @@ namespace JumaEngine
         };
 
         ActionTaskFunction* m_TaskFunction = nullptr;
-        std::atomic_bool m_Started = false;
-        std::atomic_bool m_Finished = false;
     };
 }

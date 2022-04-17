@@ -29,26 +29,26 @@ namespace JumaEngine
 
         while (true)
         {
-            ActionTask* currentTask = nullptr;
+            WindowThreadTask_OpenGL* currentTask = nullptr;
             {
                 std::shared_lock lock(windowData->windowTasksMutex);
                 for (auto& task : windowData->windowTasks)
                 {
-                    if (!task.isStarted())
+                    if (!task.finished)
                     {
                         currentTask = &task;
                         break;
                     }
                 }
-                if ((currentTask == nullptr) && windowData->shouldExitFromWindowThread)
-                {
-                    break;
-                }
             }
-
             if (currentTask != nullptr)
             {
-                currentTask->execute();
+                currentTask->task.execute();
+                currentTask->finished = true;
+            }
+            else if (windowData->shouldExitFromWindowThread.load())
+            {
+                break;
             }
         }
 
@@ -63,7 +63,7 @@ namespace JumaEngine
         }
     }
 
-    const ActionTask* WindowSubsystem_RenderAPIObject_OpenGL::submitTaskForWindow(const window_id_type windowID, ActionTask&& task)
+    WindowThreadTask_OpenGL* WindowSubsystem_RenderAPIObject_OpenGL::submitTaskForWindow(const window_id_type windowID, ActionTask&& task)
     {
         WindowDescription_OpenGL* description = reinterpret_cast<WindowDescription_OpenGL*>(findWindow(windowID));
         WindowData_OpenGL* data = description != nullptr ? description->windowData : nullptr;
@@ -79,7 +79,7 @@ namespace JumaEngine
         }
 
         std::lock_guard lock(data->windowTasksMutex);
-        data->windowTasks.removeByPredicate([](const ActionTask& task){ return task.isFinished(); });
+        data->windowTasks.removeByPredicate([](const WindowThreadTask_OpenGL& task){ return task.handled.load(); });
         return &data->windowTasks.add(std::forward<ActionTask>(task));
     }
 }
