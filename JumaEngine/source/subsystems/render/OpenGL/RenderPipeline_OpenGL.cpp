@@ -38,7 +38,7 @@ namespace JumaEngine
 
         RenderOptions options;
         options.renderPipeline = m_Parent;
-        jarray<WindowThreadTask_OpenGL*> windowRenderTasks;
+        jarray<const ActionTaskResult<void>*> windowRenderTaskResults;
         for (const auto& stageName : m_Parent->getPipelineQueue())
         {
             const RenderPipelineStage* stage = m_Parent->getPipelineStage(stageName);
@@ -57,19 +57,21 @@ namespace JumaEngine
             }
             else
             {
-                windowRenderTasks.add(windowSubsystemObject->submitTaskForWindow(
-                    renderTarget->getWindowID(), 
-                    ActionTask(this, &RenderPipeline_RenderAPIObject_OpenGL::callRenderForRenderTarget, renderTargetObject, options)
-                ));
+                ActionTask task;
+                const ActionTaskResult<void>* taskResult = task.bindClassMethod(this, &RenderPipeline_RenderAPIObject_OpenGL::callRenderForRenderTarget, renderTargetObject, options);
+                if (windowSubsystemObject->submitTaskForWindow(renderTarget->getWindowID(), std::move(task)))
+                {
+                    windowRenderTaskResults.add(taskResult);
+                }
             }
         }
 
-        for (const auto& windowRenderTask : windowRenderTasks)
+        for (const auto& windowRenderTaskResult : windowRenderTaskResults)
         {
-            if (windowRenderTask != nullptr)
+            if (windowRenderTaskResult != nullptr)
             {
-                while (!windowRenderTask->finished) {}
-                windowRenderTask->handled = true;
+                windowRenderTaskResult->waitForValidation();
+                windowRenderTaskResult->markAsHandled();
             }
         }
         windowSubsystem->onFinishRender();

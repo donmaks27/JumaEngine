@@ -18,9 +18,9 @@ namespace JumaEngine
         }
         else
         {
-            windowData->windowAsyncTaskID = getParent()->getOwnerEngine()->getAsyncTasksSubsystem()->startTask(
-                ActionTask(this, &WindowSubsystem_RenderAPIObject_OpenGL::windowThreadLoop, windowData)
-            );
+            ActionTask task;
+            task.bindClassMethod(this, &WindowSubsystem_RenderAPIObject_OpenGL::windowThreadLoop, windowData);
+            windowData->windowAsyncTaskID = getParent()->getOwnerEngine()->getAsyncTasksSubsystem()->startTask(std::move(task));
         }
     }
     void WindowSubsystem_RenderAPIObject_OpenGL::windowThreadLoop(WindowData_OpenGL* windowData)
@@ -29,12 +29,12 @@ namespace JumaEngine
 
         while (true)
         {
-            WindowThreadTask_OpenGL* currentTask = nullptr;
+            ActionTask* currentTask = nullptr;
             {
                 std::shared_lock lock(windowData->windowTasksMutex);
                 for (auto& task : windowData->windowTasks)
                 {
-                    if (!task.finished)
+                    if (!task.isFinished())
                     {
                         currentTask = &task;
                         break;
@@ -43,8 +43,7 @@ namespace JumaEngine
             }
             if (currentTask != nullptr)
             {
-                currentTask->task.execute();
-                currentTask->finished = true;
+                currentTask->execute();
             }
             else if (windowData->shouldExitFromWindowThread.load())
             {
@@ -63,24 +62,25 @@ namespace JumaEngine
         }
     }
 
-    WindowThreadTask_OpenGL* WindowSubsystem_RenderAPIObject_OpenGL::submitTaskForWindow(const window_id_type windowID, ActionTask&& task)
+    bool WindowSubsystem_RenderAPIObject_OpenGL::submitTaskForWindow(const window_id_type windowID, ActionTask&& task)
     {
         WindowDescription_OpenGL* description = reinterpret_cast<WindowDescription_OpenGL*>(findWindow(windowID));
         WindowData_OpenGL* data = description != nullptr ? description->windowData : nullptr;
         if (data == nullptr)
         {
-            return nullptr;
+            return false;
         }
 
         if (data->windowAsyncTaskID == INVALID_ASYNC_TASK_ID)
         {
             task.execute();
-            return nullptr;
+            return false;
         }
 
         std::lock_guard lock(data->windowTasksMutex);
-        data->windowTasks.removeByPredicate([](const WindowThreadTask_OpenGL& task){ return task.handled.load(); });
-        return &data->windowTasks.add(std::forward<ActionTask>(task));
+        data->windowTasks.removeByPredicate([](const ActionTask& task){ return task.isUseless(); });
+        data->windowTasks.add(std::forward<ActionTask>(task));
+        return true;
     }
 }
 
