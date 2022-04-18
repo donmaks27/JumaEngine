@@ -4,6 +4,8 @@
 
 #include "common_header.h"
 
+#include <atomic>
+
 namespace JumaEngine
 {
     class ActionTaskResultBase
@@ -12,19 +14,25 @@ namespace JumaEngine
         ActionTaskResultBase() = default;
         ~ActionTaskResultBase() = default;
 
-        bool isValid() const { return m_Valid; }
-        void validate() { m_Valid = true; }
-        void waitForValidation() const
+        bool isTaskFinished() const { return m_TaskFinished; }
+        void markAsFinished() { m_TaskFinished = true; }
+        void waitForTaskFinished() const
         {
-            while (!m_Valid) {}
+            while (!m_TaskFinished) {}
         }
 
         bool isHandled() const { return m_Handled; }
-        void markAsHandled() const { m_Handled = true; }
+        void markAsHandled() const
+        {
+            if (isTaskFinished())
+            {
+                m_Handled = true;
+            }
+        }
 
     private:
 
-        std::atomic_bool m_Valid = false;
+        std::atomic_bool m_TaskFinished = false;
         mutable std::atomic_bool m_Handled = false;
     };
     template<typename ResultType>
@@ -55,9 +63,13 @@ namespace JumaEngine
     {
     public:
         ActionTask() = default;
+        ActionTask(bool shouldHandleAfterFinish)
+            : m_ShouldHandleAfterFinish(shouldHandleAfterFinish)
+        {}
         ActionTask(const ActionTask&) = delete;
         ActionTask(ActionTask&& task) noexcept
             : m_TaskFunction(task.m_TaskFunction)
+            , m_ShouldHandleAfterFinish(task.m_ShouldHandleAfterFinish)
         {
             task.m_TaskFunction = nullptr;
         }
@@ -70,6 +82,7 @@ namespace JumaEngine
         ActionTask& operator=(ActionTask&& task) noexcept
         {
             clear();
+            m_ShouldHandleAfterFinish = task.m_ShouldHandleAfterFinish;
             m_TaskFunction = task.m_TaskFunction;
             task.m_TaskFunction = nullptr;
             return *this;
@@ -96,24 +109,20 @@ namespace JumaEngine
 
         bool isValid() const { return m_TaskFunction != nullptr; }
         const ActionTaskResultBase* getTaskResult() const { return isValid() ? m_TaskFunction->getResultObjectBase() : nullptr; }
-        bool isFinished() const
-        {
-            const ActionTaskResultBase* result = getTaskResult();
-            return (result != nullptr) && result->isValid();
-        }
-        bool isUseless() const
-        {
-            const ActionTaskResultBase* result = getTaskResult();
-            return (result == nullptr) || (result->isValid() && result->isHandled());
-        }
+        bool isFinished() const { return isValid() && m_TaskFunction->isFinished(); }
+        bool isResultHandled() const { return isValid() && m_TaskFunction->isResultHandled(); }
 
         bool execute()
         {
-            if (!isValid())
+            if (!isValid() || m_TaskFunction->isFinished())
             {
                 return false;
             }
             m_TaskFunction->call();
+            if (m_ShouldHandleAfterFinish)
+            {
+                m_TaskFunction->getResultObjectBase()->markAsHandled();
+            }
             return true;
         }
 
@@ -134,8 +143,11 @@ namespace JumaEngine
             ActionTaskFunction() = default;
             virtual ~ActionTaskFunction() = default;
 
-            virtual const ActionTaskResultBase* getResultObjectBase() = 0;
+            virtual const ActionTaskResultBase* getResultObjectBase() const = 0;
             virtual void call() = 0;
+
+            bool isFinished() const { return getResultObjectBase()->isTaskFinished(); }
+            bool isResultHandled() const { return getResultObjectBase()->isHandled(); }
         };
         template<typename ClassType, typename ResultType, typename... Args>
         class ActionTaskFunction_ClassMethod : public ActionTaskFunction
@@ -152,14 +164,14 @@ namespace JumaEngine
             virtual ~ActionTaskFunction_ClassMethod() override = default;
 
             const result_object_type* getResultObject() const { return &result; }
-            virtual const ActionTaskResultBase* getResultObjectBase() override { return getResultObject(); }
+            virtual const ActionTaskResultBase* getResultObjectBase() const override { return getResultObject(); }
             virtual void call() override
             {
                 if (function != nullptr)
                 {
                     callInternal<result_type>();
                 }
-                result.validate();
+                result.markAsFinished();
             }
 
         private:
@@ -188,11 +200,11 @@ namespace JumaEngine
             virtual ~ActionTaskFunction_Raw() override = default;
             
             const result_object_type* getResultObject() const { return &result; }
-            virtual const ActionTaskResultBase* getResultObjectBase() override { return getResultObject(); }
+            virtual const ActionTaskResultBase* getResultObjectBase() const override { return getResultObject(); }
             virtual void call() override
             {
                 result.set(std::apply(function, arguments));
-                result.validate();
+                result.markAsFinished();
             }
 
         private:
@@ -203,5 +215,6 @@ namespace JumaEngine
         };
 
         ActionTaskFunction* m_TaskFunction = nullptr;
+        bool m_ShouldHandleAfterFinish = false;
     };
 }

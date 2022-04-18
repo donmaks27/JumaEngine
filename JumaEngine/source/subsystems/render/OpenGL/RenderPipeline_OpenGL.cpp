@@ -57,7 +57,7 @@ namespace JumaEngine
             }
             else
             {
-                ActionTask task;
+                ActionTask task(true);
                 const ActionTaskResult<void>* taskResult = task.bindClassMethod(this, &RenderPipeline_RenderAPIObject_OpenGL::callRenderForRenderTarget, renderTargetObject, options);
                 if (windowSubsystemObject->submitTaskForWindow(renderTarget->getWindowID(), std::move(task)))
                 {
@@ -70,8 +70,7 @@ namespace JumaEngine
         {
             if (windowRenderTaskResult != nullptr)
             {
-                windowRenderTaskResult->waitForValidation();
-                windowRenderTaskResult->markAsHandled();
+                windowRenderTaskResult->waitForTaskFinished();
             }
         }
         windowSubsystem->onFinishRender();

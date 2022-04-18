@@ -8,28 +8,42 @@
 
 #include "subsystems/window/WindowSubsystem.h"
 
-#include "jutils/jlist.h"
-#include "subsystems/AsyncTasksSubsystem.h"
+#include "subsystems/asyncTasks/ActionTask.h"
+#include "subsystems/asyncTasks/ActionTaskQueue.h"
 
 namespace JumaEngine
 {
-    struct WindowData_OpenGL
+    class WindowSubsystem_RenderAPIObject_OpenGL;
+    struct WindowDescription_OpenGL;
+
+    class WindowActionTaskQueue_OpenGL final : public ActionTaskQueue
     {
-        window_id_type windowID = INVALID_WINDOW_ID;
-        async_task_id_type windowAsyncTaskID = INVALID_ASYNC_TASK_ID;
+        friend WindowSubsystem_RenderAPIObject_OpenGL;
 
-        std::shared_mutex windowTasksMutex;
-        jlist<ActionTask> windowTasks;
+    public:
+        WindowActionTaskQueue_OpenGL() = default;
+        virtual ~WindowActionTaskQueue_OpenGL() override = default;
 
-        std::atomic_bool shouldExitFromWindowThread = false;
+    protected:
+
+        virtual void onLoopStarted() override;
+        virtual void onLoopFinished() override;
+
+    private:
+
+        WindowSubsystem_RenderAPIObject_OpenGL* m_WindowSubsystem = nullptr;
+        WindowDescription_OpenGL* m_WindowDescription = nullptr;
     };
+
     struct WindowDescription_OpenGL : WindowDescription_RenderAPI
     {
-        WindowData_OpenGL* windowData = nullptr;
+        WindowActionTaskQueue_OpenGL* windowTaskQueue = nullptr;
     };
 
     class WindowSubsystem_RenderAPIObject_OpenGL : public WindowSubsystem_RenderAPIObject
     {
+        friend WindowActionTaskQueue_OpenGL;
+
         using Super = WindowSubsystem_RenderAPIObject;
 
     public:
@@ -40,10 +54,11 @@ namespace JumaEngine
 
     protected:
 
-        void startWindowThread(WindowData_OpenGL* windowData, bool mainWindow);
-        void windowThreadLoop(WindowData_OpenGL* windowData);
-        virtual void initWindowThread(WindowData_OpenGL* windowData);
-        virtual void finishWindowThread(WindowData_OpenGL* windowData) {}
+        void createWindow_OpenGL(WindowDescription_OpenGL* windowDescription, bool mainWindow);
+        virtual void initWindowThread(WindowDescription_OpenGL* windowDescription);
+        virtual void finishWindowThread(WindowDescription_OpenGL* windowDescription) {}
+        
+        void destroyWindow_OpenGL(window_id_type windowID, WindowDescription_OpenGL& description);
     };
 }
 

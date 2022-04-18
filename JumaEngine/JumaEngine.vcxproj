@@ -87,7 +87,8 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="source\engine\Engine.cpp" />
     <ClCompile Include="source\jutils\jlog.cpp" />
-    <ClCompile Include="source\subsystems\AsyncTasksSubsystem.cpp" />
+    <ClCompile Include="source\subsystems\asyncTasks\ActionTaskQueue.cpp" />
+    <ClCompile Include="source\subsystems\asyncTasks\AsyncTasksSubsystem.cpp" />
     <ClCompile Include="source\subsystems\render\Material.cpp" />
     <ClCompile Include="source\subsystems\render\OpenGL\Material_OpenGL.cpp" />
     <ClCompile Include="source\subsystems\render\OpenGL\RenderPipeline_OpenGL.cpp" />
@@ -127,7 +128,6 @@
   <ItemGroup>
     <ClInclude Include="source\common_header.h" />
     <ClInclude Include="source\enabled_engine_parts.h" />
-    <ClInclude Include="source\engine\ActionTask.h" />
     <ClInclude Include="source\engine\Engine.h" />
     <ClInclude Include="source\engine\EngineContextObject.h" />
     <ClInclude Include="source\engine\EngineObjectClass.h" />
@@ -186,7 +186,9 @@
     <ClInclude Include="source\jutils\math\vector4.h" />
     <ClInclude Include="source\jutils\type_checks.h" />
     <ClInclude Include="source\jutils\type_defines.h" />
-    <ClInclude Include="source\subsystems\AsyncTasksSubsystem.h" />
+    <ClInclude Include="source\subsystems\asyncTasks\ActionTask.h" />
+    <ClInclude Include="source\subsystems\asyncTasks\ActionTaskQueue.h" />
+    <ClInclude Include="source\subsystems\asyncTasks\AsyncTasksSubsystem.h" />
     <ClInclude Include="source\subsystems\render\Material.h" />
     <ClInclude Include="source\subsystems\render\material\MaterialUniform.h" />
     <ClInclude Include="source\subsystems\render\material\ShaderStage.h" />

@@ -24,7 +24,9 @@ namespace JumaEngine
         jarray<RenderPresentMode> supportedPresentModes;
     };
     struct WindowDescription_RenderAPI
-    {};
+    {
+        window_id_type windowID = INVALID_WINDOW_ID;
+    };
 
     class WindowSubsystem_RenderAPIObject : public RenderAPIObject<WindowSubsystem>
     {

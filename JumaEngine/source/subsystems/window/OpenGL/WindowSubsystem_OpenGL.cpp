@@ -7,53 +7,37 @@
 #include <GL/glew.h>
 
 #include "engine/Engine.h"
+#include "subsystems/asyncTasks/AsyncTasksSubsystem.h"
 
 namespace JumaEngine
 {
-    void WindowSubsystem_RenderAPIObject_OpenGL::startWindowThread(WindowData_OpenGL* windowData, bool mainWindow)
+    void WindowActionTaskQueue_OpenGL::onLoopStarted()
+    {
+        m_WindowSubsystem->initWindowThread(m_WindowDescription);
+    }
+    void WindowActionTaskQueue_OpenGL::onLoopFinished()
+    {
+        m_WindowSubsystem->finishWindowThread(m_WindowDescription);
+    }
+
+    void WindowSubsystem_RenderAPIObject_OpenGL::createWindow_OpenGL(WindowDescription_OpenGL* windowDescription, bool mainWindow)
     {
         if (mainWindow)
         {
-            initWindowThread(windowData);
+            initWindowThread(windowDescription);
         }
         else
         {
-            ActionTask task;
-            task.bindClassMethod(this, &WindowSubsystem_RenderAPIObject_OpenGL::windowThreadLoop, windowData);
-            windowData->windowAsyncTaskID = getParent()->getOwnerEngine()->getAsyncTasksSubsystem()->startTask(std::move(task));
+            windowDescription->windowTaskQueue = new WindowActionTaskQueue_OpenGL();
+            windowDescription->windowTaskQueue->m_WindowSubsystem = this;
+            windowDescription->windowTaskQueue->m_WindowDescription = windowDescription;
+
+            ActionTask task(true);
+            task.bindClassMethod(static_cast<ActionTaskQueue*>(windowDescription->windowTaskQueue), &ActionTaskQueue::startLoop);
+            getParent()->getOwnerEngine()->getAsyncTasksSubsystem()->startTask(std::move(task));
         }
     }
-    void WindowSubsystem_RenderAPIObject_OpenGL::windowThreadLoop(WindowData_OpenGL* windowData)
-    {
-        initWindowThread(windowData);
-
-        while (true)
-        {
-            ActionTask* currentTask = nullptr;
-            {
-                std::shared_lock lock(windowData->windowTasksMutex);
-                for (auto& task : windowData->windowTasks)
-                {
-                    if (!task.isFinished())
-                    {
-                        currentTask = &task;
-                        break;
-                    }
-                }
-            }
-            if (currentTask != nullptr)
-            {
-                currentTask->execute();
-            }
-            else if (windowData->shouldExitFromWindowThread.load())
-            {
-                break;
-            }
-        }
-
-        finishWindowThread(windowData);
-    }
-    void WindowSubsystem_RenderAPIObject_OpenGL::initWindowThread(WindowData_OpenGL* windowData)
+    void WindowSubsystem_RenderAPIObject_OpenGL::initWindowThread(WindowDescription_OpenGL* windowDescription)
     {
         const GLenum glewInitResult = glewInit();
         if (glewInitResult != GLEW_OK)
@@ -62,24 +46,37 @@ namespace JumaEngine
         }
     }
 
+    void WindowSubsystem_RenderAPIObject_OpenGL::destroyWindow_OpenGL(const window_id_type windowID, WindowDescription_OpenGL& description)
+    {
+        if (description.windowTaskQueue != nullptr)
+        {
+            //description.windowTaskQueue->stopLoop(true);
+            delete description.windowTaskQueue;
+            description.windowTaskQueue = nullptr;
+        }
+        else
+        {
+            finishWindowThread(&description);
+        }
+    }
+
     bool WindowSubsystem_RenderAPIObject_OpenGL::submitTaskForWindow(const window_id_type windowID, ActionTask&& task)
     {
         WindowDescription_OpenGL* description = reinterpret_cast<WindowDescription_OpenGL*>(findWindow(windowID));
-        WindowData_OpenGL* data = description != nullptr ? description->windowData : nullptr;
-        if (data == nullptr)
+        if (description == nullptr)
         {
             return false;
         }
 
-        if (data->windowAsyncTaskID == INVALID_ASYNC_TASK_ID)
+        if (description->windowTaskQueue == nullptr)
         {
             task.execute();
+            // Shouldn't wait for finish
             return false;
         }
 
-        std::lock_guard lock(data->windowTasksMutex);
-        data->windowTasks.removeByPredicate([](const ActionTask& task){ return task.isUseless(); });
-        data->windowTasks.add(std::forward<ActionTask>(task));
+        description->windowTaskQueue->submitTask(std::move(task));
+        // Should wait for finish
         return true;
     }
 }

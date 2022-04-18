@@ -94,39 +94,34 @@ namespace JumaEngine
 
         description->supportedPresentModes = { RenderPresentMode::VSYNC, RenderPresentMode::IMMEDIATE };
 
-        WindowData_OpenGL_GLFW* windowData = new WindowData_OpenGL_GLFW();
-        windowData->windowSubsystemObject = this;
-        windowData->windowID = windowID;
-        windowData->windowGLFW = window;
-
         WindowDescription_OpenGL_GLFW& windowDescription = m_Windows[windowID];
+        windowDescription.windowID = windowID;
         windowDescription.windowGLFW = window;
-        windowDescription.windowData = windowData;
-        glfwSetWindowUserPointer(window, windowDescription.windowData);
+        glfwSetWindowUserPointer(window, &windowDescription);
         glfwSetFramebufferSizeCallback(window, WindowSubsystem_RenderAPIObject_OpenGL_GLFW::GLFW_FramebufferResizeCallback);
 
-        startWindowThread(windowData, isMainWindow);
+        createWindow_OpenGL(&windowDescription, isMainWindow);
         return true;
     }
     void WindowSubsystem_RenderAPIObject_OpenGL_GLFW::GLFW_FramebufferResizeCallback(GLFWwindow* windowGLFW, int width, int height)
     {
-        WindowData_OpenGL_GLFW* userObject = static_cast<WindowData_OpenGL_GLFW*>(glfwGetWindowUserPointer(windowGLFW));
-        if (userObject != nullptr)
+        WindowDescription_OpenGL_GLFW* windowDescription = static_cast<WindowDescription_OpenGL_GLFW*>(glfwGetWindowUserPointer(windowGLFW));
+        if (windowDescription != nullptr)
         {
-            userObject->windowSubsystemObject->onWindowResized(userObject->windowID, { math::max<uint32>(width, 0), math::max<uint32>(height, 0) });
+            windowDescription->windowSubsystemObject->onWindowResized(windowDescription->windowID, { math::max<uint32>(width, 0), math::max<uint32>(height, 0) });
         }
     }
-    void WindowSubsystem_RenderAPIObject_OpenGL_GLFW::initWindowThread(WindowData_OpenGL* windowData)
+    void WindowSubsystem_RenderAPIObject_OpenGL_GLFW::initWindowThread(WindowDescription_OpenGL* windowDescription)
     {
-        GLFWwindow* window = reinterpret_cast<WindowData_OpenGL_GLFW*>(windowData)->windowGLFW;
+        GLFWwindow* window = reinterpret_cast<WindowDescription_OpenGL_GLFW*>(windowDescription)->windowGLFW;
         glfwMakeContextCurrent(window);
         glfwSwapInterval(1);
 
-        Super::initWindowThread(windowData);
+        Super::initWindowThread(windowDescription);
     }
-    void WindowSubsystem_RenderAPIObject_OpenGL_GLFW::finishWindowThread(WindowData_OpenGL* windowData)
+    void WindowSubsystem_RenderAPIObject_OpenGL_GLFW::finishWindowThread(WindowDescription_OpenGL* windowDescription)
     {
-        Super::finishWindowThread(windowData);
+        Super::finishWindowThread(windowDescription);
 
         glfwMakeContextCurrent(nullptr);
     }
@@ -144,20 +139,9 @@ namespace JumaEngine
     }
     void WindowSubsystem_RenderAPIObject_OpenGL_GLFW::destroyWindow_GLFW(const window_id_type windowID, WindowDescription_OpenGL_GLFW& description)
     {
-        if (description.windowData->windowAsyncTaskID != INVALID_ASYNC_TASK_ID)
-        {
-            description.windowData->shouldExitFromWindowThread = true;
-            m_Parent->getOwnerEngine()->getAsyncTasksSubsystem()->waitForTaskFinished(description.windowData->windowAsyncTaskID);
-        }
-        else
-        {
-            finishWindowThread(description.windowData);
-        }
+        destroyWindow_OpenGL(windowID, description);
 
         glfwSetWindowUserPointer(description.windowGLFW, nullptr);
-        delete description.windowData;
-        description.windowData = nullptr;
-
         glfwDestroyWindow(description.windowGLFW);
         description.windowGLFW = nullptr;
     }
