@@ -249,13 +249,14 @@ namespace JumaEngine
 
     void Engine::render(const RenderOptions* options)
     {
-        if (options->renderTargetName == JSTR("MainPass"))
+        m_Material->render(m_VertexBuffer, options);
+        /*if (options->renderTargetName == JSTR("MainPass"))
         {
             m_Material->render(m_VertexBuffer, options);
         }
         else
         {
             m_MaterialPP->render(m_VertexBufferPP, options);
-        }
+        }*/
     }
 }

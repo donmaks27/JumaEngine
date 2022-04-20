@@ -167,7 +167,7 @@ namespace JumaEngine
     {
         Super::onFinishRender();
 
-        for (const auto& window : m_Parent->getAllWindows())
+        for (const auto& window : getParentWindows())
         {
             VulkanSwapchain* swapchain = getVulkanSwapchain(window.key);
             if ((swapchain != nullptr) && swapchain->isNeedToRecreate())

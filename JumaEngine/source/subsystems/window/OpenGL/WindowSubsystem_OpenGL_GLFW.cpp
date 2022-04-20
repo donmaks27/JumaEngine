@@ -82,6 +82,7 @@ namespace JumaEngine
         const bool isMainWindow = mainWindowGLFW == nullptr;
 
         glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+        glfwWindowHint(GLFW_VISIBLE, description->hidden ? GLFW_FALSE : GLFW_TRUE);
         GLFWwindow* window = glfwCreateWindow(
             static_cast<int>(description->size.x), static_cast<int>(description->size.y), 
             *description->title, nullptr, mainWindowGLFW

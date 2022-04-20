@@ -7,10 +7,11 @@
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_OPENGL)
 
 #include "subsystems/render/Shader.h"
+#include "OpenGLContextObject.h"
 
 namespace JumaEngine
 {
-    class Shader_RenderAPIObject_OpenGL : public Shader_RenderAPIObject
+    class Shader_RenderAPIObject_OpenGL : public Shader_RenderAPIObject, public OpenGLContextObject
     {
     public:
         Shader_RenderAPIObject_OpenGL() = default;

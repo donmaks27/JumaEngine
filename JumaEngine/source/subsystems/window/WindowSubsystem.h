@@ -6,6 +6,7 @@
 #include "subsystems/SubsystemBase.h"
 #include "subsystems/render/RenderAPIObject.h"
 
+#include "jutils/jdelegate_multicast.h"
 #include "jutils/jmap.h"
 #include "jutils/jarray.h"
 #include "jutils/math/vector2.h"
@@ -18,6 +19,8 @@ namespace JumaEngine
 
     struct WindowDescription
     {
+        bool hidden = false;
+
         jstring title = JSTR("None");
         math::uvector2 size = { 0, 0 };
 
@@ -46,6 +49,7 @@ namespace JumaEngine
 
         virtual bool initInternal() override { return true; }
 
+        jmap<window_id_type, WindowDescription>& getParentWindows() const;
         bool createWindowsFromParent();
 
         WindowDescription* findParentWindow(window_id_type windowID);
@@ -65,6 +69,8 @@ namespace JumaEngine
         virtual void onFinishRender() {}
     };
 
+    CREATE_JUTILS_MULTICAST_DELEGATE_OneParam(FOnWindowSubsystemWindowEvent, window_id_type, windowID);
+
     class WindowSubsystem final : public SubsystemBase, public RenderAPIWrapperBase<WindowSubsystem_RenderAPIObject>
     {
         JUMAENGINE_CLASS(WindowSubsystem, SubsystemBase)
@@ -76,11 +82,13 @@ namespace JumaEngine
         WindowSubsystem() = default;
         virtual ~WindowSubsystem() override = default;
 
-        const jmap<window_id_type, WindowDescription>& getAllWindows() const { return m_Windows; }
+        FOnWindowSubsystemWindowEvent onWindowCreated;
+        FOnWindowSubsystemWindowEvent onWindowDestroyed;
+
         const WindowDescription* findWindow(const window_id_type windowID) const { return m_Windows.find(windowID); }
         bool isWindowValid(const window_id_type windowID) const { return m_Windows.contains(windowID); }
 
-        window_id_type createWindow(const jstring& title, const math::uvector2& size);
+        window_id_type createWindow(const jstring& title, const math::uvector2& size, bool hiddenWindow = false);
         void destroyWindow(window_id_type windowID);
         bool shouldCloseWindow(window_id_type windowID) const;
 

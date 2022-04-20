@@ -63,8 +63,8 @@ namespace JumaEngine
     {
     public:
         ActionTask() = default;
-        ActionTask(bool shouldHandleAfterFinish)
-            : m_ShouldHandleAfterFinish(shouldHandleAfterFinish)
+        ActionTask(bool shouldMarkHandledAfterFinish)
+            : m_ShouldHandleAfterFinish(shouldMarkHandledAfterFinish)
         {}
         ActionTask(const ActionTask&) = delete;
         ActionTask(ActionTask&& task) noexcept
@@ -88,23 +88,23 @@ namespace JumaEngine
             return *this;
         }
 
-        template<typename ClassType, typename ResultType, typename... Args>
-        const ActionTaskResult<ResultType>* bindClassMethod(ClassType* object, ResultType (ClassType::*function)(Args...), Args... args)
+        template<typename Function, typename... Args>
+        const ActionTaskResult<std::invoke_result_t<Function, Args...>>* bindRaw(Function function, Args&&... args)
         {
             clear();
-
-            auto* taskFunction = new ActionTaskFunction_ClassMethod(object, function, args...);
+            auto* taskFunction = new ActionTaskFunction_Raw(std::forward<Function>(function), std::forward<Args>(args)...);
             m_TaskFunction = taskFunction;
             return taskFunction->getResultObject();
         }
-        template<typename Function, typename... Args>
-        const ActionTaskResult<std::invoke_result_t<Function, Args...>>* bindRaw(Function&& function, Args... args)
+        template<typename ClassType, typename ResultType, typename... Args>
+        const ActionTaskResult<ResultType>* bindClassMethod(ClassType* object, ResultType (ClassType::*function)(Args...), Args... args)
         {
-            clear();
-
-            auto* taskFunction = new ActionTaskFunction_Raw(std::forward<Function>(function), args...);
-            m_TaskFunction = taskFunction;
-            return taskFunction->getResultObject();
+            return this->bindRaw(function, object, args...);
+        }
+        template<typename ClassType, typename ResultType, typename... Args>
+        const ActionTaskResult<ResultType>* bindClassMethod(ClassType* object, ResultType (ClassType::*function)(Args...) const, Args... args)
+        {
+            return this->bindRaw(function, object, args...);
         }
 
         bool isValid() const { return m_TaskFunction != nullptr; }
@@ -149,43 +149,6 @@ namespace JumaEngine
             bool isFinished() const { return getResultObjectBase()->isTaskFinished(); }
             bool isResultHandled() const { return getResultObjectBase()->isHandled(); }
         };
-        template<typename ClassType, typename ResultType, typename... Args>
-        class ActionTaskFunction_ClassMethod : public ActionTaskFunction
-        {
-            using class_type = ClassType;
-            using result_type = ResultType;
-            using function_type = result_type (class_type::*)(Args...);
-            using result_object_type = ActionTaskResult<result_type>;
-
-        public:
-            ActionTaskFunction_ClassMethod(class_type* objectPtr, function_type functionPtr, Args... args)
-                : function(functionPtr), arguments(objectPtr, args...)
-            {}
-            virtual ~ActionTaskFunction_ClassMethod() override = default;
-
-            const result_object_type* getResultObject() const { return &result; }
-            virtual const ActionTaskResultBase* getResultObjectBase() const override { return getResultObject(); }
-            virtual void call() override
-            {
-                if (function != nullptr)
-                {
-                    callInternal<result_type>();
-                }
-                result.markAsFinished();
-            }
-
-        private:
-
-            function_type function = nullptr;
-            std::tuple<class_type*, Args...> arguments = std::tuple();
-            result_object_type result;
-
-
-            template<typename Type>
-            void callInternal() { result.set(std::apply(function, arguments)); }
-            template<>
-            void callInternal<void>() { std::apply(function, arguments); }
-        };
         template<typename Function, typename... Args>
         class ActionTaskFunction_Raw : public ActionTaskFunction
         {
@@ -194,8 +157,8 @@ namespace JumaEngine
             using result_object_type = ActionTaskResult<result_type>;
 
         public:
-            ActionTaskFunction_Raw(function_type&& func, Args... args)
-                : function(std::forward<function_type>(func)), arguments(args...)
+            ActionTaskFunction_Raw(function_type func, Args... args)
+                : function(std::forward<function_type>(func)), arguments(std::forward<Args>(args)...)
             {}
             virtual ~ActionTaskFunction_Raw() override = default;
             
@@ -203,7 +166,7 @@ namespace JumaEngine
             virtual const ActionTaskResultBase* getResultObjectBase() const override { return getResultObject(); }
             virtual void call() override
             {
-                result.set(std::apply(function, arguments));
+                callInternal<result_type>();
                 result.markAsFinished();
             }
 
@@ -212,6 +175,12 @@ namespace JumaEngine
             function_type function;
             std::tuple<Args...> arguments;
             result_object_type result;
+
+
+            template<typename Type>
+            void callInternal() { result.set(std::apply(function, arguments)); }
+            template<>
+            void callInternal<void>() { std::apply(function, arguments); }
         };
 
         ActionTaskFunction* m_TaskFunction = nullptr;

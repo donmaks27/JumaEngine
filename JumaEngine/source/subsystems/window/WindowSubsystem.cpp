@@ -8,14 +8,13 @@
 
 namespace JumaEngine
 {
+    jmap<window_id_type, WindowDescription>& WindowSubsystem_RenderAPIObject::getParentWindows() const
+    {
+        return getParent()->m_Windows;
+    }
     bool WindowSubsystem_RenderAPIObject::createWindowsFromParent()
     {
-        if (m_Parent == nullptr)
-        {
-            return false;
-        }
-
-        for (const auto& parentDescription : m_Parent->getAllWindows())
+        for (const auto& parentDescription : getParentWindows())
         {
             if (!createWindow(parentDescription.key))
             {
@@ -58,7 +57,7 @@ namespace JumaEngine
         Super::clearSubsystemInternal();
     }
 
-    window_id_type WindowSubsystem::createWindow(const jstring& title, const math::uvector2& size)
+    window_id_type WindowSubsystem::createWindow(const jstring& title, const math::uvector2& size, bool hiddenWindow)
     {
         if (!isValid())
         {
@@ -68,6 +67,7 @@ namespace JumaEngine
 
         const window_id_type windowID = m_WindowIDs.getUID();
         WindowDescription description;
+        description.hidden = hiddenWindow;
         description.title = title;
         description.size = size;
         m_Windows.add(windowID, description);
@@ -79,6 +79,8 @@ namespace JumaEngine
             m_Windows.remove(windowID);
             return INVALID_WINDOW_ID;
         }
+
+        onWindowCreated.call(windowID);
         return windowID;
     }
     void WindowSubsystem::destroyWindow(const window_id_type windowID)
@@ -94,6 +96,7 @@ namespace JumaEngine
             return;
         }
 
+        onWindowDestroyed.call(windowID);
         RenderAPIObjectType* renderObject = getRenderAPIObject();
         if (renderObject != nullptr)
         {

@@ -4,8 +4,6 @@
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_OPENGL)
 
-#include <GL/glew.h>
-
 #include "Material_OpenGL.h"
 #include "RenderPipeline_OpenGL.h"
 #include "RenderTarget_OpenGL.h"
@@ -38,18 +36,10 @@ namespace JumaEngine
             return false;
         }
 
-        /*const GLenum glewInitResult = glewInit();
-        if (glewInitResult != GLEW_OK)
-        {
-            JUMA_LOG(error, reinterpret_cast<const char*>(glewGetErrorString(glewInitResult)));
-            return false;
-        }*/
-
         m_Parent->getRenderPipeline()->createRenderAPIObject();
         m_Parent->getDefaultTexture()->createRenderAPIObject();
         return true;
     }
-
     void RenderSubsystem_RenderAPIObject_OpenGL::clearOpenGL()
     {
         clearData();
@@ -60,27 +50,50 @@ namespace JumaEngine
 
     Shader_RenderAPIObject* RenderSubsystem_RenderAPIObject_OpenGL::createShaderObject()
     {
-        return new Shader_RenderAPIObject_OpenGL();
+        return createOpenGLObject<Shader_RenderAPIObject_OpenGL>();
     }
     Material_RenderAPIObject* RenderSubsystem_RenderAPIObject_OpenGL::createMaterialObject()
     {
-        return new Material_RenderAPIObject_OpenGL();
+        return createOpenGLObject<Material_RenderAPIObject_OpenGL>();
     }
     VertexBuffer_RenderAPIObject* RenderSubsystem_RenderAPIObject_OpenGL::createVertexBufferObject()
     {
-        return createOpenGLObject<VertexBuffer_RenderAPIObject_OpenGL>();
+        VertexBuffer_RenderAPIObject_OpenGL* vertexBuffer = createOpenGLObject<VertexBuffer_RenderAPIObject_OpenGL>();
+        onObjectCreated(vertexBuffer);
+        return vertexBuffer;
     }
     Texture_RenderAPIObject* RenderSubsystem_RenderAPIObject_OpenGL::createTextureObject()
     {
-        return new Texture_RenderAPIObject_OpenGL();
+        return createOpenGLObject<Texture_RenderAPIObject_OpenGL>();
     }
     RenderTarget_RenderAPIObject* RenderSubsystem_RenderAPIObject_OpenGL::createRenderTargetObject()
     {
-        return new RenderTarget_RenderAPIObject_OpenGL();
+        return createOpenGLObject<RenderTarget_RenderAPIObject_OpenGL>();
     }
     RenderPipeline_RenderAPIObject* RenderSubsystem_RenderAPIObject_OpenGL::createRenderPipelineObject()
     {
-        return new RenderPipeline_RenderAPIObject_OpenGL();
+        return createOpenGLObject<RenderPipeline_RenderAPIObject_OpenGL>();
+    }
+    void RenderSubsystem_RenderAPIObject_OpenGL::onObjectCreated(OpenGLContextObject* object)
+    {
+        m_CreatedObjects.add(object);
+        if (object->shouldBeFlushed())
+        {
+            m_ObjectsForFlush.add(object);
+        }
+    }
+
+    void RenderSubsystem_RenderAPIObject_OpenGL::flushObjectsChanges()
+    {
+        for (const auto& object : m_ObjectsForFlush)
+        {
+            object->flushChanges();
+        }
+    }
+    void RenderSubsystem_RenderAPIObject_OpenGL::onFinishRender()
+    {
+        Super::onFinishRender();
+        flushObjectsChanges();
     }
 }
 

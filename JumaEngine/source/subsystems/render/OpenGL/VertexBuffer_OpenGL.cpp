@@ -6,7 +6,11 @@
 
 #include <GL/glew.h>
 
+#include "RenderOptions_OpenGL.h"
+#include "RenderSubsystem_OpenGL.h"
+#include "subsystems/asyncTasks/ActionTask.h"
 #include "subsystems/render/vertex/VertexBufferData.h"
+#include "subsystems/window/OpenGL/WindowSubsystem_OpenGL.h"
 
 namespace JumaEngine
 {
@@ -17,24 +21,31 @@ namespace JumaEngine
 
     bool VertexBuffer_RenderAPIObject_OpenGL::initInternal()
     {
+        // Main thread
+        const uint64 VBOs = createVBOs();
+        m_VerticesVBO = static_cast<uint32>(VBOs >> 32);
+        m_IndicesVBO = static_cast<uint32>((VBOs << 32) >> 32);
+        return true;
+    }
+    uint64 VertexBuffer_RenderAPIObject_OpenGL::createVBOs()
+    {
         const VertexBufferDataBase* data = getVertexData();
-        const GLsizei vertexSize = static_cast<GLsizei>(data->getVertexSize());
         const uint32 indexCount = m_Parent->getIndexCount();
-        const jarray<VertexComponentDescription>& vertexComponents = data->getVertexComponents();
 
-        glGenBuffers(1, &m_VerticesVBO);
-        glBindBuffer(GL_ARRAY_BUFFER, m_VerticesVBO);
+        uint32 verticesVBO = 0, indicesVBO = 0;
+        glGenBuffers(1, &verticesVBO);
+        glBindBuffer(GL_ARRAY_BUFFER, verticesVBO);
         glBufferData(
             GL_ARRAY_BUFFER, 
-            vertexSize * m_Parent->getVertexCount(), 
+            static_cast<GLsizei>(data->getVertexSize()) * m_Parent->getVertexCount(), 
             data->getVertices(), 
             GL_STATIC_DRAW
         );
 
         if (indexCount > 0)
         {
-            glGenBuffers(1, &m_IndicesVBO);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndicesVBO);
+            glGenBuffers(1, &indicesVBO);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesVBO);
             glBufferData(
                 GL_ELEMENT_ARRAY_BUFFER, 
                 sizeof(uint32) * indexCount, 
@@ -44,8 +55,40 @@ namespace JumaEngine
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
         }
 
-        glGenVertexArrays(1, &m_VerticesVAO);
-        glBindVertexArray(m_VerticesVAO);
+        return (static_cast<uint64>(verticesVBO) << 32) + indicesVBO;
+    }
+    
+    void VertexBuffer_RenderAPIObject_OpenGL::createVerticesVAOForWindow(const window_id_type windowID)
+    {
+        // Any thread
+        if (m_VerticesVBO == 0)
+        {
+            return;
+        }
+
+        ActionTask createTask;
+        m_VerticesVAO_ChangesMutex.lock();
+        m_VerticesVAO_CreateTasks[windowID] = createTask.bindClassMethod(this, &VertexBuffer_RenderAPIObject_OpenGL::createVerticesVAO);
+        m_VerticesVAO_ChangesMutex.unlock();
+        getWindowSubsystemObject()->submitTaskForWindow(windowID, std::move(createTask));
+    }
+    uint32 VertexBuffer_RenderAPIObject_OpenGL::createVerticesVAO()
+    {
+        // Window thread
+        if (m_VerticesVBO == 0)
+        {
+            return 0;
+        }
+
+        const VertexBufferDataBase* data = getVertexData();
+        const GLsizei vertexSize = static_cast<GLsizei>(data->getVertexSize());
+        const jarray<VertexComponentDescription>& vertexComponents = data->getVertexComponents();
+
+        uint32 VAO = 0;
+        glGenVertexArrays(1, &VAO);
+
+        glBindBuffer(GL_ARRAY_BUFFER, m_VerticesVBO);
+        glBindVertexArray(VAO);
         for (int32 index = 0, size = vertexComponents.getSize(); index < size; index++)
         {
             const VertexComponentDescription& componentDescriprion = vertexComponents[index];
@@ -80,19 +123,66 @@ namespace JumaEngine
             );
             glEnableVertexAttribArray(componentDescriprion.ID);
         }
-
         glBindVertexArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-        return true;
+        return VAO;
+    }
+
+    void VertexBuffer_RenderAPIObject_OpenGL::flushChanges()
+    {
+        // Main thread
+        std::lock_guard lock(m_VerticesVAO_ChangesMutex);
+        if (!m_VerticesVAO_CreateTasks.isEmpty())
+        {
+            bool hasUnfinishedTasks = false;
+            for (auto& task : m_VerticesVAO_CreateTasks)
+            {
+                if (task.value != nullptr)
+                {
+                    if (!task.value->isTaskFinished())
+                    {
+                        hasUnfinishedTasks = true;
+                    }
+                    else
+                    {
+                        m_VerticesVAOs.add(task.key, task.value->get());
+                        task.value->markAsHandled();
+                        task.value = nullptr;
+                    }
+                }
+            }
+            if (!hasUnfinishedTasks)
+            {
+                m_VerticesVAO_CreateTasks.clear();
+            }
+        }
     }
 
     void VertexBuffer_RenderAPIObject_OpenGL::clearOpenGL()
     {
-        if (m_VerticesVAO != 0)
+        // Main thread
+        m_VerticesVAO_ChangesMutex.lock();
+        for (const auto& task : m_VerticesVAO_CreateTasks)
         {
-            glDeleteVertexArrays(1, &m_VerticesVAO);
-            m_VerticesVAO = 0;
+            if (task.value != nullptr)
+            {
+                task.value->waitForTaskFinished();
+            }
         }
+        m_VerticesVAO_ChangesMutex.unlock();
+        flushChanges();
+
+        for (const auto& VAO : m_VerticesVAOs)
+        {
+            if (VAO.value != 0)
+            {
+                ActionTask deleteTask(true);
+                deleteTask.bindRaw(&VertexBuffer_RenderAPIObject_OpenGL::clearVAO, VAO.value);
+                getWindowSubsystemObject()->submitTaskForWindow(VAO.key, std::move(deleteTask));
+            }
+        }
+        m_VerticesVAOs.clear();
+
         if (m_IndicesVBO != 0)
         {
             glDeleteBuffers(1, &m_IndicesVBO);
@@ -104,15 +194,23 @@ namespace JumaEngine
             m_VerticesVBO = 0;
         }
     }
+    void VertexBuffer_RenderAPIObject_OpenGL::clearVAO(const uint32 VAO)
+    {
+        // Window thread
+        glDeleteVertexArrays(1, &VAO);
+    }
 
     bool VertexBuffer_RenderAPIObject_OpenGL::render(const RenderOptions* renderOptions)
     {
-        if (m_VerticesVAO == 0)
+        // Window thread
+        const window_id_type windowID = reinterpret_cast<const RenderOptions_OpenGL*>(renderOptions)->windowID;
+        const uint32 VAO = getVerticesVAO(windowID);
+        if (VAO == 0)
         {
             return false;
         }
 
-        glBindVertexArray(m_VerticesVAO);
+        glBindVertexArray(VAO);
         if (m_IndicesVBO == 0)
         {
             glDrawArrays(GL_TRIANGLES, 0, m_Parent->getVertexCount());
@@ -125,6 +223,31 @@ namespace JumaEngine
         }
         glBindVertexArray(0);
         return true;
+    }
+    uint32 VertexBuffer_RenderAPIObject_OpenGL::getVerticesVAO(const window_id_type windowID)
+    {
+        // Window thread
+        const uint32* VAOPtr = m_VerticesVAOs.find(windowID);
+        if (VAOPtr != nullptr)
+        {
+            return *VAOPtr;
+        }
+
+        if (getWindowSubsystemObject()->getParent()->getMainWindowID() != windowID)
+        {
+            ActionTask createTask;
+            const ActionTaskResult<uint32>* createTaskResult = createTask.bindClassMethod(this, &VertexBuffer_RenderAPIObject_OpenGL::createVerticesVAO);
+            if (getWindowSubsystemObject()->submitTaskForWindow(windowID, std::move(createTask)))
+            {
+                std::lock_guard lock(m_VerticesVAO_ChangesMutex);
+                m_VerticesVAO_CreateTasks.add(windowID, createTaskResult);
+            }
+        }
+        else
+        {
+            // TODO
+        }
+        return 0;
     }
 }
 

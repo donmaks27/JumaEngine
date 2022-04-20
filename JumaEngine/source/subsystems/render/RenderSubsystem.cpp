@@ -95,9 +95,12 @@ namespace JumaEngine
             return;
         }
 
+        RenderSubsystem_RenderAPIObject* renderObject = getRenderAPIObject();
+        renderObject->onStartRender();
         windowSubsystem->onStartRender();
         m_RenderPipeline->render();
         windowSubsystem->onFinishRender();
+        renderObject->onFinishRender();
     }
     void RenderSubsystem::waitForRenderFinish()
     {

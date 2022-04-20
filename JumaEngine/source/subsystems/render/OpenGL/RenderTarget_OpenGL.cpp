@@ -19,6 +19,7 @@ namespace JumaEngine
 
     bool RenderTarget_RenderAPIObject_OpenGL::initInternal()
     {
+        // TODO: Create it in window thread
         const bool depthEnabled = true;
         const bool renderToWindow = m_Parent->isWindowRenderTarget();
         const bool shouldResolveMultisampling = m_Parent->shouldResolveMultisampling();

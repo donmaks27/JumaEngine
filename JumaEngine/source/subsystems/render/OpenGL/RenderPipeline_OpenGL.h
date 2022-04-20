@@ -7,13 +7,15 @@
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_OPENGL)
 
 #include "subsystems/render/RenderPipeline.h"
+#include "OpenGLContextObject.h"
 
 namespace JumaEngine
 {
+    struct RenderOptions_OpenGL;
     class WindowSubsystem;
     class RenderTarget_RenderAPIObject_OpenGL;
 
-    class RenderPipeline_RenderAPIObject_OpenGL : public RenderPipeline_RenderAPIObject
+    class RenderPipeline_RenderAPIObject_OpenGL : public RenderPipeline_RenderAPIObject, public OpenGLContextObject
     {
     public:
         RenderPipeline_RenderAPIObject_OpenGL() = default;
@@ -29,7 +31,7 @@ namespace JumaEngine
 
         void clearData();
 
-        void callRenderForRenderTarget(RenderTarget_RenderAPIObject_OpenGL* renderTargetObject, RenderOptions options);
+        void callRenderForRenderTarget(RenderTarget_RenderAPIObject_OpenGL* renderTargetObject, RenderOptions_OpenGL options);
     };
 }
 

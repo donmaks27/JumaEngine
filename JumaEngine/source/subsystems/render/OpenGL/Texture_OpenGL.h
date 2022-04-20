@@ -7,6 +7,7 @@
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_OPENGL)
 
 #include "subsystems/render/Texture.h"
+#include "OpenGLContextObject.h"
 
 #include "subsystems/render/texture/TextureFormat.h"
 
@@ -15,7 +16,7 @@ namespace JumaEngine
     TextureFormat GetTextureFormatByOpenGLFormat(uint32 format);
     uint32 GetOpenGLFormatByTextureFormat(TextureFormat format);
 
-    class Texture_RenderAPIObject_OpenGL : public Texture_RenderAPIObject
+    class Texture_RenderAPIObject_OpenGL : public Texture_RenderAPIObject, public OpenGLContextObject
     {
     public:
         Texture_RenderAPIObject_OpenGL() = default;

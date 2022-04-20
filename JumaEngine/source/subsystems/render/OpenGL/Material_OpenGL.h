@@ -7,10 +7,11 @@
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_OPENGL)
 
 #include "subsystems/render/Material.h"
+#include "OpenGLContextObject.h"
 
 namespace JumaEngine
 {
-    class Material_RenderAPIObject_OpenGL : public Material_RenderAPIObject
+    class Material_RenderAPIObject_OpenGL : public Material_RenderAPIObject, public OpenGLContextObject
     {
     public:
         Material_RenderAPIObject_OpenGL() = default;

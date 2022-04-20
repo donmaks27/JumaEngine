@@ -7,8 +7,12 @@
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_OPENGL)
 
 #include "subsystems/render/VertexBuffer.h"
-
 #include "OpenGLContextObject.h"
+
+#include <mutex>
+
+#include "jutils/jmap.h"
+#include "subsystems/asyncTasks/ActionTask.h"
 
 namespace JumaEngine
 {
@@ -24,14 +28,27 @@ namespace JumaEngine
 
         virtual bool initInternal() override;
 
+        virtual bool shouldBeFlushed() const override { return true; }
+        virtual void flushChanges() override;
+
     private:
 
         uint32 m_VerticesVBO = 0;
         uint32 m_IndicesVBO = 0;
-        uint32 m_VerticesVAO = 0;
+        jmap<window_id_type, uint32> m_VerticesVAOs;
 
+        std::mutex m_VerticesVAO_ChangesMutex;
+        jmap<window_id_type, const ActionTaskResult<uint32>*> m_VerticesVAO_CreateTasks;
+
+
+        uint64 createVBOs();
+        void createVerticesVAOForWindow(window_id_type windowID);
+        uint32 createVerticesVAO();
 
         void clearOpenGL();
+        static void clearVAO(uint32 VAO);
+
+        uint32 getVerticesVAO(window_id_type windowID);
     };
 }
 

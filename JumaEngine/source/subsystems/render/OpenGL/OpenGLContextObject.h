@@ -6,6 +6,8 @@
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_OPENGL)
 
+#include "subsystems/window/WindowID.h"
+
 namespace JumaEngine
 {
     class WindowSubsystem_RenderAPIObject_OpenGL;
@@ -21,6 +23,11 @@ namespace JumaEngine
 
         RenderSubsystem_RenderAPIObject_OpenGL* getRenderSubsystemObject() const { return m_RenderSubsystem; }
         WindowSubsystem_RenderAPIObject_OpenGL* getWindowSubsystemObject() const { return m_WindowSubsystem; }
+
+    protected:
+
+        virtual bool shouldBeFlushed() const { return false; }
+        virtual void flushChanges() {}
 
     private:
 

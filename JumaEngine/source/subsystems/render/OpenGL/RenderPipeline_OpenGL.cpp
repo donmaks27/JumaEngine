@@ -6,10 +6,10 @@
 
 #include <GL/glew.h>
 
+#include "RenderOptions_OpenGL.h"
 #include "RenderTarget_OpenGL.h"
 #include "engine/Engine.h"
 #include "subsystems/render/RenderTarget.h"
-#include "subsystems/render/RenderOptions.h"
 #include "subsystems/window/WindowSubsystem.h"
 #include "subsystems/window/OpenGL/WindowSubsystem_OpenGL.h"
 
@@ -36,7 +36,7 @@ namespace JumaEngine
 
         windowSubsystem->onStartRender();
 
-        RenderOptions options;
+        RenderOptions_OpenGL options;
         options.renderPipeline = m_Parent;
         jarray<const ActionTaskResult<void>*> windowRenderTaskResults;
         for (const auto& stageName : m_Parent->getPipelineQueue())
@@ -53,10 +53,12 @@ namespace JumaEngine
             options.renderTarget = renderTarget;
             if (!renderTarget->isWindowRenderTarget())
             {
+                options.windowID = windowSubsystem->getMainWindowID();
                 callRenderForRenderTarget(renderTargetObject, options);
             }
             else
             {
+                options.windowID = renderTarget->getWindowID();
                 ActionTask task(true);
                 const ActionTaskResult<void>* taskResult = task.bindClassMethod(this, &RenderPipeline_RenderAPIObject_OpenGL::callRenderForRenderTarget, renderTargetObject, options);
                 if (windowSubsystemObject->submitTaskForWindow(renderTarget->getWindowID(), std::move(task)))
@@ -78,7 +80,7 @@ namespace JumaEngine
         return true;
     }
     void RenderPipeline_RenderAPIObject_OpenGL::callRenderForRenderTarget(RenderTarget_RenderAPIObject_OpenGL* renderTargetObject, 
-        RenderOptions options)
+        RenderOptions_OpenGL options)
     {
         renderTargetObject->startRender();
 

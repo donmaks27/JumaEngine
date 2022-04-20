@@ -40,6 +40,9 @@ namespace JumaEngine
         virtual RenderTarget_RenderAPIObject* createRenderTargetObject() = 0;
         virtual RenderPipeline_RenderAPIObject* createRenderPipelineObject() = 0;
 
+        virtual void onStartRender() {}
+        virtual void onFinishRender() {}
+
         virtual void waitForRenderFinish() {}
 
         void clearData();
