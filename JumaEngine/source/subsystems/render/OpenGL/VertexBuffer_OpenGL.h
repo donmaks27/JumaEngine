@@ -35,21 +35,24 @@ namespace JumaEngine
 
         uint32 m_VerticesVBO = 0;
         uint32 m_IndicesVBO = 0;
-        // Accessed in window threads. Read during render (no sync), writer after render finished
         jmap<window_id_type, uint32> m_VerticesVAOs;
 
+        // Protect m_VerticesVAO_CreateTasks field during render
         std::mutex m_VerticesVAO_ChangesMutex;
         jmap<window_id_type, const ActionTaskResult<uint32>*> m_VerticesVAO_CreateTasks;
 
 
-        uint64 createVBOs();
+        bool createVBOs(uint32& outVerticesVBO, uint32& outIndicesVBO) const;
+        void onWindowDestroying(window_id_type windowID);
 
         void clearOpenGL();
-        static void clearVAO(uint32 VAO);
-        static void clearVAO_CreateTask(const ActionTaskResult<uint32>* createTask);
+        void clearVerticesVAO(window_id_type windowID, uint32 VAO) const;
+        void clearVerticesVAO_CreateTask(window_id_type windowID, const ActionTaskResult<uint32>* createTask) const;
+        static void clearVerticesVAO_Static(uint32 VAO);
+        static void clearVerticesVAO_CreateTask_Static(const ActionTaskResult<uint32>* createTask);
 
         uint32 getVerticesVAO(window_id_type windowID);
-        uint32 createVerticesVAO();
+        uint32 createVerticesVAO() const;
     };
 }
 

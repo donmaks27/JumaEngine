@@ -58,7 +58,7 @@ namespace JumaEngine
         m_TextureSamples = samples;
         markAsInitialized();
 
-        getOwnerEngine()->getWindowSubsystem()->onWindowDestroyed.bind(this, &RenderTarget::onWindowDestroyed);
+        getOwnerEngine()->getWindowSubsystem()->onWindowDestroying.bind(this, &RenderTarget::onWindowDestroyed);
         return true;
     }
 

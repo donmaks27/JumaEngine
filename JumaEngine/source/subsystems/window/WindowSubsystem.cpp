@@ -96,7 +96,7 @@ namespace JumaEngine
             return;
         }
 
-        onWindowDestroyed.call(windowID);
+        onWindowDestroying.call(windowID);
         RenderAPIObjectType* renderObject = getRenderAPIObject();
         if (renderObject != nullptr)
         {

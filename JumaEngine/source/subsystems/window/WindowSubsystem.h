@@ -83,7 +83,7 @@ namespace JumaEngine
         virtual ~WindowSubsystem() override = default;
 
         FOnWindowSubsystemWindowEvent onWindowCreated;
-        FOnWindowSubsystemWindowEvent onWindowDestroyed;
+        FOnWindowSubsystemWindowEvent onWindowDestroying;
 
         const WindowDescription* findWindow(const window_id_type windowID) const { return m_Windows.find(windowID); }
         bool isWindowValid(const window_id_type windowID) const { return m_Windows.contains(windowID); }
