@@ -54,9 +54,10 @@ namespace JumaEngine
 
     protected:
 
-        void createWindow_OpenGL(WindowDescription_OpenGL* windowDescription, bool mainWindow);
-        virtual void initWindowThread(WindowDescription_OpenGL* windowDescription);
+        void onWindowCreated_OpenGL(WindowDescription_OpenGL* windowDescription);
+        virtual void initWindowThread(WindowDescription_OpenGL* windowDescription) { initOpenGL(); }
         virtual void finishWindowThread(WindowDescription_OpenGL* windowDescription) {}
+        void initOpenGL() const;
         
         void destroyWindow_OpenGL(window_id_type windowID, WindowDescription_OpenGL& description);
     };

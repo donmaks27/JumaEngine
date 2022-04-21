@@ -51,6 +51,7 @@ namespace JumaEngine
 
     private:
 
+        GLFWwindow* m_BackgroundWindow = nullptr;
         jmap<window_id_type, WindowDescription_OpenGL_GLFW> m_Windows;
 
 

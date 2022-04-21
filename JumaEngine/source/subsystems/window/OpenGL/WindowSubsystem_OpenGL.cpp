@@ -20,24 +20,17 @@ namespace JumaEngine
         m_WindowSubsystem->finishWindowThread(m_WindowDescription);
     }
 
-    void WindowSubsystem_RenderAPIObject_OpenGL::createWindow_OpenGL(WindowDescription_OpenGL* windowDescription, bool mainWindow)
+    void WindowSubsystem_RenderAPIObject_OpenGL::onWindowCreated_OpenGL(WindowDescription_OpenGL* windowDescription)
     {
-        if (mainWindow)
-        {
-            initWindowThread(windowDescription);
-        }
-        else
-        {
-            windowDescription->windowTaskQueue = new WindowActionTaskQueue_OpenGL();
-            windowDescription->windowTaskQueue->m_WindowSubsystem = this;
-            windowDescription->windowTaskQueue->m_WindowDescription = windowDescription;
+        windowDescription->windowTaskQueue = new WindowActionTaskQueue_OpenGL();
+        windowDescription->windowTaskQueue->m_WindowSubsystem = this;
+        windowDescription->windowTaskQueue->m_WindowDescription = windowDescription;
 
-            ActionTask task(true);
-            task.bindClassMethod(static_cast<ActionTaskQueue*>(windowDescription->windowTaskQueue), &ActionTaskQueue::startLoop);
-            getParent()->getOwnerEngine()->getAsyncTasksSubsystem()->startTask(std::move(task));
-        }
+        ActionTask task(true);
+        task.bindClassMethod(static_cast<ActionTaskQueue*>(windowDescription->windowTaskQueue), &ActionTaskQueue::startLoop);
+        getParent()->getOwnerEngine()->getAsyncTasksSubsystem()->startTask(std::move(task));
     }
-    void WindowSubsystem_RenderAPIObject_OpenGL::initWindowThread(WindowDescription_OpenGL* windowDescription)
+    void WindowSubsystem_RenderAPIObject_OpenGL::initOpenGL() const
     {
         const GLenum glewInitResult = glewInit();
         if (glewInitResult != GLEW_OK)
@@ -54,29 +47,20 @@ namespace JumaEngine
             delete description.windowTaskQueue;
             description.windowTaskQueue = nullptr;
         }
-        else
-        {
-            finishWindowThread(&description);
-        }
     }
 
     bool WindowSubsystem_RenderAPIObject_OpenGL::submitTaskForWindow(const window_id_type windowID, ActionTask&& task)
     {
-        WindowDescription_OpenGL* description = reinterpret_cast<WindowDescription_OpenGL*>(findWindow(windowID));
-        if (description == nullptr)
-        {
-            return false;
-        }
+        // Should be called from the thread when windows created
 
-        if (description->windowTaskQueue == nullptr)
+        WindowDescription_OpenGL* description = reinterpret_cast<WindowDescription_OpenGL*>(findWindow(windowID));
+        ActionTaskQueue* taskQueue = description != nullptr ? description->windowTaskQueue : nullptr;
+        if (taskQueue == nullptr)
         {
-            task.execute();
-            // Shouldn't wait for finish
             return false;
         }
 
         description->windowTaskQueue->submitTask(std::move(task));
-        // Should wait for finish
         return true;
     }
 }

@@ -51,20 +51,13 @@ namespace JumaEngine
 
             options.renderTargetName = stageName;
             options.renderTarget = renderTarget;
-            if (!renderTarget->isWindowRenderTarget())
+            options.windowID = renderTarget->isWindowRenderTarget() ? renderTarget->getWindowID() : windowSubsystem->getMainWindowID();
+
+            ActionTask renderTask;
+            const ActionTaskResult<void>* renderTaskResult = renderTask.bindClassMethod(this, &RenderPipeline_RenderAPIObject_OpenGL::callRenderForRenderTarget, renderTargetObject, options);
+            if (windowSubsystemObject->submitTaskForWindow(renderTarget->getWindowID(), std::move(renderTask)))
             {
-                options.windowID = windowSubsystem->getMainWindowID();
-                callRenderForRenderTarget(renderTargetObject, options);
-            }
-            else
-            {
-                options.windowID = renderTarget->getWindowID();
-                ActionTask task(true);
-                const ActionTaskResult<void>* taskResult = task.bindClassMethod(this, &RenderPipeline_RenderAPIObject_OpenGL::callRenderForRenderTarget, renderTargetObject, options);
-                if (windowSubsystemObject->submitTaskForWindow(renderTarget->getWindowID(), std::move(task)))
-                {
-                    windowRenderTaskResults.add(taskResult);
-                }
+                windowRenderTaskResults.add(renderTaskResult);
             }
         }
 
@@ -73,14 +66,14 @@ namespace JumaEngine
             if (windowRenderTaskResult != nullptr)
             {
                 windowRenderTaskResult->waitForTaskFinished();
+                windowRenderTaskResult->markAsHandled();
             }
         }
         windowSubsystem->onFinishRender();
 
         return true;
     }
-    void RenderPipeline_RenderAPIObject_OpenGL::callRenderForRenderTarget(RenderTarget_RenderAPIObject_OpenGL* renderTargetObject, 
-        RenderOptions_OpenGL options)
+    void RenderPipeline_RenderAPIObject_OpenGL::callRenderForRenderTarget(RenderTarget_RenderAPIObject_OpenGL* renderTargetObject, RenderOptions_OpenGL options)
     {
         renderTargetObject->startRender();
 

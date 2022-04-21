@@ -72,20 +72,20 @@ namespace JumaEngine
             return false;
         }
 
-        GLFWwindow* mainWindowGLFW = nullptr;
-        if (!m_Windows.isEmpty())
+        if (m_BackgroundWindow == nullptr)
         {
-            const window_id_type mainWindowID = m_Parent->getMainWindowID();
-            const WindowDescription_OpenGL_GLFW* mainWindow = mainWindowID != windowID ? m_Windows.find(m_Parent->getMainWindowID()) : nullptr;
-            mainWindowGLFW = mainWindow != nullptr ? mainWindow->windowGLFW : nullptr;
+            glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+            glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+            m_BackgroundWindow = glfwCreateWindow(1, 1, "", nullptr, nullptr);
+            glfwMakeContextCurrent(m_BackgroundWindow);
+            initOpenGL();
         }
-        const bool isMainWindow = mainWindowGLFW == nullptr;
 
         glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
         glfwWindowHint(GLFW_VISIBLE, description->hidden ? GLFW_FALSE : GLFW_TRUE);
         GLFWwindow* window = glfwCreateWindow(
             static_cast<int>(description->size.x), static_cast<int>(description->size.y), 
-            *description->title, nullptr, mainWindowGLFW
+            *description->title, nullptr, m_BackgroundWindow
         );
         if (window == nullptr)
         {
@@ -101,7 +101,7 @@ namespace JumaEngine
         glfwSetWindowUserPointer(window, &windowDescription);
         glfwSetFramebufferSizeCallback(window, WindowSubsystem_RenderAPIObject_OpenGL_GLFW::GLFW_FramebufferResizeCallback);
 
-        createWindow_OpenGL(&windowDescription, isMainWindow);
+        onWindowCreated_OpenGL(&windowDescription);
         return true;
     }
     void WindowSubsystem_RenderAPIObject_OpenGL_GLFW::GLFW_FramebufferResizeCallback(GLFWwindow* windowGLFW, int width, int height)

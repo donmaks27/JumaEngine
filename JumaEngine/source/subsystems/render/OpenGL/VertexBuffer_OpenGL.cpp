@@ -58,19 +58,117 @@ namespace JumaEngine
         return (static_cast<uint64>(verticesVBO) << 32) + indicesVBO;
     }
     
-    void VertexBuffer_RenderAPIObject_OpenGL::createVerticesVAOForWindow(const window_id_type windowID)
+    void VertexBuffer_RenderAPIObject_OpenGL::clearOpenGL()
     {
-        // Any thread
-        if (m_VerticesVBO == 0)
+        // Main thread
+
+        m_VerticesVAO_ChangesMutex.lock();
+        for (const auto& task : m_VerticesVAO_CreateTasks)
         {
-            return;
+            if (task.value == nullptr)
+            {
+                continue;
+            }
+            if (!task.value->isTaskFinished())
+            {
+                ActionTask deleteTask(true);
+                deleteTask.bindRaw(&VertexBuffer_RenderAPIObject_OpenGL::clearVAO_CreateTask, task.value);
+                getWindowSubsystemObject()->submitTaskForWindow(task.key, std::move(deleteTask));
+            }
+            else
+            {
+                ActionTask deleteTask(true);
+                deleteTask.bindRaw(&VertexBuffer_RenderAPIObject_OpenGL::clearVAO, task.value->get());
+                getWindowSubsystemObject()->submitTaskForWindow(task.key, std::move(deleteTask));
+                task.value->markAsHandled();
+            }
+        }
+        m_VerticesVAO_CreateTasks.clear();
+        m_VerticesVAO_ChangesMutex.unlock();
+
+        for (const auto& VAO : m_VerticesVAOs)
+        {
+            if (VAO.value != 0)
+            {
+                ActionTask deleteTask(true);
+                deleteTask.bindRaw(&VertexBuffer_RenderAPIObject_OpenGL::clearVAO, VAO.value);
+                getWindowSubsystemObject()->submitTaskForWindow(VAO.key, std::move(deleteTask));
+            }
+        }
+        m_VerticesVAOs.clear();
+
+        if (m_IndicesVBO != 0)
+        {
+            glDeleteBuffers(1, &m_IndicesVBO);
+            m_IndicesVBO = 0;
+        }
+        if (m_VerticesVBO != 0)
+        {
+            glDeleteBuffers(1, &m_VerticesVBO);
+            m_VerticesVBO = 0;
+        }
+    }
+    void VertexBuffer_RenderAPIObject_OpenGL::clearVAO(const uint32 VAO)
+    {
+        // Window thread
+        glDeleteVertexArrays(1, &VAO);
+    }
+    void VertexBuffer_RenderAPIObject_OpenGL::clearVAO_CreateTask(const ActionTaskResult<uint32>* createTask)
+    {
+        // Window thread, createTask should be finished by now
+        if ((createTask != nullptr) && createTask->isTaskFinished())
+        {
+            clearVAO(createTask->get());
+            createTask->markAsHandled();
+        }
+    }
+
+    bool VertexBuffer_RenderAPIObject_OpenGL::render(const RenderOptions* renderOptions)
+    {
+        // Window thread, during render
+        const window_id_type windowID = reinterpret_cast<const RenderOptions_OpenGL*>(renderOptions)->windowID;
+        const uint32 VAO = getVerticesVAO(windowID);
+        if (VAO == 0)
+        {
+            return false;
+        }
+
+        glBindVertexArray(VAO);
+        if (m_IndicesVBO == 0)
+        {
+            glDrawArrays(GL_TRIANGLES, 0, m_Parent->getVertexCount());
+        }
+        else
+        {
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndicesVBO);
+            glDrawElements(GL_TRIANGLES, m_Parent->getIndexCount(), GL_UNSIGNED_INT, nullptr);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        }
+        glBindVertexArray(0);
+        return true;
+    }
+    uint32 VertexBuffer_RenderAPIObject_OpenGL::getVerticesVAO(const window_id_type windowID)
+    {
+        // Window thread, during render
+        const uint32* VAOPtr = m_VerticesVAOs.find(windowID);
+        if (VAOPtr != nullptr)
+        {
+            return *VAOPtr;
+        }
+
+        std::lock_guard lock(m_VerticesVAO_ChangesMutex);
+        if (m_VerticesVAO_CreateTasks.contains(windowID))
+        {
+            return 0;
         }
 
         ActionTask createTask;
-        m_VerticesVAO_ChangesMutex.lock();
-        m_VerticesVAO_CreateTasks[windowID] = createTask.bindClassMethod(this, &VertexBuffer_RenderAPIObject_OpenGL::createVerticesVAO);
-        m_VerticesVAO_ChangesMutex.unlock();
-        getWindowSubsystemObject()->submitTaskForWindow(windowID, std::move(createTask));
+        const ActionTaskResult<uint32>* createTaskResult = createTask.bindClassMethod(this, &VertexBuffer_RenderAPIObject_OpenGL::createVerticesVAO);
+        if (getWindowSubsystemObject()->submitTaskForWindow(windowID, std::move(createTask)))
+        {
+            m_VerticesVAO_CreateTasks.add(windowID, createTaskResult);
+        }
+        return 0;
     }
     uint32 VertexBuffer_RenderAPIObject_OpenGL::createVerticesVAO()
     {
@@ -127,127 +225,35 @@ namespace JumaEngine
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         return VAO;
     }
-
     void VertexBuffer_RenderAPIObject_OpenGL::flushChanges()
     {
-        // Main thread
+        // Main thread, render finished
         std::lock_guard lock(m_VerticesVAO_ChangesMutex);
         if (!m_VerticesVAO_CreateTasks.isEmpty())
         {
             bool hasUnfinishedTasks = false;
             for (auto& task : m_VerticesVAO_CreateTasks)
             {
-                if (task.value != nullptr)
+                if (task.value == nullptr)
                 {
-                    if (!task.value->isTaskFinished())
-                    {
-                        hasUnfinishedTasks = true;
-                    }
-                    else
-                    {
-                        m_VerticesVAOs.add(task.key, task.value->get());
-                        task.value->markAsHandled();
-                        task.value = nullptr;
-                    }
+                    continue;
                 }
+
+                if (!task.value->isTaskFinished())
+                {
+                    hasUnfinishedTasks = true;
+                    continue;
+                }
+
+                m_VerticesVAOs.add(task.key, task.value->get());
+                task.value->markAsHandled();
+                task.value = nullptr;
             }
             if (!hasUnfinishedTasks)
             {
                 m_VerticesVAO_CreateTasks.clear();
             }
         }
-    }
-
-    void VertexBuffer_RenderAPIObject_OpenGL::clearOpenGL()
-    {
-        // Main thread
-        m_VerticesVAO_ChangesMutex.lock();
-        for (const auto& task : m_VerticesVAO_CreateTasks)
-        {
-            if (task.value != nullptr)
-            {
-                task.value->waitForTaskFinished();
-            }
-        }
-        m_VerticesVAO_ChangesMutex.unlock();
-        flushChanges();
-
-        for (const auto& VAO : m_VerticesVAOs)
-        {
-            if (VAO.value != 0)
-            {
-                ActionTask deleteTask(true);
-                deleteTask.bindRaw(&VertexBuffer_RenderAPIObject_OpenGL::clearVAO, VAO.value);
-                getWindowSubsystemObject()->submitTaskForWindow(VAO.key, std::move(deleteTask));
-            }
-        }
-        m_VerticesVAOs.clear();
-
-        if (m_IndicesVBO != 0)
-        {
-            glDeleteBuffers(1, &m_IndicesVBO);
-            m_IndicesVBO = 0;
-        }
-        if (m_VerticesVBO != 0)
-        {
-            glDeleteBuffers(1, &m_VerticesVBO);
-            m_VerticesVBO = 0;
-        }
-    }
-    void VertexBuffer_RenderAPIObject_OpenGL::clearVAO(const uint32 VAO)
-    {
-        // Window thread
-        glDeleteVertexArrays(1, &VAO);
-    }
-
-    bool VertexBuffer_RenderAPIObject_OpenGL::render(const RenderOptions* renderOptions)
-    {
-        // Window thread
-        const window_id_type windowID = reinterpret_cast<const RenderOptions_OpenGL*>(renderOptions)->windowID;
-        const uint32 VAO = getVerticesVAO(windowID);
-        if (VAO == 0)
-        {
-            return false;
-        }
-
-        glBindVertexArray(VAO);
-        if (m_IndicesVBO == 0)
-        {
-            glDrawArrays(GL_TRIANGLES, 0, m_Parent->getVertexCount());
-        }
-        else
-        {
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndicesVBO);
-            glDrawElements(GL_TRIANGLES, m_Parent->getIndexCount(), GL_UNSIGNED_INT, nullptr);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-        }
-        glBindVertexArray(0);
-        return true;
-    }
-    uint32 VertexBuffer_RenderAPIObject_OpenGL::getVerticesVAO(const window_id_type windowID)
-    {
-        // Window thread
-        const uint32* VAOPtr = m_VerticesVAOs.find(windowID);
-        if (VAOPtr != nullptr)
-        {
-            return *VAOPtr;
-        }
-
-        if (getWindowSubsystemObject()->getParent()->getMainWindowID() != windowID)
-        {
-            ActionTask createTask;
-            const ActionTaskResult<uint32>* createTaskResult = createTask.bindClassMethod(this, &VertexBuffer_RenderAPIObject_OpenGL::createVerticesVAO);
-            if (getWindowSubsystemObject()->submitTaskForWindow(windowID, std::move(createTask)))
-            {
-                std::lock_guard lock(m_VerticesVAO_ChangesMutex);
-                m_VerticesVAO_CreateTasks.add(windowID, createTaskResult);
-            }
-        }
-        else
-        {
-            // TODO
-        }
-        return 0;
     }
 }
 
