@@ -50,11 +50,15 @@ namespace JumaEngine
 
     Shader_RenderAPIObject* RenderSubsystem_RenderAPIObject_OpenGL::createShaderObject()
     {
-        return createOpenGLObject<Shader_RenderAPIObject_OpenGL>();
+        Shader_RenderAPIObject_OpenGL* vertexBuffer = createOpenGLObject<Shader_RenderAPIObject_OpenGL>();
+        onObjectCreated(vertexBuffer);
+        return vertexBuffer;
     }
     Material_RenderAPIObject* RenderSubsystem_RenderAPIObject_OpenGL::createMaterialObject()
     {
-        return createOpenGLObject<Material_RenderAPIObject_OpenGL>();
+        Material_RenderAPIObject_OpenGL* vertexBuffer = createOpenGLObject<Material_RenderAPIObject_OpenGL>();
+        onObjectCreated(vertexBuffer);
+        return vertexBuffer;
     }
     VertexBuffer_RenderAPIObject* RenderSubsystem_RenderAPIObject_OpenGL::createVertexBufferObject()
     {
@@ -64,15 +68,21 @@ namespace JumaEngine
     }
     Texture_RenderAPIObject* RenderSubsystem_RenderAPIObject_OpenGL::createTextureObject()
     {
-        return createOpenGLObject<Texture_RenderAPIObject_OpenGL>();
+        Texture_RenderAPIObject_OpenGL* vertexBuffer = createOpenGLObject<Texture_RenderAPIObject_OpenGL>();
+        onObjectCreated(vertexBuffer);
+        return vertexBuffer;
     }
     RenderTarget_RenderAPIObject* RenderSubsystem_RenderAPIObject_OpenGL::createRenderTargetObject()
     {
-        return createOpenGLObject<RenderTarget_RenderAPIObject_OpenGL>();
+        RenderTarget_RenderAPIObject_OpenGL* vertexBuffer = createOpenGLObject<RenderTarget_RenderAPIObject_OpenGL>();
+        onObjectCreated(vertexBuffer);
+        return vertexBuffer;
     }
     RenderPipeline_RenderAPIObject* RenderSubsystem_RenderAPIObject_OpenGL::createRenderPipelineObject()
     {
-        return createOpenGLObject<RenderPipeline_RenderAPIObject_OpenGL>();
+        RenderPipeline_RenderAPIObject_OpenGL* vertexBuffer = createOpenGLObject<RenderPipeline_RenderAPIObject_OpenGL>();
+        onObjectCreated(vertexBuffer);
+        return vertexBuffer;
     }
     void RenderSubsystem_RenderAPIObject_OpenGL::onObjectCreated(OpenGLContextObject* object)
     {

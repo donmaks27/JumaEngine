@@ -57,6 +57,8 @@ namespace JumaEngine
         m_WindowID = windowID;
         m_TextureSamples = samples;
         markAsInitialized();
+
+        getOwnerEngine()->getWindowSubsystem()->onWindowDestroyed.bind(this, &RenderTarget::onWindowDestroyed);
         return true;
     }
 
@@ -75,5 +77,12 @@ namespace JumaEngine
         m_Size = { 0, 0 };
         m_TextureSamples = TextureSamples::SAMPLES_1;
         m_WindowID = INVALID_WINDOW_ID;
+    }
+    void RenderTarget::onWindowDestroyed(const window_id_type windowID)
+    {
+        if (windowID == m_WindowID)
+        {
+            clear();
+        }
     }
 }

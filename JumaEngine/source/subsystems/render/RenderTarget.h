@@ -66,5 +66,6 @@ namespace JumaEngine
 
 
         void clearData();
+        void onWindowDestroyed(window_id_type windowID);
     };
 }

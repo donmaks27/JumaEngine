@@ -38,7 +38,7 @@ namespace JumaEngine
 
         RenderOptions_OpenGL options;
         options.renderPipeline = m_Parent;
-        jarray<const ActionTaskResult<void>*> windowRenderTaskResults;
+        jmap<jstringID, const ActionTaskResult<void>*> windowRenderTaskResults;
         for (const auto& stageName : m_Parent->getPipelineQueue())
         {
             const RenderPipelineStage* stage = m_Parent->getPipelineStage(stageName);
@@ -51,22 +51,24 @@ namespace JumaEngine
 
             options.renderTargetName = stageName;
             options.renderTarget = renderTarget;
-            options.windowID = renderTarget->isWindowRenderTarget() ? renderTarget->getWindowID() : windowSubsystem->getMainWindowID();
+            options.windowID = renderTargetObject->getUsingWindowID();
 
             ActionTask renderTask;
             const ActionTaskResult<void>* renderTaskResult = renderTask.bindClassMethod(this, &RenderPipeline_RenderAPIObject_OpenGL::callRenderForRenderTarget, renderTargetObject, options);
-            if (windowSubsystemObject->submitTaskForWindow(renderTarget->getWindowID(), std::move(renderTask)))
+            if (windowSubsystemObject->submitTaskForWindow(options.windowID, std::move(renderTask)))
             {
-                windowRenderTaskResults.add(renderTaskResult);
+                windowRenderTaskResults.add(stageName, renderTaskResult);
+                /*renderTaskResult->waitForTaskFinished();
+                renderTaskResult->markAsHandled();*/
             }
         }
 
         for (const auto& windowRenderTaskResult : windowRenderTaskResults)
         {
-            if (windowRenderTaskResult != nullptr)
+            if (windowRenderTaskResult.value != nullptr)
             {
-                windowRenderTaskResult->waitForTaskFinished();
-                windowRenderTaskResult->markAsHandled();
+                windowRenderTaskResult.value->waitForTaskFinished();
+                windowRenderTaskResult.value->markAsHandled();
             }
         }
         windowSubsystem->onFinishRender();
@@ -75,7 +77,10 @@ namespace JumaEngine
     }
     void RenderPipeline_RenderAPIObject_OpenGL::callRenderForRenderTarget(RenderTarget_RenderAPIObject_OpenGL* renderTargetObject, RenderOptions_OpenGL options)
     {
-        renderTargetObject->startRender();
+        if (!renderTargetObject->startRender())
+        {
+            return;
+        }
 
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
