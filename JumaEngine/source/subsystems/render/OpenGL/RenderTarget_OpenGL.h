@@ -20,7 +20,7 @@ namespace JumaEngine
         virtual ~RenderTarget_RenderAPIObject_OpenGL() override;
         
         window_id_type getUsingWindowID() const;
-        uint32 getColorImageIndex() const { return m_ResolveColorAttachmentIndex == 0 ? m_ColorAttachmentIndex : m_ResolveColorAttachmentIndex; }
+        uint32 getColorImageIndex() const { return m_FramebufferData.resolveColorAttachment == 0 ? m_FramebufferData.colorAttachment : m_FramebufferData.resolveColorAttachment; }
 
         bool startRender();
         void finishRender();
@@ -34,27 +34,26 @@ namespace JumaEngine
 
     private:
 
-        struct FramebufferIndices
+        struct FramebufferData
         {
             bool valid = false;
+
+            uint32 colorAttachment = 0;
+            uint32 depthAttachment = 0;
+            uint32 resolveColorAttachment = 0;
+
             uint32 framebuffer = 0;
             uint32 resolveFramebuffer = 0;
         };
 
-        uint32 m_ColorAttachmentIndex = 0;
-        uint32 m_DepthAttachmentIndex = 0;
-        uint32 m_ResolveColorAttachmentIndex = 0;
-
-        FramebufferIndices m_Framebuffers;
-        const ActionTaskResult<FramebufferIndices>* m_Framebuffers_CreateTask = nullptr;
+        FramebufferData m_FramebufferData;
+        const ActionTaskResult<FramebufferData>* m_FramebufferData_CreateTask = nullptr;
 
 
-        bool createAttachments();
-        static FramebufferIndices createFramebuffers(uint32 colorAttachment, uint32 depthAttachment, uint32 resolveAttachment, 
-            bool shouldResolveMultisampling);
+        FramebufferData createFramebufferData() const;
 
         void clearData();
-        static void clearFramebuffers(FramebufferIndices framebuffers);
+        static void clearFramebuffers(FramebufferData framebuffers);
     };
 }
 

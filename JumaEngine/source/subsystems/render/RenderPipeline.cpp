@@ -161,6 +161,12 @@ namespace JumaEngine
         return true;
     }
 
+    const jset<jstringID>* RenderPipeline::getPipelineStageDependencies(const jstringID& name) const
+    {
+        const RenderPipelineStage* stage = getPipelineStage(name);
+        return (stage != nullptr) && !stage->dependencies.isEmpty() ? &stage->dependencies : nullptr;
+    }
+
     bool RenderPipeline::validatePipelineQueue()
     {
         if (!isValid())

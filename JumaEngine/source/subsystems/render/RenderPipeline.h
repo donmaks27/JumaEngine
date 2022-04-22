@@ -58,6 +58,7 @@ namespace JumaEngine
         bool removePipelineStage(const jstringID& name);
         bool addPipelineStageDependency(const jstringID& name, const jstringID& dependencyName);
         bool removePipelineStageDependency(const jstringID& name, const jstringID& dependencyName);
+        const jset<jstringID>* getPipelineStageDependencies(const jstringID& name) const;
 
         bool validatePipelineQueue();
 

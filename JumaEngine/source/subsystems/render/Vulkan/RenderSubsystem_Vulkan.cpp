@@ -150,7 +150,7 @@ namespace JumaEngine
 
     bool RenderSubsystem_RenderAPIObject_Vulkan::createVulkanInstance()
     {
-#ifdef JDEBUG
+#if JDEBUG
         const jarray<const char*> validationLayers = { "VK_LAYER_KHRONOS_validation" };
         {
             uint32 layerCount;

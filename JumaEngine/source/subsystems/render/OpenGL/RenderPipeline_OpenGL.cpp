@@ -34,11 +34,17 @@ namespace JumaEngine
         WindowSubsystem* windowSubsystem = getParent()->getOwnerEngine()->getWindowSubsystem();
         WindowSubsystem_RenderAPIObject_OpenGL* windowSubsystemObject = windowSubsystem->getRenderAPIObject<WindowSubsystem_RenderAPIObject_OpenGL>();
 
+        jmap<jstringID, const ActionTaskResult<bool>*> windowRenderTaskResults;
+        windowRenderTaskResults.reserve(m_Parent->getPipelineQueue().getSize());
+        for (const auto& stageName : m_Parent->getPipelineQueue())
+        {
+            windowRenderTaskResults[stageName] = nullptr;
+        }
+
         windowSubsystem->onStartRender();
 
         RenderOptions_OpenGL options;
         options.renderPipeline = m_Parent;
-        jmap<jstringID, const ActionTaskResult<void>*> windowRenderTaskResults;
         for (const auto& stageName : m_Parent->getPipelineQueue())
         {
             const RenderPipelineStage* stage = m_Parent->getPipelineStage(stageName);
@@ -54,12 +60,13 @@ namespace JumaEngine
             options.windowID = renderTargetObject->getUsingWindowID();
 
             ActionTask renderTask;
-            const ActionTaskResult<void>* renderTaskResult = renderTask.bindClassMethod(this, &RenderPipeline_RenderAPIObject_OpenGL::callRenderForRenderTarget, renderTargetObject, options);
-            if (windowSubsystemObject->submitTaskForWindow(options.windowID, std::move(renderTask)))
+            windowRenderTaskResults[stageName] = renderTask.bindClassMethod(
+                this, &RenderPipeline_RenderAPIObject_OpenGL::callRenderForRenderTarget, 
+                renderTargetObject, static_cast<const jmap<jstringID, const ActionTaskResult<bool>*>*>(&windowRenderTaskResults), options
+            );
+            if (!windowSubsystemObject->submitTaskForWindow(options.windowID, std::move(renderTask)))
             {
-                windowRenderTaskResults.add(stageName, renderTaskResult);
-                /*renderTaskResult->waitForTaskFinished();
-                renderTaskResult->markAsHandled();*/
+                windowRenderTaskResults[stageName] = nullptr;
             }
         }
 
@@ -75,11 +82,32 @@ namespace JumaEngine
 
         return true;
     }
-    void RenderPipeline_RenderAPIObject_OpenGL::callRenderForRenderTarget(RenderTarget_RenderAPIObject_OpenGL* renderTargetObject, RenderOptions_OpenGL options)
+    bool RenderPipeline_RenderAPIObject_OpenGL::callRenderForRenderTarget(RenderTarget_RenderAPIObject_OpenGL* renderTargetObject, 
+        const jmap<jstringID, const ActionTaskResult<bool>*>* renderTaskResults, RenderOptions_OpenGL options)
     {
+        const jset<jstringID>* dependencies = m_Parent->getPipelineStageDependencies(options.renderTargetName);
+        if ((dependencies != nullptr) && !dependencies->isEmpty())
+        {
+            for (const auto& dependency : *dependencies)
+            {
+                const ActionTaskResult<bool>* const* renderTaskResultPtr = renderTaskResults->find(dependency);
+                const ActionTaskResult<bool>* renderTaskResult = renderTaskResultPtr != nullptr ? *renderTaskResultPtr : nullptr;
+                if (renderTaskResult == nullptr)
+                {
+                    return false;
+                }
+
+                renderTaskResult->waitForTaskFinished();
+                if (!renderTaskResult->get())
+                {
+                    return false;
+                }
+            }
+        }
+
         if (!renderTargetObject->startRender())
         {
-            return;
+            return false;
         }
 
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -95,6 +123,7 @@ namespace JumaEngine
         renderPipelineStage(&options);
 
         renderTargetObject->finishRender();
+        return true;
     }
 }
 

@@ -9,6 +9,8 @@
 #include "subsystems/render/RenderPipeline.h"
 #include "OpenGLContextObject.h"
 
+#include "subsystems/asyncTasks/ActionTask.h"
+
 namespace JumaEngine
 {
     struct RenderOptions_OpenGL;
@@ -31,7 +33,8 @@ namespace JumaEngine
 
         void clearData();
 
-        void callRenderForRenderTarget(RenderTarget_RenderAPIObject_OpenGL* renderTargetObject, RenderOptions_OpenGL options);
+        bool callRenderForRenderTarget(RenderTarget_RenderAPIObject_OpenGL* renderTargetObject, 
+            const jmap<jstringID, const ActionTaskResult<bool>*>* renderTaskResults, RenderOptions_OpenGL options);
     };
 }
 

@@ -46,7 +46,7 @@ namespace JumaEngine
         bool shouldResolveMultisampling() const { return m_TextureSamples != TextureSamples::SAMPLES_1; }
 
         TextureFormat getFormat() const { return m_Format; }
-        const math::uvector2& getSize() const { return m_Size; }
+        math::uvector2 getSize() const;
 
     protected:
 

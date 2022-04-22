@@ -85,4 +85,17 @@ namespace JumaEngine
             clear();
         }
     }
+
+    math::uvector2 RenderTarget::getSize() const
+    {
+        if (isWindowRenderTarget())
+        {
+            const WindowDescription* windowDescription = getOwnerEngine()->getWindowSubsystem()->findWindow(getWindowID());
+            if (windowDescription != nullptr)
+            {
+                return windowDescription->size;
+            }
+        }
+        return m_Size;
+    }
 }
