@@ -30,10 +30,11 @@ namespace JumaEngine
 
     private:
 
-        jarray<VkSemaphore> m_SwapchainImageReadySemaphores;
         VkFence m_RenderFinishedFence = nullptr;
         VkSemaphore m_RenderFinishedSemaphore = nullptr;
         VulkanCommandBuffer* m_RenderCommandBuffer = nullptr;
+
+        jarray<VkSemaphore> m_SwapchainImageReadySemaphores;
 
 
         void clearData();

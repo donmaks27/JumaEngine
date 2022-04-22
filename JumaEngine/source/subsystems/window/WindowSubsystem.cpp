@@ -104,6 +104,18 @@ namespace JumaEngine
         }
         m_Windows.remove(windowID);
     }
+    void WindowSubsystem::destroyAllWindows()
+    {
+        WindowSubsystem_RenderAPIObject* renderObject = getRenderAPIObject();
+        if (renderObject != nullptr)
+        {
+            for (const auto& window : m_Windows)
+            {
+                renderObject->destroyWindow(window.key);
+            }
+        }
+        m_Windows.clear();
+    }
     bool WindowSubsystem::shouldCloseWindow(const window_id_type windowID) const
     {
         const RenderAPIObjectType* renderObject = getRenderAPIObject();

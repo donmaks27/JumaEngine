@@ -85,11 +85,13 @@ namespace JumaEngine
         FOnWindowSubsystemWindowEvent onWindowCreated;
         FOnWindowSubsystemWindowEvent onWindowDestroying;
 
+        const jmap<window_id_type, WindowDescription>& getWindows() const { return m_Windows; }
         const WindowDescription* findWindow(const window_id_type windowID) const { return m_Windows.find(windowID); }
         bool isWindowValid(const window_id_type windowID) const { return m_Windows.contains(windowID); }
 
         window_id_type createWindow(const jstring& title, const math::uvector2& size, bool hiddenWindow = false);
         void destroyWindow(window_id_type windowID);
+        void destroyAllWindows();
         bool shouldCloseWindow(window_id_type windowID) const;
 
         window_id_type getMainWindowID() const { return m_MainWindowID; }

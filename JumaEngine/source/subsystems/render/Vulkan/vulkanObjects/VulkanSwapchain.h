@@ -48,11 +48,11 @@ namespace JumaEngine
 
         VkSemaphore getRenderAvailableSemaphore() const { return m_RenderAvailableSemaphore; }
         
+        void markAsNeededToRecreate();
         void applySettings(bool forceRecreate = false);
         bool isNeedToRecreate() const { return m_NeedToRecreate; }
 
         bool acquireNextImage();
-        bool presentCurrentImage(VkSemaphore waitSemaphore);
 
     protected:
 
@@ -81,7 +81,6 @@ namespace JumaEngine
 
         void onWindowSizeChanged(const math::uvector2& newSize);
 
-        void markAsNeededToRecreate();
         bool applySettingsInternal(bool forceRecreate);
     };
 

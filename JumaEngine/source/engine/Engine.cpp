@@ -159,7 +159,7 @@ namespace JumaEngine
         m_RenderTarget->createRenderAPIObject();
 
         m_WindowRenderTarget = createObject<RenderTarget>();
-        m_WindowRenderTarget->init(m_WindowSubsytem->getMainWindowID(), TextureSamples::SAMPLES_16);
+        m_WindowRenderTarget->init(m_WindowSubsytem->getMainWindowID(), TextureSamples::SAMPLES_1);
         m_WindowRenderTarget->createRenderAPIObject();
 
         m_ShaderPP = createObject<Shader>();

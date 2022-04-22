@@ -11,6 +11,7 @@
 #include "subsystems/window/WindowSubsystem.h"
 #include "subsystems/window/Vulkan/WindowSubsystem_Vulkan.h"
 #include "vulkanObjects/VulkanCommandPool.h"
+#include "vulkanObjects/VulkanQueue.h"
 #include "vulkanObjects/VulkanSwapchain.h"
 
 namespace JumaEngine
@@ -204,12 +205,12 @@ namespace JumaEngine
     {
         vkResetFences(getRenderSubsystemObject()->getDevice(), 1, &m_RenderFinishedFence);
 
-        constexpr VkPipelineStageFlags waitStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        const jarray<VkPipelineStageFlags> waitStages(m_SwapchainImageReadySemaphores.getSize(), VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
         VkSubmitInfo submitInfo{};
         submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
         submitInfo.waitSemaphoreCount = m_SwapchainImageReadySemaphores.getSize();
         submitInfo.pWaitSemaphores = m_SwapchainImageReadySemaphores.getData();
-        submitInfo.pWaitDstStageMask = &waitStage;
+        submitInfo.pWaitDstStageMask = waitStages.getData();
         submitInfo.signalSemaphoreCount = 1;
         submitInfo.pSignalSemaphores = &m_RenderFinishedSemaphore;
         if (!m_RenderCommandBuffer->submit(submitInfo, m_RenderFinishedFence, false))
@@ -220,6 +221,7 @@ namespace JumaEngine
             return false;
         }
 
+        jarray<VulkanSwapchain*> swapchainsForPresent;
         for (const auto& pipelineStage : m_Parent->getPipelineStages())
         {
             if (!pipelineStage.value.renderTarget->isWindowRenderTarget())
@@ -235,7 +237,40 @@ namespace JumaEngine
                 continue;
             }
 
-            swapchain->presentCurrentImage(m_RenderFinishedSemaphore);
+            swapchainsForPresent.add(swapchain);
+        }
+        if (!swapchainsForPresent.isEmpty())
+        {
+            jarray<uint32> swapchainIndicesForPresent(swapchainsForPresent.getSize());
+            jarray<VkSwapchainKHR> vulkanSwapchainsForPresent(swapchainsForPresent.getSize());
+            jarray<VkResult> swapchainPresentResults(swapchainsForPresent.getSize());
+            for (int32 index = 0; index < swapchainsForPresent.getSize(); index++)
+            {
+                vulkanSwapchainsForPresent[index] = swapchainsForPresent[index]->get();
+                swapchainIndicesForPresent[index] = static_cast<uint8>(swapchainsForPresent[index]->getSwapchainImageIndex());
+            }
+            VkPresentInfoKHR presentInfo{};
+            presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+            presentInfo.waitSemaphoreCount = 1;
+            presentInfo.pWaitSemaphores = &m_RenderFinishedSemaphore;
+            presentInfo.swapchainCount = swapchainsForPresent.getSize();
+            presentInfo.pSwapchains = vulkanSwapchainsForPresent.getData();
+            presentInfo.pImageIndices = swapchainIndicesForPresent.getData();
+            presentInfo.pResults = swapchainPresentResults.getData();
+            vkQueuePresentKHR(getRenderSubsystemObject()->getQueue(VulkanQueueType::Present)->get(), &presentInfo);
+            for (int32 index = 0; index < swapchainsForPresent.getSize(); index++)
+            {
+                const VkResult result = swapchainPresentResults[index];
+                if ((result == VK_ERROR_OUT_OF_DATE_KHR) || (result == VK_SUBOPTIMAL_KHR))
+                {
+                    swapchainsForPresent[index]->markAsNeededToRecreate();
+                }
+                else if (result != VK_SUCCESS)
+                {
+                    JUMA_VULKAN_ERROR_LOG(JSTR("Failed to present swapchain image"), result);
+                    throw std::runtime_error(JSTR("Failed to present swapchain image"));
+                }
+            }
         }
         return true;
     }

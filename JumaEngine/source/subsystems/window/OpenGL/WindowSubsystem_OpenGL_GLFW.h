@@ -8,8 +8,6 @@
 
 #include "WindowSubsystem_OpenGL.h"
 
-#include "jutils/jmap.h"
-
 struct GLFWwindow;
 
 namespace JumaEngine

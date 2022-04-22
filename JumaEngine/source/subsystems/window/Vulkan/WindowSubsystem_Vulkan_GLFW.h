@@ -8,15 +8,16 @@
 
 #include "WindowSubsystem_Vulkan.h"
 
-#include "jutils/jmap.h"
-
 struct GLFWwindow;
 
 namespace JumaEngine
 {
+    class WindowSubsystem_RenderAPIObject_Vulkan_GLFW;
+
     struct WindowDescription_Vulkan_GLFW : WindowDescription_Vulkan
     {
         GLFWwindow* windowGLFW = nullptr;
+        WindowSubsystem_RenderAPIObject_Vulkan_GLFW* windowSubsystemObject = nullptr;
     };
 
     class WindowSubsystem_RenderAPIObject_Vulkan_GLFW final : public WindowSubsystem_RenderAPIObject_Vulkan
@@ -45,12 +46,6 @@ namespace JumaEngine
         virtual void onFinishRender() override;
 
     private:
-
-        struct WindowUserObject
-        {
-            WindowSubsystem_RenderAPIObject_Vulkan_GLFW* object = nullptr;
-            window_id_type windowID = INVALID_WINDOW_ID;
-        };
 
         jmap<window_id_type, WindowDescription_Vulkan_GLFW> m_Windows;
 

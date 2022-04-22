@@ -49,6 +49,8 @@ namespace JumaEngine
         void updateSupportedPresentModes(window_id_type windowID, WindowDescription_Vulkan& description, 
             WindowDescription& parentDescription);
 
+        bool createVulkanSwapchain(window_id_type windowID, WindowDescription_Vulkan& description, const math::uvector2& size);
+
         void destroyWindow_Vulkan(window_id_type windowID, WindowDescription_Vulkan& description);
         void destroyVulkanSwapchain(window_id_type windowID, WindowDescription_Vulkan& description);
 

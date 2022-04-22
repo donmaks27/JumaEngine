@@ -99,7 +99,6 @@ namespace JumaEngine
         if (m_VulkanInstance != nullptr)
         {
             WindowSubsystem* windowSubsystem = m_Parent->getOwnerEngine()->getWindowSubsystem();
-            const window_id_type mainWindowID = windowSubsystem->getMainWindowID();
             if (m_Device != nullptr)
             {
                 vkDeviceWaitIdle(m_Device);
@@ -107,7 +106,10 @@ namespace JumaEngine
                 WindowSubsystem_RenderAPIObject_Vulkan* windowRenderObject = windowSubsystem->getRenderAPIObject<WindowSubsystem_RenderAPIObject_Vulkan>();
                 if (windowRenderObject != nullptr)
                 {
-                    windowRenderObject->destroyVulkanSwapchain(mainWindowID);
+                    for (const auto& window : windowSubsystem->getWindows())
+                    {
+                        windowRenderObject->destroyVulkanSwapchain(window.key);
+                    }
                 }
 
                 for (const auto& renderPassTypeAndPointer : m_RenderPasses)
@@ -138,7 +140,7 @@ namespace JumaEngine
 
             m_PhysicalDevice = nullptr;
 
-            windowSubsystem->destroyMainWindow();
+            windowSubsystem->destroyAllWindows();
 
 #if JDEBUG
             DestroyDebugUtilsMessengerEXT(m_VulkanInstance, m_DebugMessenger, nullptr);
@@ -185,7 +187,7 @@ namespace JumaEngine
 
         VkDebugUtilsMessengerCreateInfoEXT debugMessangerInfo{};
         debugMessangerInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-        debugMessangerInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+        debugMessangerInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
         debugMessangerInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
         debugMessangerInfo.pfnUserCallback = RenderSubsystem_RenderAPIObject_Vulkan::Vulkan_DebugCallback;
 #endif

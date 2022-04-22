@@ -74,28 +74,38 @@ namespace JumaEngine
             JUMA_LOG(error, JSTR("Can't find window"));
             return false;
         }
-        if (description->vulkanSwapchain != nullptr)
+        return createVulkanSwapchain(windowID, *description, parentDescription->size);
+    }
+    bool WindowSubsystem_RenderAPIObject_Vulkan::createVulkanSwapchain(const window_id_type windowID, WindowDescription_Vulkan& description, 
+        const math::uvector2& size)
+    {
+        if (getRenderSubsystem()->getPhysicalDevice() == nullptr)
+        {
+            return false;
+        }
+
+        if (description.vulkanSwapchain != nullptr)
         {
             JUMA_LOG(warning, JSTR("Window's swapchain already created"));
             return false;
         }
 
         VkSurfaceFormatKHR surfaceFormat;
-        if (!pickSurfaceFormat(description->vulkanSurface, surfaceFormat))
+        if (!pickSurfaceFormat(description.vulkanSurface, surfaceFormat))
         {
             JUMA_LOG(error, JSTR("Failed to pick surface format"));
             return false;
         }
 
         VulkanSwapchain* swapchain = getRenderSubsystem()->createVulkanObject<VulkanSwapchain>();
-        if ((swapchain == nullptr) || !swapchain->init(description->vulkanSurface, surfaceFormat, parentDescription->size))
+        if ((swapchain == nullptr) || !swapchain->init(description.vulkanSurface, surfaceFormat, size))
         {
             JUMA_LOG(error, JSTR("Failed to create swapchain"));
             delete swapchain;
             return false;
         }
 
-        description->vulkanSwapchain = swapchain;
+        description.vulkanSwapchain = swapchain;
         return true;
     }
     VulkanSwapchain* WindowSubsystem_RenderAPIObject_Vulkan::getVulkanSwapchain(const window_id_type windowID) const

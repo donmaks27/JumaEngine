@@ -4,7 +4,6 @@
 
 #if defined(JUMAENGINE_INCLUDE_RENDER_API_VULKAN)
 
-#include "VulkanQueue.h"
 #include "subsystems/render/Vulkan/RenderSubsystem_Vulkan.h"
 
 namespace JumaEngine
@@ -243,30 +242,6 @@ namespace JumaEngine
         }
 
         m_CurrentSwapchainImageIndex = static_cast<int8>(renderImageIndex);
-        return true;
-    }
-    bool VulkanSwapchain::presentCurrentImage(VkSemaphore waitSemaphore)
-    {
-        const uint32 swapchainImageIndex = static_cast<uint8>(m_CurrentSwapchainImageIndex);
-        VkPresentInfoKHR presentInfo{};
-        presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-        presentInfo.waitSemaphoreCount = 1;
-        presentInfo.pWaitSemaphores = &waitSemaphore;
-        presentInfo.swapchainCount = 1;
-        presentInfo.pSwapchains = &m_Swapchain;
-        presentInfo.pImageIndices = &swapchainImageIndex;
-        presentInfo.pResults = nullptr;
-        const VkResult result = vkQueuePresentKHR(getRenderSubsystemObject()->getQueue(VulkanQueueType::Present)->get(), &presentInfo);
-        if ((result == VK_ERROR_OUT_OF_DATE_KHR) || (result == VK_SUBOPTIMAL_KHR))
-        {
-            markAsNeededToRecreate();
-            return false;
-        }
-        if (result != VK_SUCCESS)
-        {
-            JUMA_VULKAN_ERROR_LOG(JSTR("Failed to present swapchain image"), result);
-            throw std::runtime_error(JSTR("Failed to present swapchain image"));
-        }
         return true;
     }
 }

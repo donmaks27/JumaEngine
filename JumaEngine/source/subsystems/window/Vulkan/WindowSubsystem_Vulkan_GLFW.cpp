@@ -92,10 +92,8 @@ namespace JumaEngine
             return false;
         }
 
-        const auto* renderSubsystem = getRenderSubsystem();
-
         VkSurfaceKHR surface = nullptr;
-        const VkResult result = glfwCreateWindowSurface(renderSubsystem->getVulkanInstance(), window, nullptr, &surface);
+        const VkResult result = glfwCreateWindowSurface(getRenderSubsystem()->getVulkanInstance(), window, nullptr, &surface);
         if (result != VK_SUCCESS)
         {
             JUMA_VULKAN_ERROR_LOG(JSTR("Failed to create window surface"), result);
@@ -104,23 +102,24 @@ namespace JumaEngine
         }
 
         WindowDescription_Vulkan_GLFW& windowDescription = m_Windows[windowID];
+        windowDescription.windowID = windowID;
+        windowDescription.windowSubsystemObject = this;
         windowDescription.windowGLFW = window;
         windowDescription.vulkanSurface = surface;
         updateSupportedPresentModes(windowID, windowDescription, *description);
 
-        WindowUserObject* userObject = new WindowUserObject();
-        userObject->object = this;
-        userObject->windowID = windowID;
-        glfwSetWindowUserPointer(window, userObject);
+        glfwSetWindowUserPointer(window, &windowDescription);
         glfwSetFramebufferSizeCallback(window, WindowSubsystem_RenderAPIObject_Vulkan_GLFW::GLFW_FramebufferResizeCallback);
+
+        createVulkanSwapchain(windowID, windowDescription, description->size);
         return true;
     }
     void WindowSubsystem_RenderAPIObject_Vulkan_GLFW::GLFW_FramebufferResizeCallback(GLFWwindow* windowGLFW, int width, int height)
     {
-        WindowUserObject* userObject = static_cast<WindowUserObject*>(glfwGetWindowUserPointer(windowGLFW));
-        if (userObject != nullptr)
+        const WindowDescription_Vulkan_GLFW* windowDescription = static_cast<WindowDescription_Vulkan_GLFW*>(glfwGetWindowUserPointer(windowGLFW));
+        if (windowDescription != nullptr)
         {
-            userObject->object->onWindowResized(userObject->windowID, { math::max<uint32>(width, 0), math::max<uint32>(height, 0) });
+            windowDescription->windowSubsystemObject->onWindowResized(windowDescription->windowID, { math::max<uint32>(width, 0), math::max<uint32>(height, 0) });
         }
     }
 
@@ -140,10 +139,7 @@ namespace JumaEngine
     {
         destroyWindow_Vulkan(windowID, description);
 
-        const WindowUserObject* userObject = static_cast<WindowUserObject*>(glfwGetWindowUserPointer(description.windowGLFW));
         glfwSetWindowUserPointer(description.windowGLFW, nullptr);
-        delete userObject;
-
         glfwDestroyWindow(description.windowGLFW);
         description.windowGLFW = nullptr;
     }
