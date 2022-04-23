@@ -52,7 +52,6 @@ namespace JumaEngine
         m_BaseMaterial = baseMaterial;
         m_BaseShader = m_BaseMaterial->getShader();
         m_BaseMaterial->onClear.bind(this, &Material::onBaseMaterialClear);
-        m_BaseMaterial->onParamChanged.bind(this, &Material::onBaseMaterialParamChanged);
 
         markAsInitialized();
         return true;
@@ -71,7 +70,6 @@ namespace JumaEngine
         }
         else
         {
-            m_BaseMaterial->onParamChanged.unbind(this, &Material::onBaseMaterialParamChanged);
             m_BaseMaterial->onClear.unbind(this, &Material::onBaseMaterialClear);
         }
         onClear.call(this);
@@ -178,23 +176,6 @@ namespace JumaEngine
         return false;
     }
     
-    void Material::onBaseMaterialParamChanged(Material* material, const jstringID& paramName)
-    {
-        if (!isOverrideParam(paramName))
-        {
-            notifyMaterialParamChanged(paramName);
-        }
-    }
-    void Material::notifyMaterialParamChanged(const jstringID& paramName)
-    {
-        Material_RenderAPIObject* renderObject = getRenderAPIObject();
-        if (renderObject != nullptr)
-        {
-            renderObject->onMaterialParamChanged(paramName);
-        }
-        onParamChanged.call(this, paramName);
-    }
-
     bool Material::isUniformTypeCorrect(const jstringID& paramName, const ShaderUniformType type) const
     {
         const ShaderUniform* uniform = m_BaseShader->getUniforms().find(paramName);
@@ -203,7 +184,6 @@ namespace JumaEngine
 
     void Material::resetParamValue(const jstringID& paramName)
     {
-        bool paramChanged = false;
         const ShaderUniformType type = getParamType(paramName);
         switch (type)
         {
@@ -211,7 +191,7 @@ namespace JumaEngine
             {
                 if (isMaterialInstance())
                 {
-                    paramChanged = m_UniformValues_Mat4.remove(paramName);
+                    m_UniformValues_Mat4.remove(paramName);
                 }
                 else
                 {
@@ -219,7 +199,6 @@ namespace JumaEngine
                     if (!math::isMatricesEqual(value, math::matrix4(1)))
                     {
                         value = math::matrix4(1);
-                        paramChanged = true;
                     }
                 }
             }
@@ -238,12 +217,10 @@ namespace JumaEngine
                     if (isMaterialInstance())
                     {
                         m_UniformValues_Texture.remove(paramName);
-                        paramChanged = true;
                     }
                     else if (value != nullptr)
                     {
                         *valuePtr = nullptr;
-                        paramChanged = true;
                     }
                 }
             }
@@ -262,22 +239,16 @@ namespace JumaEngine
                     if (isMaterialInstance())
                     {
                         m_UniformValues_RenderTarget.remove(paramName);
-                        paramChanged = true;
                     }
                     else if (value != nullptr)
                     {
                         *valuePtr = nullptr;
-                        paramChanged = true;
                     }
                 }
             }
             break;
 
         default: ;
-        }
-        if (paramChanged)
-        {
-            notifyMaterialParamChanged(paramName);
         }
     }
 

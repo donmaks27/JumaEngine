@@ -27,10 +27,6 @@ namespace JumaEngine
         virtual ~Material_RenderAPIObject() override = default;
 
         virtual bool render(VertexBuffer* vertexBuffer, const RenderOptions* renderOptions) = 0;
-
-    protected:
-
-        virtual void onMaterialParamChanged(const jstringID& paramName) {}
     };
 
     CREATE_JUTILS_MULTICAST_DELEGATE_OneParam(OnMaterialEvent, Material*, material);
@@ -45,7 +41,6 @@ namespace JumaEngine
         virtual ~Material() override;
 
         OnMaterialEvent onClear;
-        OnMaterialParamEvent onParamChanged;
 
 
         bool init(Shader* shader);
@@ -76,12 +71,7 @@ namespace JumaEngine
         template<ShaderUniformType Type, TEMPLATE_ENABLE(MaterialUniformInfo<Type>::isValid)>
         bool setParamValue(const jstringID& paramName, const typename MaterialUniformInfo<Type>::value_type& value)
         {
-            if (!isUniformTypeCorrect(paramName, Type) || !this->setParamValueInternal<Type>(paramName, value))
-            {
-                return false;
-            }
-            notifyMaterialParamChanged(paramName);
-            return true;
+            return !isUniformTypeCorrect(paramName, Type) || !this->setParamValueInternal<Type>(paramName, value);
         }
         void resetParamValue(const jstringID& paramName);
 
@@ -113,9 +103,6 @@ namespace JumaEngine
         void onBaseShaderClear(Shader* shader) { clear(); }
         void onBaseMaterialClear(Material* material) { clear(); }
         
-        void onBaseMaterialParamChanged(Material* material, const jstringID& paramName);
-        void notifyMaterialParamChanged(const jstringID& paramName);
-
         bool isUniformTypeCorrect(const jstringID& paramName, ShaderUniformType type) const;
 
         template<ShaderUniformType Type>

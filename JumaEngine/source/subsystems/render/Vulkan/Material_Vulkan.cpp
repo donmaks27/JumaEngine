@@ -9,6 +9,7 @@
 #include "Shader_Vulkan.h"
 #include "Texture_Vulkan.h"
 #include "RenderTarget_Vulkan.h"
+#include "jutils/math/math_matrix.h"
 #include "subsystems/render/Shader.h"
 #include "subsystems/render/VertexBuffer.h"
 #include "subsystems/render/RenderTarget.h"
@@ -45,16 +46,12 @@ namespace JumaEngine
             case ShaderUniformType::Mat4:
                 {
                     bufferUniformCount++;
-
-                    m_UniformValues_Buffer[uniformData.key].buffer = getRenderSubsystemObject()->createVulkanObject<VulkanBuffer>();
                 }
                 break;
             case ShaderUniformType::Texture:
             case ShaderUniformType::RenderTarget:
                 {
                     imageUniformCount++;
-
-                    m_UniformValues_Image.getOrAdd(uniformData.key);
                 }
                 break;
 
@@ -74,7 +71,7 @@ namespace JumaEngine
         if (imageUniformCount > 0)
         {
             VkDescriptorPoolSize& poolSize = poolSizes.addDefault();
-            poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            poolSize.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
             poolSize.descriptorCount = imageUniformCount;
         }
         if (poolSizes.isEmpty())
@@ -112,7 +109,7 @@ namespace JumaEngine
         const Shader_RenderAPIObject_Vulkan* shader = dynamic_cast<const Shader_RenderAPIObject_Vulkan*>(m_Parent->getShader()->getRenderAPIObject());
         vkCmdBindDescriptorSets(
             commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, shader->getPipelineLayout(),
-            0, 1, &m_DescriptorSet.descriptorSet, 0, nullptr
+            0, 1, &m_DescriptorSet, 0, nullptr
         );
         return true;
     }
@@ -122,16 +119,11 @@ namespace JumaEngine
         {
             return false;
         }
-        if (m_DescriptorSet.valid)
-        {
-            return true;
-        }
 
         jarray<VkDescriptorBufferInfo> bufferInfos;
         jarray<VkWriteDescriptorSet> descriptorWrites;
-        bufferInfos.reserve(m_UniformValues_Buffer.getSize());
+        bufferInfos.reserve(m_UniformValues_Buffer_Mat4.getSize());
         descriptorWrites.reserve(bufferInfos.getSize());
-
         for (const auto& uniform : m_Parent->getShader()->getUniforms())
         {
             VkWriteDescriptorSet descriptorWrite{};
@@ -139,58 +131,120 @@ namespace JumaEngine
             {
             case ShaderUniformType::Mat4:
                 {
-                    VkDescriptorBufferInfo bufferInfo{};
-
-                    bool valueUpdated = false;
-                    switch (uniform.value.type)
-                    {
-                    case ShaderUniformType::Mat4:
-                        valueUpdated = updateBufferUniformValue<ShaderUniformType::Mat4>(uniform.key, bufferInfo);
-                        break;
-                    default: ;
-                    }
-                    if (!valueUpdated)
+                    math::matrix4 value;
+                    if (!m_Parent->getParamValue<ShaderUniformType::Mat4>(uniform.key, value))
                     {
                         continue;
                     }
 
+                    UniformValue_Buffer_Mat4* uniformValue = m_UniformValues_Buffer_Mat4.find(uniform.key);
+                    if (uniformValue == nullptr)
+                    {
+                        uniformValue = &m_UniformValues_Buffer_Mat4[uniform.key];
+                        uniformValue->buffer = getRenderSubsystemObject()->createVulkanObject<VulkanBuffer>();
+                        const bool initSuccess = uniformValue->buffer->init(sizeof(math::matrix4), 
+                            VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, {},
+                            VMA_MEMORY_USAGE_CPU_TO_GPU, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+                        );
+                        if (!initSuccess)
+                        {
+                            JUMA_LOG(error, JSTR("Failed to initialize uniform value buffer"));
+                            delete uniformValue->buffer;
+                            m_UniformValues_Buffer_Mat4.remove(uniform.key);
+                            continue;
+                        }
+                    }
+                    else if (math::isMatricesEqual(value, uniformValue->value))
+                    {
+                        // No need to update
+                        continue;
+                    }
+
+                    if (!uniformValue->buffer->setData(&value))
+                    {
+                        JUMA_LOG(error, JSTR("Failed to update uniform value buffer"));
+                        continue;
+                    }
+                    uniformValue->value = value;
+
+                    VkDescriptorBufferInfo bufferInfo{};
+                    bufferInfo.buffer = uniformValue->buffer->get();
+                    bufferInfo.offset = 0;
+                    bufferInfo.range = sizeof(math::matrix4);
                     descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
                     descriptorWrite.descriptorCount = 1;
                     descriptorWrite.pBufferInfo = &bufferInfos.add(bufferInfo);
                 }
                 break;
-            case ShaderUniformType::Texture:
-                {
-                    VkDescriptorImageInfo imageInfo{};
-                    if (!updateTextureUniformValue(uniform.key, imageInfo))
-                    {
-                        continue;
-                    }
 
-                    descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-                    descriptorWrite.descriptorCount = 1;
-                    descriptorWrite.pImageInfo = &imageInfo;
-                }
-                break;
+            case ShaderUniformType::Texture:
             case ShaderUniformType::RenderTarget:
                 {
-                    VkDescriptorImageInfo imageInfo{};
-                    if (!updateRenderTargetUniformValue(uniform.key, imageInfo))
+                    VulkanImage* imageValue;
+                    if (uniform.value.type == ShaderUniformType::Texture)
                     {
+                        Texture* texture = nullptr;
+                        if (!m_Parent->getParamValue<ShaderUniformType::Texture>(uniform.key, texture))
+                        {
+                            continue;
+                        }
+                        const Texture_RenderAPIObject_Vulkan* textureObject = texture != nullptr ? texture->getRenderAPIObject<Texture_RenderAPIObject_Vulkan>() : nullptr;
+                        imageValue = textureObject != nullptr ? textureObject->getImage() : nullptr; 
+                    }
+                    else
+                    {
+                        RenderTarget* renderTarget = nullptr;
+                        if (!m_Parent->getParamValue<ShaderUniformType::RenderTarget>(uniform.key, renderTarget))
+                        {
+                            continue;
+                        }
+                        const RenderTarget_RenderAPIObject_Vulkan* renderTargetObject = renderTarget != nullptr ? renderTarget->getRenderAPIObject<RenderTarget_RenderAPIObject_Vulkan>() : nullptr;
+                        const VulkanFramebuffer* framebuffer = renderTargetObject != nullptr ? renderTargetObject->getFramebuffer() : nullptr;
+                        imageValue = framebuffer != nullptr ? framebuffer->getResultImage() : nullptr;
+                    }
+                    if (imageValue == nullptr)
+                    {
+                        const Texture* defaultTexture = getRenderSubsystemObject()->getParent()->getDefaultTexture();
+                        const Texture_RenderAPIObject_Vulkan* defaultTextureObject = defaultTexture != nullptr ? defaultTexture->getRenderAPIObject<Texture_RenderAPIObject_Vulkan>() : nullptr;
+                        imageValue = defaultTextureObject != nullptr ? defaultTextureObject->getImage() : nullptr;
+                        if (imageValue == nullptr)
+                        {
+                            JUMA_LOG(error, JSTR("Invalid default texture"));
+                            continue;
+                        }
+                    }
+                    VkImage vulkanImageValue = imageValue->get();
+                    if (vulkanImageValue == nullptr)
+                    {
+                        JUMA_LOG(error, JSTR("Invalid image"));
                         continue;
                     }
 
+                    UniformValue_Image& uniformValue = m_UniformValues_Image[uniform.key];
+                    if (uniformValue.value == vulkanImageValue)
+                    {
+                        // No need to update
+                        continue;
+                    }
+                    uniformValue.value = vulkanImageValue;
+
+                    VkDescriptorImageInfo imageInfo{};
+                    imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                    imageInfo.imageView = imageValue->getImageView();
+                    imageInfo.sampler = imageValue->getSampler();
                     descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
                     descriptorWrite.descriptorCount = 1;
                     descriptorWrite.pImageInfo = &imageInfo;
                 }
                 break;
 
-            default: ;
+            default: 
+                JUMA_LOG(warning, JSTR("Unsupported uniform type"));
+                continue;
             }
 
             descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            descriptorWrite.dstSet = m_DescriptorSet.descriptorSet;
+            descriptorWrite.dstSet = m_DescriptorSet;
             descriptorWrite.dstBinding = uniform.value.location;
             descriptorWrite.dstArrayElement = 0;
             descriptorWrites.add(descriptorWrite);
@@ -202,13 +256,11 @@ namespace JumaEngine
                0, nullptr
             );
         }
-
-        m_DescriptorSet.valid = true;
         return true;
     }
     bool Material_RenderAPIObject_Vulkan::createDescriptorSet()
     {
-        if (m_DescriptorSet.descriptorSet != nullptr)
+        if (m_DescriptorSet != nullptr)
         {
             return true;
         }
@@ -222,7 +274,7 @@ namespace JumaEngine
         allocateInfo.descriptorPool = m_DescriptorPool;
         allocateInfo.descriptorSetCount = 1;
         allocateInfo.pSetLayouts = &layout;
-        const VkResult result = vkAllocateDescriptorSets(getRenderSubsystemObject()->getDevice(), &allocateInfo, &m_DescriptorSet.descriptorSet);
+        const VkResult result = vkAllocateDescriptorSets(getRenderSubsystemObject()->getDevice(), &allocateInfo, &m_DescriptorSet);
         if (result != VK_SUCCESS)
         {
             JUMA_VULKAN_ERROR_LOG(JSTR("Failed to allocate descriptor set"), result);
@@ -231,153 +283,17 @@ namespace JumaEngine
         return true;
     }
 
-    bool Material_RenderAPIObject_Vulkan::updateBufferUniformValueData(UniformValue_Buffer* bufferValue, const uint64 dataSize, const void* data, 
-        VkDescriptorBufferInfo& outInfo)
-    {
-        if (!bufferValue->buffer->isValid())
-        {
-            const bool success = bufferValue->buffer->init(dataSize, 
-                VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, {}, 
-                VMA_MEMORY_USAGE_CPU_TO_GPU, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
-            );
-            if (!success)
-            {
-                JUMA_LOG(error, JSTR("Failed to initialize uniform value buffer"));
-                return false;
-            }
-        }
-        if (!bufferValue->buffer->setData(data, dataSize))
-        {
-            JUMA_LOG(error, JSTR("Failed to update uniform value buffer"));
-            return false;
-        }
-
-        outInfo.buffer = bufferValue->buffer->get();
-        outInfo.offset = 0;
-        outInfo.range = dataSize;
-        return true;
-    }
-
-    bool Material_RenderAPIObject_Vulkan::updateTextureUniformValue(const jstringID& name, VkDescriptorImageInfo& outInfo)
-    {
-        if (m_Parent->isOverrideParam(name))
-        {
-            UniformValue_Image* imageValue = m_UniformValues_Image.find(name);
-            if (!imageValue->valid)
-            {
-                Texture* texture = nullptr;
-                if (m_Parent->getParamValue<ShaderUniformType::Texture>(name, texture))
-                {
-                    const Texture_RenderAPIObject_Vulkan* textureObject = texture != nullptr ? texture->getRenderAPIObject<Texture_RenderAPIObject_Vulkan>() : nullptr;
-                    VulkanImage* image = textureObject != nullptr ? textureObject->getImage() : nullptr;
-                    if (image == nullptr)
-                    {
-                        const Texture* defaultTexture = getRenderSubsystemObject()->getParent()->getDefaultTexture();
-                        const Texture_RenderAPIObject_Vulkan* defaultTextureObject = defaultTexture != nullptr ? defaultTexture->getRenderAPIObject<Texture_RenderAPIObject_Vulkan>() : nullptr;
-                        image = defaultTextureObject != nullptr ? defaultTextureObject->getImage() : nullptr;
-                        if (image == nullptr)
-                        {
-                            JUMA_LOG(error, JSTR("Invalid default texture"));
-                            return false;
-                        }
-                    }
-
-                    imageValue->image = image;
-                    imageValue->valid = true;
-
-                    outInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-                    outInfo.imageView = image->getImageView();
-                    outInfo.sampler = image->getSampler();
-                    return true;
-                }
-            }
-        }
-        else if (m_Parent->isMaterialInstance())
-        {
-            Material_RenderAPIObject_Vulkan* baseMaterialObject = dynamic_cast<Material_RenderAPIObject_Vulkan*>(m_Parent->getBaseMaterial()->getRenderAPIObject());
-            return baseMaterialObject->updateTextureUniformValue(name, outInfo);
-        }
-        return false;
-    }
-    bool Material_RenderAPIObject_Vulkan::updateRenderTargetUniformValue(const jstringID& name, VkDescriptorImageInfo& outInfo)
-    {
-        if (m_Parent->isOverrideParam(name))
-        {
-            UniformValue_Image* imageValue = m_UniformValues_Image.find(name);
-            if (!imageValue->valid)
-            {
-                RenderTarget* renderTarget = nullptr;
-                if (m_Parent->getParamValue<ShaderUniformType::RenderTarget>(name, renderTarget))
-                {
-                    const RenderTarget_RenderAPIObject_Vulkan* renderTargetObject = renderTarget != nullptr ? renderTarget->getRenderAPIObject<RenderTarget_RenderAPIObject_Vulkan>() : nullptr;
-                    const VulkanFramebuffer* framebuffer = renderTargetObject != nullptr ? renderTargetObject->getFramebuffer() : nullptr;
-                    VulkanImage* image = framebuffer != nullptr ? framebuffer->getResultImage() : nullptr;
-                    if (image == nullptr)
-                    {
-                        const Texture* defaultTexture = getRenderSubsystemObject()->getParent()->getDefaultTexture();
-                        const Texture_RenderAPIObject_Vulkan* defaultTextureObject = defaultTexture != nullptr ? defaultTexture->getRenderAPIObject<Texture_RenderAPIObject_Vulkan>() : nullptr;
-                        image = defaultTextureObject != nullptr ? defaultTextureObject->getImage() : nullptr;
-                        if (image == nullptr)
-                        {
-                            JUMA_LOG(error, JSTR("Invalid default texture"));
-                            return false;
-                        }
-                    }
-
-                    imageValue->image = image;
-                    imageValue->valid = true;
-
-                    outInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-                    outInfo.imageView = image->getImageView();
-                    outInfo.sampler = image->getSampler();
-                    return true;
-                }
-            }
-        }
-        else if (m_Parent->isMaterialInstance())
-        {
-            Material_RenderAPIObject_Vulkan* baseMaterialObject = dynamic_cast<Material_RenderAPIObject_Vulkan*>(m_Parent->getBaseMaterial()->getRenderAPIObject());
-            return baseMaterialObject->updateRenderTargetUniformValue(name, outInfo);
-        }
-        return false;
-    }
-
-    void Material_RenderAPIObject_Vulkan::onMaterialParamChanged(const jstringID& paramName)
-    {
-        const ShaderUniformType type = m_Parent->getParamType(paramName);
-        switch (type)
-        {
-        case ShaderUniformType::Mat4:
-            {
-                m_UniformValues_Buffer[paramName].valid = false;
-            }
-            break;
-        case ShaderUniformType::Texture:
-        case ShaderUniformType::RenderTarget:
-            {
-                m_UniformValues_Image[paramName].valid = false;
-            }
-            break;
-
-        default: ;
-        }
-        m_DescriptorSet.valid = false;
-    }
-
     void Material_RenderAPIObject_Vulkan::clearVulkanData()
     {
         VkDevice device = getRenderSubsystemObject()->getDevice();
 
-        for (auto& vertexPipelines : m_RenderPipelines)
+        for (const auto& pipeline : m_RenderPipelines)
         {
-            for (auto& pipeline : vertexPipelines.value)
-            {
-                vkDestroyPipeline(device, pipeline.value, nullptr);
-            }
+            vkDestroyPipeline(device, pipeline.value, nullptr);
         }
         m_RenderPipelines.clear();
 
-        for (auto& value : m_UniformValues_Buffer)
+        for (auto& value : m_UniformValues_Buffer_Mat4)
         {
             if (value.value.buffer != nullptr)
             {
@@ -385,22 +301,39 @@ namespace JumaEngine
                 value.value.buffer = nullptr;
             }
         }
-        m_UniformValues_Buffer.clear();
+        m_UniformValues_Buffer_Mat4.clear();
+        m_UniformValues_Image.clear();
 
         if (m_DescriptorPool != nullptr)
         {
-            m_DescriptorSet.descriptorSet = nullptr;
-            m_DescriptorSet.valid = false;
+            m_DescriptorSet = nullptr;
             vkDestroyDescriptorPool(device, m_DescriptorPool, nullptr);
             m_DescriptorPool = nullptr;
         }
     }
+    
+    bool Material_RenderAPIObject_Vulkan::render(VertexBuffer* vertexBuffer, const RenderOptions* renderOptions)
+    {
+        if ((vertexBuffer == nullptr) || (renderOptions == nullptr))
+        {
+            JUMA_LOG(error, JSTR("Invalid input params"));
+            return false;
+        }
 
+        const RenderOptions_Vulkan* options = reinterpret_cast<const RenderOptions_Vulkan*>(renderOptions);
+        const VulkanCommandBuffer* commandBuffer = options->commandBuffer;
+        if (!bindRenderPipeline(commandBuffer->get(), vertexBuffer->getVertexName(), options->renderPass) ||
+            !bindDescriptorSet(commandBuffer->get()))
+        {
+            return false;
+        }
+        return vertexBuffer->render(renderOptions);
+    }
     bool Material_RenderAPIObject_Vulkan::bindRenderPipeline(VkCommandBuffer commandBuffer, const jstringID& vertexName, 
         const VulkanRenderPass* renderPass)
     {
         VkPipeline pipeline;
-        if (!createRenderPipeline(vertexName, renderPass, pipeline))
+        if (!getRenderPipeline(vertexName, renderPass, pipeline))
         {
             return false;
         }
@@ -408,7 +341,8 @@ namespace JumaEngine
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
         return true;
     }
-    bool Material_RenderAPIObject_Vulkan::createRenderPipeline(const jstringID& vertexName, const VulkanRenderPass* renderPass, VkPipeline& outPipeline)
+    bool Material_RenderAPIObject_Vulkan::getRenderPipeline(const jstringID& vertexName, const VulkanRenderPass* renderPass, 
+        VkPipeline& outPipeline)
     {
         const render_pass_id_type renderPassID = renderPass != nullptr ? renderPass->getTypeID() : INVALID_RENDER_PASS_TYPE_ID;
         if (renderPassID == INVALID_RENDER_PASS_TYPE_ID)
@@ -417,14 +351,12 @@ namespace JumaEngine
             return false;
         }
 
-        auto& vertexPipelines = m_RenderPipelines[vertexName];
+        const RenderPipelineID pipelineID = { vertexName, renderPassID };
+        VkPipeline* pipelinePtr = m_RenderPipelines.find(pipelineID);
+        if (pipelinePtr != nullptr)
         {
-            VkPipeline* pipeline = vertexPipelines.find(renderPassID);
-            if (pipeline != nullptr)
-            {
-                outPipeline = *pipeline;
-                return true;
-            }
+            outPipeline = *pipelinePtr;
+            return true;
         }
 
         const VertexDescription_Vulkan* vertexDescription = getRenderSubsystemObject()->findVertexDescription(vertexName);
@@ -548,27 +480,9 @@ namespace JumaEngine
             return false;
         }
 
-        vertexPipelines[renderPassID] = renderPipeline;
+        m_RenderPipelines[pipelineID] = renderPipeline;
         outPipeline = renderPipeline;
         return true;
-    }
-
-    bool Material_RenderAPIObject_Vulkan::render(VertexBuffer* vertexBuffer, const RenderOptions* renderOptions)
-    {
-        if ((vertexBuffer == nullptr) || (renderOptions == nullptr))
-        {
-            JUMA_LOG(error, JSTR("Invalid input params"));
-            return false;
-        }
-
-        const RenderOptions_Vulkan* options = reinterpret_cast<const RenderOptions_Vulkan*>(renderOptions);
-        const VulkanCommandBuffer* commandBuffer = options->commandBuffer;
-        if (!bindRenderPipeline(commandBuffer->get(), vertexBuffer->getVertexName(), options->renderPass) ||
-            !bindDescriptorSet(commandBuffer->get()))
-        {
-            return false;
-        }
-        return vertexBuffer->render(renderOptions);
     }
 }
 
