@@ -54,7 +54,7 @@ namespace JumaEngine
                     math::matrix4 value;
                     if (m_Parent->getParamValue<ShaderUniformType::Mat4>(uniform.key, value))
                     {
-                        glUniformMatrix4fv(static_cast<GLint>(uniform.value.location), 4, GL_FALSE, &value[0][0]);
+                        glUniformMatrix4fv(static_cast<GLint>(uniform.value.location), 1, GL_FALSE, &value[0][0]);
                     }
                 }
                 break;

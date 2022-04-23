@@ -81,20 +81,21 @@ namespace JumaEngine
             case ShaderUniformType::Mat4: return setValue<ShaderUniformType::Mat4>(name, math::matrix4(1));
             case ShaderUniformType::Texture: return setValue<ShaderUniformType::Texture>(name, nullptr);
             case ShaderUniformType::RenderTarget: return setValue<ShaderUniformType::RenderTarget>(name, nullptr);
-            default: break;
+            default: ;
             }
         }
         return false;
     }
-    void MaterialParamsStorage::removeValue(const ShaderUniformType type, const jstringID& name)
+    bool MaterialParamsStorage::removeValue(const ShaderUniformType type, const jstringID& name)
     {
         switch (type)
         {
-        case ShaderUniformType::Mat4: m_UniformValues_Mat4.remove(name); break;
-        case ShaderUniformType::Texture: m_UniformValues_Texture.remove(name); break;
-        case ShaderUniformType::RenderTarget: m_UniformValues_RenderTarget.remove(name); break;
+        case ShaderUniformType::Mat4: return m_UniformValues_Mat4.remove(name);
+        case ShaderUniformType::Texture: return m_UniformValues_Texture.remove(name);
+        case ShaderUniformType::RenderTarget: return m_UniformValues_RenderTarget.remove(name);
         default: ;
         }
+        return false;
     }
 
     bool MaterialParamsStorage::contains(const ShaderUniformType type, const jstringID& name) const

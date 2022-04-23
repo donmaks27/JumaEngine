@@ -22,7 +22,7 @@ namespace JumaEngine
             return (name != jstringID_NONE) && this->setValueInternal<Type>(name, value);
         }
         bool setDefaultValue(ShaderUniformType type, const jstringID& name);
-        void removeValue(ShaderUniformType type, const jstringID& name);
+        bool removeValue(ShaderUniformType type, const jstringID& name);
 
         template<ShaderUniformType Type>
         bool getValue(const jstringID& name, typename MaterialParamInfo<Type>::value_type& outValue) const

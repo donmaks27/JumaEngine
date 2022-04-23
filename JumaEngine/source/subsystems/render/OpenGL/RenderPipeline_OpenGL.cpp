@@ -9,6 +9,7 @@
 #include "RenderOptions_OpenGL.h"
 #include "RenderTarget_OpenGL.h"
 #include "engine/Engine.h"
+#include "subsystems/GlobalMaterialParamsSubsystem.h"
 #include "subsystems/render/RenderTarget.h"
 #include "subsystems/window/WindowSubsystem.h"
 #include "subsystems/window/OpenGL/WindowSubsystem_OpenGL.h"
@@ -116,9 +117,20 @@ namespace JumaEngine
         glEnable(GL_ALPHA_TEST);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+        glEnable(GL_CULL_FACE);
+        math::matrix4 windowTransform(1);
+        if (!renderTargetObject->getParent()->isWindowRenderTarget())
+        {
+            glCullFace(GL_BACK);
+        }
+        else
+        {
+            glCullFace(GL_FRONT);
+            windowTransform[1][1] = -1;
+        }
+        getParent()->getOwnerEngine()->getGlobalMaterialParamsSubsystem()->getGlobalMaterialParams().setValue<ShaderUniformType::Mat4>(JSTR("WindowTransform"), windowTransform);
         
         renderPipelineStage(&options);
 

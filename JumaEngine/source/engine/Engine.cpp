@@ -6,6 +6,7 @@
 
 #include "jutils/jlog.h"
 #include "jutils/jstringID.h"
+#include "subsystems/GlobalMaterialParamsSubsystem.h"
 #include "subsystems/asyncTasks/AsyncTasksSubsystem.h"
 #include "subsystems/render/Material.h"
 #include "subsystems/render/RenderOptions.h"
@@ -92,6 +93,9 @@ namespace JumaEngine
         m_AsyncTasksSubsystem = createObject<AsyncTasksSubsystem>();
         m_AsyncTasksSubsystem->initSubsystem();
 
+        m_GlobalMaterialParamsSubsystem = createObject<GlobalMaterialParamsSubsystem>();
+        m_GlobalMaterialParamsSubsystem->initSubsystem();
+
         m_WindowSubsytem = createObject<WindowSubsystem>();
         if (m_WindowSubsytem == nullptr)
         {
@@ -117,6 +121,8 @@ namespace JumaEngine
         m_WindowSubsytem->createRenderAPIObject();
         m_RenderSubsystem->createRenderAPIObject();
 
+        m_GlobalMaterialParamsSubsystem->getGlobalMaterialParams().setValue<ShaderUniformType::Mat4>(JSTR("WindowTransform"), math::matrix4(1));
+
         m_Texture = createObject<Texture>();
         m_Texture->init(TextureFormat::RGBA, { 2, 2 }, new uint8[16]{
             255, 0, 0, 0,
@@ -129,16 +135,17 @@ namespace JumaEngine
         m_Shader = createObject<Shader>();
         m_Shader->init(
             JSTR("content/shaders/ui_postProcess"), JSTR("content/shaders/ui_texture"),
-            { { JSTR("uTexture"), ShaderUniform{ 0, ShaderUniformType::Texture, { ShaderStage::Fragment } } } }
+            {
+                { JSTR("uWindowTransform"), ShaderUniform{ 0, ShaderUniformType::Mat4, { ShaderStage::Vertex } } },
+                { JSTR("uTexture"), ShaderUniform{ 1, ShaderUniformType::Texture, { ShaderStage::Fragment } } }
+            }
         );
-        /*m_Shader->init(
-            JSTR("content/shaders/ui"), JSTR("content/shaders/ui")
-        );*/
         m_Shader->createRenderAPIObject();
 
         m_Material = createObject<Material>();
         m_Material->init(m_Shader);
         m_Material->setParamValue<ShaderUniformType::Texture>(JSTR("uTexture"), m_Texture);
+        m_Material->markParamAsGlobal(JSTR("uWindowTransform"), JSTR("WindowTransform"));
         m_Material->createRenderAPIObject();
 
         VertexBufferData<Vertex2D_TexCoord>* vertexData = new VertexBufferData<Vertex2D_TexCoord>();
@@ -165,13 +172,17 @@ namespace JumaEngine
         m_ShaderPP = createObject<Shader>();
         m_ShaderPP->init(
             JSTR("content/shaders/ui_postProcess"), JSTR("content/shaders/ui_texture"),
-            { { JSTR("uTexture"), ShaderUniform{ 0, ShaderUniformType::RenderTarget, { ShaderStage::Fragment } } } }
+            {
+                { JSTR("uWindowTransform"), ShaderUniform{ 0, ShaderUniformType::Mat4, { ShaderStage::Vertex } } },
+                { JSTR("uTexture"), ShaderUniform{ 1, ShaderUniformType::RenderTarget, { ShaderStage::Fragment } } }
+            }
         );
         m_ShaderPP->createRenderAPIObject();
 
         m_MaterialPP = createObject<Material>();
         m_MaterialPP->init(m_ShaderPP);
         m_MaterialPP->setParamValue<ShaderUniformType::RenderTarget>(JSTR("uTexture"), m_RenderTarget);
+        m_MaterialPP->markParamAsGlobal(JSTR("uWindowTransform"), JSTR("WindowTransform"));
         m_MaterialPP->createRenderAPIObject();
 
         VertexBufferData<Vertex2D_TexCoord>* ppVertexData = new VertexBufferData<Vertex2D_TexCoord>();
@@ -239,6 +250,10 @@ namespace JumaEngine
         m_WindowSubsytem->clear();
         delete m_WindowSubsytem;
         m_WindowSubsytem = nullptr;
+
+        m_GlobalMaterialParamsSubsystem->clear();
+        delete m_GlobalMaterialParamsSubsystem;
+        m_GlobalMaterialParamsSubsystem = nullptr;
 
         m_AsyncTasksSubsystem->clear();
         delete m_AsyncTasksSubsystem;

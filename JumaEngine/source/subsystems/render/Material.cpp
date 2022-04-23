@@ -4,10 +4,9 @@
 
 #include "RenderSubsystem.h"
 #include "RenderTarget.h"
-#include "engine/Engine.h"
 #include "Shader.h"
-#include "Texture.h"
-#include "jutils/math/math_matrix.h"
+#include "engine/Engine.h"
+#include "subsystems/GlobalMaterialParamsSubsystem.h"
 
 namespace JumaEngine
 {
@@ -107,40 +106,34 @@ namespace JumaEngine
         }
         return ShaderUniformType::None;
     }
-    bool Material::isOverrideParam(const jstringID& paramName) const
-    {
-        if (!isValid())
-        {
-            return false;
-        }
-        if (!isMaterialInstance())
-        {
-            return true;
-        }
-
-        const ShaderUniform* uniform = m_BaseShader->getUniforms().find(paramName);
-        if (uniform == nullptr)
-        {
-            return false;
-        }
-        return m_MaterialParams.contains(uniform->type, paramName);
-    }
     
     bool Material::isUniformTypeCorrect(const jstringID& paramName, const ShaderUniformType type) const
     {
         const ShaderUniform* uniform = m_BaseShader->getUniforms().find(paramName);
         return (uniform != nullptr) && (uniform->type == type);
     }
-    void Material::resetParamValue(const jstringID& paramName)
+
+    bool Material::resetParamValue(const jstringID& paramName)
     {
         const ShaderUniformType type = getParamType(paramName);
-        if (isMaterialInstance())
+        return isMaterialInstance() ? m_MaterialParams.removeValue(type, paramName) : m_MaterialParams.setDefaultValue(type, paramName);
+    }
+
+    bool Material::markParamAsGlobal(const jstringID& paramName, const jstringID& globalParamName)
+    {
+        if (globalParamName == jstringID_NONE)
         {
-            m_MaterialParams.removeValue(type, paramName);
+            return false;
         }
-        else
+        if (!resetParamValue(paramName))
         {
-            m_MaterialParams.setDefaultValue(type, paramName);
+            return false;
         }
+        m_GlobalMaterialParams[paramName] = globalParamName;
+        return true;
+    }
+    MaterialParamsStorage& Material::getGlobalMaterialParams() const
+    {
+        return getOwnerEngine()->getGlobalMaterialParamsSubsystem()->getGlobalMaterialParams();
     }
 }

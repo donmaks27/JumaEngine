@@ -50,7 +50,6 @@ namespace JumaEngine
         bool render(VertexBuffer* vertexBuffer, const RenderOptions* renderOptions);
 
         ShaderUniformType getParamType(const jstringID& paramName) const;
-        bool isOverrideParam(const jstringID& paramName) const;
 
         template<ShaderUniformType Type, TEMPLATE_ENABLE(MaterialParamInfo<Type>::isValid)>
         bool getParamValue(const jstringID& paramName, typename MaterialParamInfo<Type>::value_type& outValue) const
@@ -64,9 +63,13 @@ namespace JumaEngine
         template<ShaderUniformType Type, TEMPLATE_ENABLE(MaterialParamInfo<Type>::isValid)>
         bool setParamValue(const jstringID& paramName, const typename MaterialParamInfo<Type>::value_type& value)
         {
-            return isUniformTypeCorrect(paramName, Type) && m_MaterialParams.setValue<Type>(paramName, value);
+            return isUniformTypeCorrect(paramName, Type) && !isGlobalParam(paramName) && m_MaterialParams.setValue<Type>(paramName, value);
         }
-        void resetParamValue(const jstringID& paramName);
+        bool resetParamValue(const jstringID& paramName);
+        
+        bool isGlobalParam(const jstringID& paramName) const { return isValid() && m_GlobalMaterialParams.contains(paramName); }
+        bool markParamAsGlobal(const jstringID& paramName, const jstringID& globalParamName);
+        bool markParamAsLocal(const jstringID& paramName) { return m_GlobalMaterialParams.remove(paramName); }
 
     protected:
 
@@ -80,22 +83,30 @@ namespace JumaEngine
         Material* m_BaseMaterial = nullptr;
 
         MaterialParamsStorage m_MaterialParams;
+        jmap<jstringID, jstringID> m_GlobalMaterialParams;
 
 
         void clearData();
 
         void onBaseShaderClear(Shader* shader) { clear(); }
         void onBaseMaterialClear(Material* material) { clear(); }
-        
+
         bool isUniformTypeCorrect(const jstringID& paramName, ShaderUniformType type) const;
         template<ShaderUniformType Type>
         bool getParamValueInternal(const jstringID& paramName, typename MaterialParamInfo<Type>::value_type& outValue) const
         {
+            const jstringID* globalParamName = m_GlobalMaterialParams.find(paramName);
+            if (globalParamName != nullptr)
+            {
+                return getGlobalMaterialParams().getValue<Type>(*globalParamName, outValue);
+            }
             if (m_MaterialParams.getValue<Type>(paramName, outValue))
             {
                 return true;
             }
             return isMaterialInstance() && getBaseMaterial()->getParamValueInternal<Type>(paramName, outValue);
         }
+
+        MaterialParamsStorage& getGlobalMaterialParams() const;
     };
 }

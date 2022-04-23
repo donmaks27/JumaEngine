@@ -178,6 +178,9 @@
     <ClCompile Include="source\subsystems\render\material\MaterialParamsStorage.cpp">
       <Filter>JumaEngine\subsystems\render\material</Filter>
     </ClCompile>
+    <ClCompile Include="source\subsystems\GlobalMaterialParamsSubsystem.cpp">
+      <Filter>JumaEngine\subsystems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\common_header.h">
@@ -578,6 +581,9 @@
     </ClInclude>
     <ClInclude Include="source\subsystems\render\material\MaterialParam.h">
       <Filter>JumaEngine\subsystems\render\material</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\GlobalMaterialParamsSubsystem.h">
+      <Filter>JumaEngine\subsystems</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

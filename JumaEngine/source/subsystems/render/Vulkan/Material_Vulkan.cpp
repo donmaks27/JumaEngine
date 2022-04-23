@@ -121,8 +121,10 @@ namespace JumaEngine
         }
 
         jarray<VkDescriptorBufferInfo> bufferInfos;
+        jarray<VkDescriptorImageInfo> imageInfos;
         jarray<VkWriteDescriptorSet> descriptorWrites;
         bufferInfos.reserve(m_UniformValues_Buffer_Mat4.getSize());
+        imageInfos.reserve(m_UniformValues_Image.getSize());
         descriptorWrites.reserve(bufferInfos.getSize());
         for (const auto& uniform : m_Parent->getShader()->getUniforms())
         {
@@ -167,13 +169,13 @@ namespace JumaEngine
                     }
                     uniformValue->value = value;
 
-                    VkDescriptorBufferInfo bufferInfo{};
+                    VkDescriptorBufferInfo& bufferInfo = bufferInfos.addDefault();
                     bufferInfo.buffer = uniformValue->buffer->get();
                     bufferInfo.offset = 0;
                     bufferInfo.range = sizeof(math::matrix4);
                     descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
                     descriptorWrite.descriptorCount = 1;
-                    descriptorWrite.pBufferInfo = &bufferInfos.add(bufferInfo);
+                    descriptorWrite.pBufferInfo = &bufferInfo;
                 }
                 break;
 
@@ -228,7 +230,7 @@ namespace JumaEngine
                     }
                     uniformValue.value = vulkanImageValue;
 
-                    VkDescriptorImageInfo imageInfo{};
+                    VkDescriptorImageInfo& imageInfo = imageInfos.addDefault();
                     imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
                     imageInfo.imageView = imageValue->getImageView();
                     imageInfo.sampler = imageValue->getSampler();
