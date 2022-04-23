@@ -13,25 +13,25 @@ namespace JumaEngine
     class RenderTarget;
 
     template<ShaderUniformType Type>
-    struct MaterialUniformInfo
+    struct MaterialParamInfo
     {
         static constexpr bool isValid = false;
     };
 
     template<>
-    struct MaterialUniformInfo<ShaderUniformType::Mat4>
+    struct MaterialParamInfo<ShaderUniformType::Mat4>
     {
         static constexpr bool isValid = true;
         using value_type = math::matrix4;
     };
     template<>
-    struct MaterialUniformInfo<ShaderUniformType::Texture>
+    struct MaterialParamInfo<ShaderUniformType::Texture>
     {
         static constexpr bool isValid = true;
         using value_type = Texture*;
     };
     template<>
-    struct MaterialUniformInfo<ShaderUniformType::RenderTarget>
+    struct MaterialParamInfo<ShaderUniformType::RenderTarget>
     {
         static constexpr bool isValid = true;
         using value_type = RenderTarget*;

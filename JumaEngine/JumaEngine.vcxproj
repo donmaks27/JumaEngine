@@ -90,6 +90,7 @@
     <ClCompile Include="source\subsystems\asyncTasks\ActionTaskQueue.cpp" />
     <ClCompile Include="source\subsystems\asyncTasks\AsyncTasksSubsystem.cpp" />
     <ClCompile Include="source\subsystems\render\Material.cpp" />
+    <ClCompile Include="source\subsystems\render\material\MaterialParamsStorage.cpp" />
     <ClCompile Include="source\subsystems\render\OpenGL\Material_OpenGL.cpp" />
     <ClCompile Include="source\subsystems\render\OpenGL\OpenGLContextObject.cpp" />
     <ClCompile Include="source\subsystems\render\OpenGL\RenderPipeline_OpenGL.cpp" />
@@ -191,7 +192,8 @@
     <ClInclude Include="source\subsystems\asyncTasks\ActionTaskQueue.h" />
     <ClInclude Include="source\subsystems\asyncTasks\AsyncTasksSubsystem.h" />
     <ClInclude Include="source\subsystems\render\Material.h" />
-    <ClInclude Include="source\subsystems\render\material\MaterialUniform.h" />
+    <ClInclude Include="source\subsystems\render\material\MaterialParamsStorage.h" />
+    <ClInclude Include="source\subsystems\render\material\MaterialParam.h" />
     <ClInclude Include="source\subsystems\render\material\ShaderStage.h" />
     <ClInclude Include="source\subsystems\render\material\ShaderUniform.h" />
     <ClInclude Include="source\subsystems\render\OpenGL\Material_OpenGL.h" />
