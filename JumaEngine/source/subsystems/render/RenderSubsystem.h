@@ -8,6 +8,8 @@
 
 #include "RenderAPI.h"
 #include "RenderPresentMode.h"
+#include "jutils/jmap.h"
+#include "vertex/VertexBufferData.h"
 
 namespace JumaEngine
 {
@@ -32,6 +34,8 @@ namespace JumaEngine
     protected:
 
         virtual bool initInternal() override { return true; }
+
+        virtual void onVertexTypeRegistered(const jstringID& vertexName, const VertexDescription& description) {}
 
         virtual Shader_RenderAPIObject* createShaderObject() = 0;
         virtual Material_RenderAPIObject* createMaterialObject() = 0;
@@ -59,8 +63,37 @@ namespace JumaEngine
         virtual ~RenderSubsystem() override = default;
 
         RenderAPI getRenderAPI() const { return m_CurrentRenderAPI; }
-
         RenderPresentMode getPresentMode() const { return m_CurrentPresentMode; }
+
+        template<typename T, TEMPLATE_ENABLE(is_vertex_type<T>)>
+        void registerVertexType()
+        {
+            const jstringID& vertexName = VertexInfo<T>::getVertexName();
+            if (!m_RegisteredVertexTypes.contains(vertexName))
+            {
+                const VertexDescription& description = m_RegisteredVertexTypes.add(
+                    vertexName, { VertexInfo<T>::getVertexSize(), VertexInfo<T>::getVertexComponents() }
+                );
+                this->onVertexTypeRegistered(vertexName, description);
+            }
+        }
+        const VertexDescription* findVertexDescription(const jstringID& vertexName) const { return m_RegisteredVertexTypes.find(vertexName); }
+
+        template<typename T, TEMPLATE_ENABLE(is_vertex_type<T>)>
+        VertexBufferDataBase* createVertexBufferData(jarray<T> vertices)
+        {
+            registerVertexType<T>();
+            VertexBufferData<T>* data = new VertexBufferData<T>;
+            data->setVertices(std::move(vertices));
+            return data;
+        }
+        template<typename T, TEMPLATE_ENABLE(is_vertex_type<T>)>
+        VertexBufferDataBase* createVertexBufferData(jarray<T> vertices, jarray<uint32> indices)
+        {
+            VertexBufferDataBase* vertexBufferData = createVertexBufferData(std::move(vertices));
+            vertexBufferData->setVertexIndices(std::move(indices));
+            return vertexBufferData;
+        }
 
         Texture* getDefaultTexture() const { return m_DefaultTexture; }
         RenderPipeline* getRenderPipeline() const { return m_RenderPipeline; }
@@ -77,18 +110,23 @@ namespace JumaEngine
 
     protected:
 
-        virtual RenderSubsystem_RenderAPIObject* createRenderAPIObjectInternal() override;
-        
         virtual bool initSubsystemInternal() override;
         virtual void clearSubsystemInternal() override;
 
+        virtual RenderSubsystem_RenderAPIObject* createRenderAPIObjectInternal() override;
+        virtual void onRenderAPIObjectInitialized() override;
+        
     private:
 
         RenderAPI m_CurrentRenderAPI = RenderAPI::OpenGL;
-
         RenderPresentMode m_CurrentPresentMode = RenderPresentMode::VSync;
+
+        jmap<jstringID, VertexDescription> m_RegisteredVertexTypes;
 
         Texture* m_DefaultTexture = nullptr;
         RenderPipeline* m_RenderPipeline = nullptr;
+
+
+        void onVertexTypeRegistered(const jstringID& vertexName, const VertexDescription& description);
     };
 }

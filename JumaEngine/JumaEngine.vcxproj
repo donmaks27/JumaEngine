@@ -225,7 +225,6 @@
     <ClInclude Include="source\subsystems\render\texture\TextureSamples.h" />
     <ClInclude Include="source\subsystems\render\texture\TextureWrapMode.h" />
     <ClInclude Include="source\subsystems\render\VertexBuffer.h" />
-    <ClInclude Include="source\subsystems\render\vertex\ImportedVertex.h" />
     <ClInclude Include="source\subsystems\render\vertex\Vertex2D.h" />
     <ClInclude Include="source\subsystems\render\vertex\Vertex2D_TexCoord.h" />
     <ClInclude Include="source\subsystems\render\vertex\Vertex3D.h" />

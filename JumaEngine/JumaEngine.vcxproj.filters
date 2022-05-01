@@ -408,9 +408,6 @@
     <ClInclude Include="source\subsystems\render\Material.h">
       <Filter>JumaEngine\subsystems\render</Filter>
     </ClInclude>
-    <ClInclude Include="source\subsystems\render\vertex\ImportedVertex.h">
-      <Filter>JumaEngine\subsystems\render\vertex</Filter>
-    </ClInclude>
     <ClInclude Include="source\subsystems\render\vertex\Vertex2D.h">
       <Filter>JumaEngine\subsystems\render\vertex</Filter>
     </ClInclude>

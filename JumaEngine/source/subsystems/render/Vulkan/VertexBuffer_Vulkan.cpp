@@ -23,11 +23,12 @@ namespace JumaEngine
     {
         RenderSubsystem_RenderAPIObject_Vulkan* renderSubsystem = getRenderSubsystemObject();
         const VertexBufferDataBase* vertexData = getVertexData();
+        const VertexDescription* vertexDescription = getRenderSubsystemObject()->getParent()->findVertexDescription(vertexData->getVertexName());
         const jset<VulkanQueueType> queues = { VulkanQueueType::Graphics, VulkanQueueType::Transfer };
 
         m_VertexBuffer = renderSubsystem->createVulkanObject<VulkanBuffer>();
         bool success = m_VertexBuffer->initGPUBuffer(
-            vertexData->getVertices(), vertexData->getVertexSize() * m_Parent->getVertexCount(), 
+            vertexData->getVertices(), vertexDescription->size * m_Parent->getVertexCount(), 
             queues, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT
         );
         if (!success)
@@ -51,8 +52,6 @@ namespace JumaEngine
                 return false;
             }
         }
-
-        renderSubsystem->registerVertexType(vertexData);
         return true;
     }
 

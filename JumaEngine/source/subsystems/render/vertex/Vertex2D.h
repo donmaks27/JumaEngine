@@ -3,7 +3,9 @@
 #pragma once
 
 #include "common_header.h"
+
 #include "VertexInfo.h"
+#include "jutils/math/vector2.h"
 
 namespace JumaEngine
 {
@@ -19,12 +21,7 @@ namespace JumaEngine
 
         static jarray<VertexComponentDescription> getVertexComponents()
         {
-            return {{ 0, VertexComponentType::Vec2, offsetof(VertexType, position) }};
-        }
-
-        static void copyFromImportedVertex(VertexType& outVertex, const ImportedVertex& importedVertex)
-        {
-            outVertex.position = { importedVertex.position.x, importedVertex.position.y };
+            return {{ 0, JSTR("position"), VertexComponentType::Vec2, offsetof(VertexType, position) }};
         }
     };
 }

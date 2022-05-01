@@ -3,18 +3,22 @@
 #pragma once
 
 #include "common_header.h"
+
 #include "VertexComponents.h"
-#include "ImportedVertex.h"
-#include "jutils/jstringID.h"
 
 namespace JumaEngine
 {
     template<typename T>
     struct VertexInfo : std::false_type
     {
-        // static jarray<VertexComponentDescription> getVertexComponents();
+        static const jstringID& getVertexName()
+        {
+            static jstringID vertexName = jstringID_NONE;
+            return vertexName;
+        }
+        static uint32 getVertexSize() { return 0; }
 
-        // static void copyFromImportedVertex(T& outVertex, const ImportedVertex& importedVertex);
+        static jarray<VertexComponentDescription> getVertexComponents() { return {}; }
     };
 
     template<typename T>

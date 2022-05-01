@@ -63,7 +63,6 @@ namespace JumaEngine
         VulkanQueue* getQueue(const VulkanQueueType queueType) const { return m_Queues[m_QueueFamilyIndices[queueType]]; }
         VulkanCommandPool* getCommandPool(const VulkanQueueType queueType) const { return m_CommandPools[queueType]; }
 
-        void registerVertexType(const VertexBufferDataBase* vertexBufferData);
         const VertexDescription_Vulkan* findVertexDescription(const jstringID& vertexName) const { return m_RegisteredVertexTypes.find(vertexName); }
         
         VulkanRenderPass* getRenderPass(const VulkanRenderPassDescription& description);
@@ -71,6 +70,8 @@ namespace JumaEngine
     protected:
 
         virtual bool initInternal() override;
+        
+        virtual void onVertexTypeRegistered(const jstringID& vertexName, const VertexDescription& description) override;
 
         virtual Shader_RenderAPIObject* createShaderObject() override;
         virtual Material_RenderAPIObject* createMaterialObject() override;

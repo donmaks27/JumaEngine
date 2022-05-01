@@ -487,6 +487,34 @@ namespace JumaEngine
         return false;
     }
 
+    void RenderSubsystem_RenderAPIObject_Vulkan::onVertexTypeRegistered(const jstringID& vertexName, const VertexDescription& description)
+    {
+        VertexDescription_Vulkan& descriptionVulkan = m_RegisteredVertexTypes[vertexName];
+        descriptionVulkan.binding.binding = 0;
+        descriptionVulkan.binding.stride = description.size;
+        descriptionVulkan.binding.inputRate = VkVertexInputRate::VK_VERTEX_INPUT_RATE_VERTEX;
+        for (int32 index = 0; index < description.components.getSize(); index++)
+        {
+            const VertexComponentDescription& componentDescriprion = description.components[index];
+            VkFormat format;
+            switch (componentDescriprion.type)
+            {
+            case VertexComponentType::Float: format = VK_FORMAT_R32_SFLOAT; break;
+            case VertexComponentType::Vec2: format = VK_FORMAT_R32G32_SFLOAT; break;
+            case VertexComponentType::Vec3: format = VK_FORMAT_R32G32B32_SFLOAT; break;
+            case VertexComponentType::Vec4: format = VK_FORMAT_R32G32B32A32_SFLOAT; break;
+            default: continue;
+            }
+
+            VkVertexInputAttributeDescription attribute;
+            attribute.location = componentDescriprion.location;
+            attribute.binding = descriptionVulkan.binding.binding;
+            attribute.offset = componentDescriprion.offset;
+            attribute.format = format;
+            descriptionVulkan.attributes.add(attribute);
+        }
+    }
+
     Shader_RenderAPIObject* RenderSubsystem_RenderAPIObject_Vulkan::createShaderObject()
     {
         return createVulkanObject<Shader_RenderAPIObject_Vulkan>();
@@ -517,55 +545,6 @@ namespace JumaEngine
         vkQueueWaitIdle(getQueue(VulkanQueueType::Graphics)->get());
 
         Super::waitForRenderFinish();
-    }
-
-    void RenderSubsystem_RenderAPIObject_Vulkan::registerVertexType(const VertexBufferDataBase* vertexBufferData)
-    {
-        if (vertexBufferData == nullptr)
-        {
-            return;
-        }
-
-        VertexDescription_Vulkan& description = m_RegisteredVertexTypes[vertexBufferData->getVertexName()];
-        if (!description.attributes.isEmpty())
-        {
-            return;
-        }
-
-        description.binding.binding = 0;
-        description.binding.stride = vertexBufferData->getVertexSize();
-        description.binding.inputRate = VkVertexInputRate::VK_VERTEX_INPUT_RATE_VERTEX;
-
-        const jarray<VertexComponentDescription> vertexComponents = vertexBufferData->getVertexComponents();
-        for (int32 index = 0, componentsCount = vertexComponents.getSize(); index < componentsCount; index++)
-        {
-            const VertexComponentDescription& componentDescriprion = vertexComponents[index];
-            VkFormat format = VkFormat::VK_FORMAT_UNDEFINED;
-            switch (componentDescriprion.type)
-            {
-            case VertexComponentType::Float:
-                format = VK_FORMAT_R32_SFLOAT;
-                break;
-            case VertexComponentType::Vec2:
-                format = VK_FORMAT_R32G32_SFLOAT;
-                break;
-            case VertexComponentType::Vec3:
-                format = VK_FORMAT_R32G32B32_SFLOAT;
-                break;
-            case VertexComponentType::Vec4:
-                format = VK_FORMAT_R32G32B32A32_SFLOAT;
-                break;
-
-            default: continue;
-            }
-
-            VkVertexInputAttributeDescription attribute;
-            attribute.location = componentDescriprion.ID;
-            attribute.binding = description.binding.binding;
-            attribute.offset = componentDescriprion.offset;
-            attribute.format = format;
-            description.attributes.add(attribute);
-        }
     }
 
     VulkanRenderPass* RenderSubsystem_RenderAPIObject_Vulkan::getRenderPass(const VulkanRenderPassDescription& description)

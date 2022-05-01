@@ -87,6 +87,8 @@ namespace JumaEngine
                 m_RenderAPIObject = nullptr;
                 return false;
             }
+
+            onRenderAPIObjectInitialized();
             return true;
         }
         APIObjectType* getRenderAPIObject() const { return m_RenderAPIObject; }
@@ -104,6 +106,7 @@ namespace JumaEngine
     protected:
 
         virtual APIObjectType* createRenderAPIObjectInternal() = 0;
+        virtual void onRenderAPIObjectInitialized() {}
 
     private:
 

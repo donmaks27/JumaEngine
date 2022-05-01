@@ -24,11 +24,6 @@ namespace JumaEngine
         }
     }
 
-    RenderSubsystem_RenderAPIObject* RenderSubsystem::createRenderAPIObjectInternal()
-    {
-        return createRenderSubsystemRenderAPIObject(getRenderAPI());
-    }
-    
     bool RenderSubsystem::initSubsystemInternal()
     {
         if (!Super::initSubsystemInternal())
@@ -54,6 +49,28 @@ namespace JumaEngine
         clearRenderAPIObject();
 
         Super::clearSubsystemInternal();
+    }
+    
+    RenderSubsystem_RenderAPIObject* RenderSubsystem::createRenderAPIObjectInternal()
+    {
+        return createRenderSubsystemRenderAPIObject(getRenderAPI());
+    }
+    void RenderSubsystem::onRenderAPIObjectInitialized()
+    {
+        RenderAPIObjectType* renderObject = getRenderAPIObject();
+        for (const auto& vertexDescription : m_RegisteredVertexTypes)
+        {
+            renderObject->onVertexTypeRegistered(vertexDescription.key, vertexDescription.value);
+        }
+    }
+
+    void RenderSubsystem::onVertexTypeRegistered(const jstringID& vertexName, const VertexDescription& description)
+    {
+        RenderAPIObjectType* renderObject = getRenderAPIObject();
+        if (renderObject != nullptr)
+        {
+            renderObject->onVertexTypeRegistered(vertexName, description);
+        }
     }
 
     Shader_RenderAPIObject* RenderSubsystem::createShaderObject()

@@ -148,17 +148,15 @@ namespace JumaEngine
         m_Material->markParamAsGlobal(JSTR("uWindowTransform"), JSTR("WindowTransform"));
         m_Material->createRenderAPIObject();
 
-        VertexBufferData<Vertex2D_TexCoord>* vertexData = new VertexBufferData<Vertex2D_TexCoord>();
-        vertexData->setVertices({
+        m_VertexBuffer = createObject<VertexBuffer>();
+        m_VertexBuffer->init(m_RenderSubsystem->createVertexBufferData<Vertex2D_TexCoord>({
             { {  0.0f, -0.5f }, { 0.0f, 0.0f } },
             { {  0.6f,  0.0f }, { 1.0f, 0.0f } },
             { { -0.3f,  0.0f }, { 0.0f, 1.0f } },
             { { -0.3f,  0.0f }, { 0.0f, 1.0f } },
             { {  0.6f,  0.0f }, { 1.0f, 0.0f } },
             { {  0.3f,  0.5f }, { 1.0f, 1.0f } }
-        });
-        m_VertexBuffer = createObject<VertexBuffer>();
-        m_VertexBuffer->init(vertexData);
+        }));
         m_VertexBuffer->createRenderAPIObject();
 
         m_RenderTarget = createObject<RenderTarget>();
@@ -185,17 +183,15 @@ namespace JumaEngine
         m_MaterialPP->markParamAsGlobal(JSTR("uWindowTransform"), JSTR("WindowTransform"));
         m_MaterialPP->createRenderAPIObject();
 
-        VertexBufferData<Vertex2D_TexCoord>* ppVertexData = new VertexBufferData<Vertex2D_TexCoord>();
-        ppVertexData->setVertices({
+        m_VertexBufferPP = createObject<VertexBuffer>();
+        m_VertexBufferPP->init(m_RenderSubsystem->createVertexBufferData<Vertex2D_TexCoord>({
             { { -1.0f, -1.0f }, { 0.0f, 0.0f } },
             { {  1.0f, -1.0f }, { 1.0f, 0.0f } },
             { { -1.0f,  1.0f }, { 0.0f, 1.0f } },
             { { -1.0f,  1.0f }, { 0.0f, 1.0f } },
             { {  1.0f, -1.0f }, { 1.0f, 0.0f } },
             { {  1.0f,  1.0f }, { 1.0f, 1.0f } }
-        });
-        m_VertexBufferPP = createObject<VertexBuffer>();
-        m_VertexBufferPP->init(ppVertexData);
+        }));
         m_VertexBufferPP->createRenderAPIObject();
         
         const window_id_type secondWindowID = m_WindowSubsytem->createWindow(JSTR("Second window"), { 800, 600 });
