@@ -585,5 +585,14 @@
     <ClInclude Include="source\subsystems\GlobalMaterialParamsSubsystem.h">
       <Filter>JumaEngine\subsystems</Filter>
     </ClInclude>
+    <ClInclude Include="source\subsystems\render\texture\TextureFiltering.h">
+      <Filter>JumaEngine\subsystems\render\texture</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\texture\TextureWrapMode.h">
+      <Filter>JumaEngine\subsystems\render\texture</Filter>
+    </ClInclude>
+    <ClInclude Include="source\subsystems\render\texture\TextureSamplerType.h">
+      <Filter>JumaEngine\subsystems\render\texture</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

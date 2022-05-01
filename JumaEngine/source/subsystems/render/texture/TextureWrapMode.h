@@ -6,10 +6,10 @@
 
 namespace JumaEngine
 {
-    enum class RenderPresentMode : uint8
+    enum class TextureWrapMode : uint8
     {
-        Immediate,
-        VSync,
-        TripleBuffer
+        Repeat,
+        Mirror,
+        Clamp
     };
 }

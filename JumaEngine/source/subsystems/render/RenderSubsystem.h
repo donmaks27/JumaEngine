@@ -84,9 +84,9 @@ namespace JumaEngine
 
     private:
 
-        RenderAPI m_CurrentRenderAPI = RenderAPI::Vulkan;
+        RenderAPI m_CurrentRenderAPI = RenderAPI::OpenGL;
 
-        RenderPresentMode m_CurrentPresentMode = RenderPresentMode::VSYNC;
+        RenderPresentMode m_CurrentPresentMode = RenderPresentMode::VSync;
 
         Texture* m_DefaultTexture = nullptr;
         RenderPipeline* m_RenderPipeline = nullptr;

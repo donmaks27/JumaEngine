@@ -43,7 +43,7 @@ namespace JumaEngine
         bool isWindowRenderTarget() const { return getWindowID() != INVALID_WINDOW_ID; }
 
         TextureSamples getTextureSamples() const { return m_TextureSamples; }
-        bool shouldResolveMultisampling() const { return m_TextureSamples != TextureSamples::SAMPLES_1; }
+        bool shouldResolveMultisampling() const { return m_TextureSamples != TextureSamples::X1; }
 
         TextureFormat getFormat() const { return m_Format; }
         math::uvector2 getSize() const;
@@ -62,7 +62,7 @@ namespace JumaEngine
         math::uvector2 m_Size = { 0, 0 };
         TextureFormat m_Format = TextureFormat::None;
 
-        TextureSamples m_TextureSamples = TextureSamples::SAMPLES_1;
+        TextureSamples m_TextureSamples = TextureSamples::X1;
 
 
         void clearData();

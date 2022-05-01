@@ -602,13 +602,13 @@ namespace JumaEngine
         vkGetPhysicalDeviceProperties(getPhysicalDevice(), &deviceProperties);
 
         const VkSampleCountFlags counts = deviceProperties.limits.framebufferColorSampleCounts & deviceProperties.limits.framebufferDepthSampleCounts;
-        if (counts & VK_SAMPLE_COUNT_64_BIT) { return TextureSamples::SAMPLES_64; }
-        if (counts & VK_SAMPLE_COUNT_32_BIT) { return TextureSamples::SAMPLES_32; }
-        if (counts & VK_SAMPLE_COUNT_16_BIT) { return TextureSamples::SAMPLES_16; }
-        if (counts & VK_SAMPLE_COUNT_8_BIT) { return TextureSamples::SAMPLES_8; }
-        if (counts & VK_SAMPLE_COUNT_4_BIT) { return TextureSamples::SAMPLES_4; }
-        if (counts & VK_SAMPLE_COUNT_2_BIT) { return TextureSamples::SAMPLES_2; }
-        return TextureSamples::SAMPLES_1;
+        if (counts & VK_SAMPLE_COUNT_64_BIT) { return TextureSamples::X64; }
+        if (counts & VK_SAMPLE_COUNT_32_BIT) { return TextureSamples::X32; }
+        if (counts & VK_SAMPLE_COUNT_16_BIT) { return TextureSamples::X16; }
+        if (counts & VK_SAMPLE_COUNT_8_BIT) { return TextureSamples::X8; }
+        if (counts & VK_SAMPLE_COUNT_4_BIT) { return TextureSamples::X4; }
+        if (counts & VK_SAMPLE_COUNT_2_BIT) { return TextureSamples::X2; }
+        return TextureSamples::X1;
     }
 }
 

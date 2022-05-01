@@ -9,8 +9,6 @@
 #include "subsystems/render/RenderSubsystem.h"
 
 #include "OpenGLContextObject.h"
-#include "jutils/jdelegate_multicast.h"
-#include "jutils/jset.h"
 
 namespace JumaEngine
 {
@@ -33,11 +31,10 @@ namespace JumaEngine
             {
                 openGLContextObject->m_RenderSubsystem = this;
                 openGLContextObject->m_WindowSubsystem = m_WindowSubsystem;
+                this->onObjectCreated(openGLContextObject);
             }
             return openGLContextObject;
         }
-
-        void flushObjectsChanges();
 
     protected:
 
@@ -50,19 +47,14 @@ namespace JumaEngine
         virtual RenderTarget_RenderAPIObject* createRenderTargetObject() override;
         virtual RenderPipeline_RenderAPIObject* createRenderPipelineObject() override;
 
-        virtual void onFinishRender() override;
-
     private:
 
         WindowSubsystem_RenderAPIObject_OpenGL* m_WindowSubsystem = nullptr;
 
-        jarray<OpenGLContextObject*> m_CreatedObjects;
-        jarray<OpenGLContextObject*> m_ObjectsForFlush;
-
 
         void clearOpenGL();
 
-        void onObjectCreated(OpenGLContextObject* object);
+        void onObjectCreated(OpenGLContextObject* object) {}
     };
 }
 

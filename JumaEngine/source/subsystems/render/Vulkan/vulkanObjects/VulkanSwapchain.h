@@ -25,7 +25,7 @@ namespace JumaEngine
     struct VulkanSwapchainSettings
     {
         math::uvector2 size = { 0, 0 };
-        RenderPresentMode presentMode = RenderPresentMode::VSYNC;
+        RenderPresentMode presentMode = RenderPresentMode::VSync;
     };
 
     class VulkanSwapchain : public VulkanContextObject
@@ -88,8 +88,8 @@ namespace JumaEngine
     {
         switch (presentMode)
         {
-        case RenderPresentMode::VSYNC:         return VK_PRESENT_MODE_FIFO_KHR;
-        case RenderPresentMode::TRIPLE_BUFFER: return VK_PRESENT_MODE_MAILBOX_KHR;
+        case RenderPresentMode::VSync:         return VK_PRESENT_MODE_FIFO_KHR;
+        case RenderPresentMode::TripleBuffer: return VK_PRESENT_MODE_MAILBOX_KHR;
         default: ;
         }
         return VK_PRESENT_MODE_IMMEDIATE_KHR;

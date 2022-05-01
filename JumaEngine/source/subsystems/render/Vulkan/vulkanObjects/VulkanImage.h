@@ -107,11 +107,11 @@ namespace JumaEngine
     {
         switch (format)
         {
-        case VK_FORMAT_R8G8B8A8_SRGB: return TextureFormat::RGBA;
-        case VK_FORMAT_B8G8R8A8_SRGB: return TextureFormat::BGRA;
-        case VK_FORMAT_D32_SFLOAT: return TextureFormat::SFLOAT32;
-        case VK_FORMAT_D32_SFLOAT_S8_UINT: return TextureFormat::SFLOAT32_UINT8;
-        case VK_FORMAT_D24_UNORM_S8_UINT: return TextureFormat::UNORM24_UINT8;
+        case VK_FORMAT_R8G8B8A8_SRGB: return TextureFormat::RGBA_UINT8;
+        case VK_FORMAT_B8G8R8A8_SRGB: return TextureFormat::BGRA_UINT8;
+        case VK_FORMAT_D32_SFLOAT: return TextureFormat::DEPTH_FLOAT32;
+        case VK_FORMAT_D32_SFLOAT_S8_UINT: return TextureFormat::DEPTH_FLOAT32_STENCIL_UINT8;
+        case VK_FORMAT_D24_UNORM_S8_UINT: return TextureFormat::DEPTH_UNORM24_STENCIL_UINT8;
         default: ;
         }
         return TextureFormat::None;
@@ -120,11 +120,11 @@ namespace JumaEngine
     {
         switch (format)
         {
-        case TextureFormat::RGBA: return VK_FORMAT_R8G8B8A8_SRGB;
-        case TextureFormat::BGRA: return VK_FORMAT_B8G8R8A8_SRGB;
-        case TextureFormat::SFLOAT32: return VK_FORMAT_D32_SFLOAT;
-        case TextureFormat::SFLOAT32_UINT8: return VK_FORMAT_D32_SFLOAT_S8_UINT;
-        case TextureFormat::UNORM24_UINT8: return VK_FORMAT_D24_UNORM_S8_UINT;
+        case TextureFormat::RGBA_UINT8: return VK_FORMAT_R8G8B8A8_SRGB;
+        case TextureFormat::BGRA_UINT8: return VK_FORMAT_B8G8R8A8_SRGB;
+        case TextureFormat::DEPTH_FLOAT32: return VK_FORMAT_D32_SFLOAT;
+        case TextureFormat::DEPTH_FLOAT32_STENCIL_UINT8: return VK_FORMAT_D32_SFLOAT_S8_UINT;
+        case TextureFormat::DEPTH_UNORM24_STENCIL_UINT8: return VK_FORMAT_D24_UNORM_S8_UINT;
         default: ;
         }
         return VK_FORMAT_UNDEFINED;
@@ -134,12 +134,12 @@ namespace JumaEngine
     {
         switch (samples)
         {
-        case TextureSamples::SAMPLES_2:  return VK_SAMPLE_COUNT_2_BIT;
-        case TextureSamples::SAMPLES_4:  return VK_SAMPLE_COUNT_4_BIT;
-        case TextureSamples::SAMPLES_8:  return VK_SAMPLE_COUNT_8_BIT;
-        case TextureSamples::SAMPLES_16: return VK_SAMPLE_COUNT_16_BIT;
-        case TextureSamples::SAMPLES_32: return VK_SAMPLE_COUNT_32_BIT;
-        case TextureSamples::SAMPLES_64: return VK_SAMPLE_COUNT_64_BIT;
+        case TextureSamples::X2:  return VK_SAMPLE_COUNT_2_BIT;
+        case TextureSamples::X4:  return VK_SAMPLE_COUNT_4_BIT;
+        case TextureSamples::X8:  return VK_SAMPLE_COUNT_8_BIT;
+        case TextureSamples::X16: return VK_SAMPLE_COUNT_16_BIT;
+        case TextureSamples::X32: return VK_SAMPLE_COUNT_32_BIT;
+        case TextureSamples::X64: return VK_SAMPLE_COUNT_64_BIT;
         default: ;
         }
         return VK_SAMPLE_COUNT_1_BIT;

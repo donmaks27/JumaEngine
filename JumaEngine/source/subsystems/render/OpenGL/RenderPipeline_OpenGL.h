@@ -33,8 +33,7 @@ namespace JumaEngine
 
         void clearData();
 
-        bool callRenderForRenderTarget(RenderTarget_RenderAPIObject_OpenGL* renderTargetObject, 
-            const jmap<jstringID, const ActionTaskResult<bool>*>* renderTaskResults, RenderOptions_OpenGL options);
+        bool callRenderForRenderTarget(RenderTarget_RenderAPIObject_OpenGL* renderTargetObject, RenderOptions_OpenGL options);
     };
 }
 

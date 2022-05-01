@@ -25,33 +25,27 @@ namespace JumaEngine
 
     bool RenderTarget_RenderAPIObject_OpenGL::initInternal()
     {
-        // Main thread
-        ActionTask createTask;
-        m_FramebufferData_CreateTask = createTask.bindClassMethod(this, &RenderTarget_RenderAPIObject_OpenGL::createFramebufferData);
-        if (!getWindowSubsystemObject()->submitTaskForWindow(getUsingWindowID(), std::move(createTask)))
-        {
-            JUMA_LOG(error, JSTR("Failed to send task for creating framebuffers"));
-            m_FramebufferData_CreateTask = nullptr;
-            return false;
-        }
-        return true;
+        const window_id_type prevActiveWindowID = getWindowSubsystemObject()->getActiveWindow();
+        getWindowSubsystemObject()->setWindowActive(getUsingWindowID());
+        const bool success = createFramebufferData();
+        getWindowSubsystemObject()->setWindowActive(prevActiveWindowID);
+        return success;
     }
-    RenderTarget_RenderAPIObject_OpenGL::FramebufferData RenderTarget_RenderAPIObject_OpenGL::createFramebufferData() const
+    bool RenderTarget_RenderAPIObject_OpenGL::createFramebufferData()
     {
-        // Window thread
         const bool renderToWindow = m_Parent->isWindowRenderTarget();
         const bool shouldResolveMultisampling = m_Parent->shouldResolveMultisampling();
         if (!shouldResolveMultisampling && renderToWindow)
         {
-            return { true, 0, 0, 0, 0, 0 };
+            return true;
         }
 
-        const TextureFormat format = !renderToWindow ? m_Parent->getFormat() : TextureFormat::RGBA;
+        const TextureFormat format = !renderToWindow ? m_Parent->getFormat() : TextureFormat::RGBA_UINT8;
         const uint32 formatOpenGL = GetOpenGLFormatByTextureFormat(format);
         if (formatOpenGL == 0)
         {
             JUMA_LOG(error, JSTR("Unsupported render target format"));
-            return { false };
+            return false;
         }
         
         const bool depthEnabled = true;
@@ -119,27 +113,22 @@ namespace JumaEngine
         }
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-        return { true, colorAttachment, depthAttachment, resolveAttachment, framebufferIndices[0], framebufferIndices[1] };
-    }
-    void RenderTarget_RenderAPIObject_OpenGL::flushChanges()
-    {
-        // Main thread, after render
-        if ((m_FramebufferData_CreateTask != nullptr) && m_FramebufferData_CreateTask->isTaskFinished())
-        {
-            m_FramebufferData = m_FramebufferData_CreateTask->get();
-            m_FramebufferData_CreateTask->markAsHandled();
-            m_FramebufferData_CreateTask = nullptr;
-        }
+        m_FramebufferData = { colorAttachment, depthAttachment, resolveAttachment, framebufferIndices[0], framebufferIndices[1] };
+        return true;
     }
 
     void RenderTarget_RenderAPIObject_OpenGL::clearData()
     {
-        // Main thread
-        if (m_FramebufferData.valid && (m_FramebufferData.framebuffer != 0))
+        if (m_FramebufferData.framebuffer != 0)
         {
-            ActionTask clearTask(true);
-            clearTask.bindRaw(&RenderTarget_RenderAPIObject_OpenGL::clearFramebuffers, m_FramebufferData);
-            getWindowSubsystemObject()->submitTaskForWindow(getUsingWindowID(), std::move(clearTask));
+            const window_id_type prevActiveWindowID = getWindowSubsystemObject()->getActiveWindow();
+            getWindowSubsystemObject()->setWindowActive(getUsingWindowID());
+            glDeleteFramebuffers(1, &m_FramebufferData.framebuffer);
+            if (m_FramebufferData.resolveFramebuffer != 0)
+            {
+                glDeleteFramebuffers(1, &m_FramebufferData.resolveFramebuffer);
+            }
+            getWindowSubsystemObject()->setWindowActive(prevActiveWindowID);
 
             if (m_Parent->shouldResolveMultisampling())
             {
@@ -157,33 +146,11 @@ namespace JumaEngine
             {
                 glDeleteTextures(1, &m_FramebufferData.resolveColorAttachment);
             }
-            m_FramebufferData = { false };
-        }
-    }
-    void RenderTarget_RenderAPIObject_OpenGL::clearFramebuffers(const FramebufferData framebuffers)
-    {
-        // Window thread
-        if (framebuffers.valid)
-        {
-            if (framebuffers.framebuffer != 0)
-            {
-                glDeleteFramebuffers(1, &framebuffers.framebuffer);
-                if (framebuffers.resolveFramebuffer != 0)
-                {
-                    glDeleteFramebuffers(1, &framebuffers.resolveFramebuffer);
-                }
-            }
         }
     }
 
     bool RenderTarget_RenderAPIObject_OpenGL::startRender()
     {
-        // Window thread
-        if (!m_FramebufferData.valid)
-        {
-            return false;
-        }
-
         if (m_Parent->isWindowRenderTarget())
         {
             getWindowSubsystemObject()->getParent()->onStartWindowRender(m_Parent->getWindowID());
@@ -193,7 +160,6 @@ namespace JumaEngine
     }
     void RenderTarget_RenderAPIObject_OpenGL::finishRender()
     {
-        // Window thread
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         if (m_Parent->shouldResolveMultisampling())
         {

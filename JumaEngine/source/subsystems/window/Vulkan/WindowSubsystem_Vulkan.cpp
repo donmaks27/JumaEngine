@@ -54,14 +54,14 @@ namespace JumaEngine
 	    jarray<VkPresentModeKHR> surfacePresentModes(static_cast<int32>(surfacePresentModeCount));
 	    vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, description.vulkanSurface, &surfacePresentModeCount, surfacePresentModes.getData());
 
-        parentDescription.supportedPresentModes = { RenderPresentMode::VSYNC };
+        parentDescription.supportedPresentModes = { RenderPresentMode::VSync };
         if (surfacePresentModes.contains(VK_PRESENT_MODE_IMMEDIATE_KHR))
         {
-            parentDescription.supportedPresentModes.add(RenderPresentMode::IMMEDIATE);
+            parentDescription.supportedPresentModes.add(RenderPresentMode::Immediate);
         }
         if (surfacePresentModes.contains(VK_PRESENT_MODE_MAILBOX_KHR))
         {
-            parentDescription.supportedPresentModes.add(RenderPresentMode::TRIPLE_BUFFER);
+            parentDescription.supportedPresentModes.add(RenderPresentMode::TripleBuffer);
         }
     }
 

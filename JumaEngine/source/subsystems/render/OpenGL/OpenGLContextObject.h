@@ -24,11 +24,6 @@ namespace JumaEngine
         RenderSubsystem_RenderAPIObject_OpenGL* getRenderSubsystemObject() const { return m_RenderSubsystem; }
         WindowSubsystem_RenderAPIObject_OpenGL* getWindowSubsystemObject() const { return m_WindowSubsystem; }
 
-    protected:
-
-        virtual bool shouldBeFlushed() const { return false; }
-        virtual void flushChanges() {}
-
     private:
 
         RenderSubsystem_RenderAPIObject_OpenGL* m_RenderSubsystem = nullptr;

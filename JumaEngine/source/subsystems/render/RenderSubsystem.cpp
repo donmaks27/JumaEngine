@@ -37,7 +37,7 @@ namespace JumaEngine
         }
 
         m_DefaultTexture = getOwnerEngine()->createObject<Texture>();
-        m_DefaultTexture->init(TextureFormat::RGBA, { 1, 1 }, new uint8[4]{ 255, 0, 255, 0 });
+        m_DefaultTexture->init(TextureFormat::RGBA_UINT8, { 1, 1 }, new uint8[4]{ 255, 0, 255, 0 });
 
         m_RenderPipeline = getOwnerEngine()->createObject<RenderPipeline>();
         m_RenderPipeline->init();

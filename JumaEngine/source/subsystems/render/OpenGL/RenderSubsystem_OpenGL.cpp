@@ -11,7 +11,6 @@
 #include "Texture_OpenGL.h"
 #include "VertexBuffer_OpenGL.h"
 #include "engine/Engine.h"
-#include "subsystems/window/WindowSubsystem.h"
 #include "subsystems/window/OpenGL/WindowSubsystem_OpenGL.h"
 
 namespace JumaEngine
@@ -50,60 +49,27 @@ namespace JumaEngine
 
     Shader_RenderAPIObject* RenderSubsystem_RenderAPIObject_OpenGL::createShaderObject()
     {
-        Shader_RenderAPIObject_OpenGL* vertexBuffer = createOpenGLObject<Shader_RenderAPIObject_OpenGL>();
-        onObjectCreated(vertexBuffer);
-        return vertexBuffer;
+        return createOpenGLObject<Shader_RenderAPIObject_OpenGL>();
     }
     Material_RenderAPIObject* RenderSubsystem_RenderAPIObject_OpenGL::createMaterialObject()
     {
-        Material_RenderAPIObject_OpenGL* vertexBuffer = createOpenGLObject<Material_RenderAPIObject_OpenGL>();
-        onObjectCreated(vertexBuffer);
-        return vertexBuffer;
+        return createOpenGLObject<Material_RenderAPIObject_OpenGL>();
     }
     VertexBuffer_RenderAPIObject* RenderSubsystem_RenderAPIObject_OpenGL::createVertexBufferObject()
     {
-        VertexBuffer_RenderAPIObject_OpenGL* vertexBuffer = createOpenGLObject<VertexBuffer_RenderAPIObject_OpenGL>();
-        onObjectCreated(vertexBuffer);
-        return vertexBuffer;
+        return createOpenGLObject<VertexBuffer_RenderAPIObject_OpenGL>();
     }
     Texture_RenderAPIObject* RenderSubsystem_RenderAPIObject_OpenGL::createTextureObject()
     {
-        Texture_RenderAPIObject_OpenGL* vertexBuffer = createOpenGLObject<Texture_RenderAPIObject_OpenGL>();
-        onObjectCreated(vertexBuffer);
-        return vertexBuffer;
+        return createOpenGLObject<Texture_RenderAPIObject_OpenGL>();
     }
     RenderTarget_RenderAPIObject* RenderSubsystem_RenderAPIObject_OpenGL::createRenderTargetObject()
     {
-        RenderTarget_RenderAPIObject_OpenGL* vertexBuffer = createOpenGLObject<RenderTarget_RenderAPIObject_OpenGL>();
-        onObjectCreated(vertexBuffer);
-        return vertexBuffer;
+        return createOpenGLObject<RenderTarget_RenderAPIObject_OpenGL>();
     }
     RenderPipeline_RenderAPIObject* RenderSubsystem_RenderAPIObject_OpenGL::createRenderPipelineObject()
     {
-        RenderPipeline_RenderAPIObject_OpenGL* vertexBuffer = createOpenGLObject<RenderPipeline_RenderAPIObject_OpenGL>();
-        onObjectCreated(vertexBuffer);
-        return vertexBuffer;
-    }
-    void RenderSubsystem_RenderAPIObject_OpenGL::onObjectCreated(OpenGLContextObject* object)
-    {
-        m_CreatedObjects.add(object);
-        if (object->shouldBeFlushed())
-        {
-            m_ObjectsForFlush.add(object);
-        }
-    }
-
-    void RenderSubsystem_RenderAPIObject_OpenGL::flushObjectsChanges()
-    {
-        for (const auto& object : m_ObjectsForFlush)
-        {
-            object->flushChanges();
-        }
-    }
-    void RenderSubsystem_RenderAPIObject_OpenGL::onFinishRender()
-    {
-        Super::onFinishRender();
-        flushObjectsChanges();
+        return createOpenGLObject<RenderPipeline_RenderAPIObject_OpenGL>();
     }
 }
 

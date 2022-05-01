@@ -124,7 +124,7 @@ namespace JumaEngine
         m_GlobalMaterialParamsSubsystem->getGlobalMaterialParams().setValue<ShaderUniformType::Mat4>(JSTR("WindowTransform"), math::matrix4(1));
 
         m_Texture = createObject<Texture>();
-        m_Texture->init(TextureFormat::RGBA, { 2, 2 }, new uint8[16]{
+        m_Texture->init(TextureFormat::RGBA_UINT8, { 2, 2 }, new uint8[16]{
             255, 0, 0, 0,
             0, 255, 0, 0,
             0, 0, 255, 0,
@@ -162,11 +162,11 @@ namespace JumaEngine
         m_VertexBuffer->createRenderAPIObject();
 
         m_RenderTarget = createObject<RenderTarget>();
-        m_RenderTarget->init(TextureFormat::RGBA, m_WindowSubsytem->findWindow(m_WindowSubsytem->getMainWindowID())->size, TextureSamples::SAMPLES_1);
+        m_RenderTarget->init(TextureFormat::RGBA_UINT8, m_WindowSubsytem->findWindow(m_WindowSubsytem->getMainWindowID())->size, TextureSamples::X1);
         m_RenderTarget->createRenderAPIObject();
 
         m_WindowRenderTarget = createObject<RenderTarget>();
-        m_WindowRenderTarget->init(m_WindowSubsytem->getMainWindowID(), TextureSamples::SAMPLES_1);
+        m_WindowRenderTarget->init(m_WindowSubsytem->getMainWindowID(), TextureSamples::X1);
         m_WindowRenderTarget->createRenderAPIObject();
 
         m_ShaderPP = createObject<Shader>();
@@ -201,7 +201,7 @@ namespace JumaEngine
         const window_id_type secondWindowID = m_WindowSubsytem->createWindow(JSTR("Second window"), { 800, 600 });
 
         m_SecondWindowRenderTarget = createObject<RenderTarget>();
-        m_SecondWindowRenderTarget->init(secondWindowID, TextureSamples::SAMPLES_1);
+        m_SecondWindowRenderTarget->init(secondWindowID, TextureSamples::X1);
         m_SecondWindowRenderTarget->createRenderAPIObject();
 
         RenderPipeline* renderPipeline = m_RenderSubsystem->getRenderPipeline();

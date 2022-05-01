@@ -75,7 +75,7 @@ namespace JumaEngine
 
         m_Format = TextureFormat::None;
         m_Size = { 0, 0 };
-        m_TextureSamples = TextureSamples::SAMPLES_1;
+        m_TextureSamples = TextureSamples::X1;
         m_WindowID = INVALID_WINDOW_ID;
     }
     void RenderTarget::onWindowDestroyed(const window_id_type windowID)

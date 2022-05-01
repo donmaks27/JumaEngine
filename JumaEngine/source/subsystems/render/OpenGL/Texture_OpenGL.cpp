@@ -12,8 +12,8 @@ namespace JumaEngine
     {
         switch (format)
         {
-        case GL_RGBA: return TextureFormat::RGBA;
-        case GL_BGRA: return TextureFormat::BGRA;
+        case GL_RGBA: return TextureFormat::RGBA_UINT8;
+        case GL_BGRA: return TextureFormat::BGRA_UINT8;
         default: ;
         }
         return TextureFormat::None;
@@ -22,8 +22,8 @@ namespace JumaEngine
     {
         switch (format)
         {
-        case TextureFormat::RGBA: return GL_RGBA;
-        case TextureFormat::BGRA: return GL_BGRA;
+        case TextureFormat::RGBA_UINT8: return GL_RGBA;
+        case TextureFormat::BGRA_UINT8: return GL_BGRA;
         default: ;
         }
         return 0;
@@ -56,8 +56,8 @@ namespace JumaEngine
         );
         glGenerateMipmap(GL_TEXTURE_2D);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 8);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 8.0f);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
@@ -82,7 +82,6 @@ namespace JumaEngine
         }
 
         glActiveTexture(GL_TEXTURE0 + index);
-        glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, imageIndex);
         return true;
     }
@@ -90,7 +89,6 @@ namespace JumaEngine
     {
         glActiveTexture(GL_TEXTURE0 + index);
         glBindTexture(GL_TEXTURE_2D, 0);
-        glDisable(GL_TEXTURE_2D);
     }
 }
 

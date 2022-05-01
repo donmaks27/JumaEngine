@@ -219,8 +219,11 @@
     <ClInclude Include="source\subsystems\render\RenderTarget.h" />
     <ClInclude Include="source\subsystems\render\Shader.h" />
     <ClInclude Include="source\subsystems\render\Texture.h" />
+    <ClInclude Include="source\subsystems\render\texture\TextureFiltering.h" />
     <ClInclude Include="source\subsystems\render\texture\TextureFormat.h" />
+    <ClInclude Include="source\subsystems\render\texture\TextureSamplerType.h" />
     <ClInclude Include="source\subsystems\render\texture\TextureSamples.h" />
+    <ClInclude Include="source\subsystems\render\texture\TextureWrapMode.h" />
     <ClInclude Include="source\subsystems\render\VertexBuffer.h" />
     <ClInclude Include="source\subsystems\render\vertex\ImportedVertex.h" />
     <ClInclude Include="source\subsystems\render\vertex\Vertex2D.h" />

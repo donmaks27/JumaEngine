@@ -60,7 +60,7 @@ namespace JumaEngine
         
         VkSurfaceCapabilitiesKHR capabilities;
         vkGetPhysicalDeviceSurfaceCapabilitiesKHR(getRenderSubsystemObject()->getPhysicalDevice(), m_WindowSurface, &capabilities);
-        uint32 imageCount = m_CurrentSettings.presentMode != RenderPresentMode::TRIPLE_BUFFER ? 3 : 2;
+        uint32 imageCount = m_CurrentSettings.presentMode != RenderPresentMode::TripleBuffer ? 3 : 2;
         if (capabilities.maxImageCount > 0)
         {
             imageCount = math::min(imageCount, capabilities.maxImageCount);

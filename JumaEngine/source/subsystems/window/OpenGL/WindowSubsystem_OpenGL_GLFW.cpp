@@ -6,8 +6,6 @@
 
 #include <GLFW/glfw3.h>
 
-#include "engine/Engine.h"
-
 namespace JumaEngine
 {
     WindowSubsystem_RenderAPIObject_OpenGL_GLFW::~WindowSubsystem_RenderAPIObject_OpenGL_GLFW()
@@ -36,7 +34,7 @@ namespace JumaEngine
 
         glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_SAMPLES, 0);
 
@@ -72,20 +70,13 @@ namespace JumaEngine
             return false;
         }
 
-        if (m_BackgroundWindow == nullptr)
-        {
-            glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-            glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-            m_BackgroundWindow = glfwCreateWindow(1, 1, "", nullptr, nullptr);
-            glfwMakeContextCurrent(m_BackgroundWindow);
-            initOpenGL();
-        }
+        GLFWwindow* existingWindow = !m_Windows.isEmpty() ? m_Windows.begin()->value.windowGLFW : nullptr;
 
         glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
         glfwWindowHint(GLFW_VISIBLE, description->hidden ? GLFW_FALSE : GLFW_TRUE);
         GLFWwindow* window = glfwCreateWindow(
             static_cast<int>(description->size.x), static_cast<int>(description->size.y), 
-            *description->title, nullptr, m_BackgroundWindow
+            *description->title, nullptr, existingWindow
         );
         if (window == nullptr)
         {
@@ -93,15 +84,25 @@ namespace JumaEngine
             return false;
         }
 
-        description->supportedPresentModes = { RenderPresentMode::VSYNC, RenderPresentMode::IMMEDIATE };
+        description->supportedPresentModes = { RenderPresentMode::VSync, RenderPresentMode::Immediate };
 
         WindowDescription_OpenGL_GLFW& windowDescription = m_Windows[windowID];
         windowDescription.windowID = windowID;
         windowDescription.windowGLFW = window;
         glfwSetWindowUserPointer(window, &windowDescription);
         glfwSetFramebufferSizeCallback(window, WindowSubsystem_RenderAPIObject_OpenGL_GLFW::GLFW_FramebufferResizeCallback);
-
-        onWindowCreated_OpenGL(&windowDescription);
+        
+        const window_id_type prevActiveWindowID = getActiveWindow();
+        setWindowActive(windowID);
+        glfwSwapInterval(1);
+        if (prevActiveWindowID != INVALID_WINDOW_ID)
+        {
+            setWindowActive(prevActiveWindowID);
+        }
+        else
+        {
+            initOpenGL();
+        }
         return true;
     }
     void WindowSubsystem_RenderAPIObject_OpenGL_GLFW::GLFW_FramebufferResizeCallback(GLFWwindow* windowGLFW, int width, int height)
@@ -112,19 +113,12 @@ namespace JumaEngine
             windowDescription->windowSubsystemObject->onWindowResized(windowDescription->windowID, { math::max<uint32>(width, 0), math::max<uint32>(height, 0) });
         }
     }
-    void WindowSubsystem_RenderAPIObject_OpenGL_GLFW::initWindowThread(WindowDescription_OpenGL* windowDescription)
+    
+    void WindowSubsystem_RenderAPIObject_OpenGL_GLFW::setWindowActiveInternal(const window_id_type windowID)
     {
-        GLFWwindow* window = reinterpret_cast<WindowDescription_OpenGL_GLFW*>(windowDescription)->windowGLFW;
+        const WindowDescription_OpenGL_GLFW* windowDescription = m_Windows.find(windowID);
+        GLFWwindow* window = windowDescription != nullptr ? windowDescription->windowGLFW : nullptr;
         glfwMakeContextCurrent(window);
-        glfwSwapInterval(1);
-
-        Super::initWindowThread(windowDescription);
-    }
-    void WindowSubsystem_RenderAPIObject_OpenGL_GLFW::finishWindowThread(WindowDescription_OpenGL* windowDescription)
-    {
-        Super::finishWindowThread(windowDescription);
-
-        glfwMakeContextCurrent(nullptr);
     }
 
     void WindowSubsystem_RenderAPIObject_OpenGL_GLFW::destroyWindow(const window_id_type windowID)
@@ -140,8 +134,6 @@ namespace JumaEngine
     }
     void WindowSubsystem_RenderAPIObject_OpenGL_GLFW::destroyWindow_GLFW(const window_id_type windowID, WindowDescription_OpenGL_GLFW& description)
     {
-        destroyWindow_OpenGL(windowID, description);
-
         glfwSetWindowUserPointer(description.windowGLFW, nullptr);
         glfwDestroyWindow(description.windowGLFW);
         description.windowGLFW = nullptr;

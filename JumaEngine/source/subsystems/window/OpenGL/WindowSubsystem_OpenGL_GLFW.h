@@ -41,15 +41,13 @@ namespace JumaEngine
         virtual bool createWindow(window_id_type windowID) override;
         virtual void destroyWindow(window_id_type windowID) override;
 
-        virtual void initWindowThread(WindowDescription_OpenGL* windowDescription) override;
-        virtual void finishWindowThread(WindowDescription_OpenGL* windowDescription) override;
+        virtual void setWindowActiveInternal(window_id_type windowID) override;
 
         virtual void onFinishWindowRender(window_id_type windowID) override;
         virtual void onFinishRender() override;
 
     private:
 
-        GLFWwindow* m_BackgroundWindow = nullptr;
         jmap<window_id_type, WindowDescription_OpenGL_GLFW> m_Windows;
 
 

@@ -9,8 +9,6 @@
 #include "subsystems/render/RenderTarget.h"
 #include "OpenGLContextObject.h"
 
-#include "subsystems/asyncTasks/ActionTask.h"
-
 namespace JumaEngine
 {
     class RenderTarget_RenderAPIObject_OpenGL : public RenderTarget_RenderAPIObject, public OpenGLContextObject
@@ -29,15 +27,10 @@ namespace JumaEngine
 
         virtual bool initInternal() override;
 
-        virtual bool shouldBeFlushed() const override { return true; }
-        virtual void flushChanges() override;
-
     private:
 
         struct FramebufferData
         {
-            bool valid = false;
-
             uint32 colorAttachment = 0;
             uint32 depthAttachment = 0;
             uint32 resolveColorAttachment = 0;
@@ -47,13 +40,11 @@ namespace JumaEngine
         };
 
         FramebufferData m_FramebufferData;
-        const ActionTaskResult<FramebufferData>* m_FramebufferData_CreateTask = nullptr;
 
 
-        FramebufferData createFramebufferData() const;
+        bool createFramebufferData();
 
         void clearData();
-        static void clearFramebuffers(FramebufferData framebuffers);
     };
 }
 

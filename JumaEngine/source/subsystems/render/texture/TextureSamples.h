@@ -8,26 +8,20 @@ namespace JumaEngine
 {
     enum class TextureSamples : uint8
     {
-        SAMPLES_1,
-        SAMPLES_2,
-        SAMPLES_4,
-        SAMPLES_8,
-        SAMPLES_16,
-        SAMPLES_32,
-        SAMPLES_64
+        X1, X2, X4, X8, X16, X32, X64
     };
 
     inline uint8 GetTextureSamplesNumber(const TextureSamples samples)
     {
         switch (samples)
         {
-        case TextureSamples::SAMPLES_1:  return 1;
-        case TextureSamples::SAMPLES_2:  return 2;
-        case TextureSamples::SAMPLES_4:  return 4;
-        case TextureSamples::SAMPLES_8:  return 8;
-        case TextureSamples::SAMPLES_16: return 16;
-        case TextureSamples::SAMPLES_32: return 32;
-        case TextureSamples::SAMPLES_64: return 64;
+        case TextureSamples::X1:  return 1;
+        case TextureSamples::X2:  return 2;
+        case TextureSamples::X4:  return 4;
+        case TextureSamples::X8:  return 8;
+        case TextureSamples::X16: return 16;
+        case TextureSamples::X32: return 32;
+        case TextureSamples::X64: return 64;
         default: ;
         }
         JUMA_LOG(error, JSTR("Unsupported sample count"));
