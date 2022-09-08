@@ -1,7 +1,0 @@
-[submodule "JumaEngine/source/jutils"]
-	path = JumaEngine/source/jutils
-	url = https://github.com/donmaks27/jutils.git
-
-[submodule "JumaEngine/content"]
-	path = JumaEngine/content
-	url = https://github.com/donmaks27/JumaEngine-content.git
