@@ -9,6 +9,8 @@ namespace JumaEngine
 {
     class GameEngineBase : public EngineBase
     {
+        using Super = EngineBase;
+
     public:
         GameEngineBase() = default;
         virtual ~GameEngineBase() override = default;
