@@ -15,17 +15,31 @@ namespace JumaEngine
         GameEngine() = default;
         virtual ~GameEngine() override;
 
+        template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<GameInstance, T>)>
+        bool init();
+
         virtual bool update() override;
 
     protected:
 
-        virtual bool initInternal() override;
-        virtual void destroyInternal() override;
+        virtual void clearInternal() override;
 
     private:
 
-        bool createRenderEngine(JumaRE::RenderAPI api);
+        bool initInternal();
 
         void clearData_GameEngine();
     };
+
+    template <typename T, TEMPLATE_ENABLE_IMPL(is_base_and_not_abstract<GameInstance, T>)>
+    bool GameEngine::init()
+    {
+        if (!createRenderEngine(JumaRE::RenderAPI::Vulkan, { 
+                JSTR("JumaEngine"), { 800, 600 }
+            }) || !createGameInstance<T>())
+        {
+            return false;
+        }
+        return initInternal();
+    }
 }

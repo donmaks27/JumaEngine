@@ -4,6 +4,9 @@
 
 #include <JumaRE/RenderPipeline.h>
 
+#include "../include/JumaEngine/GameInstance.h"
+#include "JumaRE/RenderTarget.h"
+
 namespace JumaEngine
 {
     GameEngine::~GameEngine()
@@ -13,65 +16,55 @@ namespace JumaEngine
 
     bool GameEngine::initInternal()
     {
-        if (!Super::initInternal())
-        {
-            return false;
-        }
-        return createRenderEngine(JumaRE::RenderAPI::Vulkan);
+        const JumaRE::RenderEngine* renderEngine = getRenderEngine();
+        const JumaRE::WindowController* windowController = renderEngine != nullptr ? renderEngine->getWindowController() : nullptr;
+        const JumaRE::window_id windowID = windowController != nullptr ? windowController->getMainWindowID() : JumaRE::window_id_INVALID;
+        const JumaRE::WindowData* windowData = windowController != nullptr ? windowController->findWindowData(windowID) : nullptr;
+        JumaRE::RenderTarget* renderTarget = windowData != nullptr ? windowData->windowRenderTarget : nullptr;
+        return initGameInstance(renderTarget);
     }
-    bool GameEngine::createRenderEngine(const JumaRE::RenderAPI api)
+
+    void GameEngine::clearInternal()
     {
-        JumaRE::RenderEngine* renderEngine = JumaRE::CreateRenderEngine(api);
-        if (renderEngine == nullptr)
+        clearData_GameEngine();
+        Super::clearInternal();
+    }
+    void GameEngine::clearData_GameEngine()
+    {
+        const JumaRE::RenderEngine* renderEngine = getRenderEngine();
+        JumaRE::RenderPipeline* pipeline = renderEngine != nullptr ? renderEngine->getRenderPipeline() : nullptr;
+        if (pipeline != nullptr)
         {
-            JUTILS_LOG(error, JSTR("Failed to create render engine ({})"), api);
-            return false;
-        }
-        if (!renderEngine->init({ JSTR("JumaEngine"), { 800, 600 }, JumaRE::TextureSamples::X1 }))
-        {
-            JUTILS_LOG(error, JSTR("Failed to initialize render engine ({})"), api);
-            return false;
+            pipeline->waitForRenderFinished();
         }
 
-        JUTILS_LOG(correct, JSTR("Render engine ({}) initialized"), api);
-        m_RenderEngine = renderEngine;
-        return true;
+        destroyGameInstance();
+        destroyRenderEngine();
     }
 
     bool GameEngine::update()
     {
-        JumaRE::WindowController* windowController = m_RenderEngine->getWindowController();
-        if (windowController->shouldCloseWindow(windowController->getMainWindowID()))
+        const JumaRE::RenderEngine* renderEngine = getRenderEngine();
+        if (renderEngine == nullptr)
         {
             return false;
         }
 
-        if (!m_RenderEngine->getRenderPipeline()->render())
+        JumaRE::WindowController* windowController = renderEngine->getWindowController();
+        if (windowController->isMainWindowClosed())
+        {
+            return false;
+        }
+
+        getGameInstance()->update();
+
+        JumaRE::RenderPipeline* pipeline = renderEngine->getRenderPipeline();
+        if (!pipeline->render())
         {
             return false;
         }
 
         windowController->updateWindows();
         return true;
-    }
-
-    void GameEngine::destroyInternal()
-    {
-        clearData_GameEngine();
-        Super::destroyInternal();
-    }
-    void GameEngine::clearData_GameEngine()
-    {
-        if (m_RenderEngine != nullptr)
-        {
-            JumaRE::RenderPipeline* pipeline = m_RenderEngine->getRenderPipeline();
-            if (pipeline != nullptr)
-            {
-                pipeline->waitForRenderFinished();
-            }
-
-            delete m_RenderEngine;
-            m_RenderEngine = nullptr;
-        }
     }
 }

@@ -10,15 +10,14 @@ namespace JumaEngine
 {
     class EngineContextObject;
 
-    class EngineBase
+    class Engine
     {
     public:
-        EngineBase() = default;
-        virtual ~EngineBase() = default;
+        Engine() = default;
+        virtual ~Engine();
 
-        bool init();
         virtual bool update() = 0;
-        void destroy();
+        void clear();
 
         JumaRE::RenderEngine* getRenderEngine() const { return m_RenderEngine; }
 
@@ -33,14 +32,17 @@ namespace JumaEngine
 
     protected:
 
+        bool createRenderEngine(JumaRE::RenderAPI api, const JumaRE::WindowCreateInfo& mainWindowInfo);
+        void destroyRenderEngine();
+
+        virtual void clearInternal();
+
+    private:
+
         JumaRE::RenderEngine* m_RenderEngine = nullptr;
 
 
-        virtual bool initInternal() { return true; }
-
-        virtual void destroyInternal() {}
-
-    private:
+        void clearData_Engine();
 
         void registerObjectInternal(EngineContextObject* object);
     };
