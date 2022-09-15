@@ -28,6 +28,8 @@ namespace JumaEngine
         virtual bool initInternal();
         virtual void clearInternal();
 
+        JumaRE::RenderTarget* getGameRenderTarget() const { return m_GameRenderTarget; }
+
     private:
 
         JumaRE::RenderTarget* m_GameRenderTarget = nullptr;
