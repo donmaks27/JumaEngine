@@ -8,6 +8,7 @@
 
 namespace JumaEngine
 {
+    class GameInstance;
     class EngineContextObject;
 
     class Engine
@@ -16,10 +17,28 @@ namespace JumaEngine
         Engine() = default;
         virtual ~Engine();
 
-        virtual bool update() = 0;
+        bool init();
         void clear();
-
+        
         JumaRE::RenderEngine* getRenderEngine() const { return m_RenderEngine; }
+        
+        GameInstance* getGameInstance() const { return m_GameInstance; }
+        template<typename T, TEMPLATE_ENABLE(is_base<GameInstance, T>)>
+        T* getGameInstance() const { return dynamic_cast<T*>(getGameInstance()); }
+        template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<GameInstance, T>)>
+        bool createGameInstance()
+        {
+            if (m_GameInstance == nullptr)
+            {
+                m_GameInstance = createObject<T>();
+                if (m_GameInstance != nullptr)
+                {
+                    return initGameInstance();
+                }
+            }
+            return false;
+        }
+        void destroyGameInstance();
 
         template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<EngineContextObject, T>)>
         T* createObject() { return this->registerObject(new T()); }
@@ -29,17 +48,22 @@ namespace JumaEngine
             this->registerObjectInternal(object);
             return object;
         }
+        
+        virtual bool update() = 0;
 
     protected:
+
+        virtual bool initInternal();
+        virtual bool initGameInstance() = 0;
+        virtual void clearInternal();
 
         bool createRenderEngine(JumaRE::RenderAPI api, const JumaRE::WindowCreateInfo& mainWindowInfo);
         void destroyRenderEngine();
 
-        virtual void clearInternal();
-
     private:
 
         JumaRE::RenderEngine* m_RenderEngine = nullptr;
+        GameInstance* m_GameInstance = nullptr;
 
 
         void clearData_Engine();

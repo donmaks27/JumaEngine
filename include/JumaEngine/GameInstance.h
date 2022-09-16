@@ -9,17 +9,18 @@
 
 namespace JumaEngine
 {
-    class GameEngineBase;
-
     class GameInstance : public EngineContextObject
     {
         using Super = EngineContextObject;
 
-        friend GameEngineBase;
+        friend Engine;
 
     public:
         GameInstance() = default;
         virtual ~GameInstance() override;
+        
+        bool init(JumaRE::RenderTarget* renderTarget);
+        void clear();
 
         virtual void update();
 
@@ -35,9 +36,6 @@ namespace JumaEngine
         JumaRE::RenderTarget* m_GameRenderTarget = nullptr;
 
 
-        bool init(JumaRE::RenderTarget* renderTarget);
-
-        void clear() { clearInternal(); }
         void clearData_GameInstance();
     };
 }

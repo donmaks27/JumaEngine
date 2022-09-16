@@ -3,9 +3,9 @@
 #include "../include/JumaEngine/GameEngine.h"
 
 #include <JumaRE/RenderPipeline.h>
+#include <JumaRE/RenderTarget.h>
 
 #include "../include/JumaEngine/GameInstance.h"
-#include "JumaRE/RenderTarget.h"
 
 namespace JumaEngine
 {
@@ -16,12 +16,21 @@ namespace JumaEngine
 
     bool GameEngine::initInternal()
     {
+        if (!Super::initInternal())
+        {
+            return false;
+        }
+        return createRenderEngine(JumaRE::RenderAPI::Vulkan, { JSTR("JumaEngine"), { 800, 600 } });
+    }
+
+    bool GameEngine::initGameInstance()
+    {
         const JumaRE::RenderEngine* renderEngine = getRenderEngine();
         const JumaRE::WindowController* windowController = renderEngine != nullptr ? renderEngine->getWindowController() : nullptr;
         const JumaRE::window_id windowID = windowController != nullptr ? windowController->getMainWindowID() : JumaRE::window_id_INVALID;
         const JumaRE::WindowData* windowData = windowController != nullptr ? windowController->findWindowData(windowID) : nullptr;
         JumaRE::RenderTarget* renderTarget = windowData != nullptr ? windowData->windowRenderTarget : nullptr;
-        return initGameInstance(renderTarget);
+        return getGameInstance()->init(renderTarget);
     }
 
     void GameEngine::clearInternal()
@@ -39,7 +48,6 @@ namespace JumaEngine
         }
 
         destroyGameInstance();
-        destroyRenderEngine();
     }
 
     bool GameEngine::update()

@@ -3,15 +3,38 @@
 #include "../include/JumaEngine/Engine.h"
 
 #include <JumaRE/RenderEngineImpl.h>
-#include <JumaRE/RenderPipeline.h>
 
 #include "../include/JumaEngine/EngineContextObject.h"
+#include "../include/JumaEngine/GameInstance.h"
 
 namespace JumaEngine
 {
     Engine::~Engine()
     {
         clearData_Engine();
+    }
+
+    bool Engine::init()
+    {
+        return initInternal();
+    }
+    bool Engine::initInternal()
+    {
+        return true;
+    }
+
+    void Engine::clear()
+    {
+        clearInternal();
+    }
+    void Engine::clearInternal()
+    {
+        clearData_Engine();
+    }
+    void Engine::clearData_Engine()
+    {
+        destroyGameInstance();
+        destroyRenderEngine();
     }
 
     bool Engine::createRenderEngine(const JumaRE::RenderAPI api, const JumaRE::WindowCreateInfo& mainWindowInfo)
@@ -41,17 +64,14 @@ namespace JumaEngine
         }
     }
 
-    void Engine::clear()
+    void Engine::destroyGameInstance()
     {
-        clearInternal();
-    }
-    void Engine::clearInternal()
-    {
-        clearData_Engine();
-    }
-    void Engine::clearData_Engine()
-    {
-        m_RenderEngine = nullptr;
+        if (m_GameInstance != nullptr)
+        {
+            m_GameInstance->clear();
+            delete m_GameInstance;
+            m_GameInstance = nullptr;
+        }
     }
 
     void Engine::registerObjectInternal(EngineContextObject* object)

@@ -25,6 +25,10 @@ namespace JumaEngine
         return true;
     }
 
+    void GameInstance::clear()
+    {
+        clearInternal();
+    }
     void GameInstance::clearInternal()
     {
         clearData_GameInstance();
