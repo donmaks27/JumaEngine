@@ -6,6 +6,7 @@
 #include "EngineContextObject.h"
 
 #include <JumaRE/RenderTarget.h>
+#include <JumaRE/input/InputButtons.h>
 
 namespace JumaEngine
 {
@@ -35,7 +36,13 @@ namespace JumaEngine
 
         JumaRE::RenderTarget* m_GameRenderTarget = nullptr;
 
+        math::uvector2 m_CursorPosition = { 0, 0 };
+
 
         void clearData_GameInstance();
+
+        void onInputButton(JumaRE::InputDevice device, JumaRE::InputButton button, JumaRE::InputButtonAction action);
+        void onInputAxis(JumaRE::InputDevice device, JumaRE::InputAxis axis, float value);
+        void onInputAxis2D(JumaRE::InputDevice device, JumaRE::InputAxis axis, const math::vector2& value);
     };
 }

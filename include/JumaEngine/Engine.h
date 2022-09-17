@@ -69,5 +69,12 @@ namespace JumaEngine
         void clearData_Engine();
 
         void registerObjectInternal(EngineContextObject* object);
+        
+        void onInputButton(JumaRE::WindowController* windowController, const JumaRE::WindowData* windowData, 
+            JumaRE::InputDevice device, JumaRE::InputButton button, JumaRE::InputButtonAction action);
+        void onInputAxis(JumaRE::WindowController* windowController, const JumaRE::WindowData* windowData, 
+            JumaRE::InputDevice device, JumaRE::InputAxis axis, float value);
+        void onInputAxis2D(JumaRE::WindowController* windowController, const JumaRE::WindowData* windowData, 
+            JumaRE::InputDevice device, JumaRE::InputAxis axis, const math::vector2& value);
     };
 }
