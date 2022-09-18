@@ -32,6 +32,8 @@ namespace JumaEngine
 
         JumaRE::RenderTarget* getGameRenderTarget() const { return m_GameRenderTarget; }
 
+        const math::uvector2& getCursorPosition() const { return m_CursorPosition; }
+
     private:
 
         JumaRE::RenderTarget* m_GameRenderTarget = nullptr;
