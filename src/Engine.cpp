@@ -6,6 +6,7 @@
 
 #include "../include/JumaEngine/EngineContextObject.h"
 #include "../include/JumaEngine/GameInstance.h"
+#include "../include/JumaEngine/ShadersSubsystem.h"
 
 namespace JumaEngine
 {
@@ -20,7 +21,7 @@ namespace JumaEngine
     }
     bool Engine::initInternal()
     {
-        return true;
+        return (getSubsystem<ShadersSubsystem>() != nullptr);
     }
 
     void Engine::clear()
@@ -34,6 +35,7 @@ namespace JumaEngine
     void Engine::clearData_Engine()
     {
         destroyGameInstance();
+        destroyEngineSubsystems();
         destroyRenderEngine();
     }
 
@@ -75,6 +77,34 @@ namespace JumaEngine
         }
     }
 
+    EngineContextObject* Engine::registerObjectInternal(EngineContextObject* object)
+    {
+        if (object != nullptr)
+        {
+            object->m_Engine = this;
+        }
+        return object;
+    }
+    EngineContextObject* Engine::createObject(const EngineClass* engineClass)
+    {
+        return registerObjectInternal(engineClass != nullptr ? engineClass->createBaseObject() : nullptr);
+    }
+
+    GameInstance* Engine::createGameInstance(const EngineSubclass<GameInstance>& subclass)
+    {
+        if (m_GameInstance != nullptr)
+        {
+            return m_GameInstance;
+        }
+
+        m_GameInstance = createObject(subclass);
+        if (!initGameInstance())
+        {
+            delete m_GameInstance;
+            m_GameInstance = nullptr;
+        }
+        return m_GameInstance;
+    }
     void Engine::destroyGameInstance()
     {
         if (m_GameInstance != nullptr)
@@ -85,12 +115,27 @@ namespace JumaEngine
         }
     }
 
-    void Engine::registerObjectInternal(EngineContextObject* object)
+    EngineSubsystem* Engine::getSubsystem(const EngineSubclass<EngineSubsystem>& subclass)
     {
-        if (object != nullptr)
+        EngineSubsystem* const* subsystemPtr = m_EngineSubsystems.find(subclass);
+        if (subsystemPtr != nullptr)
         {
-            object->m_Engine = this;
+            return *subsystemPtr;
         }
+        EngineSubsystem* subsystem = createObject(subclass);
+        if (subsystem == nullptr)
+        {
+            return nullptr;
+        }
+        return m_EngineSubsystems.add(subclass, subsystem);
+    }
+    void Engine::destroyEngineSubsystems()
+    {
+        for (const auto& subsystem : m_EngineSubsystems)
+        {
+            delete subsystem.value;
+        }
+        m_EngineSubsystems.clear();
     }
 
     void Engine::onInputButton(JumaRE::WindowController* windowController, const JumaRE::WindowData* windowData,

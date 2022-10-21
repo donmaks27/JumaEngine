@@ -20,7 +20,7 @@ namespace JumaEngine
         {
             return false;
         }
-        return createRenderEngine(JumaRE::RenderAPI::Vulkan, { JSTR("JumaEngine"), { 800, 600 } });
+        return createRenderEngine(JumaRE::RenderAPI::DirectX12, { JSTR("JumaEngine"), { 800, 600 } });
     }
 
     bool GameEngine::initGameInstance()
@@ -46,8 +46,6 @@ namespace JumaEngine
         {
             pipeline->waitForRenderFinished();
         }
-
-        destroyGameInstance();
     }
 
     bool GameEngine::update()

@@ -62,8 +62,6 @@ namespace JumaEngine
                 };
                 m_CursorPosition.x = math::clamp(newPosition.x, 0, math::max(renderTargetSize.x - 1, 0));
                 m_CursorPosition.y = math::clamp(newPosition.y, 0, math::max(renderTargetSize.y - 1, 0));
-
-                JUTILS_LOG(info, JSTR("Cursor position: {}"), m_CursorPosition.toString());
             }
         }
     }

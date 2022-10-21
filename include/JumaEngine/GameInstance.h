@@ -12,7 +12,7 @@ namespace JumaEngine
 {
     class GameInstance : public EngineContextObject
     {
-        using Super = EngineContextObject;
+        JUMAENGINE_CLASS(GameInstance, EngineContextObject)
 
         friend Engine;
 
