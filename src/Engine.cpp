@@ -87,7 +87,7 @@ namespace JumaEngine
     }
     EngineContextObject* Engine::createObject(const EngineClass* engineClass)
     {
-        return registerObjectInternal(engineClass != nullptr ? engineClass->createBaseObject() : nullptr);
+        return engineClass != nullptr ? registerObjectInternal(engineClass->createBaseObject()) : nullptr;
     }
 
     GameInstance* Engine::createGameInstance(const EngineSubclass<GameInstance>& subclass)
@@ -117,6 +117,10 @@ namespace JumaEngine
 
     EngineSubsystem* Engine::getSubsystem(const EngineSubclass<EngineSubsystem>& subclass)
     {
+        if (subclass == nullptr)
+        {
+            return nullptr;
+        }
         EngineSubsystem* const* subsystemPtr = m_EngineSubsystems.find(subclass);
         if (subsystemPtr != nullptr)
         {
@@ -125,9 +129,19 @@ namespace JumaEngine
         EngineSubsystem* subsystem = createObject(subclass);
         if (subsystem == nullptr)
         {
+            JUTILS_LOG(error, JSTR("Failed to create subsystem {}"), subclass.get()->getClassName());
             return nullptr;
         }
-        return m_EngineSubsystems.add(subclass, subsystem);
+
+        m_EngineSubsystems.add(subclass, subsystem);
+        if (!subsystem->initSubsystem())
+        {
+            JUTILS_LOG(error, JSTR("Failed to init subsystem {}"), subclass.get()->getClassName());
+            m_EngineSubsystems.remove(subclass);
+            delete subsystem;
+            return nullptr;
+        }
+        return subsystem;
     }
     void Engine::destroyEngineSubsystems()
     {

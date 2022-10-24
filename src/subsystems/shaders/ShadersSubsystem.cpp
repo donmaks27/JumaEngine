@@ -11,6 +11,17 @@ namespace JumaEngine
         clear();
     }
 
+    bool ShadersSubsystem::initSubsystem()
+    {
+        if (!Super::initSubsystem())
+        {
+            return false;
+        }
+
+        m_EngineInternalParams.setValue<JumaRE::ShaderUniformType::Vec2>(JSTR("ScreenCoordsModifier"), getEngine()->getRenderEngine()->getScreenCoordinateModifier());
+        return true;
+    }
+
     Shader* ShadersSubsystem::getShader(const jstringID& shaderName)
     {
         Shader* shaderPtr = m_Shaders.find(shaderName);
@@ -95,5 +106,7 @@ namespace JumaEngine
             shader.value.clearShader();
         }
         m_Shaders.clear();
+
+        m_EngineInternalParams.clear();
     }
 }

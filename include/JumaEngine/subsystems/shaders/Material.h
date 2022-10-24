@@ -40,7 +40,7 @@ namespace JumaEngine
         template<JumaRE::ShaderUniformType Type>
         bool setParamValue(const jstringID& name, const typename JumaRE::ShaderUniformInfo<Type>::value_type& value)
         {
-            if (!m_Material->setParamValue<Type>(name, value))
+            if (isEngineInternalMaterialParam(name) || !m_Material->setParamValue<Type>(name, value))
             {
                 return false;
             }
@@ -49,7 +49,7 @@ namespace JumaEngine
         }
         bool resetParamValue(const jstringID& name)
         {
-            if (!m_Material->resetParamValue(name))
+            if (isEngineInternalMaterialParam(name) || !m_Material->resetParamValue(name))
             {
                 return false;
             }
@@ -57,7 +57,7 @@ namespace JumaEngine
             return true;
         }
         template<JumaRE::ShaderUniformType Type>
-        bool getParamValue(const jstringID& name, const typename JumaRE::ShaderUniformInfo<Type>::value_type& value) const { return m_Material->getParamValue(name, value); }
+        bool getParamValue(const jstringID& name, typename JumaRE::ShaderUniformInfo<Type>::value_type& outValue) const { return m_Material->getParamValue(name, outValue); }
 
     private:
 
@@ -73,5 +73,8 @@ namespace JumaEngine
 
         void onBaseMaterialParamChanged(Material* baseMaterial, const jstringID& paramName);
         void onBaseMaterialClear(Material* baseMaterial) { clearMaterial(); }
+
+        bool isEngineInternalMaterialParam(const jstringID& name) const;
+        void onEngineInternalParamChanged(ShadersSubsystem* subsystem, const jstringID& internalParamName);
     };
 }

@@ -11,8 +11,14 @@ namespace JumaEngine
     {
         JUMAENGINE_CLASS_ABSTRACT(EngineSubsystem, EngineContextObject)
 
+        friend Engine;
+
     public:
         EngineSubsystem() = default;
         virtual ~EngineSubsystem() override = default;
+
+    protected:
+
+        virtual bool initSubsystem() { return true; }
     };
 }

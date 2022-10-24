@@ -68,7 +68,8 @@ namespace JumaEngine
         }
         return !outVertexComponents.isEmpty();
     }
-    inline bool ParseVertexUniforms(const jmap<jstring, json::json_value>& jsonObject, jmap<jstringID, JumaRE::ShaderUniform>& outUniforms)
+    inline bool ParseVertexUniforms(const jmap<jstring, json::json_value>& jsonObject, jmap<jstringID, JumaRE::ShaderUniform>& outUniforms, 
+        jmap<jstringID, jstringID>& outEngineInternalParams)
     {
         const json::json_value* uniformsJsonValue = jsonObject.find(JSTR("uniforms"));
         if (uniformsJsonValue == nullptr)
@@ -132,51 +133,59 @@ namespace JumaEngine
                 (*uniformBlockOffsetJsonValue)->tryGetNumber(uniformBlockOffset);
             }
 
+            jstring engineInternalParamString;
+            const json::json_value* engineInternalParamValue = uniformJsonObject.find(JSTR("engineInternalParam"));
+            if ((engineInternalParamValue != nullptr) && (*engineInternalParamValue)->tryGetString(engineInternalParamString))
+            {
+                outEngineInternalParams.add(uniformJson.key, engineInternalParamString);
+            }
+
             outUniforms.add(uniformJson.key, { uniformType, uniformStages, uniformLocation, uniformBlockOffset });
         }
         return true;
     }
-    inline JumaRE::Shader* LoadShader(JumaRE::RenderEngine* renderEngine, const jstring& shaderName)
+
+    bool Shader::loadShader(const jstringID& shaderName)
     {
+        JumaRE::RenderEngine* renderEngine = getEngine()->getRenderEngine();
         if (renderEngine == nullptr)
         {
             JUTILS_LOG(error, JSTR("Invalid render engine"));
-            return nullptr;
+            return false;
         }
-        const jstring jsonFileName = JSTR("content/") + shaderName + JSTR(".json");
+
+        const jstring shaderNameString = shaderName.toString();
+        const jstring jsonFileName = JSTR("content/") + shaderNameString + JSTR(".json");
         const json::json_value shaderJsonValue = json::parseFile(jsonFileName);
         if (shaderJsonValue == nullptr)
         {
             JUTILS_LOG(error, JSTR("Failed to parse file {}"), jsonFileName);
-            return nullptr;
+            return false;
         }
         const jmap<jstring, json::json_value>& shaderJsonObject = shaderJsonValue->asObject();
 
         jmap<JumaRE::ShaderStageFlags, jstring> shaderFiles;
         jset<jstringID> vertexComponents;
         jmap<jstringID, JumaRE::ShaderUniform> uniforms;
+        jmap<jstringID, jstringID> engineInternalParams;
         if (!ParseShaderFiles(renderEngine, shaderJsonObject, shaderFiles) || 
             !ParseVertexComponents(shaderJsonObject, vertexComponents) ||
-            !ParseVertexUniforms(shaderJsonObject, uniforms))
+            !ParseVertexUniforms(shaderJsonObject, uniforms, engineInternalParams))
         {
             JUTILS_LOG(error, JSTR("Failed to parse shader JSON file {}"), jsonFileName);
-            return nullptr;
+            return false;
         }
-        return renderEngine->createShader(shaderFiles, std::move(vertexComponents), std::move(uniforms));
-    }
 
-    bool Shader::loadShader(const jstringID& shaderName)
-    {
-        const jstring shaderNameString = shaderName.toString();
-        JumaRE::Shader* shader = LoadShader(getEngine()->getRenderEngine(), shaderNameString);
+        JumaRE::Shader* shader = renderEngine->createShader(shaderFiles, std::move(vertexComponents), std::move(uniforms));
         if (shader == nullptr)
         {
-            JUTILS_LOG(error, JSTR("Failed to load shader {}"), shaderNameString);
+            JUTILS_LOG(error, JSTR("Failed to create shader {}"), shaderNameString);
             return false;
         }
 
         m_Shader = shader;
         m_ShaderName = shaderName;
+        m_EngineInternalParamNames = engineInternalParams;
         return true;
     }
 

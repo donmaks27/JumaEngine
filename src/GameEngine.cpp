@@ -16,11 +16,11 @@ namespace JumaEngine
 
     bool GameEngine::initInternal()
     {
-        if (!Super::initInternal())
+        if (!createRenderEngine(JumaRE::RenderAPI::DirectX12, { JSTR("JumaEngine"), { 800, 600 } }))
         {
             return false;
         }
-        return createRenderEngine(JumaRE::RenderAPI::DirectX12, { JSTR("JumaEngine"), { 800, 600 } });
+        return Super::initInternal();
     }
 
     bool GameEngine::initGameInstance()

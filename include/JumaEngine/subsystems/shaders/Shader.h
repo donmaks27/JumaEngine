@@ -22,6 +22,7 @@ namespace JumaEngine
         virtual ~Shader() override = default;
 
         const jstringID& getName() const { return m_ShaderName; }
+        const jmap<jstringID, jstringID>& getEngineInternalParamNames() const { return m_EngineInternalParamNames; }
 
         JumaRE::Shader* getShader() const { return m_Shader; }
 
@@ -29,6 +30,8 @@ namespace JumaEngine
 
         JumaRE::Shader* m_Shader = nullptr;
         jstringID m_ShaderName = jstringID_NONE;
+
+        jmap<jstringID, jstringID> m_EngineInternalParamNames; // Material param name - internal param name
 
 
         bool loadShader(const jstringID& shaderName);
