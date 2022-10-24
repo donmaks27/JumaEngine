@@ -6,7 +6,7 @@
 
 #include <JumaRE/RenderEngine.h>
 
-#include "EngineSubsystem.h"
+#include "subsystems/EngineSubsystem.h"
 
 namespace JumaEngine
 {
@@ -23,19 +23,18 @@ namespace JumaEngine
         
         JumaRE::RenderEngine* getRenderEngine() const { return m_RenderEngine; }
 
+        template<typename T, TEMPLATE_ENABLE(is_base<EngineContextObject, T>)>
+        T* registerObject(T* object) { return dynamic_cast<T*>(this->registerObjectInternal(object)); }
+
         EngineContextObject* createObject(const EngineClass* engineClass);
         template<typename T>
-        T* createObject(const EngineSubclass<T>& subclass)
-        {
-            EngineContextObject* object = createObject(subclass.get());
-            return object != nullptr ? dynamic_cast<T*>(object) : nullptr;
-        }
+        T* createObject(const EngineSubclass<T>& subclass) { return dynamic_cast<T*>(this->createObject(subclass.get())); }
         template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<EngineContextObject, T>)>
         T* createObject() { return this->createObject<T>(T::GetClassStatic()); }
         
         GameInstance* getGameInstance() const { return m_GameInstance; }
         template<typename T, TEMPLATE_ENABLE(is_base<GameInstance, T>)>
-        T* getGameInstance() const { return dynamic_cast<T*>(getGameInstance()); }
+        T* getGameInstance() const { return dynamic_cast<T*>(this->getGameInstance()); }
         GameInstance* createGameInstance(const EngineSubclass<GameInstance>& subclass);
         template<typename T, TEMPLATE_ENABLE(is_base<GameInstance, T>)>
         T* createGameInstance() { return dynamic_cast<T*>( this->createGameInstance(T::GetClassStatic()) ); }

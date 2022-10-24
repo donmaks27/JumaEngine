@@ -6,7 +6,7 @@
 
 #include "../include/JumaEngine/EngineContextObject.h"
 #include "../include/JumaEngine/GameInstance.h"
-#include "../include/JumaEngine/ShadersSubsystem.h"
+#include "../include/JumaEngine/subsystems/shaders/ShadersSubsystem.h"
 
 namespace JumaEngine
 {
