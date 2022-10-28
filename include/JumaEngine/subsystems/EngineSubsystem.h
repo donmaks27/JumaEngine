@@ -20,5 +20,6 @@ namespace JumaEngine
     protected:
 
         virtual bool initSubsystem() { return true; }
+        virtual void clearSubsystem() {}
     };
 }

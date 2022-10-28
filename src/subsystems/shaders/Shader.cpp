@@ -8,7 +8,7 @@
 
 namespace JumaEngine
 {
-    inline bool ParseShaderStage(const jstring& str, JumaRE::ShaderStageFlags& outStage)
+    inline bool ParseShaderStage(const jstringID& str, JumaRE::ShaderStageFlags& outStage)
     {
         if (str == JSTR("vertex"))
         {
@@ -22,7 +22,7 @@ namespace JumaEngine
         }
         return false;
     }
-    inline bool ParseShaderFiles(const JumaRE::RenderEngine* renderEngine, const jmap<jstring, json::json_value>& jsonObject, jmap<JumaRE::ShaderStageFlags, jstring>& outFiles)
+    inline bool ParseShaderFiles(const JumaRE::RenderEngine* renderEngine, const jmap<jstringID, json::json_value>& jsonObject, jmap<JumaRE::ShaderStageFlags, jstring>& outFiles)
     {
         const json::json_value* jsonValue = jsonObject.find("shaderFiles");
         if (jsonValue == nullptr)
@@ -49,7 +49,7 @@ namespace JumaEngine
         }
         return true;
     }
-    inline bool ParseVertexComponents(const jmap<jstring, json::json_value>& jsonObject, jset<jstringID>& outVertexComponents)
+    inline bool ParseVertexComponents(const jmap<jstringID, json::json_value>& jsonObject, jset<jstringID>& outVertexComponents)
     {
         const json::json_value* vertexComponentsJsonValue = jsonObject.find(JSTR("vertexComponents"));
         if (vertexComponentsJsonValue == nullptr)
@@ -68,7 +68,7 @@ namespace JumaEngine
         }
         return !outVertexComponents.isEmpty();
     }
-    inline bool ParseVertexUniforms(const jmap<jstring, json::json_value>& jsonObject, jmap<jstringID, JumaRE::ShaderUniform>& outUniforms, 
+    inline bool ParseVertexUniforms(const jmap<jstringID, json::json_value>& jsonObject, jmap<jstringID, JumaRE::ShaderUniform>& outUniforms, 
         jmap<jstringID, jstringID>& outEngineInternalParams)
     {
         const json::json_value* uniformsJsonValue = jsonObject.find(JSTR("uniforms"));
@@ -84,7 +84,7 @@ namespace JumaEngine
             {
                 continue;
             }
-            const jmap<jstring, json::json_value>& uniformJsonObject = uniformJson.value->asObject();
+            const jmap<jstringID, json::json_value>& uniformJsonObject = uniformJson.value->asObject();
 
             jstring uniformTypeString;
             const json::json_value* uniformTypeJsonValue = uniformJsonObject.find(JSTR("type"));
@@ -155,14 +155,14 @@ namespace JumaEngine
         }
 
         const jstring shaderNameString = shaderName.toString();
-        const jstring jsonFileName = JSTR("content/") + shaderNameString + JSTR(".json");
+        const jstring jsonFileName = JSTR("content/shaders/") + shaderNameString + JSTR(".json");
         const json::json_value shaderJsonValue = json::parseFile(jsonFileName);
         if (shaderJsonValue == nullptr)
         {
             JUTILS_LOG(error, JSTR("Failed to parse file {}"), jsonFileName);
             return false;
         }
-        const jmap<jstring, json::json_value>& shaderJsonObject = shaderJsonValue->asObject();
+        const jmap<jstringID, json::json_value>& shaderJsonObject = shaderJsonValue->asObject();
 
         jmap<JumaRE::ShaderStageFlags, jstring> shaderFiles;
         jset<jstringID> vertexComponents;

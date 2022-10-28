@@ -147,6 +147,7 @@ namespace JumaEngine
     {
         for (const auto& subsystem : m_EngineSubsystems)
         {
+            subsystem.value->clearSubsystem();
             delete subsystem.value;
         }
         m_EngineSubsystems.clear();

@@ -22,7 +22,7 @@ namespace JumaEngine
 
     public:
         ShadersSubsystem() = default;
-        virtual ~ShadersSubsystem() override;
+        virtual ~ShadersSubsystem() override = default;
 
         OnShadersSubsystemMaterialParamEvent onEngineInternalParamChanged;
 
@@ -55,6 +55,7 @@ namespace JumaEngine
     protected:
 
         virtual bool initSubsystem() override;
+        virtual void clearSubsystem() override;
 
     private:
 

@@ -6,11 +6,6 @@
 
 namespace JumaEngine
 {
-    ShadersSubsystem::~ShadersSubsystem()
-    {
-        clear();
-    }
-
     bool ShadersSubsystem::initSubsystem()
     {
         if (!Super::initSubsystem())
@@ -20,6 +15,12 @@ namespace JumaEngine
 
         m_EngineInternalParams.setValue<JumaRE::ShaderUniformType::Vec2>(JSTR("ScreenCoordsModifier"), getEngine()->getRenderEngine()->getScreenCoordinateModifier());
         return true;
+    }
+    void ShadersSubsystem::clearSubsystem()
+    {
+        clear();
+
+        Super::clearSubsystem();
     }
 
     Shader* ShadersSubsystem::getShader(const jstringID& shaderName)
