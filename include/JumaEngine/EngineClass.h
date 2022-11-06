@@ -78,7 +78,9 @@ namespace JumaEngine
         }
 
         ClassType* get() const { return m_Class; }
-        operator ClassType*() const { return get(); }
+
+        ClassType* operator->() { return m_Class; }
+        const ClassType* operator->() const { return m_Class; }
         
         template<typename T1, TEMPLATE_ENABLE(is_base<Type, T1>)>
         bool operator==(const EngineSubclass<T1>& subclass) const { return m_Class == subclass.get(); }

@@ -4,46 +4,49 @@
 
 namespace JumaEngine
 {
-    GameInstance::~GameInstance()
+    bool GameInstance::init()
     {
-        clearData_GameInstance();
+        return true;
     }
-
-    bool GameInstance::init(JumaRE::RenderTarget* renderTarget)
-    {
-        if (renderTarget == nullptr)
-        {
-            JUTILS_LOG(error, JSTR("Invalid render target for game instance"));
-            return false;
-        }
-
-        m_GameRenderTarget = renderTarget;
-        return initInternal();
-    }
-    bool GameInstance::initInternal()
+    bool GameInstance::initRenderData()
     {
         return true;
     }
 
+    bool GameInstance::setupRenderTarget(JumaRE::RenderTarget* renderTarget)
+    {
+        m_GameRenderTarget = renderTarget;
+        return onSetupGameRenderTarget();
+    }
+    bool GameInstance::onSetupGameRenderTarget()
+    {
+        return true;
+    }
+
+    bool GameInstance::initLogic()
+    {
+        return true;
+    }
+    void GameInstance::startLogic()
+    {
+    }
+    bool GameInstance::update(float deltaTime)
+    {
+        return true;
+    }
+    void GameInstance::stopLogic()
+    {
+    }
+
     void GameInstance::clear()
     {
-        clearInternal();
+        clearRenderData();
     }
-    void GameInstance::clearInternal()
-    {
-        clearData_GameInstance();
-    }
-    void GameInstance::clearData_GameInstance()
-    {
-        m_GameRenderTarget = nullptr;
-    }
-
-    void GameInstance::update()
+    void GameInstance::clearRenderData()
     {
     }
 
-    void GameInstance::onInputButton(const JumaRE::InputDevice device, const JumaRE::InputButton button,
-        const JumaRE::InputButtonAction action)
+    void GameInstance::onInputButton(const JumaRE::InputDevice device, const JumaRE::InputButton button, const JumaRE::InputButtonAction action)
     {
     }
     void GameInstance::onInputAxis(const JumaRE::InputDevice device, const JumaRE::InputAxis axis, const float value)

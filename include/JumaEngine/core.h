@@ -4,6 +4,12 @@
 
 #include <jutils/jlog.h>
 
+#ifdef JUMAENGINE_ENABLED_EDITORENGINE
+    #undef JUMAENGINE_ENABLED_GAMEENGINE
+#else
+    #define JUMAENGINE_ENABLED_GAMEENGINE
+#endif
+
 namespace JumaEngine
 {
     using namespace jutils;

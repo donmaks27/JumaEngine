@@ -6,6 +6,16 @@
 
 namespace JumaEngine
 {
+    bool TexturesSubsystem::initSubsystem()
+    {
+        if (!Super::initSubsystem())
+        {
+            return false;
+        }
+
+        getEngine()->getRenderEngine()->onDestroying.bind(this, &TexturesSubsystem::onRenderEngineDestroying);
+        return true;
+    }
     void TexturesSubsystem::clearSubsystem()
     {
         clear();
@@ -34,6 +44,12 @@ namespace JumaEngine
 
     void TexturesSubsystem::clear()
     {
+        JumaRE::RenderEngine* renderEngine = getEngine()->getRenderEngine();
+        if (renderEngine != nullptr)
+        {
+            renderEngine->onDestroying.unbind(this, &TexturesSubsystem::onRenderEngineDestroying);
+        }
+
         for (auto& texture : m_Textures)
         {
             texture.value.clearTexture();

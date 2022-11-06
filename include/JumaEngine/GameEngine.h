@@ -3,6 +3,9 @@
 #pragma once
 
 #include "core.h"
+
+#ifdef JUMAENGINE_ENABLED_GAMEENGINE
+
 #include "Engine.h"
 
 namespace JumaEngine
@@ -13,19 +16,26 @@ namespace JumaEngine
 
     public:
         GameEngine() = default;
-        virtual ~GameEngine() override;
-
-        virtual bool update() override;
+        virtual ~GameEngine() override = default;
 
     protected:
 
-        virtual bool initInternal() override;
-        virtual bool initGameInstance() override;
-        virtual void clearInternal() override;
+        virtual bool initRenderEngine() override;
+
+        virtual bool initEngineLoop() override;
+        virtual void startEngineLoop() override;
+        virtual bool update() override;
+        virtual void stopEngineLoop() override;
 
     private:
 
-
-        void clearData_GameEngine();
+        void onInputButton(JumaRE::WindowController* windowController, const JumaRE::WindowData* windowData, 
+            JumaRE::InputDevice device, JumaRE::InputButton button, JumaRE::InputButtonAction action);
+        void onInputAxis(JumaRE::WindowController* windowController, const JumaRE::WindowData* windowData, 
+            JumaRE::InputDevice device, JumaRE::InputAxis axis, float value);
+        void onInputAxis2D(JumaRE::WindowController* windowController, const JumaRE::WindowData* windowData, 
+            JumaRE::InputDevice device, JumaRE::InputAxis axis, const math::vector2& value);
     };
 }
+
+#endif

@@ -2,75 +2,67 @@
 
 #include "../include/JumaEngine/GameEngine.h"
 
-#include <JumaRE/RenderPipeline.h>
-#include <JumaRE/RenderTarget.h>
-
-#include "../include/JumaEngine/GameInstance.h"
+#ifdef JUMAENGINE_ENABLED_GAMEENGINE
 
 namespace JumaEngine
 {
-    GameEngine::~GameEngine()
+    bool GameEngine::initRenderEngine()
     {
-        clearData_GameEngine();
+        m_InitialRenderAPI = JumaRE::RenderAPI::Vulkan;
+        return Super::initRenderEngine();
     }
 
-    bool GameEngine::initInternal()
+    bool GameEngine::initEngineLoop()
     {
-        if (!createRenderEngine(JumaRE::RenderAPI::DirectX12, { JSTR("JumaEngine"), { 800, 600 } }))
+        JumaRE::WindowController* windowController = getRenderEngine()->getWindowController();
+        m_InitialGameInstanceRenderTarger = windowController->findWindowData(windowController->getMainWindowID())->windowRenderTarget;
+        if (!Super::initEngineLoop())
         {
             return false;
         }
-        return Super::initInternal();
-    }
 
-    bool GameEngine::initGameInstance()
-    {
-        const JumaRE::RenderEngine* renderEngine = getRenderEngine();
-        const JumaRE::WindowController* windowController = renderEngine != nullptr ? renderEngine->getWindowController() : nullptr;
-        const JumaRE::window_id windowID = windowController != nullptr ? windowController->getMainWindowID() : JumaRE::window_id_INVALID;
-        const JumaRE::WindowData* windowData = windowController != nullptr ? windowController->findWindowData(windowID) : nullptr;
-        JumaRE::RenderTarget* renderTarget = windowData != nullptr ? windowData->windowRenderTarget : nullptr;
-        return getGameInstance()->init(renderTarget);
-    }
+        windowController->OnInputButton.bind(this, &GameEngine::onInputButton);
+        windowController->OnInputAxis.bind(this, &GameEngine::onInputAxis);
+        windowController->OnInputAxis2D.bind(this, &GameEngine::onInputAxis2D);
 
-    void GameEngine::clearInternal()
-    {
-        clearData_GameEngine();
-        Super::clearInternal();
+        return getGameInstance()->initLogic();
     }
-    void GameEngine::clearData_GameEngine()
+    void GameEngine::startEngineLoop()
     {
-        const JumaRE::RenderEngine* renderEngine = getRenderEngine();
-        JumaRE::RenderPipeline* pipeline = renderEngine != nullptr ? renderEngine->getRenderPipeline() : nullptr;
-        if (pipeline != nullptr)
-        {
-            pipeline->waitForRenderFinished();
-        }
+        Super::startEngineLoop();
+        getGameInstance()->startLogic();
     }
-
     bool GameEngine::update()
     {
-        const JumaRE::RenderEngine* renderEngine = getRenderEngine();
-        if (renderEngine == nullptr)
+        if (!Super::update())
         {
             return false;
         }
-
-        JumaRE::WindowController* windowController = renderEngine->getWindowController();
-        if (windowController->isMainWindowClosed())
-        {
-            return false;
-        }
-
-        getGameInstance()->update();
-
-        JumaRE::RenderPipeline* pipeline = renderEngine->getRenderPipeline();
-        if (!pipeline->render())
-        {
-            return false;
-        }
-
-        windowController->updateWindows();
+        // TODO: Calculate delta time
+        getGameInstance()->update(0.0f);
         return true;
     }
+    void GameEngine::stopEngineLoop()
+    {
+        getGameInstance()->stopLogic();
+        Super::stopEngineLoop();
+    }
+
+    void GameEngine::onInputButton(JumaRE::WindowController* windowController, const JumaRE::WindowData* windowData,
+        const JumaRE::InputDevice device, const JumaRE::InputButton button, const JumaRE::InputButtonAction action)
+    {
+        getGameInstance()->onInputButton(device, button, action);
+    }
+    void GameEngine::onInputAxis(JumaRE::WindowController* windowController, const JumaRE::WindowData* windowData,
+        const JumaRE::InputDevice device, const JumaRE::InputAxis axis, const float value)
+    {
+        getGameInstance()->onInputAxis(device, axis, value);
+    }
+    void GameEngine::onInputAxis2D(JumaRE::WindowController* windowController, const JumaRE::WindowData* windowData,
+        const JumaRE::InputDevice device, const JumaRE::InputAxis axis, const math::vector2& value)
+    {
+        getGameInstance()->onInputAxis2D(device, axis, value);
+    }
 }
+
+#endif

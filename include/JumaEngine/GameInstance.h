@@ -15,24 +15,34 @@ namespace JumaEngine
         JUMAENGINE_CLASS(GameInstance, EngineContextObject)
 
         friend Engine;
+#ifdef JUMAENGINE_ENABLED_GAMEENGINE
+        friend class GameEngine;
+#endif
 
     public:
         GameInstance() = default;
-        virtual ~GameInstance() override;
-        
-        bool init(JumaRE::RenderTarget* renderTarget);
-        void clear();
-
-        virtual void update();
+        virtual ~GameInstance() override = default;
 
     protected:
 
-        virtual bool initInternal();
-        virtual void clearInternal();
+        virtual bool init();
+        virtual bool initRenderData();
+        virtual bool onSetupGameRenderTarget();
+
+        virtual bool initLogic();
+        virtual void startLogic();
+        virtual bool update(float deltaTime);
+        virtual void stopLogic();
+
+        virtual void clear();
+        virtual void clearRenderData();
 
         JumaRE::RenderTarget* getGameRenderTarget() const { return m_GameRenderTarget; }
-
         const math::uvector2& getCursorPosition() const { return m_CursorPosition; }
+
+        virtual void onInputButton(JumaRE::InputDevice device, JumaRE::InputButton button, JumaRE::InputButtonAction action);
+        virtual void onInputAxis(JumaRE::InputDevice device, JumaRE::InputAxis axis, float value);
+        virtual void onInputAxis2D(JumaRE::InputDevice device, JumaRE::InputAxis axis, const math::vector2& value);
 
     private:
 
@@ -41,10 +51,6 @@ namespace JumaEngine
         math::uvector2 m_CursorPosition = { 0, 0 };
 
 
-        void clearData_GameInstance();
-
-        void onInputButton(JumaRE::InputDevice device, JumaRE::InputButton button, JumaRE::InputButtonAction action);
-        void onInputAxis(JumaRE::InputDevice device, JumaRE::InputAxis axis, float value);
-        void onInputAxis2D(JumaRE::InputDevice device, JumaRE::InputAxis axis, const math::vector2& value);
+        bool setupRenderTarget(JumaRE::RenderTarget* renderTarget);
     };
 }

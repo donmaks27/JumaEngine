@@ -25,10 +25,14 @@ namespace JumaEngine
 
     protected:
 
+        virtual bool initSubsystem() override;
         virtual void clearSubsystem() override;
 
     private:
 
         jmap<jstringID, Texture> m_Textures;
+
+
+        void onRenderEngineDestroying(JumaRE::RenderEngine* renderEngine) { clearSubsystem(); }
     };
 }

@@ -67,6 +67,8 @@ namespace JumaEngine
         jarray<const Material*> m_DestroyingMaterials;
 
 
+        void onRenderEngineDestroying(JumaRE::RenderEngine* renderEngine) { clearSubsystem(); }
+
         void onMaterialClear(Material* material);
     };
 }

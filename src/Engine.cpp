@@ -3,80 +3,13 @@
 #include "../include/JumaEngine/Engine.h"
 
 #include <JumaRE/RenderEngineImpl.h>
+#include <JumaRE/RenderPipeline.h>
 
-#include "../include/JumaEngine/EngineContextObject.h"
-#include "../include/JumaEngine/GameInstance.h"
 #include "../include/JumaEngine/subsystems/shaders/ShadersSubsystem.h"
+#include "../include/JumaEngine/subsystems/textures/TexturesSubsystem.h"
 
 namespace JumaEngine
 {
-    Engine::~Engine()
-    {
-        clearData_Engine();
-    }
-
-    bool Engine::init()
-    {
-        return initInternal();
-    }
-    bool Engine::initInternal()
-    {
-        return (getSubsystem<ShadersSubsystem>() != nullptr);
-    }
-
-    void Engine::clear()
-    {
-        clearInternal();
-    }
-    void Engine::clearInternal()
-    {
-        clearData_Engine();
-    }
-    void Engine::clearData_Engine()
-    {
-        destroyGameInstance();
-        destroyEngineSubsystems();
-        destroyRenderEngine();
-    }
-
-    bool Engine::createRenderEngine(const JumaRE::RenderAPI api, const JumaRE::WindowCreateInfo& mainWindowInfo)
-    {
-        JumaRE::RenderEngine* renderEngine = JumaRE::CreateRenderEngine(api);
-        if (renderEngine == nullptr)
-        {
-            JUTILS_LOG(error, JSTR("Failed to create render engine ({})"), api);
-            return false;
-        }
-        if (!renderEngine->init(mainWindowInfo))
-        {
-            JUTILS_LOG(error, JSTR("Failed to initialize render engine ({})"), api);
-            delete renderEngine;
-            return false;
-        }
-
-        JUTILS_LOG(correct, JSTR("Render engine ({}) initialized"), api);
-        m_RenderEngine = renderEngine;
-
-        JumaRE::WindowController* windowController = m_RenderEngine->getWindowController();
-        windowController->OnInputButton.bind(this, &Engine::onInputButton);
-        windowController->OnInputAxis.bind(this, &Engine::onInputAxis);
-        windowController->OnInputAxis2D.bind(this, &Engine::onInputAxis2D);
-        return true;
-    }
-    void Engine::destroyRenderEngine()
-    {
-        if (m_RenderEngine != nullptr)
-        {
-            JumaRE::WindowController* windowController = m_RenderEngine->getWindowController();
-            windowController->OnInputButton.unbind(this, &Engine::onInputButton);
-            windowController->OnInputAxis.unbind(this, &Engine::onInputAxis);
-            windowController->OnInputAxis2D.unbind(this, &Engine::onInputAxis2D);
-
-            delete m_RenderEngine;
-            m_RenderEngine = nullptr;
-        }
-    }
-
     EngineContextObject* Engine::registerObjectInternal(EngineContextObject* object)
     {
         if (object != nullptr)
@@ -90,60 +23,159 @@ namespace JumaEngine
         return engineClass != nullptr ? registerObjectInternal(engineClass->createBaseObject()) : nullptr;
     }
 
-    GameInstance* Engine::createGameInstance(const EngineSubclass<GameInstance>& subclass)
+    bool Engine::init(const EngineSubclass<GameInstance>& gameInstanceClass)
     {
         if (m_GameInstance != nullptr)
         {
-            return m_GameInstance;
+            JUTILS_LOG(warning, JSTR("Engine already initialized!"));
+            return false;
         }
 
-        m_GameInstance = createObject(subclass);
+        if (!initEngine())
+        {
+            JUTILS_LOG(error, JSTR("Failed to init engine"));
+            return false;
+        }
+
+        m_GameInstance = createObject(gameInstanceClass);
         if (!initGameInstance())
         {
+            JUTILS_LOG(error, JSTR("Failed to init game instance"));
+            m_GameInstance->clear();
             delete m_GameInstance;
             m_GameInstance = nullptr;
+            clear();
+            return false;
         }
-        return m_GameInstance;
+
+        if (!initRenderEngine())
+        {
+            JUTILS_LOG(error, JSTR("Failed to init render engine"));
+            clear();
+            return false;
+        }
+
+        if (!m_GameInstance->initRenderData())
+        {
+            JUTILS_LOG(error, JSTR("Failed to init render data of game instance"));
+            clear();
+            return false;
+        }
+        return true;
     }
-    void Engine::destroyGameInstance()
+    bool Engine::initEngine()
+    {
+        return true;
+    }
+    bool Engine::initGameInstance()
+    {
+        return m_GameInstance->init();
+    }
+    bool Engine::initRenderEngine()
+    {
+        m_RenderEngine = JumaRE::CreateRenderEngine(m_InitialRenderAPI);
+        if (m_RenderEngine == nullptr)
+        {
+            JUTILS_LOG(error, JSTR("Failed to create render engine ({})"), m_InitialRenderAPI);
+            return false;
+        }
+        if (!m_RenderEngine->init(m_InitialRenderEngineWindow))
+        {
+            JUTILS_LOG(error, JSTR("Failed to init render engine ({})"), m_InitialRenderAPI);
+            delete m_RenderEngine;
+            m_RenderEngine = nullptr;
+            return false;
+        }
+
+        if (createSubsystem<ShadersSubsystem>() == nullptr)
+        {
+            JUTILS_LOG(error, JSTR("Failed to init shaders subsystem"));
+            return false;
+        }
+        if (createSubsystem<TexturesSubsystem>() == nullptr)
+        {
+            JUTILS_LOG(error, JSTR("Failed to init textures subsystem"));
+            return false;
+        }
+        return true;
+    }
+
+    void Engine::start()
+    {
+        JUTILS_LOG(info, JSTR("Initializing engine loop..."));
+        if (!initEngineLoop())
+        {
+            JUTILS_LOG(error, JSTR("Failed to init engine loop"));
+            return;
+        }
+
+        JUTILS_LOG(info, JSTR("Starting engine loop..."));
+        startEngineLoop();
+        JUTILS_LOG(info, JSTR("Stopping engine loop..."));
+        stopEngineLoop();
+        JUTILS_LOG(info, JSTR("Engine loop stopped"));
+    }
+    bool Engine::initEngineLoop()
+    {
+        if (m_InitialGameInstanceRenderTarger == nullptr)
+        {
+            JUTILS_LOG(error, JSTR("Invalid game instance render target"));
+            return false;
+        }
+        m_GameInstance->setupRenderTarget(m_InitialGameInstanceRenderTarger);
+        return true;
+    }
+    void Engine::startEngineLoop()
+    {
+        while (update())
+        {
+            if (!m_RenderEngine->getRenderPipeline()->render())
+            {
+                JUTILS_LOG(error, JSTR("Render failed"));
+                break;
+            }
+            m_RenderEngine->getWindowController()->updateWindows();
+        }
+
+        getRenderEngine()->getRenderPipeline()->waitForRenderFinished();
+    }
+    bool Engine::update()
+    {
+        if (m_RenderEngine->getWindowController()->isMainWindowClosed())
+        {
+            return false;
+        }
+        return true;
+    }
+    void Engine::stopEngineLoop()
+    {
+    }
+
+    void Engine::clear()
     {
         if (m_GameInstance != nullptr)
         {
+            m_GameInstance->clearRenderData();
+            clearRenderEngine();
+
             m_GameInstance->clear();
             delete m_GameInstance;
             m_GameInstance = nullptr;
         }
+        clearEngine();
     }
-
-    EngineSubsystem* Engine::getSubsystem(const EngineSubclass<EngineSubsystem>& subclass)
+    void Engine::clearRenderEngine()
     {
-        if (subclass == nullptr)
+        if (m_RenderEngine != nullptr)
         {
-            return nullptr;
-        }
-        EngineSubsystem* const* subsystemPtr = m_EngineSubsystems.find(subclass);
-        if (subsystemPtr != nullptr)
-        {
-            return *subsystemPtr;
-        }
-        EngineSubsystem* subsystem = createObject(subclass);
-        if (subsystem == nullptr)
-        {
-            JUTILS_LOG(error, JSTR("Failed to create subsystem {}"), subclass.get()->getClassName());
-            return nullptr;
-        }
+            
 
-        m_EngineSubsystems.add(subclass, subsystem);
-        if (!subsystem->initSubsystem())
-        {
-            JUTILS_LOG(error, JSTR("Failed to init subsystem {}"), subclass.get()->getClassName());
-            m_EngineSubsystems.remove(subclass);
-            delete subsystem;
-            return nullptr;
+            m_RenderEngine->clear();
+            delete m_RenderEngine;
+            m_RenderEngine = nullptr;
         }
-        return subsystem;
     }
-    void Engine::destroyEngineSubsystems()
+    void Engine::clearEngine()
     {
         for (const auto& subsystem : m_EngineSubsystems)
         {
@@ -153,31 +185,41 @@ namespace JumaEngine
         m_EngineSubsystems.clear();
     }
 
-    void Engine::onInputButton(JumaRE::WindowController* windowController, const JumaRE::WindowData* windowData,
-        const JumaRE::InputDevice device, const JumaRE::InputButton button, const JumaRE::InputButtonAction action)
+    EngineSubsystem* Engine::createSubsystem(const EngineSubclass<EngineSubsystem>& subsystemClass)
     {
-        GameInstance* gameInstance = getGameInstance();
-        if (gameInstance != nullptr)
+        if (subsystemClass == nullptr)
         {
-            gameInstance->onInputButton(device, button, action);
+            return nullptr;
         }
+        EngineSubsystem* const* subsystemPtr = m_EngineSubsystems.find(subsystemClass);
+        if (subsystemPtr != nullptr)
+        {
+            return *subsystemPtr;
+        }
+        EngineSubsystem* subsystem = createObject(subsystemClass);
+        if (subsystem == nullptr)
+        {
+            JUTILS_LOG(error, JSTR("Failed to create subsystem {}"), subsystemClass->getClassName());
+            return nullptr;
+        }
+
+        m_EngineSubsystems.add(subsystemClass, subsystem);
+        if (!subsystem->initSubsystem())
+        {
+            JUTILS_LOG(error, JSTR("Failed to init subsystem {}"), subsystemClass->getClassName());
+            m_EngineSubsystems.remove(subsystemClass);
+            delete subsystem;
+            return nullptr;
+        }
+        return subsystem;
     }
-    void Engine::onInputAxis(JumaRE::WindowController* windowController, const JumaRE::WindowData* windowData,
-        const JumaRE::InputDevice device, const JumaRE::InputAxis axis, const float value)
+    EngineSubsystem* Engine::getSubsystem(const EngineSubclass<EngineSubsystem>& subsystemClass) const
     {
-        GameInstance* gameInstance = getGameInstance();
-        if (gameInstance != nullptr)
+        if (subsystemClass == nullptr)
         {
-            gameInstance->onInputAxis(device, axis, value);
+            return nullptr;
         }
-    }
-    void Engine::onInputAxis2D(JumaRE::WindowController* windowController, const JumaRE::WindowData* windowData,
-        const JumaRE::InputDevice device, const JumaRE::InputAxis axis, const math::vector2& value)
-    {
-        GameInstance* gameInstance = getGameInstance();
-        if (gameInstance != nullptr)
-        {
-            gameInstance->onInputAxis2D(device, axis, value);
-        }
+        EngineSubsystem* const* subsystemPtr = m_EngineSubsystems.find(subsystemClass);
+        return subsystemPtr != nullptr ? *subsystemPtr : nullptr;
     }
 }

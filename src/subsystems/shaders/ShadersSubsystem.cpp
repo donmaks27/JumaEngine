@@ -13,6 +13,8 @@ namespace JumaEngine
             return false;
         }
 
+        getEngine()->getRenderEngine()->onDestroying.bind(this, &ShadersSubsystem::onRenderEngineDestroying);
+
         m_EngineInternalParams.setValue<JumaRE::ShaderUniformType::Vec2>(JSTR("ScreenCoordsModifier"), getEngine()->getRenderEngine()->getScreenCoordinateModifier());
         return true;
     }
@@ -95,6 +97,12 @@ namespace JumaEngine
 
     void ShadersSubsystem::clear()
     {
+        JumaRE::RenderEngine* renderEngine = getEngine()->getRenderEngine();
+        if (renderEngine != nullptr)
+        {
+            renderEngine->onDestroying.unbind(this, &ShadersSubsystem::onRenderEngineDestroying);
+        }
+
         for (auto& material : m_Materials)
         {
             material.clearMaterial();
