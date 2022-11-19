@@ -86,6 +86,10 @@ namespace JumaEngine
             m_RenderEngine = nullptr;
             return false;
         }
+        JUTILS_LOG(info, JSTR("Render engine initialized ({})"), m_InitialRenderAPI);
+
+        m_RenderEngine->registerVertexComponent(JSTR("position2D"), { JumaRE::VertexComponentType::Vec2, 0 });
+        m_RenderEngine->registerVertexComponent(JSTR("textureCoords"), { JumaRE::VertexComponentType::Vec2, 1 });
 
         if (createSubsystem<ShadersSubsystem>() == nullptr)
         {
@@ -168,8 +172,6 @@ namespace JumaEngine
     {
         if (m_RenderEngine != nullptr)
         {
-            
-
             m_RenderEngine->clear();
             delete m_RenderEngine;
             m_RenderEngine = nullptr;
