@@ -5,6 +5,7 @@
 #include <JumaRE/RenderEngineImpl.h>
 #include <JumaRE/RenderPipeline.h>
 
+#include "../include/JumaEngine/subsystems/meshes/MeshesSubsystem.h"
 #include "../include/JumaEngine/subsystems/shaders/ShadersSubsystem.h"
 #include "../include/JumaEngine/subsystems/textures/TexturesSubsystem.h"
 
@@ -88,9 +89,6 @@ namespace JumaEngine
         }
         JUTILS_LOG(info, JSTR("Render engine initialized ({})"), m_InitialRenderAPI);
 
-        m_RenderEngine->registerVertexComponent(JSTR("position2D"), { JumaRE::VertexComponentType::Vec2, 0 });
-        m_RenderEngine->registerVertexComponent(JSTR("textureCoords"), { JumaRE::VertexComponentType::Vec2, 1 });
-
         if (createSubsystem<ShadersSubsystem>() == nullptr)
         {
             JUTILS_LOG(error, JSTR("Failed to init shaders subsystem"));
@@ -99,6 +97,11 @@ namespace JumaEngine
         if (createSubsystem<TexturesSubsystem>() == nullptr)
         {
             JUTILS_LOG(error, JSTR("Failed to init textures subsystem"));
+            return false;
+        }
+        if (createSubsystem<MeshesSubsystem>() == nullptr)
+        {
+            JUTILS_LOG(error, JSTR("Failed to init meshes subsystem"));
             return false;
         }
         return true;
