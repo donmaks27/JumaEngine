@@ -65,7 +65,7 @@ namespace JumaEngine
         if (!loaderImageInitialized)
         {
             loaderImageInitialized = true;
-            stbi_set_flip_vertically_on_load(renderEngine->shouldFlipLoadedTextures());
+            stbi_set_flip_vertically_on_load(renderEngine->getRenderAPI() == JumaRE::RenderAPI::OpenGL);
         }
 
         math::ivector2 textureSize;

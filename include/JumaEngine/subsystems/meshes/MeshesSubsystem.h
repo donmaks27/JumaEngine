@@ -20,6 +20,7 @@ namespace JumaEngine
         virtual ~MeshesSubsystem() override = default;
 
         Mesh* generateCudeMesh(Material* material);
+        Mesh* generatePlane2DMesh(Material* material);
 
         void clear();
 

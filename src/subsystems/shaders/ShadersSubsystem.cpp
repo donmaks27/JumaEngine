@@ -14,8 +14,6 @@ namespace JumaEngine
         }
 
         getEngine()->getRenderEngine()->onDestroying.bind(this, &ShadersSubsystem::onRenderEngineDestroying);
-
-        m_EngineInternalParams.setValue<JumaRE::ShaderUniformType::Vec2>(JSTR("ScreenCoordsModifier"), getEngine()->getRenderEngine()->getScreenCoordinateModifier());
         return true;
     }
     void ShadersSubsystem::clearSubsystem()
