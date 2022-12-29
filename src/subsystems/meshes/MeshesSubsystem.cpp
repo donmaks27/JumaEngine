@@ -44,7 +44,7 @@ namespace JumaEngine
             math::vector3 position;
             math::vector2 textureCoords;
         };
-        const jarray<vertex_data> data = {
+        jarray<vertex_data> data = {
             { { -1.0f,  1.0f,  1.0f }, { 0.0f, 0.0f } },
             { { -1.0f,  1.0f, -1.0f }, { 0.0f, 1.0f } },
             { {  1.0f,  1.0f, -1.0f }, { 1.0f, 1.0f } },
@@ -83,6 +83,18 @@ namespace JumaEngine
             16, 17, 18, 16, 18, 19,
             20, 21, 22, 20, 22, 23
         };
+        switch (getEngine()->getRenderEngine()->getRenderAPI())
+        {
+        case JumaRE::RenderAPI::OpenGL:
+            {
+                for (auto& vertex : data)
+                {
+                    vertex.textureCoords.y = 1.0f - vertex.textureCoords.y;
+                }
+            }
+            break;
+        default: ;
+        }
 
         Mesh* mesh = getEngine()->registerObject(&m_Meshes.addDefault());
         const bool meshValid = mesh->init({ 
@@ -125,6 +137,14 @@ namespace JumaEngine
                 for (auto& vertex : data)
                 {
                     vertex.position.y = -vertex.position.y;
+                }
+            }
+            break;
+        case JumaRE::RenderAPI::OpenGL:
+            {
+                for (auto& vertex : data)
+                {
+                    vertex.textureCoords.y = 1.0f - vertex.textureCoords.y;
                 }
             }
             break;
