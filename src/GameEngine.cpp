@@ -14,8 +14,9 @@ namespace JumaEngine
 
     bool GameEngine::initEngineLoop()
     {
-        JumaRE::WindowController* windowController = getRenderEngine()->getWindowController();
-        m_InitialGameInstanceRenderTarger = windowController->findWindowData(windowController->getMainWindowID())->windowRenderTarget;
+        JumaRE::RenderEngine* renderEngine = getRenderEngine();
+        JumaRE::WindowController* windowController = renderEngine->getWindowController();
+        m_InitialGameInstanceRenderTarger = renderEngine->getRenderTarget(windowController->findWindowData(windowController->getMainWindowID())->windowRenderTargetID);
         if (!Super::initEngineLoop())
         {
             return false;
