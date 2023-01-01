@@ -136,14 +136,12 @@ namespace JumaEngine
     {
         while (update())
         {
-            if (!m_RenderEngine->getRenderPipeline()->render())
+            if (!m_RenderEngine->render())
             {
                 JUTILS_LOG(error, JSTR("Render failed"));
                 break;
             }
-            m_RenderEngine->getWindowController()->updateWindows();
         }
-
         getRenderEngine()->getRenderPipeline()->waitForRenderFinished();
     }
     bool Engine::update()
