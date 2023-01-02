@@ -1,13 +1,14 @@
-﻿// Copyright 2022 Leonov Maksim. All Rights Reserved.
+﻿// Copyright © 2022-2023 Leonov Maksim. All Rights Reserved.
 
-#include "../include/JumaEngine/Engine.h"
+#include "JumaEngine/Engine.h"
 
 #include <JumaRE/RenderEngineImpl.h>
 #include <JumaRE/RenderPipeline.h>
 
-#include "../include/JumaEngine/subsystems/meshes/MeshesSubsystem.h"
-#include "../include/JumaEngine/subsystems/shaders/ShadersSubsystem.h"
-#include "../include/JumaEngine/subsystems/textures/TexturesSubsystem.h"
+#include "JumaEngine/subsystems/meshes/MeshesSubsystem.h"
+#include "JumaEngine/subsystems/shaders/ShadersSubsystem.h"
+#include "JumaEngine/subsystems/textures/TexturesSubsystem.h"
+#include "JumaEngine/subsystems/ui/UISubsystem.h"
 
 namespace JumaEngine
 {
@@ -104,6 +105,11 @@ namespace JumaEngine
             JUTILS_LOG(error, JSTR("Failed to init meshes subsystem"));
             return false;
         }
+        if (createSubsystem<UISubsystem>() == nullptr)
+        {
+            JUTILS_LOG(error, JSTR("Failed to init UI subsystem"));
+            return false;
+        }
         return true;
     }
 
@@ -183,6 +189,9 @@ namespace JumaEngine
         for (const auto& subsystem : m_EngineSubsystems)
         {
             subsystem.value->clearSubsystem();
+        }
+        for (const auto& subsystem : m_EngineSubsystems)
+        {
             delete subsystem.value;
         }
         m_EngineSubsystems.clear();

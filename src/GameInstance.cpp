@@ -1,6 +1,6 @@
-﻿// Copyright 2022 Leonov Maksim. All Rights Reserved.
+﻿// Copyright © 2022-2023 Leonov Maksim. All Rights Reserved.
 
-#include "../include/JumaEngine/GameInstance.h"
+#include "JumaEngine/GameInstance.h"
 
 namespace JumaEngine
 {

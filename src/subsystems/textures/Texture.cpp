@@ -1,13 +1,13 @@
-﻿// Copyright 2022 Leonov Maksim. All Rights Reserved.
+﻿// Copyright © 2022-2023 Leonov Maksim. All Rights Reserved.
 
-#include "../../../include/JumaEngine/subsystems/textures/Texture.h"
+#include "JumaEngine/subsystems/textures/Texture.h"
 
 #include <jutils/json/json_parser.h>
 #include <jutils/math/vector3.h>
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 
-#include "../../../include/JumaEngine/Engine.h"
+#include "JumaEngine/Engine.h"
 
 namespace JumaEngine
 {

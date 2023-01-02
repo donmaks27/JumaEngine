@@ -1,4 +1,4 @@
-﻿// Copyright 2022 Leonov Maksim. All Rights Reserved.
+﻿// Copyright © 2022-2023 Leonov Maksim. All Rights Reserved.
 
 #pragma once
 
@@ -13,6 +13,8 @@ namespace JumaEngine
     class Material;
     class Shader;
     class ShadersSubsystem;
+
+    using ShaderUniformType = JumaRE::ShaderUniformType;
 
     JUTILS_CREATE_MULTICAST_DELEGATE1(OnMaterialEvent, Material*, material);
     JUTILS_CREATE_MULTICAST_DELEGATE2(OnMaterialParamEvent, Material*, material, const jstringID&, paramName);
@@ -37,7 +39,7 @@ namespace JumaEngine
         JumaRE::Material* getMaterial() const { return m_Material; }
         JumaRE::Shader* getShader() const { return m_Material != nullptr ? m_Material->getShader() : nullptr; }
 
-        template<JumaRE::ShaderUniformType Type>
+        template<ShaderUniformType Type>
         bool setParamValue(const jstringID& name, const typename JumaRE::ShaderUniformInfo<Type>::value_type& value)
         {
             if (isEngineInternalMaterialParam(name) || !m_Material->setParamValue<Type>(name, value))
@@ -56,7 +58,7 @@ namespace JumaEngine
             onParamChanged.call(this, name);
             return true;
         }
-        template<JumaRE::ShaderUniformType Type>
+        template<ShaderUniformType Type>
         bool getParamValue(const jstringID& name, typename JumaRE::ShaderUniformInfo<Type>::value_type& outValue) const { return m_Material->getParamValue(name, outValue); }
 
     private:

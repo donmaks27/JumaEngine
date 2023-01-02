@@ -1,10 +1,10 @@
-﻿// Copyright 2022 Leonov Maksim. All Rights Reserved.
+﻿// Copyright © 2022-2023 Leonov Maksim. All Rights Reserved.
 
-#include "../../../include/JumaEngine/subsystems/meshes/MeshesSubsystem.h"
+#include "JumaEngine/subsystems/meshes/MeshesSubsystem.h"
 
 #include <jutils/math/vector3.h>
 
-#include "../../../include/JumaEngine/Engine.h"
+#include "JumaEngine/Engine.h"
 
 namespace JumaEngine
 {
@@ -16,9 +16,15 @@ namespace JumaEngine
         }
 
         JumaRE::RenderEngine* renderEngine = getEngine()->getRenderEngine();
-        renderEngine->registerVertexComponent(JSTR("position2D"), { JumaRE::VertexComponentType::Vec2, 0 });
-        renderEngine->registerVertexComponent(JSTR("position3D"), { JumaRE::VertexComponentType::Vec3, 0 });
-        renderEngine->registerVertexComponent(JSTR("textureCoords"), { JumaRE::VertexComponentType::Vec2, 1 });
+        renderEngine->registerVertexComponent(m_VertexComponentIDs.add(VertexComponent::Position2D, JSTR("position2D")), { 
+            JumaRE::VertexComponentType::Vec2, 0
+        });
+        renderEngine->registerVertexComponent(m_VertexComponentIDs.add(VertexComponent::Position3D, JSTR("position3D")), { 
+            JumaRE::VertexComponentType::Vec3, 0
+        });
+        renderEngine->registerVertexComponent(m_VertexComponentIDs.add(VertexComponent::TextureCoords, JSTR("textureCoords")), { 
+            JumaRE::VertexComponentType::Vec2, 1
+        });
         return true;
     }
     void MeshesSubsystem::clearSubsystem()
@@ -35,6 +41,12 @@ namespace JumaEngine
             mesh.clearMesh();
         }
         m_Meshes.clear();
+    }
+
+    jstringID MeshesSubsystem::getVertexComponentID(const VertexComponent component) const
+    {
+        const jstringID* componentID = m_VertexComponentIDs.find(component);
+        return componentID != nullptr ? *componentID : jstringID_NONE;
     }
 
     Mesh* MeshesSubsystem::generateCudeMesh(Material* material)
@@ -97,64 +109,9 @@ namespace JumaEngine
         }
 
         Mesh* mesh = getEngine()->registerObject(&m_Meshes.addDefault());
-        const bool meshValid = mesh->init({ 
-            JumaRE::MakeVertexBufferData({ { JSTR("position3D"), JSTR("textureCoords") } }, data, indices )
-        }, { material });
-        if (!meshValid)
-        {
-            m_Meshes.removeLast();
-            return nullptr;
-        }
-        return mesh;
-    }
-    Mesh* MeshesSubsystem::generatePlane2DMesh(Material* material)
-    {
-        struct vertex_data
-        {
-            math::vector2 position;
-            math::vector2 textureCoords;
-        };
-
-        const JumaRE::RenderEngine* renderEngine = getEngine()->getRenderEngine();
-        if (renderEngine == nullptr)
-        {
-            return nullptr;
-        }
-
-        jarray<vertex_data> data = {
-            { jutils::math::vector2{ -1.0f, -1.0f }, { 0.0f, 0.0f } },
-            { jutils::math::vector2{ -1.0f,  1.0f }, { 0.0f, 1.0f } },
-            { jutils::math::vector2{  1.0f, -1.0f }, { 1.0f, 0.0f } },
-            { jutils::math::vector2{  1.0f, -1.0f }, { 1.0f, 0.0f } },
-            { jutils::math::vector2{ -1.0f,  1.0f }, { 0.0f, 1.0f } },
-            { jutils::math::vector2{  1.0f,  1.0f }, { 1.0f, 1.0f } }
-        };
-        switch (renderEngine->getRenderAPI())
-        {
-        case JumaRE::RenderAPI::DirectX11:
-        case JumaRE::RenderAPI::DirectX12:
-            {
-                for (auto& vertex : data)
-                {
-                    vertex.position.y = -vertex.position.y;
-                }
-            }
-            break;
-        case JumaRE::RenderAPI::OpenGL:
-            {
-                for (auto& vertex : data)
-                {
-                    vertex.textureCoords.y = 1.0f - vertex.textureCoords.y;
-                }
-            }
-            break;
-        default: ;
-        }
-
-        Mesh* mesh = getEngine()->registerObject(&m_Meshes.addDefault());
-        const bool meshValid = mesh->init({ 
-            JumaRE::MakeVertexBufferData({ { JSTR("position2D"), JSTR("textureCoords") } }, data )
-        }, { material });
+        const bool meshValid = mesh->init({ JumaRE::MakeVertexBufferData({ {
+            getVertexComponentID(VertexComponent::Position3D), getVertexComponentID(VertexComponent::TextureCoords)
+        } }, data, indices ) }, { material });
         if (!meshValid)
         {
             m_Meshes.removeLast();

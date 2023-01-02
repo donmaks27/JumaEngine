@@ -1,8 +1,8 @@
-﻿// Copyright 2022 Leonov Maksim. All Rights Reserved.
+﻿// Copyright © 2022-2023 Leonov Maksim. All Rights Reserved.
 
-#include "../../../include/JumaEngine/subsystems/textures/TexturesSubsystem.h"
+#include "JumaEngine/subsystems/textures/TexturesSubsystem.h"
 
-#include "../../../include/JumaEngine/Engine.h"
+#include "JumaEngine/Engine.h"
 
 namespace JumaEngine
 {

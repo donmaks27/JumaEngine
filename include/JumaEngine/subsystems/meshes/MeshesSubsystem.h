@@ -1,4 +1,4 @@
-﻿// Copyright 2022 Leonov Maksim. All Rights Reserved.
+﻿// Copyright © 2022-2023 Leonov Maksim. All Rights Reserved.
 
 #pragma once
 
@@ -6,8 +6,10 @@
 #include "../EngineSubsystem.h"
 
 #include <jutils/jlist.h>
+#include <jutils/jmap.h>
 
 #include "Mesh.h"
+#include "VertexComponent.h"
 
 namespace JumaEngine
 {
@@ -19,8 +21,9 @@ namespace JumaEngine
         MeshesSubsystem() = default;
         virtual ~MeshesSubsystem() override = default;
 
+        jstringID getVertexComponentID(VertexComponent component) const;
+
         Mesh* generateCudeMesh(Material* material);
-        Mesh* generatePlane2DMesh(Material* material);
 
         void clear();
 
@@ -30,6 +33,8 @@ namespace JumaEngine
         virtual void clearSubsystem() override;
 
     private:
+
+        jmap<VertexComponent, jstringID> m_VertexComponentIDs;
 
         jlist<Mesh> m_Meshes;
     };

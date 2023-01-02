@@ -1,10 +1,10 @@
-﻿// Copyright 2022 Leonov Maksim. All Rights Reserved.
+﻿// Copyright © 2022-2023 Leonov Maksim. All Rights Reserved.
 
-#include "../../../include/JumaEngine/subsystems/shaders/Shader.h"
+#include "JumaEngine/subsystems/shaders/Shader.h"
 
 #include <jutils/json/json_parser.h>
 
-#include "../../../include/JumaEngine/Engine.h"
+#include "JumaEngine/Engine.h"
 
 namespace JumaEngine
 {
