@@ -9,8 +9,6 @@
 
 namespace JumaEngine
 {
-    class UIObject;
-
     class UISubsystem final : public EngineSubsystem
     {
         JUMAENGINE_CLASS(UISubsystem, EngineSubsystem)
@@ -21,8 +19,6 @@ namespace JumaEngine
 
         JumaRE::VertexBuffer* getVertexBufferUI() const { return m_VertexBufferUI; }
 
-        UIObject* createUIObject();
-
     protected:
 
         virtual bool initSubsystem() override;
@@ -31,7 +27,5 @@ namespace JumaEngine
     private:
 
         JumaRE::VertexBuffer* m_VertexBufferUI = nullptr;
-
-        jarray<UIObject*> m_UIObjects;
     };
 }

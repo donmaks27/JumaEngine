@@ -3,19 +3,21 @@
 #pragma once
 
 #include "../../core.h"
-#include "../../EngineContextObject.h"
+#include "Widget.h"
 
-#include "../shaders/Material.h"
+#include <jutils/math/vector2.h>
 
 namespace JumaEngine
 {
-    class UIElement : public EngineContextObject
+    class Material;
+
+    class TestWidget final : public Widget
     {
-        JUMAENGINE_CLASS(UIElement, EngineContextObject)
+        JUMAENGINE_CLASS(TestWidget, Widget)
 
     public:
-        UIElement() = default;
-        virtual ~UIElement() override;
+        TestWidget() = default;
+        virtual ~TestWidget() override = default;
 
         void setMaterial(Material* material);
         Material* getMaterial() const { return m_Material; }
@@ -24,7 +26,14 @@ namespace JumaEngine
         void setOffset(const math::vector2& offset) { m_Offset = offset; }
         void setSize(const math::vector2& size) { m_Size = size; }
         void setDepth(const float depth) { m_Depth = depth; }
-        void updateMaterial();
+        void setVisibility(const bool visible) { m_Visible = visible; }
+
+        bool isVisible() const { return m_Visible; }
+
+    protected:
+
+        virtual void update(float deltaTime) override;
+        virtual void postUpdate() override;
 
     private:
 
@@ -34,8 +43,9 @@ namespace JumaEngine
         math::vector2 m_Offset = { 0.0f, 0.0f };
         math::vector2 m_Size = { 1.0f, 1.0f };
         float m_Depth = 0.0f;
+        bool m_Visible = true;
 
 
-        void clearWidget();
+        void updateMaterial() const;
     };
 }

@@ -140,8 +140,10 @@ namespace JumaEngine
     }
     void Engine::startEngineLoop()
     {
-        while (update())
+        while (!shouldExit())
         {
+            update();
+            postUpdate();
             if (!m_RenderEngine->render())
             {
                 JUTILS_LOG(error, JSTR("Render failed"));
@@ -150,13 +152,15 @@ namespace JumaEngine
         }
         getRenderEngine()->getRenderPipeline()->waitForRenderFinished();
     }
-    bool Engine::update()
+    bool Engine::shouldExit()
     {
-        if (m_RenderEngine->getWindowController()->isMainWindowClosed())
-        {
-            return false;
-        }
-        return true;
+        return (m_RenderEngine != nullptr) && m_RenderEngine->getWindowController()->isMainWindowClosed();
+    }
+    void Engine::update()
+    {
+    }
+    void Engine::postUpdate()
+    {
     }
     void Engine::stopEngineLoop()
     {

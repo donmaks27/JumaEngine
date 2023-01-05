@@ -1,4 +1,4 @@
-﻿// Copyright © 2022 Leonov Maksim. All Rights Reserved.
+﻿// Copyright © 2022-2023 Leonov Maksim. All Rights Reserved.
 
 #pragma once
 
@@ -24,7 +24,8 @@ namespace JumaEngine
 
         virtual bool initEngineLoop() override;
         virtual void startEngineLoop() override;
-        virtual bool update() override;
+        virtual void update() override;
+        virtual void postUpdate() override;
         virtual void stopEngineLoop() override;
 
     private:

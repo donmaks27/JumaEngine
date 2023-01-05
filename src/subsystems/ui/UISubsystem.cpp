@@ -4,7 +4,6 @@
 
 #include "JumaEngine/Engine.h"
 #include "JumaEngine/subsystems/meshes/MeshesSubsystem.h"
-#include "JumaEngine/subsystems/ui/UIObject.h"
 
 namespace JumaEngine
 {
@@ -73,12 +72,6 @@ namespace JumaEngine
     }
     void UISubsystem::clearSubsystem()
     {
-        for (const auto& object : m_UIObjects)
-        {
-            delete object;
-        }
-        m_UIObjects.clear();
-
         if (m_VertexBufferUI != nullptr)
         {
             JumaRE::RenderEngine* renderEngine = getEngine()->getRenderEngine();
@@ -90,10 +83,5 @@ namespace JumaEngine
         }
 
         Super::clearSubsystem();
-    }
-
-    UIObject* UISubsystem::createUIObject()
-    {
-        return m_UIObjects.add(getEngine()->createObject<UIObject>());
     }
 }

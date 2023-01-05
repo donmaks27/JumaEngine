@@ -33,19 +33,21 @@ namespace JumaEngine
         Super::startEngineLoop();
         getGameInstance()->startLogic();
     }
-    bool GameEngine::update()
+    void GameEngine::update()
     {
-        if (!Super::update())
-        {
-            return false;
-        }
+        Super::update();
+
         // TODO: Calculate delta time
         getGameInstance()->update(0.0f);
-        return true;
+    }
+    void GameEngine::postUpdate()
+    {
+        Super::postUpdate();
+        getGameInstance()->postUpdate();
     }
     void GameEngine::stopEngineLoop()
     {
-        getGameInstance()->stopLogic();
+        getGameInstance()->clearLogic();
         Super::stopEngineLoop();
     }
 
