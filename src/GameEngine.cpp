@@ -14,7 +14,7 @@ namespace JumaEngine
 
     bool GameEngine::initEngineLoop()
     {
-        JumaRE::RenderEngine* renderEngine = getRenderEngine();
+        const JumaRE::RenderEngine* renderEngine = getRenderEngine();
         JumaRE::WindowController* windowController = renderEngine->getWindowController();
         m_InitialGameInstanceRenderTarger = renderEngine->getRenderTarget(windowController->findWindowData(windowController->getMainWindowID())->windowRenderTargetID);
         if (!Super::initEngineLoop())
@@ -22,49 +22,42 @@ namespace JumaEngine
             return false;
         }
 
-        windowController->OnInputButton.bind(this, &GameEngine::onInputButton);
-        windowController->OnInputAxis.bind(this, &GameEngine::onInputAxis);
-        windowController->OnInputAxis2D.bind(this, &GameEngine::onInputAxis2D);
+        windowController->onWindowInput.bind(this, &GameEngine::onWindowInput);
 
-        return getGameInstance()->initLogic();
+        return CallInitLogicObject(getGameInstance());
     }
-    void GameEngine::startEngineLoop()
+    void GameEngine::onEngineLoopStarted()
     {
-        Super::startEngineLoop();
-        getGameInstance()->startLogic();
+        Super::onEngineLoopStarted();
+
+        CallOnStartLogic(getGameInstance());
     }
     void GameEngine::update()
     {
         Super::update();
 
         // TODO: Calculate delta time
-        getGameInstance()->update(0.0f);
+        CallUpdateLogicObject(getGameInstance(), 0.0f);
     }
     void GameEngine::postUpdate()
     {
         Super::postUpdate();
-        getGameInstance()->postUpdate();
+
+        CallPostUpdateLogicObject(getGameInstance());
     }
-    void GameEngine::stopEngineLoop()
+    void GameEngine::onEngineLoopStopped()
     {
-        getGameInstance()->clearLogic();
-        Super::stopEngineLoop();
+        CallClearLogicObject(getGameInstance());
+
+        getRenderEngine()->getWindowController()->onWindowInput.unbind(this, &GameEngine::onWindowInput);
+
+        Super::onEngineLoopStopped();
     }
 
-    void GameEngine::onInputButton(JumaRE::WindowController* windowController, const JumaRE::WindowData* windowData,
-        const JumaRE::InputDevice device, const JumaRE::InputButton button, const JumaRE::InputButtonAction action)
+    void GameEngine::onWindowInput(JumaRE::WindowController* windowController, const JumaRE::WindowData* windowData, 
+        const JumaRE::InputActionData& input)
     {
-        getGameInstance()->onInputButton(device, button, action);
-    }
-    void GameEngine::onInputAxis(JumaRE::WindowController* windowController, const JumaRE::WindowData* windowData,
-        const JumaRE::InputDevice device, const JumaRE::InputAxis axis, const float value)
-    {
-        getGameInstance()->onInputAxis(device, axis, value);
-    }
-    void GameEngine::onInputAxis2D(JumaRE::WindowController* windowController, const JumaRE::WindowData* windowData,
-        const JumaRE::InputDevice device, const JumaRE::InputAxis axis, const math::vector2& value)
-    {
-        getGameInstance()->onInputAxis2D(device, axis, value);
+        passInputToGameInstance(input);
     }
 }
 

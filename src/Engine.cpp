@@ -123,23 +123,9 @@ namespace JumaEngine
         }
 
         JUTILS_LOG(info, JSTR("Starting engine loop..."));
-        startEngineLoop();
-        JUTILS_LOG(info, JSTR("Stopping engine loop..."));
-        stopEngineLoop();
-        JUTILS_LOG(info, JSTR("Engine loop stopped"));
-    }
-    bool Engine::initEngineLoop()
-    {
-        if (m_InitialGameInstanceRenderTarger == nullptr)
-        {
-            JUTILS_LOG(error, JSTR("Invalid game instance render target"));
-            return false;
-        }
-        m_GameInstance->setupRenderTarget(m_InitialGameInstanceRenderTarger);
-        return true;
-    }
-    void Engine::startEngineLoop()
-    {
+        onEngineLoopStarted();
+        JUTILS_LOG(info, JSTR("Engine loop started"));
+
         while (!shouldExit())
         {
             update();
@@ -151,6 +137,25 @@ namespace JumaEngine
             }
         }
         getRenderEngine()->getRenderPipeline()->waitForRenderFinished();
+        
+        JUTILS_LOG(info, JSTR("Stopping engine loop..."));
+        onEngineLoopStopped();
+        JUTILS_LOG(info, JSTR("Engine loop stopped"));
+
+        clear();
+    }
+    bool Engine::initEngineLoop()
+    {
+        if (m_InitialGameInstanceRenderTarger == nullptr)
+        {
+            JUTILS_LOG(error, JSTR("Invalid game instance render target"));
+            return false;
+        }
+        m_GameInstance->setupRenderTarget(m_InitialGameInstanceRenderTarger);
+        return true;
+    }
+    void Engine::onEngineLoopStarted()
+    {
     }
     bool Engine::shouldExit()
     {
@@ -162,7 +167,7 @@ namespace JumaEngine
     void Engine::postUpdate()
     {
     }
-    void Engine::stopEngineLoop()
+    void Engine::onEngineLoopStopped()
     {
     }
 
@@ -181,6 +186,11 @@ namespace JumaEngine
     }
     void Engine::clearRenderEngine()
     {
+        for (const auto& subsystem : m_EngineSubsystems)
+        {
+            subsystem.value->clearSubsystem();
+        }
+
         if (m_RenderEngine != nullptr)
         {
             m_RenderEngine->clear();
@@ -190,10 +200,6 @@ namespace JumaEngine
     }
     void Engine::clearEngine()
     {
-        for (const auto& subsystem : m_EngineSubsystems)
-        {
-            subsystem.value->clearSubsystem();
-        }
         for (const auto& subsystem : m_EngineSubsystems)
         {
             delete subsystem.value;
@@ -237,5 +243,31 @@ namespace JumaEngine
         }
         EngineSubsystem* const* subsystemPtr = m_EngineSubsystems.find(subsystemClass);
         return subsystemPtr != nullptr ? *subsystemPtr : nullptr;
+    }
+
+    void Engine::passInputToGameInstance(const JumaRE::InputActionData& input)
+    {
+        if (m_GameInstance == nullptr)
+        {
+            return;
+        }
+        if (input.device != JumaRE::InputDevice::NONE)
+        {
+            if (input.button != JumaRE::InputButton::NONE)
+            {
+                m_GameInstance->onInputButton(input.device, input.button, input.buttonAction);
+            }
+            else if (input.axis != JumaRE::InputAxis::NONE)
+            {
+                if (JumaRE::IsInputAxis2D(input.axis))
+                {
+                    m_GameInstance->onInputAxis2D(input.device, input.axis, input.axisValue);
+                }
+                else
+                {
+                    m_GameInstance->onInputAxis(input.device, input.axis, input.axisValue[0]);
+                }
+            }
+        }
     }
 }

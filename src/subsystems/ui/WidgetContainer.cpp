@@ -15,13 +15,13 @@ namespace JumaEngine
         }
     }
 
-    void WidgetContainer::setRootWidget(const EngineSubclass<Widget>& widgetClass)
+    Widget* WidgetContainer::setRootWidget(const EngineSubclass<Widget>& widgetClass)
     {
         if (m_RootWidget != nullptr)
         {
             if (m_LogicInitialized)
             {
-                m_RootWidget->clearLogic();
+                m_RootWidget->onStopLogic();
             }
             delete m_RootWidget;
             m_RootWidget = nullptr;
@@ -37,15 +37,17 @@ namespace JumaEngine
             }
             if (m_LogicStarted && (m_RootWidget != nullptr))
             {
-                m_RootWidget->startLogic();
+                m_RootWidget->onStartLogic();
             }
         }
+
+        return getRootWidget();
     }
 
-    bool WidgetContainer::initLogic()
+    bool WidgetContainer::initLogicObject()
     {
         m_LogicInitialized = true;
-        if (!Super::initLogic())
+        if (!Super::initLogicObject())
         {
             return false;
         }
@@ -60,7 +62,7 @@ namespace JumaEngine
         if (m_RootWidget != nullptr)
         {
             m_RootWidget->setWidgetContainer(this);
-            if (!m_RootWidget->initLogic())
+            if (!m_RootWidget->initLogicObject())
             {
                 JUTILS_LOG(error, JSTR("Failed to init logic of root widget"));
                 return false;
@@ -69,25 +71,25 @@ namespace JumaEngine
         return true;
     }
 
-    void WidgetContainer::startLogic()
+    void WidgetContainer::onStartLogic()
     {
-        Super::startLogic();
+        Super::onStartLogic();
 
         m_LogicStarted = true;
         if (m_RootWidget != nullptr)
         {
-            m_RootWidget->startLogic();
+            m_RootWidget->onStartLogic();
         }
     }
-    void WidgetContainer::clearLogic()
+    void WidgetContainer::onStopLogic()
     {
-        Super::clearLogic();
+        Super::onStopLogic();
 
         m_LogicInitialized = false;
         m_LogicStarted = false;
         if (m_RootWidget != nullptr)
         {
-            m_RootWidget->clearLogic();
+            m_RootWidget->onStopLogic();
             delete m_RootWidget;
             m_RootWidget = nullptr;
         }

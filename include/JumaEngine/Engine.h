@@ -29,7 +29,6 @@ namespace JumaEngine
         template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<GameInstance, T>)>
         bool init() { return this->init(T::GetClassStatic()); }
         void start();
-        void clear();
 
         GameInstance* getGameInstance() const { return m_GameInstance; }
         template<typename T, TEMPLATE_ENABLE(is_base<GameInstance, T>)>
@@ -54,14 +53,16 @@ namespace JumaEngine
         virtual bool initRenderEngine();
 
         virtual bool initEngineLoop();
-        virtual void startEngineLoop();
+        virtual void onEngineLoopStarted();
         virtual bool shouldExit();
         virtual void update();
         virtual void postUpdate();
-        virtual void stopEngineLoop();
+        virtual void onEngineLoopStopped();
 
         virtual void clearRenderEngine();
         virtual void clearEngine();
+
+        void passInputToGameInstance(const JumaRE::InputActionData& input);
 
     private:
 
@@ -74,6 +75,8 @@ namespace JumaEngine
         EngineContextObject* registerObjectInternal(EngineContextObject* object);
 
         bool init(const EngineSubclass<GameInstance>& gameInstanceClass);
+
+        void clear();
 
         EngineSubsystem* createSubsystem(const EngineSubclass<EngineSubsystem>& subsystemClass);
         EngineSubsystem* getSubsystem(const EngineSubclass<EngineSubsystem>& subsystemClass) const;

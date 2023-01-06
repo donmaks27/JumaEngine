@@ -2,6 +2,8 @@
 
 #include "JumaEngine/GameInstance.h"
 
+#include "JumaEngine/Engine.h"
+
 namespace JumaEngine
 {
     bool GameInstance::init()

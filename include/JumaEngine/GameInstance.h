@@ -4,20 +4,18 @@
 
 #include "core.h"
 #include "LogicObject.h"
+#include "ILogicObjectOwner.h"
 
 #include <JumaRE/RenderTarget.h>
 #include <JumaRE/input/InputButtons.h>
 
 namespace JumaEngine
 {
-    class GameInstance : public LogicObject
+    class GameInstance : public LogicObject, public ILogicObjectOwner
     {
         JUMAENGINE_CLASS(GameInstance, LogicObject)
 
         friend Engine;
-#ifdef JUMAENGINE_ENABLED_GAMEENGINE
-        friend class GameEngine;
-#endif
 
     public:
         GameInstance() = default;

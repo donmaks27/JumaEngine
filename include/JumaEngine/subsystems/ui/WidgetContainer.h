@@ -22,12 +22,15 @@ namespace JumaEngine
         void setRenderTarget(JumaRE::RenderTarget* renderTarget);
         JumaRE::RenderTarget* getRenderTarget() const { return m_RenderTarget; }
 
-        void setRootWidget(const EngineSubclass<Widget>& widgetClass);
+        template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<Widget, T>)>
+        T* setRootWidget()
+            { return dynamic_cast<T*>(this->setRootWidget(T::GetClassStatic())); }
+        Widget* setRootWidget(const EngineSubclass<Widget>& widgetClass);
         Widget* getRootWidget() const { return m_RootWidget; }
 
-        virtual bool initLogic() override;
-        virtual void startLogic() override;
-        virtual void clearLogic() override;
+        virtual bool initLogicObject() override;
+        virtual void onStartLogic() override;
+        virtual void onStopLogic() override;
 
         virtual void update(float deltaTime) override;
         virtual void postUpdate() override;
