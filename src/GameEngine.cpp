@@ -23,33 +23,33 @@ namespace JumaEngine
         }
 
         windowController->onWindowInput.bind(this, &GameEngine::onWindowInput);
-
-        return CallInitLogicObject(getGameInstance());
+        InitializeLogicObject(getGameInstance());
+        return true;
     }
     void GameEngine::onEngineLoopStarted()
     {
         Super::onEngineLoopStarted();
 
-        CallOnStartLogic(getGameInstance());
+        StartLogicObject(getGameInstance());
     }
     void GameEngine::update()
     {
         Super::update();
 
         // TODO: Calculate delta time
-        CallUpdateLogicObject(getGameInstance(), 0.0f);
+        UpdateLogicObject(getGameInstance(), 0.0f);
     }
     void GameEngine::postUpdate()
     {
         Super::postUpdate();
 
-        CallPostUpdateLogicObject(getGameInstance());
+        PostUpdateLogicObject(getGameInstance());
     }
     void GameEngine::onEngineLoopStopped()
     {
-        CallClearLogicObject(getGameInstance());
-
         getRenderEngine()->getWindowController()->onWindowInput.unbind(this, &GameEngine::onWindowInput);
+
+        DestroyLogicObject(getGameInstance());
 
         Super::onEngineLoopStopped();
     }

@@ -4,22 +4,25 @@
 
 #include "../../core.h"
 #include "../../LogicObject.h"
+#include "../../ILogicObjectOwner.h"
 
 #include <JumaRE/RenderTarget.h>
 
 namespace JumaEngine
 {
+    class GameInstance;
     class Widget;
 
-    class WidgetContainer final : public LogicObject
+    class WidgetContainer final : public LogicObject, public ILogicObjectOwner
     {
         JUMAENGINE_CLASS(WidgetContainer, LogicObject)
+
+        friend GameInstance;
 
     public:
         WidgetContainer() = default;
         virtual ~WidgetContainer() override = default;
 
-        void setRenderTarget(JumaRE::RenderTarget* renderTarget);
         JumaRE::RenderTarget* getRenderTarget() const { return m_RenderTarget; }
 
         template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<Widget, T>)>
@@ -28,12 +31,14 @@ namespace JumaEngine
         Widget* setRootWidget(const EngineSubclass<Widget>& widgetClass);
         Widget* getRootWidget() const { return m_RootWidget; }
 
-        virtual bool initLogicObject() override;
-        virtual void onStartLogic() override;
-        virtual void onStopLogic() override;
+    protected:
 
-        virtual void update(float deltaTime) override;
-        virtual void postUpdate() override;
+        virtual void onInitialized() override;
+        virtual void onLogicStarted() override;
+        virtual void onUpdate(float deltaTime) override;
+        virtual void onPostUpdate() override;
+        virtual void onLogicStopping() override;
+        virtual void onDestroying() override;
 
     private:
 
@@ -41,10 +46,7 @@ namespace JumaEngine
 
         Widget* m_RootWidget = nullptr;
 
-        bool m_LogicInitialized = false;
-        bool m_LogicStarted = false;
-
-
-        bool initRootWidget();
+        
+        void setRenderTarget(JumaRE::RenderTarget* renderTarget) { m_RenderTarget = renderTarget; }
     };
 }

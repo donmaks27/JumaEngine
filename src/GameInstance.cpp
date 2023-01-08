@@ -3,6 +3,7 @@
 #include "JumaEngine/GameInstance.h"
 
 #include "JumaEngine/Engine.h"
+#include "JumaEngine/subsystems/ui/WidgetContainer.h"
 
 namespace JumaEngine
 {
@@ -25,6 +26,56 @@ namespace JumaEngine
         return true;
     }
 
+    void GameInstance::onInitialized()
+    {
+        Super::onInitialized();
+    }
+
+    void GameInstance::onLogicStarted()
+    {
+        Super::onLogicStarted();
+    }
+
+    void GameInstance::onUpdate(float deltaTime)
+    {
+        Super::onUpdate(deltaTime);
+
+        for (const auto& widgetContainer : m_WidgetContainers)
+        {
+            UpdateLogicObject(widgetContainer, deltaTime);
+        }
+    }
+
+    void GameInstance::onPostUpdate()
+    {
+        Super::onPostUpdate();
+
+        for (const auto& widgetContainer : m_WidgetContainers)
+        {
+            PostUpdateLogicObject(widgetContainer);
+        }
+    }
+
+    void GameInstance::onLogicStopping()
+    {
+        for (const auto& widgetContainer : m_WidgetContainers)
+        {
+            DestroyLogicObject(widgetContainer);
+        }
+        for (const auto& widgetContainer : m_WidgetContainers)
+        {
+            delete widgetContainer;
+        }
+        m_WidgetContainers.clear();
+
+        Super::onLogicStopping();
+    }
+
+    void GameInstance::onDestroying()
+    {
+        Super::onDestroying();
+    }
+
     void GameInstance::clear()
     {
         clearRenderData();
@@ -33,13 +84,27 @@ namespace JumaEngine
     {
     }
 
-    void GameInstance::onInputButton(const JumaRE::InputDevice device, const JumaRE::InputButton button, const JumaRE::InputButtonAction action)
+    WidgetContainer* GameInstance::createWidget(JumaRE::RenderTarget* renderTarget)
     {
+        if (!isLogicActive())
+        {
+            return nullptr;
+        }
+
+        WidgetContainer* widgetContainer = getEngine()->createObject<WidgetContainer>();
+        widgetContainer->setRenderTarget(renderTarget);
+        InitializeLogicObject(widgetContainer);
+        StartLogicObject(widgetContainer);
+        return m_WidgetContainers.add(widgetContainer);
     }
-    void GameInstance::onInputAxis(const JumaRE::InputDevice device, const JumaRE::InputAxis axis, const float value)
+    void GameInstance::destroyWidget(WidgetContainer* widgetContainer)
     {
-    }
-    void GameInstance::onInputAxis2D(const JumaRE::InputDevice device, const JumaRE::InputAxis axis, const math::vector2& value)
-    {
+        const int32 index = m_WidgetContainers.indexOf(widgetContainer);
+        if (m_WidgetContainers.isValidIndex(index))
+        {
+            DestroyLogicObject(widgetContainer);
+            m_WidgetContainers.removeAt(index);
+            delete widgetContainer;
+        }
     }
 }

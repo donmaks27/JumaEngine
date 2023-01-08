@@ -11,7 +11,7 @@ namespace JumaEngine
 
     class LogicObject : public EngineContextObject
     {
-        JUMAENGINE_CLASS_ABSTRACT(LogicObject, EngineContextObject)
+        JUMAENGINE_CLASS(LogicObject, EngineContextObject)
 
         friend ILogicObjectOwner;
 
@@ -19,21 +19,31 @@ namespace JumaEngine
         LogicObject() = default;
         virtual ~LogicObject() override = default;
 
-        bool isLogicInitialized() const { return m_LogicObjectInitialized; }
-        bool isLogicStarted() const { return m_LogicStarted; }
+        bool isInitialized() const { return m_ObjectInitialized && !isDestroyed(); }
+        bool isLogicActive() const { return m_LogicStarted; }
+        bool isDestroyed() const { return m_ObjectDestroyed; }
 
     protected:
 
-        virtual bool initLogicObject() { return true; }
-        virtual void onStartLogic() {}
-        virtual void update(float deltaTime) {}
-        virtual void postUpdate() {}
-        virtual void onStopLogic() {}
-        virtual void clearLogicObject() {}
+        virtual void onInitialized() {}
+        virtual void onLogicStarted() {}
+        virtual void onUpdate(float deltaTime) {}
+        virtual void onPostUpdate() {}
+        virtual void onLogicStopping() {}
+        virtual void onDestroying() {}
 
     private:
 
-        bool m_LogicObjectInitialized = false;
+        bool m_ObjectInitialized = false;
         bool m_LogicStarted = false;
+        bool m_ObjectDestroyed = false;
+
+
+        void initializeLogicObject();
+        void startLogic();
+        void update(float deltaTime);
+        void postUpdate();
+        void stopLogic();
+        void destroyLogicObject();
     };
 }

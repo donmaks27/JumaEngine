@@ -14,9 +14,9 @@ namespace JumaEngine
         m_Material = material;
     }
 
-    void TestWidget::update(const float deltaTime)
+    void TestWidget::onUpdate(const float deltaTime)
     {
-        Super::update(deltaTime);
+        Super::onUpdate(deltaTime);
 
         const JumaRE::RenderEngine* renderEngine = getEngine()->getRenderEngine();
         const JumaRE::WindowController* windowController = renderEngine->getWindowController();
@@ -46,9 +46,9 @@ namespace JumaEngine
             setVisibility(false);
         }
     }
-    void TestWidget::postUpdate()
+    void TestWidget::onPostUpdate()
     {
-        Super::postUpdate();
+        Super::onPostUpdate();
 
         updateMaterial();
         if (isVisible() && (m_Material != nullptr))

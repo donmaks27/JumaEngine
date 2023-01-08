@@ -4,8 +4,4 @@
 
 namespace JumaEngine
 {
-    void Widget::setWidgetContainer(WidgetContainer* widgetContainer)
-    {
-        m_WidgetContainer = widgetContainer;
-    }
 }

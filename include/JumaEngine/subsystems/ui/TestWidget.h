@@ -32,8 +32,8 @@ namespace JumaEngine
 
     protected:
 
-        virtual void update(float deltaTime) override;
-        virtual void postUpdate() override;
+        virtual void onUpdate(float deltaTime) override;
+        virtual void onPostUpdate() override;
 
     private:
 

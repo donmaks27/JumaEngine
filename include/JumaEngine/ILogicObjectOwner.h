@@ -17,11 +17,11 @@ namespace JumaEngine
 
     protected:
 
-        static bool CallInitLogicObject(LogicObject* object);
-        static bool CallOnStartLogic(LogicObject* object);
-        static void CallUpdateLogicObject(LogicObject* object, float deltaTime);
-        static void CallPostUpdateLogicObject(LogicObject* object);
-        static void CallOnStopLogic(LogicObject* object);
-        static void CallClearLogicObject(LogicObject* object);
+        static void InitializeLogicObject(LogicObject* object);
+        static void StartLogicObject(LogicObject* object);
+        static void UpdateLogicObject(LogicObject* object, float deltaTime);
+        static void PostUpdateLogicObject(LogicObject* object);
+        static void StopLogicObject(LogicObject* object);
+        static void DestroyLogicObject(LogicObject* object);
     };
 }

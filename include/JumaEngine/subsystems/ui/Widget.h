@@ -26,6 +26,6 @@ namespace JumaEngine
         WidgetContainer* m_WidgetContainer = nullptr;
 
 
-        void setWidgetContainer(WidgetContainer* widgetContainer);
+        void setWidgetContainer(WidgetContainer* container) { m_WidgetContainer = container; }
     };
 }

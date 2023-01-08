@@ -6,57 +6,28 @@
 
 namespace JumaEngine
 {
-    bool ILogicObjectOwner::CallInitLogicObject(LogicObject* object)
+    void ILogicObjectOwner::InitializeLogicObject(LogicObject* object)
     {
-        if (object->isLogicInitialized())
-        {
-            return true;
-        }
-        if (!object->initLogicObject())
-        {
-            return false;
-        }
-        object->m_LogicObjectInitialized = true;
-        return true;
+        object->initializeLogicObject();
     }
-    bool ILogicObjectOwner::CallOnStartLogic(LogicObject* object)
+    void ILogicObjectOwner::StartLogicObject(LogicObject* object)
     {
-        if (!CallInitLogicObject(object))
-        {
-            return false;
-        }
-        if (!object->isLogicStarted())
-        {
-            object->onStartLogic();
-            object->m_LogicStarted = true;
-        }
-        return true;
+        object->startLogic();
     }
-
-    void ILogicObjectOwner::CallUpdateLogicObject(LogicObject* object, const float deltaTime)
+    void ILogicObjectOwner::UpdateLogicObject(LogicObject* object, const float deltaTime)
     {
         object->update(deltaTime);
     }
-    void ILogicObjectOwner::CallPostUpdateLogicObject(LogicObject* object)
+    void ILogicObjectOwner::PostUpdateLogicObject(LogicObject* object)
     {
         object->postUpdate();
     }
-
-    void ILogicObjectOwner::CallOnStopLogic(LogicObject* object)
+    void ILogicObjectOwner::StopLogicObject(LogicObject* object)
     {
-        if (object->isLogicStarted())
-        {
-            object->onStopLogic();
-            object->m_LogicStarted = false;
-        }
+        object->stopLogic();
     }
-    void ILogicObjectOwner::CallClearLogicObject(LogicObject* object)
+    void ILogicObjectOwner::DestroyLogicObject(LogicObject* object)
     {
-        CallOnStopLogic(object);
-        if (object->isLogicInitialized())
-        {
-            object->clearLogicObject();
-            object->m_LogicObjectInitialized = false;
-        }
+        object->destroyLogicObject();
     }
 }

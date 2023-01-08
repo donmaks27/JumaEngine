@@ -7,110 +7,98 @@
 
 namespace JumaEngine
 {
-    void WidgetContainer::setRenderTarget(JumaRE::RenderTarget* renderTarget)
+    void WidgetContainer::onInitialized()
     {
-        if (!m_LogicInitialized)
+        Super::onInitialized();
+
+        if (m_RootWidget != nullptr)
         {
-            m_RenderTarget = renderTarget;
+            m_RootWidget->setWidgetContainer(this);
+            InitializeLogicObject(m_RootWidget);
         }
+    }
+
+    void WidgetContainer::onLogicStarted()
+    {
+        Super::onLogicStarted();
+
+        if (m_RootWidget != nullptr)
+        {
+            StartLogicObject(m_RootWidget);
+        }
+    }
+
+    void WidgetContainer::onUpdate(const float deltaTime)
+    {
+        Super::onUpdate(deltaTime);
+
+        if (m_RootWidget != nullptr)
+        {
+            UpdateLogicObject(m_RootWidget, deltaTime);
+        }
+    }
+
+    void WidgetContainer::onPostUpdate()
+    {
+        Super::onPostUpdate();
+
+        if (m_RootWidget != nullptr)
+        {
+            PostUpdateLogicObject(m_RootWidget);
+        }
+    }
+
+    void WidgetContainer::onLogicStopping()
+    {
+        if (m_RootWidget != nullptr)
+        {
+            StopLogicObject(m_RootWidget);
+        }
+
+        Super::onLogicStopping();
+    }
+
+    void WidgetContainer::onDestroying()
+    {
+        if (m_RootWidget != nullptr)
+        {
+            DestroyLogicObject(m_RootWidget);
+            delete m_RootWidget;
+            m_RootWidget = nullptr;
+        }
+
+        m_RenderTarget = nullptr;
+
+        Super::onDestroying();
     }
 
     Widget* WidgetContainer::setRootWidget(const EngineSubclass<Widget>& widgetClass)
     {
+        if (isDestroyed())
+        {
+            return nullptr;
+        }
+
         if (m_RootWidget != nullptr)
         {
-            if (m_LogicInitialized)
-            {
-                m_RootWidget->onStopLogic();
-            }
+            DestroyLogicObject(m_RootWidget);
             delete m_RootWidget;
-            m_RootWidget = nullptr;
         }
 
         m_RootWidget = getEngine()->createObject(widgetClass);
         if (m_RootWidget != nullptr)
         {
-            if (m_LogicInitialized && !initRootWidget())
+            m_RootWidget->setWidgetContainer(this);
+            if (isInitialized())
             {
-                delete m_RootWidget;
-                m_RootWidget = nullptr;
-            }
-            if (m_LogicStarted && (m_RootWidget != nullptr))
-            {
-                m_RootWidget->onStartLogic();
+                InitializeLogicObject(m_RootWidget);
+                if (isLogicActive())
+                {
+                    StartLogicObject(m_RootWidget);
+                }
             }
         }
 
         return getRootWidget();
-    }
-
-    bool WidgetContainer::initLogicObject()
-    {
-        m_LogicInitialized = true;
-        if (!Super::initLogicObject())
-        {
-            return false;
-        }
-        if (m_RenderTarget == nullptr)
-        {
-            return false;
-        }
-        return initRootWidget();
-    }
-    bool WidgetContainer::initRootWidget()
-    {
-        if (m_RootWidget != nullptr)
-        {
-            m_RootWidget->setWidgetContainer(this);
-            if (!m_RootWidget->initLogicObject())
-            {
-                JUTILS_LOG(error, JSTR("Failed to init logic of root widget"));
-                return false;
-            }
-        }
-        return true;
-    }
-
-    void WidgetContainer::onStartLogic()
-    {
-        Super::onStartLogic();
-
-        m_LogicStarted = true;
-        if (m_RootWidget != nullptr)
-        {
-            m_RootWidget->onStartLogic();
-        }
-    }
-    void WidgetContainer::onStopLogic()
-    {
-        Super::onStopLogic();
-
-        m_LogicInitialized = false;
-        m_LogicStarted = false;
-        if (m_RootWidget != nullptr)
-        {
-            m_RootWidget->onStopLogic();
-            delete m_RootWidget;
-            m_RootWidget = nullptr;
-        }
-    }
-
-    void WidgetContainer::update(const float deltaTime)
-    {
-        Super::update(deltaTime);
-
-        if (m_RootWidget != nullptr)
-        {
-            m_RootWidget->update(deltaTime);
-        }
-    }
-    void WidgetContainer::postUpdate()
-    {
-        Super::postUpdate();
-
-        if (m_RootWidget != nullptr)
-        {
-            m_RootWidget->postUpdate();
-        }
     }
 }
