@@ -19,7 +19,7 @@ namespace JumaEngine
         TestWidget() = default;
         virtual ~TestWidget() override = default;
 
-        void setMaterial(Material* material);
+        void setMaterial(Material* material, bool imitateCursor);
         Material* getMaterial() const { return m_Material; }
 
         void setLocation(const math::vector2& location) { m_Location = location; }
@@ -44,6 +44,8 @@ namespace JumaEngine
         math::vector2 m_Size = { 1.0f, 1.0f };
         float m_Depth = 0.0f;
         bool m_Visible = true;
+
+        bool m_ImitateCursor = false;
 
 
         void updateMaterial() const;

@@ -84,20 +84,20 @@ namespace JumaEngine
     {
     }
 
-    WidgetContainer* GameInstance::createWidget(JumaRE::RenderTarget* renderTarget)
+    WidgetContainer* GameInstance::createWidgetContainer(JumaRE::RenderTarget* renderTarget)
     {
         if (!isLogicActive())
         {
             return nullptr;
         }
 
-        WidgetContainer* widgetContainer = getEngine()->createObject<WidgetContainer>();
+        WidgetContainer* widgetContainer = m_WidgetContainers.add(getEngine()->createObject<WidgetContainer>());
         widgetContainer->setRenderTarget(renderTarget);
         InitializeLogicObject(widgetContainer);
         StartLogicObject(widgetContainer);
-        return m_WidgetContainers.add(widgetContainer);
+        return widgetContainer;
     }
-    void GameInstance::destroyWidget(WidgetContainer* widgetContainer)
+    void GameInstance::destroyWidgetContainer(WidgetContainer* widgetContainer)
     {
         const int32 index = m_WidgetContainers.indexOf(widgetContainer);
         if (m_WidgetContainers.isValidIndex(index))

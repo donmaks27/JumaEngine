@@ -19,11 +19,15 @@ namespace JumaEngine
         Widget() = default;
         virtual ~Widget() override = default;
 
-        WidgetContainer* getWidgetContainer() const { return m_WidgetContainer; }
+        WidgetContainer* getWidgetContainer() const
+            { return m_WidgetContainer != nullptr ? m_WidgetContainer : (m_ParentWidget != nullptr ? m_ParentWidget->getWidgetContainer() : nullptr); }
+
+        void setParentWidget(Widget* widget) { m_ParentWidget = widget; }
 
     private:
 
         WidgetContainer* m_WidgetContainer = nullptr;
+        Widget* m_ParentWidget = nullptr;
 
 
         void setWidgetContainer(WidgetContainer* container) { m_WidgetContainer = container; }

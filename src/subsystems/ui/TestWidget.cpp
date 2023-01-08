@@ -9,41 +9,45 @@
 
 namespace JumaEngine
 {
-    void TestWidget::setMaterial(Material* material)
+    void TestWidget::setMaterial(Material* material, const bool imitateCursor)
     {
         m_Material = material;
+        m_ImitateCursor = imitateCursor;
     }
 
     void TestWidget::onUpdate(const float deltaTime)
     {
         Super::onUpdate(deltaTime);
 
-        const JumaRE::RenderEngine* renderEngine = getEngine()->getRenderEngine();
-        const JumaRE::WindowController* windowController = renderEngine->getWindowController();
-        if (windowController->getCursorMode(windowController->getMainWindowID()) != JumaRE::WindowCursorMode::Locked)
+        if (m_ImitateCursor)
         {
-            const JumaRE::WindowData* windowData = windowController->findWindowData(windowController->getMainWindowID());
-            const JumaRE::RenderTarget* renderTarget = getWidgetContainer()->getRenderTarget();
-            const math::uvector2 renderTargetSize = renderTarget->getSize();
-            const math::vector2 cursorPosition = windowData->cursorPosition;
-            const math::vector2 screenCoordsModifier = math::vector2(1.0f, renderEngine->getRenderAPI() == JumaRE::RenderAPI::Vulkan ? 1.0f : -1.0f);
-            const math::vector2 cursorLocation = (2.0f * (cursorPosition / renderTargetSize) - 1.0f) * screenCoordsModifier;
-
-            setLocation(cursorLocation);
-            setSize(math::vector2(24.0f, 24.0f) / renderTargetSize);
-            if (renderEngine->getRenderAPI() == JumaRE::RenderAPI::Vulkan)
+            const JumaRE::RenderEngine* renderEngine = getEngine()->getRenderEngine();
+            const JumaRE::WindowController* windowController = renderEngine->getWindowController();
+            if (windowController->getCursorMode(windowController->getMainWindowID()) != JumaRE::WindowCursorMode::Locked)
             {
-                setOffset({ 1.0f, 1.0f });
+                const JumaRE::WindowData* windowData = windowController->findWindowData(windowController->getMainWindowID());
+                const JumaRE::RenderTarget* renderTarget = getWidgetContainer()->getRenderTarget();
+                const math::uvector2 renderTargetSize = renderTarget->getSize();
+                const math::vector2 cursorPosition = windowData->cursorPosition;
+                const math::vector2 screenCoordsModifier = math::vector2(1.0f, renderEngine->getRenderAPI() == JumaRE::RenderAPI::Vulkan ? 1.0f : -1.0f);
+                const math::vector2 cursorLocation = (2.0f * (cursorPosition / renderTargetSize) - 1.0f) * screenCoordsModifier;
+
+                setLocation(cursorLocation);
+                setSize(math::vector2(24.0f, 24.0f) / renderTargetSize);
+                if (renderEngine->getRenderAPI() == JumaRE::RenderAPI::Vulkan)
+                {
+                    setOffset({ 1.0f, 1.0f });
+                }
+                else
+                {
+                    setOffset({ 1.0f, -1.0f });
+                }
+                setVisibility(true);
             }
             else
             {
-                setOffset({ 1.0f, -1.0f });
+                setVisibility(false);
             }
-            setVisibility(true);
-        }
-        else
-        {
-            setVisibility(false);
         }
     }
     void TestWidget::onPostUpdate()

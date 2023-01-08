@@ -24,8 +24,8 @@ namespace JumaEngine
         GameInstance() = default;
         virtual ~GameInstance() override = default;
 
-        WidgetContainer* createWidget(JumaRE::RenderTarget* renderTarget);
-        void destroyWidget(WidgetContainer* widgetContainer);
+        WidgetContainer* createWidgetContainer(JumaRE::RenderTarget* renderTarget);
+        void destroyWidgetContainer(WidgetContainer* widgetContainer);
 
     protected:
 
