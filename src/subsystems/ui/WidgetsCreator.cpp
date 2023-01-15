@@ -17,6 +17,14 @@ namespace JumaEngine
     {
         Super::onLogicStarted();
 
+        for (const auto& widgetContext : m_WidgetContexts)
+        {
+            Widget* rootWidget = widgetContext.value.getRootWidget();
+            if (rootWidget != nullptr)
+            {
+                StartLogicObject(rootWidget);
+            }
+        }
         for (const auto& widget : m_Widgets)
         {
             StartLogicObject(widget);
@@ -27,19 +35,27 @@ namespace JumaEngine
     {
         Super::onUpdate(deltaTime);
 
-        for (const auto& widget : m_Widgets)
+        for (const auto& widgetContext : m_WidgetContexts)
         {
-            UpdateLogicObject(widget, deltaTime);
+            Widget* rootWidget = widgetContext.value.getRootWidget();
+            if (rootWidget != nullptr)
+            {
+                UpdateLogicObject(rootWidget, deltaTime);
+            }
         }
     }
 
-    void WidgetsCreator::onPostUpdate()
+    void WidgetsCreator::onPreRender()
     {
-        Super::onPostUpdate();
+        Super::onPreRender();
 
-        for (const auto& widget : m_Widgets)
+        for (const auto& widgetContext : m_WidgetContexts)
         {
-            PostUpdateLogicObject(widget);
+            Widget* rootWidget = widgetContext.value.getRootWidget();
+            if (rootWidget != nullptr)
+            {
+                PreRenderLogicObject(rootWidget);
+            }
         }
     }
 
@@ -64,7 +80,6 @@ namespace JumaEngine
             delete widget;
         }
         m_Widgets.clear();
-
         m_WidgetContexts.clear();
 
         Super::onDestroying();
@@ -98,8 +113,13 @@ namespace JumaEngine
     void WidgetsCreator::destroyWidgetContext(WidgetContext* widgetContext)
     {
         JumaRE::RenderTarget* renderTarget = widgetContext != nullptr ? widgetContext->getRenderTarget() : nullptr;
-        if (renderTarget != nullptr)
+        if ((renderTarget != nullptr) && m_WidgetContexts.contains(renderTarget))
         {
+            Widget* widget = widgetContext->getRootWidget();
+            if (widget != nullptr)
+            {
+                widget->setParentWidget(nullptr);
+            }
             m_WidgetContexts.remove(renderTarget);
         }
     }
@@ -119,11 +139,8 @@ namespace JumaEngine
         }
 
         m_Widgets.add(widget);
+        widget->m_ParentWidgetsCreator = this;
         InitializeLogicObject(widget);
-        if (isLogicActive())
-        {
-            StartLogicObject(widget);
-        }
         return widget;
     }
     void WidgetsCreator::destroyWidget(Widget* widget)
@@ -133,6 +150,35 @@ namespace JumaEngine
             DestroyLogicObject(widget);
             m_Widgets.remove(widget);
             delete widget;
+        }
+    }
+
+    void WidgetsCreator::setRootWidget(WidgetContext* widgetContext, Widget* widget)
+    {
+        if ((widgetContext == nullptr) || (widgetContext->getWidgetsCreator() != this))
+        {
+            return;
+        }
+        Widget* oldRootWidget = widgetContext->getRootWidget();
+        if (oldRootWidget == widget)
+        {
+            return;
+        }
+
+        if (oldRootWidget != nullptr)
+        {
+            oldRootWidget->setWidgetContext(nullptr);
+        }
+        widgetContext->m_RootWidget = widget;
+        if (widget != nullptr)
+        {
+            widget->setParentWidget(nullptr);
+            widget->setWidgetContext(widgetContext);
+
+            if (isLogicActive())
+            {
+                StartLogicObject(widget);
+            }
         }
     }
 }

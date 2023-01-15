@@ -4,6 +4,13 @@
 
 namespace JumaEngine
 {
+    void Widget::onDestroying()
+    {
+        onWidgetDestroying.call(this);
+
+        Super::onDestroying();
+    }
+
     void Widget::setWidgetContext(WidgetContext* widgetContext)
     {
         if (m_WidgetContext != widgetContext)
@@ -24,6 +31,7 @@ namespace JumaEngine
             if (m_ParentWidget != nullptr)
             {
                 m_ParentWidget->onWidgetContextChanged.unbind(this, &Widget::onParentWidgetContextChanged);
+                m_ParentWidget->onWidgetDestroying.unbind(this, &Widget::onParentWidgetDestroying);
                 m_ParentWidget = nullptr;
                 onDetachedFromParent.call(this);
             }
@@ -32,6 +40,7 @@ namespace JumaEngine
             {
                 m_ParentWidget = widget;
                 m_ParentWidget->onWidgetContextChanged.bind(this, &Widget::onParentWidgetContextChanged);
+                m_ParentWidget->onWidgetDestroying.bind(this, &Widget::onParentWidgetDestroying);
                 setWidgetContext(m_ParentWidget->getWidgetContext());
             }
             else
@@ -39,5 +48,16 @@ namespace JumaEngine
                 setWidgetContext(nullptr);
             }
         }
+    }
+    void Widget::onParentWidgetDestroying(Widget* widget)
+    {
+        setParentWidget(nullptr);
+    }
+
+    void Widget::setWidgetLocation(const math::vector2& location, const math::vector2& sizeMin, const math::vector2& sizeMax)
+    {
+        m_WidgetLocation = location;
+        m_WidgetSizeMin = sizeMin;
+        m_WidgetSizeMax = sizeMax;
     }
 }

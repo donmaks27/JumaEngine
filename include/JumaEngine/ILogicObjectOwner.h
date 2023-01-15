@@ -20,7 +20,7 @@ namespace JumaEngine
         static void InitializeLogicObject(LogicObject* object);
         static void StartLogicObject(LogicObject* object);
         static void UpdateLogicObject(LogicObject* object, float deltaTime);
-        static void PostUpdateLogicObject(LogicObject* object);
+        static void PreRenderLogicObject(LogicObject* object);
         static void StopLogicObject(LogicObject* object);
         static void DestroyLogicObject(LogicObject* object);
     };

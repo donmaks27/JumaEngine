@@ -47,11 +47,11 @@ namespace JumaEngine
         UpdateLogicObject(m_GameWidgetsCreator, deltaTime);
     }
 
-    void GameInstance::onPostUpdate()
+    void GameInstance::onPreRender()
     {
-        Super::onPostUpdate();
+        Super::onPreRender();
 
-        PostUpdateLogicObject(m_GameWidgetsCreator);
+        PreRenderLogicObject(m_GameWidgetsCreator);
     }
 
     void GameInstance::onLogicStopping()

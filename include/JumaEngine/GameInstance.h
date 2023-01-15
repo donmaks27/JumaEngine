@@ -35,7 +35,7 @@ namespace JumaEngine
         virtual void onInitialized() override;
         virtual void onLogicStarted() override;
         virtual void onUpdate(float deltaTime) override;
-        virtual void onPostUpdate() override;
+        virtual void onPreRender() override;
         virtual void onLogicStopping() override;
         virtual void onDestroying() override;
 

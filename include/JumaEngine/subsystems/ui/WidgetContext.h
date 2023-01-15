@@ -17,13 +17,11 @@ namespace JumaEngine
 
     public:
         WidgetContext() = default;
-        ~WidgetContext() = default;
 
         WidgetsCreator* getWidgetsCreator() const { return m_ParentWidgetsCreator; }
         JumaRE::RenderTarget* getRenderTarget() const { return m_RenderTarget; }
 
         Widget* getRootWidget() const { return m_RootWidget; }
-        void setRootWidget(Widget* widget);
 
     private:
 

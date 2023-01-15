@@ -21,6 +21,12 @@ namespace JumaEngine
 
         void addWidget(Widget* widget);
 
+    protected:
+
+        virtual void onLogicStarted() override;
+        virtual void onUpdate(float deltaTime) override;
+        virtual void onPreRender() override;
+
     private:
 
         jarray<Widget*> m_Widgets;

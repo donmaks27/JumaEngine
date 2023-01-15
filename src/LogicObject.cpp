@@ -29,11 +29,11 @@ namespace JumaEngine
             onUpdate(deltaTime);
         }
     }
-    void LogicObject::postUpdate()
+    void LogicObject::preRender()
     {
         if (isLogicActive())
         {
-            onPostUpdate();
+            onPreRender();
         }
     }
 

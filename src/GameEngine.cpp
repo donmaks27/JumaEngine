@@ -43,7 +43,7 @@ namespace JumaEngine
     {
         Super::postUpdate();
 
-        PostUpdateLogicObject(getGameInstance());
+        PreRenderLogicObject(getGameInstance());
     }
     void GameEngine::onEngineLoopStopped()
     {

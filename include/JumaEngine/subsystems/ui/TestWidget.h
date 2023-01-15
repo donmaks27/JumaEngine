@@ -33,7 +33,7 @@ namespace JumaEngine
     protected:
 
         virtual void onUpdate(float deltaTime) override;
-        virtual void onPostUpdate() override;
+        virtual void onPreRender() override;
 
     private:
 

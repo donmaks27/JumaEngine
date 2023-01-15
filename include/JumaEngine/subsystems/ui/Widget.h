@@ -6,12 +6,14 @@
 #include "../../LogicObject.h"
 
 #include <jutils/jdelegate_multicast.h>
+#include <jutils/math/vector2.h>
 
 namespace JumaEngine
 {
-    class IWidgetContainer;
     class Widget;
     class WidgetContext;
+    class WidgetsCreator;
+    class IWidgetContainer;
 
     JUTILS_CREATE_MULTICAST_DELEGATE1(OnWidgetEvent, Widget*, widget);
 
@@ -19,8 +21,8 @@ namespace JumaEngine
     {
         JUMAENGINE_CLASS_ABSTRACT(Widget, LogicObject)
 
+        friend WidgetsCreator;
         friend IWidgetContainer;
-        friend WidgetContext;
 
     public:
         Widget() = default;
@@ -28,20 +30,35 @@ namespace JumaEngine
 
         OnWidgetEvent onWidgetContextChanged;
         OnWidgetEvent onDetachedFromParent;
+        OnWidgetEvent onWidgetDestroying;
 
 
+        WidgetsCreator* getWidgetsCreator() const { return m_ParentWidgetsCreator; }
         WidgetContext* getWidgetContext() const { return m_WidgetContext; }
         Widget* getParentWidget() const { return m_ParentWidget; }
 
+    protected:
+
+        virtual void onDestroying() override;
+
     private:
 
+        WidgetsCreator* m_ParentWidgetsCreator = nullptr;
         WidgetContext* m_WidgetContext = nullptr;
         Widget* m_ParentWidget = nullptr;
+
+        math::vector2 m_WidgetLocation = { 0.0f, 0.0f };
+        math::vector2 m_WidgetSizeMin = { 0.0f, 0.0f };
+        math::vector2 m_WidgetSizeMax = { 0.0f, 0.0f };
+        math::vector2 m_WidgetActualSize = { 0.0f, 0.0f };
 
 
         void setWidgetContext(WidgetContext* widgetContext);
         void onParentWidgetContextChanged(Widget* parentWidget);
 
         void setParentWidget(Widget* widget);
+        void onParentWidgetDestroying(Widget* widget);
+
+        void setWidgetLocation(const math::vector2& location, const math::vector2& sizeMin, const math::vector2& sizeMax);
     };
 }

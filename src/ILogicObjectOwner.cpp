@@ -18,9 +18,9 @@ namespace JumaEngine
     {
         object->update(deltaTime);
     }
-    void ILogicObjectOwner::PostUpdateLogicObject(LogicObject* object)
+    void ILogicObjectOwner::PreRenderLogicObject(LogicObject* object)
     {
-        object->postUpdate();
+        object->preRender();
     }
     void ILogicObjectOwner::StopLogicObject(LogicObject* object)
     {

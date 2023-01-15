@@ -4,6 +4,8 @@
 
 #include "../../core.h"
 
+#include <jutils/math/vector2.h>
+
 namespace JumaEngine
 {
     class Widget;
@@ -18,5 +20,7 @@ namespace JumaEngine
     protected:
 
         static void SetParentForChildWidget(Widget* childWidget, Widget* parentWidget);
+        static void SetLocationForChildWidget(Widget* childWidget, const math::vector2& location, const math::vector2& sizeMin, 
+            const math::vector2& sizeMax);
     };
 }

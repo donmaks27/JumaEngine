@@ -28,7 +28,7 @@ namespace JumaEngine
         virtual void onInitialized() {}
         virtual void onLogicStarted() {}
         virtual void onUpdate(float deltaTime) {}
-        virtual void onPostUpdate() {}
+        virtual void onPreRender() {}
         virtual void onLogicStopping() {}
         virtual void onDestroying() {}
 
@@ -42,7 +42,7 @@ namespace JumaEngine
         void initializeLogicObject();
         void startLogic();
         void update(float deltaTime);
-        void postUpdate();
+        void preRender();
         void stopLogic();
         void destroyLogicObject();
     };

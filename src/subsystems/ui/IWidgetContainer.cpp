@@ -10,4 +10,9 @@ namespace JumaEngine
     {
         childWidget->setParentWidget(parentWidget);
     }
+    void IWidgetContainer::SetLocationForChildWidget(Widget* childWidget, const math::vector2& location, const math::vector2& sizeMin, 
+        const math::vector2& sizeMax)
+    {
+        childWidget->setWidgetLocation(location, sizeMin, sizeMax);
+    }
 }

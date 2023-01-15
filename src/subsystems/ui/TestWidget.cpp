@@ -51,9 +51,9 @@ namespace JumaEngine
             }
         }
     }
-    void TestWidget::onPostUpdate()
+    void TestWidget::onPreRender()
     {
-        Super::onPostUpdate();
+        Super::onPreRender();
 
         const WidgetContext* widgetContext = getWidgetContext();
         if (widgetContext != nullptr)

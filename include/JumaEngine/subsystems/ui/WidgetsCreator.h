@@ -31,12 +31,14 @@ namespace JumaEngine
         T* createWidget() { return dynamic_cast<T*>(this->createWidget(T::GetClassStatic())); }
         void destroyWidget(Widget* widget);
 
+        void setRootWidget(WidgetContext* widgetContext, Widget* widget);
+
     protected:
 
         virtual void onInitialized() override;
         virtual void onLogicStarted() override;
         virtual void onUpdate(float deltaTime) override;
-        virtual void onPostUpdate() override;
+        virtual void onPreRender() override;
         virtual void onLogicStopping() override;
         virtual void onDestroying() override;
 
