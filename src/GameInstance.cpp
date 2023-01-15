@@ -3,7 +3,7 @@
 #include "JumaEngine/GameInstance.h"
 
 #include "JumaEngine/Engine.h"
-#include "JumaEngine/subsystems/ui/WidgetContainer.h"
+#include "JumaEngine/subsystems/ui/WidgetsCreator.h"
 
 namespace JumaEngine
 {
@@ -34,39 +34,31 @@ namespace JumaEngine
     void GameInstance::onLogicStarted()
     {
         Super::onLogicStarted();
+
+        m_GameWidgetsCreator = getEngine()->createObject<WidgetsCreator>();
+        InitializeLogicObject(m_GameWidgetsCreator);
+        StartLogicObject(m_GameWidgetsCreator);
     }
 
     void GameInstance::onUpdate(float deltaTime)
     {
         Super::onUpdate(deltaTime);
 
-        for (const auto& widgetContainer : m_WidgetContainers)
-        {
-            UpdateLogicObject(widgetContainer, deltaTime);
-        }
+        UpdateLogicObject(m_GameWidgetsCreator, deltaTime);
     }
 
     void GameInstance::onPostUpdate()
     {
         Super::onPostUpdate();
 
-        for (const auto& widgetContainer : m_WidgetContainers)
-        {
-            PostUpdateLogicObject(widgetContainer);
-        }
+        PostUpdateLogicObject(m_GameWidgetsCreator);
     }
 
     void GameInstance::onLogicStopping()
     {
-        for (const auto& widgetContainer : m_WidgetContainers)
-        {
-            DestroyLogicObject(widgetContainer);
-        }
-        for (const auto& widgetContainer : m_WidgetContainers)
-        {
-            delete widgetContainer;
-        }
-        m_WidgetContainers.clear();
+        DestroyLogicObject(m_GameWidgetsCreator);
+        delete m_GameWidgetsCreator;
+        m_GameWidgetsCreator = nullptr;
 
         Super::onLogicStopping();
     }
@@ -82,29 +74,5 @@ namespace JumaEngine
     }
     void GameInstance::clearRenderData()
     {
-    }
-
-    WidgetContainer* GameInstance::createWidgetContainer(JumaRE::RenderTarget* renderTarget)
-    {
-        if (!isLogicActive())
-        {
-            return nullptr;
-        }
-
-        WidgetContainer* widgetContainer = m_WidgetContainers.add(getEngine()->createObject<WidgetContainer>());
-        widgetContainer->setRenderTarget(renderTarget);
-        InitializeLogicObject(widgetContainer);
-        StartLogicObject(widgetContainer);
-        return widgetContainer;
-    }
-    void GameInstance::destroyWidgetContainer(WidgetContainer* widgetContainer)
-    {
-        const int32 index = m_WidgetContainers.indexOf(widgetContainer);
-        if (m_WidgetContainers.isValidIndex(index))
-        {
-            DestroyLogicObject(widgetContainer);
-            m_WidgetContainers.removeAt(index);
-            delete widgetContainer;
-        }
     }
 }

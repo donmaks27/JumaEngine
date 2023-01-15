@@ -12,7 +12,7 @@
 namespace JumaEngine
 {
     class Widget;
-    class WidgetContainer;
+    class WidgetsCreator;
 
     class GameInstance : public LogicObject, public ILogicObjectOwner
     {
@@ -24,8 +24,7 @@ namespace JumaEngine
         GameInstance() = default;
         virtual ~GameInstance() override = default;
 
-        WidgetContainer* createWidgetContainer(JumaRE::RenderTarget* renderTarget);
-        void destroyWidgetContainer(WidgetContainer* widgetContainer);
+        WidgetsCreator* getWidgetsCreator() const { return m_GameWidgetsCreator; }
 
     protected:
 
@@ -53,7 +52,7 @@ namespace JumaEngine
 
         JumaRE::RenderTarget* m_GameRenderTarget = nullptr;
 
-        jarray<WidgetContainer*> m_WidgetContainers;
+        WidgetsCreator* m_GameWidgetsCreator = nullptr;
 
 
         bool setupRenderTarget(JumaRE::RenderTarget* renderTarget);

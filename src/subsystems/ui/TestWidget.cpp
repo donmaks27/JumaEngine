@@ -5,7 +5,7 @@
 #include "JumaEngine/Engine.h"
 #include "JumaEngine/subsystems/shaders/Material.h"
 #include "JumaEngine/subsystems/ui/UISubsystem.h"
-#include "JumaEngine/subsystems/ui/WidgetContainer.h"
+#include "JumaEngine/subsystems/ui/WidgetContext.h"
 
 namespace JumaEngine
 {
@@ -19,14 +19,15 @@ namespace JumaEngine
     {
         Super::onUpdate(deltaTime);
 
-        if (m_ImitateCursor)
+        const WidgetContext* widgetContext = getWidgetContext();
+        if ((widgetContext != nullptr) && m_ImitateCursor)
         {
             const JumaRE::RenderEngine* renderEngine = getEngine()->getRenderEngine();
             const JumaRE::WindowController* windowController = renderEngine->getWindowController();
             if (windowController->getCursorMode(windowController->getMainWindowID()) != JumaRE::WindowCursorMode::Locked)
             {
                 const JumaRE::WindowData* windowData = windowController->findWindowData(windowController->getMainWindowID());
-                const JumaRE::RenderTarget* renderTarget = getWidgetContainer()->getRenderTarget();
+                const JumaRE::RenderTarget* renderTarget = widgetContext->getRenderTarget();
                 const math::uvector2 renderTargetSize = renderTarget->getSize();
                 const math::vector2 cursorPosition = windowData->cursorPosition;
                 const math::vector2 screenCoordsModifier = math::vector2(1.0f, renderEngine->getRenderAPI() == JumaRE::RenderAPI::Vulkan ? 1.0f : -1.0f);
@@ -54,15 +55,19 @@ namespace JumaEngine
     {
         Super::onPostUpdate();
 
-        updateMaterial();
-        if (isVisible() && (m_Material != nullptr))
+        const WidgetContext* widgetContext = getWidgetContext();
+        if (widgetContext != nullptr)
         {
-            const Engine* engine = getEngine();
-            const UISubsystem* uiSubsystem = engine->getSubsystem<UISubsystem>();
-            if (uiSubsystem != nullptr)
+            updateMaterial();
+            if (isVisible() && (m_Material != nullptr))
             {
-                JumaRE::RenderTarget* renderTarget = getWidgetContainer()->getRenderTarget();
-                engine->getRenderEngine()->addPrimitiveToRenderList(renderTarget, uiSubsystem->getVertexBufferUI(), m_Material->getMaterial());
+                const Engine* engine = getEngine();
+                const UISubsystem* uiSubsystem = engine->getSubsystem<UISubsystem>();
+                if (uiSubsystem != nullptr)
+                {
+                    JumaRE::RenderTarget* renderTarget = widgetContext->getRenderTarget();
+                    engine->getRenderEngine()->addPrimitiveToRenderList(renderTarget, uiSubsystem->getVertexBufferUI(), m_Material->getMaterial());
+                }
             }
         }
     }
