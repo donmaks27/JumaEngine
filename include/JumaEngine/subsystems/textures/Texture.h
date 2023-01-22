@@ -30,6 +30,8 @@ namespace JumaEngine
 
 
         bool loadTexture(const jstringID& textureName);
+        bool loadEngineTexture(const jstringID& textureName);
+        bool loadTexture(const jstringID& textureName, const jstringID& contentFolder);
         void clearTexture();
     };
 }

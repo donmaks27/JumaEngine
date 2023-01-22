@@ -44,7 +44,7 @@ namespace JumaEngine
 
         for (const auto& widget : m_Widgets)
         {
-            SetLocationForChildWidget(widget, { 1.0f, 1.0f }, { 1.0f, 1.0f }, { 1.0f, 1.0f });
+            SetLocationForChildWidget(widget, { 0.0f, 0.0f }, { 1.0f, 1.0f }, { 1.0f, 1.0f });
             PreRenderLogicObject(widget);
         }
     }

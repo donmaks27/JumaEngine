@@ -27,6 +27,7 @@ namespace JumaEngine
         OnShadersSubsystemMaterialParamEvent onEngineInternalParamChanged;
 
 
+        Shader* getEngineShader(const jstringID& shaderName);
         Shader* getShader(const jstringID& shaderName);
 
         Material* createMaterial(Shader* shader);
@@ -61,11 +62,14 @@ namespace JumaEngine
 
         JumaRE::MaterialParamsStorage m_EngineInternalParams;
 
+        jmap<jstringID, Shader> m_EngineShaders;
         jmap<jstringID, Shader> m_Shaders;
         jlist<Material> m_Materials;
 
         jarray<const Material*> m_DestroyingMaterials;
 
+
+        Shader* getShader(jmap<jstringID, Shader>& shadersList, const jstringID& shaderName, const jstringID& contentFolder) const;
 
         void onRenderEngineDestroying(JumaRE::RenderEngine* renderEngine) { clearSubsystem(); }
 

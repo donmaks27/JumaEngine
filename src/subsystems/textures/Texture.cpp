@@ -22,6 +22,16 @@ namespace JumaEngine
 
     bool Texture::loadTexture(const jstringID& textureName)
     {
+        static jstringID contentFolderName = JSTR("content");
+        return loadTexture(textureName, contentFolderName);
+    }
+    bool Texture::loadEngineTexture(const jstringID& textureName)
+    {
+        static jstringID contentFolderName = JSTR("content_engine");
+        return loadTexture(textureName, contentFolderName);
+    }
+    bool Texture::loadTexture(const jstringID& textureName, const jstringID& contentFolder)
+    {
         JumaRE::RenderEngine* renderEngine = getEngine()->getRenderEngine();
         if (renderEngine == nullptr)
         {
@@ -30,7 +40,7 @@ namespace JumaEngine
         }
 
         const jstring textureNameString = textureName.toString();
-        const jstring configFilePath = JSTR("content/textures/") + textureNameString + JSTR(".json");
+        const jstring configFilePath = contentFolder.toString() + JSTR("/textures/") + textureNameString + JSTR(".json");
         const json::json_value configJsonValue = json::parseFile(configFilePath);
         if (configJsonValue == nullptr)
         {

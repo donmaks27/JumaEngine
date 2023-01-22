@@ -1,0 +1,43 @@
+{
+    "shaderFiles": {
+        "vertex": {
+            "OpenGL": "content_engine/shaders/widgetSolidColor.vert",
+            "Vulkan": "content_engine/shaders/widgetSolidColor.vert.spv",
+            "DirectX11": "content_engine/shaders/widgetSolidColor.vert.hlsl.obj",
+            "DirectX12": "content_engine/shaders/widgetSolidColor.vert.hlsl.obj"
+        },
+        "fragment": {
+            "OpenGL": "content_engine/shaders/widgetSolidColor.frag",
+            "Vulkan": "content_engine/shaders/widgetSolidColor.frag.spv",
+            "DirectX11": "content_engine/shaders/widgetSolidColor.frag.hlsl.obj",
+            "DirectX12": "content_engine/shaders/widgetSolidColor.frag.hlsl.obj"
+        }
+    },
+    "vertexComponents": [ "position2D", "textureCoords" ],
+    "uniforms": {
+        "uLocation": {
+            "type": "vec2",
+            "stages": [ "vertex" ],
+            "shaderLocation": 0,
+            "shaderBlockOffset": 0
+        },
+        "uSize": {
+            "type": "vec2",
+            "stages": [ "vertex" ],
+            "shaderLocation": 0,
+            "shaderBlockOffset": 8
+        },
+        "uDepth": {
+            "type": "float",
+            "stages": [ "vertex" ],
+            "shaderLocation": 0,
+            "shaderBlockOffset": 16
+        },
+        "uColor": {
+            "type": "vec4",
+            "stages": [ "fragment" ],
+            "shaderLocation": 1,
+            "shaderBlockOffset": 0
+        }
+    }
+}

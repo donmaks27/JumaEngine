@@ -23,22 +23,32 @@ namespace JumaEngine
         Super::clearSubsystem();
     }
 
+    Texture* TexturesSubsystem::getEngineTexture(const jstringID& textureName)
+    {
+        static jstringID contentFolder = JSTR("content_engine");
+        return getTexture(m_EngineTextures, textureName, contentFolder);
+    }
     Texture* TexturesSubsystem::getTexture(const jstringID& textureName)
     {
-        Texture* texturePtr = m_Textures.find(textureName);
+        static jstringID contentFolder = JSTR("content");
+        return getTexture(m_Textures, textureName, contentFolder);
+    }
+    Texture* TexturesSubsystem::getTexture(jmap<jstringID, Texture>& texturesList, const jstringID& textureName, const jstringID& contentFolder) const
+    {
+        Texture* texturePtr = texturesList.find(textureName);
         if (texturePtr != nullptr)
         {
             return texturePtr;
         }
 
-        Texture* texture = getEngine()->registerObject(&m_Textures.add(textureName));
-        if (!texture->loadTexture(textureName))
+        Texture* texture = getEngine()->registerObject(&texturesList.add(textureName));
+        if (!texture->loadTexture(textureName, contentFolder))
         {
-            JUTILS_LOG(error, JSTR("Failed to load texture {}"), textureName.toString());
+            JUTILS_LOG(error, JSTR("Failed to load texture {} from {}"), textureName.toString(), contentFolder.toString());
             return nullptr;
         }
 
-        JUTILS_LOG(correct, JSTR("Loaded texture {}"), textureName.toString());
+        JUTILS_LOG(correct, JSTR("Loaded texture {} from {}"), textureName.toString(), contentFolder.toString());
         return texture;
     }
 

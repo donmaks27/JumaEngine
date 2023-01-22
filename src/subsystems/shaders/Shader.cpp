@@ -145,7 +145,7 @@ namespace JumaEngine
         return true;
     }
 
-    bool Shader::loadShader(const jstringID& shaderName)
+    bool Shader::loadShader(const jstringID& shaderName, const jstringID& contentFolder)
     {
         JumaRE::RenderEngine* renderEngine = getEngine()->getRenderEngine();
         if (renderEngine == nullptr)
@@ -155,7 +155,7 @@ namespace JumaEngine
         }
 
         const jstring shaderNameString = shaderName.toString();
-        const jstring jsonFileName = JSTR("content/shaders/") + shaderNameString + JSTR(".json");
+        const jstring jsonFileName = contentFolder.toString() + JSTR("/shaders/") + shaderNameString + JSTR(".json");
         const json::json_value shaderJsonValue = json::parseFile(jsonFileName);
         if (shaderJsonValue == nullptr)
         {

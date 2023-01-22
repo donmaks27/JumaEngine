@@ -23,23 +23,33 @@ namespace JumaEngine
         Super::clearSubsystem();
     }
 
+    Shader* ShadersSubsystem::getEngineShader(const jstringID& shaderName)
+    {
+        static jstringID contentFolder = JSTR("content_engine");
+        return getShader(m_EngineShaders, shaderName, contentFolder);
+    }
     Shader* ShadersSubsystem::getShader(const jstringID& shaderName)
     {
-        Shader* shaderPtr = m_Shaders.find(shaderName);
+        static jstringID contentFolder = JSTR("content");
+        return getShader(m_Shaders, shaderName, contentFolder);
+    }
+    Shader* ShadersSubsystem::getShader(jmap<jstringID, Shader>& shadersList, const jstringID& shaderName, const jstringID& contentFolder) const
+    {
+        Shader* shaderPtr = shadersList.find(shaderName);
         if (shaderPtr != nullptr)
         {
             return shaderPtr;
         }
 
-        Shader* shader = getEngine()->registerObject(&m_Shaders.add(shaderName));
-        if (!shader->loadShader(shaderName))
+        Shader* shader = getEngine()->registerObject(&shadersList.add(shaderName));
+        if (!shader->loadShader(shaderName, contentFolder))
         {
-            JUTILS_LOG(error, JSTR("Failed to create shader {}"), shaderName.toString());
-            m_Shaders.remove(shaderName);
+            JUTILS_LOG(error, JSTR("Failed to create shader {} from {}"), shaderName.toString(), contentFolder.toString());
+            shadersList.remove(shaderName);
             return nullptr;
         }
 
-        JUTILS_LOG(correct, JSTR("Created shader {}"), shaderName.toString());
+        JUTILS_LOG(correct, JSTR("Created shader {} from {}"), shaderName.toString(), contentFolder.toString());
         return shader;
     }
 

@@ -19,6 +19,7 @@ namespace JumaEngine
         TexturesSubsystem() = default;
         virtual ~TexturesSubsystem() override = default;
 
+        Texture* getEngineTexture(const jstringID& textureName);
         Texture* getTexture(const jstringID& textureName);
 
         void clear();
@@ -30,8 +31,11 @@ namespace JumaEngine
 
     private:
 
+        jmap<jstringID, Texture> m_EngineTextures;
         jmap<jstringID, Texture> m_Textures;
 
+
+        Texture* getTexture(jmap<jstringID, Texture>& texturesList, const jstringID& textureName, const jstringID& contentFolder) const;
 
         void onRenderEngineDestroying(JumaRE::RenderEngine* renderEngine) { clearSubsystem(); }
     };

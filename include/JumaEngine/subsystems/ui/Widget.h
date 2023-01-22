@@ -37,9 +37,18 @@ namespace JumaEngine
         WidgetContext* getWidgetContext() const { return m_WidgetContext; }
         Widget* getParentWidget() const { return m_ParentWidget; }
 
+        math::vector2 getLocation() const { return m_WidgetLocation; }
+        math::vector2 getSize() const { return m_WidgetActualSize; }
+
     protected:
 
         virtual void onDestroying() override;
+
+
+        math::vector2 getMinSize() const { return m_WidgetSizeMin; }
+        math::vector2 getMaxSize() const { return m_WidgetSizeMax; }
+
+        void setActualSize(const math::vector2& size) { m_WidgetActualSize = size; }
 
     private:
 
