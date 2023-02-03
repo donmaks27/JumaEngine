@@ -44,8 +44,16 @@ namespace JumaEngine
 
         for (const auto& widget : m_Widgets)
         {
-            SetLocationForChildWidget(widget, { 0.0f, 0.0f }, { 1.0f, 1.0f }, { 1.0f, 1.0f });
             PreRenderLogicObject(widget);
         }
+    }
+    void OverlayWidget::recalculateWidetSize()
+    {
+        const math::box2 bounds = getWidgetBounds();
+        m_WidgetRenderSize = bounds.v1 - bounds.v0;
+	    for (const auto& widget : m_Widgets)
+	    {
+		    RecalculateChildWidgetSize(widget, getWidgetBounds(), WidgetAlignmentH::Fill, WidgetAlignmentV::Fill);
+	    }
     }
 }

@@ -1,10 +1,10 @@
 {
     "shaderFiles": {
         "vertex": {
-            "OpenGL": "content_engine/shaders/widgetDefault.vert",
+            "OpenGL": "content_engine/shaders/widgetDefaultInverted.vert",
             "Vulkan": "content_engine/shaders/widgetDefault.vert.spv",
-            "DirectX11": "content_engine/shaders/widgetDefault.vert.hlsl.obj",
-            "DirectX12": "content_engine/shaders/widgetDefault.vert.hlsl.obj"
+            "DirectX11": "content_engine/shaders/widgetDefaultInverted.vert.hlsl.obj",
+            "DirectX12": "content_engine/shaders/widgetDefaultInverted.vert.hlsl.obj"
         },
         "fragment": {
             "OpenGL": "content_engine/shaders/widgetDefault.frag",

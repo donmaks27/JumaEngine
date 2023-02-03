@@ -59,8 +59,7 @@ namespace JumaEngine
         {
             return;
         }
-
-        setActualSize(getMaxSize());
+        
         if (m_WidgetMaterial == nullptr)
         {
             return;
@@ -79,9 +78,38 @@ namespace JumaEngine
         {
             ShadersSubsystem* shadersSubsystem = getEngine()->getSubsystem<ShadersSubsystem>();
             shadersSubsystem->destroyMaterial(m_WidgetMaterial);
+            m_WidgetMaterial = nullptr;
         }
 
         Super::onDestroying();
+    }
+
+    void ImageWidget::recalculateWidetSize()
+    {
+        const math::box2& bounds = getWidgetBounds();
+        const math::vector2 boundsSize = bounds.v1 - bounds.v0;
+        if (!m_UseSolidColor)
+        {
+	        if (m_MaterialTexture == nullptr)
+	        {
+		        m_WidgetRenderSize = { 0.0f, 0.0f };
+	        }
+            else
+            {
+                const math::vector2 imageSize = math::vector2(m_MaterialTexture->getSize()) / getWidgetContext()->getRenderTarget()->getSize();
+                m_WidgetRenderSize = {
+                    getWidgetAlignmentH() == WidgetAlignmentH::Fill ? boundsSize.x : imageSize.x,
+                    getWidgetAlignmentV() == WidgetAlignmentV::Fill ? boundsSize.y : imageSize.y
+                };
+            }
+        }
+        else
+        {
+	        m_WidgetRenderSize = {
+                getWidgetAlignmentH() == WidgetAlignmentH::Fill ? boundsSize.x : 0.0f,
+                getWidgetAlignmentV() == WidgetAlignmentV::Fill ? boundsSize.y : 0.0f
+            };
+        }
     }
 
     void ImageWidget::recreateMaterial()
@@ -135,11 +163,11 @@ namespace JumaEngine
         {
             static const jstringID locationParamName = JSTR("uLocation");
             static const jstringID sizeParamName = JSTR("uSize");
-            //static const jstringID depthParamName = JSTR("uDepth");
+            static const jstringID depthParamName = JSTR("uDepth");
 
-            m_WidgetMaterial->setParamValue<ShaderUniformType::Vec2>(locationParamName, getLocation());
-            m_WidgetMaterial->setParamValue<ShaderUniformType::Vec2>(sizeParamName, getSize());
-            //m_WidgetMaterial->setParamValue<ShaderUniformType::Float>(depthParamName, 0.0f);
+            m_WidgetMaterial->setParamValue<ShaderUniformType::Vec2>(locationParamName, getWidgetRenderLocation());
+            m_WidgetMaterial->setParamValue<ShaderUniformType::Vec2>(sizeParamName, getWidgetRenderSize());
+            m_WidgetMaterial->setParamValue<ShaderUniformType::Float>(depthParamName, 0.4f);
         }
     }
 }

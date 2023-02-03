@@ -54,6 +54,9 @@ namespace JumaEngine
             Widget* rootWidget = widgetContext.value.getRootWidget();
             if (rootWidget != nullptr)
             {
+                rootWidget->setWidgetBounds({ { 0.0f, 0.0f }, { 1.0f, 1.0f } }, WidgetAlignmentH::Fill, WidgetAlignmentV::Fill);
+                rootWidget->recalculateWidetSize();
+
                 PreRenderLogicObject(rootWidget);
             }
         }

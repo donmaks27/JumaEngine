@@ -36,6 +36,8 @@ namespace JumaEngine
         virtual void onPreRender() override;
         virtual void onDestroying() override;
 
+        virtual void recalculateWidetSize() override;
+
     private:
 
         Material* m_WidgetMaterial = nullptr;

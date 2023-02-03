@@ -4,7 +4,9 @@
 
 #include "../../core.h"
 
-#include <jutils/math/vector2.h>
+#include <jutils/math/box2.h>
+
+#include "WidgetAlignment.h"
 
 namespace JumaEngine
 {
@@ -20,7 +22,6 @@ namespace JumaEngine
     protected:
 
         static void SetParentForChildWidget(Widget* childWidget, Widget* parentWidget);
-        static void SetLocationForChildWidget(Widget* childWidget, const math::vector2& location, const math::vector2& sizeMin, 
-            const math::vector2& sizeMax);
+        static void RecalculateChildWidgetSize(Widget* childWidget, const math::box2& bounds, WidgetAlignmentH alignmentH, WidgetAlignmentV alignmentV);
     };
 }

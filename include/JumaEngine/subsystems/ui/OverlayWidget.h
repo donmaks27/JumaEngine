@@ -27,6 +27,8 @@ namespace JumaEngine
         virtual void onUpdate(float deltaTime) override;
         virtual void onPreRender() override;
 
+        virtual void recalculateWidetSize() override;
+
     private:
 
         jarray<Widget*> m_Widgets;

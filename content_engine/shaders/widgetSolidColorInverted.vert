@@ -13,5 +13,5 @@ layout(location = 1) in vec2 vTexCoords;
 void main()
 {
     vec2 screenPosition = (uLocation + uSize * vPosition) * 2 - 1.0f;
-    gl_Position = vec4(screenPosition, uDepth, 1.0f);
+    gl_Position = vec4(screenPosition.x, -screenPosition.y, uDepth, 1.0f);
 }

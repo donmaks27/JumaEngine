@@ -53,11 +53,44 @@ namespace JumaEngine
     {
         setParentWidget(nullptr);
     }
-
-    void Widget::setWidgetLocation(const math::vector2& location, const math::vector2& sizeMin, const math::vector2& sizeMax)
+    
+    void Widget::setWidgetBounds(const math::box2& bounds, const WidgetAlignmentH alignmentH, const WidgetAlignmentV alignmentV)
     {
-        m_WidgetLocation = location;
-        m_WidgetSizeMin = sizeMin;
-        m_WidgetSizeMax = sizeMax;
+        m_WidgetBounds = bounds;
+        m_WidgetAlignmentH = alignmentH;
+        m_WidgetAlignmentV = alignmentV;
     }
+    math::vector2 Widget::getWidgetRenderLocation() const
+	{
+        math::vector2 location;
+        switch (m_WidgetAlignmentH)
+        {
+        case WidgetAlignmentH::Left: 
+        case WidgetAlignmentH::Fill:
+            location.x = m_WidgetBounds.v0.x;
+        	break;
+        case WidgetAlignmentH::Center: 
+            location.x = m_WidgetBounds.v0.x + ((m_WidgetBounds.v1.x - m_WidgetBounds.v0.x - m_WidgetRenderSize.x) / 2);
+        	break;
+        case WidgetAlignmentH::Right: 
+            location.x = m_WidgetBounds.v1.x - m_WidgetRenderSize.x;
+            break;
+        default: ;
+        }
+        switch (m_WidgetAlignmentV)
+        {
+        case WidgetAlignmentV::Top:
+        case WidgetAlignmentV::Fill:
+            location.y = m_WidgetBounds.v0.y;
+        	break;
+        case WidgetAlignmentV::Center: 
+            location.y = m_WidgetBounds.v0.y + ((m_WidgetBounds.v1.y - m_WidgetBounds.v0.y - m_WidgetRenderSize.y) / 2);
+            break;
+        case WidgetAlignmentV::Bottom: 
+            location.y = m_WidgetBounds.v1.y - m_WidgetRenderSize.y;
+        	break;
+        default: ;
+        }
+        return location;
+	}
 }

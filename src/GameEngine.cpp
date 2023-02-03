@@ -4,6 +4,8 @@
 
 #ifdef JUMAENGINE_ENABLED_GAMEENGINE
 
+#include <chrono>
+
 namespace JumaEngine
 {
     bool GameEngine::initRenderEngine()
@@ -36,8 +38,14 @@ namespace JumaEngine
     {
         Super::update();
 
-        // TODO: Calculate delta time
-        UpdateLogicObject(getGameInstance(), 0.0f);
+        static std::chrono::time_point<std::chrono::steady_clock> prevTimePoint = std::chrono::steady_clock::now();
+        const std::chrono::time_point<std::chrono::steady_clock> currentTimePoint = std::chrono::steady_clock::now();
+        const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(currentTimePoint - prevTimePoint);
+        prevTimePoint = prevTimePoint + duration;
+        
+        const float deltaTime = static_cast<float>(duration.count()) / 1000.0f;
+
+        UpdateLogicObject(getGameInstance(), deltaTime);
     }
     void GameEngine::postUpdate()
     {

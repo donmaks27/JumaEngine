@@ -4,51 +4,41 @@
 
 #include "JumaEngine/Engine.h"
 #include "JumaEngine/subsystems/shaders/Material.h"
+#include "JumaEngine/subsystems/shaders/ShadersSubsystem.h"
 #include "JumaEngine/subsystems/ui/UISubsystem.h"
 #include "JumaEngine/subsystems/ui/WidgetContext.h"
 
 namespace JumaEngine
 {
-    void TestWidget::setMaterial(Material* material, const bool imitateCursor)
+    void TestWidget::onInitialized()
     {
-        m_Material = material;
-        m_ImitateCursor = imitateCursor;
+	    Super::onInitialized();
+
+        ShadersSubsystem* shadersSubsystem = getEngine()->getSubsystem<ShadersSubsystem>();
+        Shader* shader = shadersSubsystem->getEngineShader(JSTR("widgetSolidColor"));
+        if (shader != nullptr)
+        {
+	        m_Material = shadersSubsystem->createMaterial(shader);
+            m_Material->setParamValue<ShaderUniformType::Vec4>(JSTR("uColor"), { 1.0f, 0.0f, 1.0f, 1.0f });
+        }
     }
 
     void TestWidget::onUpdate(const float deltaTime)
     {
         Super::onUpdate(deltaTime);
-
-        const WidgetContext* widgetContext = getWidgetContext();
-        if ((widgetContext != nullptr) && m_ImitateCursor)
+        
+        const JumaRE::RenderEngine* renderEngine = getEngine()->getRenderEngine();
+        const JumaRE::WindowController* windowController = renderEngine->getWindowController();
+        if (windowController->getCursorMode(windowController->getMainWindowID()) != JumaRE::WindowCursorMode::Locked)
         {
-            const JumaRE::RenderEngine* renderEngine = getEngine()->getRenderEngine();
-            const JumaRE::WindowController* windowController = renderEngine->getWindowController();
-            if (windowController->getCursorMode(windowController->getMainWindowID()) != JumaRE::WindowCursorMode::Locked)
-            {
-                const JumaRE::WindowData* windowData = windowController->findWindowData(windowController->getMainWindowID());
-                const JumaRE::RenderTarget* renderTarget = widgetContext->getRenderTarget();
-                const math::uvector2 renderTargetSize = renderTarget->getSize();
-                const math::vector2 cursorPosition = windowData->cursorPosition;
-                const math::vector2 screenCoordsModifier = math::vector2(1.0f, renderEngine->getRenderAPI() == JumaRE::RenderAPI::Vulkan ? 1.0f : -1.0f);
-                const math::vector2 cursorLocation = (2.0f * (cursorPosition / renderTargetSize) - 1.0f) * screenCoordsModifier;
+            m_CursorVisible = true;
 
-                setLocation(cursorLocation);
-                setSize(math::vector2(24.0f, 24.0f) / renderTargetSize);
-                if (renderEngine->getRenderAPI() == JumaRE::RenderAPI::Vulkan)
-                {
-                    setOffset({ 1.0f, 1.0f });
-                }
-                else
-                {
-                    setOffset({ 1.0f, -1.0f });
-                }
-                setVisibility(true);
-            }
-            else
-            {
-                setVisibility(false);
-            }
+            const JumaRE::WindowData* windowData = windowController->findWindowData(windowController->getMainWindowID());
+            m_CursorLocation = math::vector2(windowData->cursorPosition) / windowData->size;
+        }
+        else
+        {
+            m_CursorVisible = false;
         }
     }
     void TestWidget::onPreRender()
@@ -59,7 +49,7 @@ namespace JumaEngine
         if (widgetContext != nullptr)
         {
             updateMaterial();
-            if (isVisible() && (m_Material != nullptr))
+            if (m_CursorVisible && (m_Material != nullptr))
             {
                 const Engine* engine = getEngine();
                 const UISubsystem* uiSubsystem = engine->getSubsystem<UISubsystem>();
@@ -71,18 +61,48 @@ namespace JumaEngine
             }
         }
     }
+
+    void TestWidget::onDestroying()
+    {
+        if (m_Material != nullptr)
+        {
+	        getEngine()->getSubsystem<ShadersSubsystem>()->destroyMaterial(m_Material);
+            m_Material = nullptr;
+        }
+
+	    Super::onDestroying();
+    }
+
+    void TestWidget::recalculateWidetSize()
+    {
+        const WidgetContext* widgetContext = getWidgetContext();
+        const JumaRE::RenderTarget* renderTarget = widgetContext != nullptr ? widgetContext->getRenderTarget() : nullptr;
+        if (renderTarget == nullptr)
+        {
+	        m_WidgetRenderSize = { 0.0f, 0.0f };
+        }
+        else
+        {
+	        const math::box2 bounds = getWidgetBounds();
+            m_WidgetRenderSize = math::vector2(24.0f, 24.0f) / renderTarget->getSize() * (bounds.v1 - bounds.v0);
+        }
+    }
+    math::vector2 TestWidget::getWidgetRenderLocation() const
+    {
+	    const math::box2 bounds = getWidgetBounds();
+        return bounds.v0 + m_CursorLocation * (bounds.v1 - bounds.v0);
+    }
+
     void TestWidget::updateMaterial() const
     {
         static const jstringID locationParamName = JSTR("uLocation");
-        static const jstringID offsetParamName = JSTR("uOffset");
         static const jstringID sizeParamName = JSTR("uSize");
         static const jstringID depthParamName = JSTR("uDepth");
 
         if (m_Material != nullptr)
         {
-            m_Material->setParamValue<ShaderUniformType::Vec2>(locationParamName, m_Location);
-            m_Material->setParamValue<ShaderUniformType::Vec2>(offsetParamName, m_Offset);
-            m_Material->setParamValue<ShaderUniformType::Vec2>(sizeParamName, m_Size);
+            m_Material->setParamValue<ShaderUniformType::Vec2>(locationParamName, getWidgetRenderLocation());
+            m_Material->setParamValue<ShaderUniformType::Vec2>(sizeParamName, getWidgetRenderSize());
             m_Material->setParamValue<ShaderUniformType::Float>(depthParamName, m_Depth);
         }
     }
