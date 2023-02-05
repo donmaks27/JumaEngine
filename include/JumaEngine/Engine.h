@@ -11,12 +11,14 @@
 
 namespace JumaEngine
 {
-    class Engine
+	class WidgetContext;
+
+	class Engine : public ILogicObjectOwner
     {
     protected:
         Engine() = default;
     public:
-        virtual ~Engine() = default;
+        virtual ~Engine() override = default;
 
         template<typename T, TEMPLATE_ENABLE(is_base<EngineContextObject, T>)>
         T* registerObject(T* object) { return dynamic_cast<T*>(this->registerObjectInternal(object)); }
@@ -35,6 +37,7 @@ namespace JumaEngine
         T* getGameInstance() const { return dynamic_cast<T*>(this->getGameInstance()); }
 
         JumaRE::RenderEngine* getRenderEngine() const { return m_RenderEngine; }
+        JumaRE::RenderTarget* getWindowRenderTarget(JumaRE::window_id windowID) const;
 
         template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<EngineSubsystem, T>)>
         T* createSubsystem() { return dynamic_cast<T*>(this->createSubsystem(T::GetClassStatic())); }
@@ -55,7 +58,7 @@ namespace JumaEngine
         virtual bool initEngineLoop();
         virtual void onEngineLoopStarted();
         virtual bool shouldExit();
-        virtual void update();
+        virtual void update(float deltaTime);
         virtual void postUpdate();
         virtual void onEngineLoopStopped();
 
@@ -66,10 +69,19 @@ namespace JumaEngine
 
     private:
 
+        struct WindowProxyRenderTarget
+        {
+	        JumaRE::RenderTarget* proxyRenderTarget = nullptr;
+            WidgetContext* widgetContext = nullptr;
+        };
+
         GameInstance* m_GameInstance = nullptr;
         JumaRE::RenderEngine* m_RenderEngine = nullptr;
 
         jmap<EngineSubclass<EngineSubsystem>, EngineSubsystem*> m_EngineSubsystems;
+        WidgetsCreator* m_EngineWidgetCreator = nullptr;
+
+        jmap<JumaRE::window_id, WindowProxyRenderTarget> m_WindowProxyRenderTargets;
 
 
         EngineContextObject* registerObjectInternal(EngineContextObject* object);
@@ -80,5 +92,8 @@ namespace JumaEngine
 
         EngineSubsystem* createSubsystem(const EngineSubclass<EngineSubsystem>& subsystemClass);
         EngineSubsystem* getSubsystem(const EngineSubclass<EngineSubsystem>& subsystemClass) const;
+
+        void onWindowCreated(JumaRE::WindowController* windowController, const JumaRE::WindowData* windowData);
+        void onWindowDestroying(JumaRE::WindowController* windowController, const JumaRE::WindowData* windowData);
     };
 }

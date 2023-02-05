@@ -1,7 +1,7 @@
 {
     "shaderFiles": {
         "vertex": {
-            "OpenGL": "content_engine/shaders/widgetSolidColorInverted.vert",
+            "OpenGL": "content_engine/shaders/widgetSolidColor.vert",
             "Vulkan": "content_engine/shaders/widgetSolidColor.vert.spv",
             "DirectX11": "content_engine/shaders/widgetSolidColorInverted.vert.hlsl.obj",
             "DirectX12": "content_engine/shaders/widgetSolidColorInverted.vert.hlsl.obj"

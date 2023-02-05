@@ -33,6 +33,22 @@ namespace JumaEngine
             updateMaterialColorParams();
         }
     }
+    void ImageWidget::setTextureOffset(const math::vector2& value)
+    {
+        m_MaterialTextureOffset = value;
+        if (!shouldUseSolidColor())
+        {
+            updateMaterialColorParams();
+        }
+    }
+    void ImageWidget::setTextureScale(const math::vector2& value)
+    {
+        m_MaterialTextureScale = value;
+        if (!shouldUseSolidColor())
+        {
+            updateMaterialColorParams();
+        }
+    }
 
     void ImageWidget::setDepth(const float depth)
     {
@@ -132,10 +148,6 @@ namespace JumaEngine
         if (shader != nullptr)
         {
             m_WidgetMaterial = shadersSubsystem->createMaterial(shader);
-
-            /*static const jstringID offsetParamName = JSTR("uOffset");
-            const float offsetY = getEngine()->getRenderEngine()->getRenderAPI() == JumaRE::RenderAPI::Vulkan ? 1.0f : -1.0f;
-            m_WidgetMaterial->setParamValue<ShaderUniformType::Vec2>(offsetParamName, { 1.0f, offsetY });*/
         }
 
         updateMaterialColorParams();
@@ -152,7 +164,11 @@ namespace JumaEngine
             }
             else
             {
+                static jstringID textureOffsetParam = JSTR("uTextureOffset");
+                static jstringID textureScaleParam = JSTR("uTextureScale");
                 static jstringID textureParam = JSTR("uTexture");
+                m_WidgetMaterial->setParamValue<ShaderUniformType::Vec2>(textureOffsetParam, getTextureOffset());
+                m_WidgetMaterial->setParamValue<ShaderUniformType::Vec2>(textureScaleParam, getTextureScale());
                 m_WidgetMaterial->setParamValue<ShaderUniformType::Texture>(textureParam, getTexture());
             }
         }

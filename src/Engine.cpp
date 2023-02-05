@@ -2,13 +2,16 @@
 
 #include "JumaEngine/Engine.h"
 
+#include <chrono>
 #include <JumaRE/RenderEngineImpl.h>
 #include <JumaRE/RenderPipeline.h>
 
 #include "JumaEngine/subsystems/meshes/MeshesSubsystem.h"
 #include "JumaEngine/subsystems/shaders/ShadersSubsystem.h"
 #include "JumaEngine/subsystems/textures/TexturesSubsystem.h"
+#include "JumaEngine/subsystems/ui/ImageWidget.h"
 #include "JumaEngine/subsystems/ui/UISubsystem.h"
+#include "JumaEngine/subsystems/ui/WidgetsCreator.h"
 
 namespace JumaEngine
 {
@@ -110,6 +113,17 @@ namespace JumaEngine
             JUTILS_LOG(error, JSTR("Failed to init UI subsystem"));
             return false;
         }
+
+        m_EngineWidgetCreator = createObject<WidgetsCreator>();
+        InitializeLogicObject(m_EngineWidgetCreator);
+
+        JumaRE::WindowController* windowController = m_RenderEngine->getWindowController();
+        windowController->onWindowCreated.bind(this, &Engine::onWindowCreated);
+        windowController->onWindowDestroying.bind(this, &Engine::onWindowDestroying);
+        for (const auto& windowID : windowController->getWindowIDs())
+        {
+	        onWindowCreated(windowController, windowController->findWindowData(windowID));
+        }
         return true;
     }
 
@@ -128,7 +142,13 @@ namespace JumaEngine
 
         while (!shouldExit())
         {
-            update();
+            static std::chrono::time_point<std::chrono::steady_clock> prevTimePoint = std::chrono::steady_clock::now();
+	        const std::chrono::time_point<std::chrono::steady_clock> currentTimePoint = std::chrono::steady_clock::now();
+	        const auto duration = std::chrono::duration_cast<std::chrono::microseconds>(currentTimePoint - prevTimePoint);
+	        prevTimePoint = prevTimePoint + duration;
+	        const float deltaTime = static_cast<float>(duration.count()) / 1000000.0f;
+
+            update(deltaTime);
             postUpdate();
             if (!m_RenderEngine->render())
             {
@@ -151,24 +171,32 @@ namespace JumaEngine
             JUTILS_LOG(error, JSTR("Invalid game instance render target"));
             return false;
         }
+        
         m_GameInstance->setupRenderTarget(m_InitialGameInstanceRenderTarger);
         return true;
     }
     void Engine::onEngineLoopStarted()
     {
+        StartLogicObject(m_EngineWidgetCreator);
     }
     bool Engine::shouldExit()
     {
         return (m_RenderEngine != nullptr) && m_RenderEngine->getWindowController()->isMainWindowClosed();
     }
-    void Engine::update()
+    void Engine::update(const float deltaTime)
     {
+        UpdateLogicObject(m_EngineWidgetCreator, deltaTime);
     }
     void Engine::postUpdate()
     {
+        PreRenderLogicObject(m_EngineWidgetCreator);
     }
     void Engine::onEngineLoopStopped()
     {
+        JumaRE::WindowController* windowController = m_RenderEngine->getWindowController();
+        windowController->onWindowCreated.unbind(this, &Engine::onWindowCreated);
+        windowController->onWindowDestroying.unbind(this, &Engine::onWindowDestroying);
+        DestroyLogicObject(m_EngineWidgetCreator);
     }
 
     void Engine::clear()
@@ -186,6 +214,12 @@ namespace JumaEngine
     }
     void Engine::clearRenderEngine()
     {
+        if (m_EngineWidgetCreator != nullptr)
+        {
+	        delete m_EngineWidgetCreator;
+            m_EngineWidgetCreator = nullptr;
+        }
+
         for (const auto& subsystem : m_EngineSubsystems)
         {
             subsystem.value->clearSubsystem();
@@ -243,6 +277,53 @@ namespace JumaEngine
         }
         EngineSubsystem* const* subsystemPtr = m_EngineSubsystems.find(subsystemClass);
         return subsystemPtr != nullptr ? *subsystemPtr : nullptr;
+    }
+
+    void Engine::onWindowCreated(JumaRE::WindowController* windowController, const JumaRE::WindowData* windowData)
+    {
+        if (m_RenderEngine->getRenderAPI() == JumaRE::RenderAPI::OpenGL)
+        {
+			JumaRE::RenderTarget* windowRenderTarget = m_RenderEngine->getRenderTarget(windowData->windowRenderTargetID);
+            JumaRE::RenderTarget* renderTarget = m_RenderEngine->createRenderTarget(windowRenderTarget->getColorFormat(), windowRenderTarget->getSize(), windowRenderTarget->getSampleCount());
+            windowRenderTarget->setSampleCount(JumaRE::TextureSamples::X1);
+            m_RenderEngine->getRenderPipeline()->addRenderTargetDependecy(windowData->windowRenderTargetID, renderTarget->getID());
+
+            ImageWidget* imageWidget = m_EngineWidgetCreator->createWidget<ImageWidget>();
+            imageWidget->setUsingSolidColor(false);
+            imageWidget->setTexture(renderTarget);
+            imageWidget->setTextureScale({ 1.0f, -1.0f });
+
+	        WidgetContext* widgetContext = m_EngineWidgetCreator->createWidgetContext(windowRenderTarget);
+            m_EngineWidgetCreator->setRootWidget(widgetContext, imageWidget);
+
+            m_WindowProxyRenderTargets.add(windowData->windowRenderTargetID, { renderTarget, widgetContext });
+        }
+    }
+    void Engine::onWindowDestroying(JumaRE::WindowController* windowController, const JumaRE::WindowData* windowData)
+    {
+        if (m_RenderEngine->getRenderAPI() == JumaRE::RenderAPI::OpenGL)
+        {
+	        const WindowProxyRenderTarget* renderTarget = m_WindowProxyRenderTargets.find(windowData->windowID);
+
+            Widget* widget = renderTarget->widgetContext->getRootWidget();
+            m_EngineWidgetCreator->destroyWidgetContext(renderTarget->widgetContext);
+            m_EngineWidgetCreator->destroyWidget(widget);
+
+            m_RenderEngine->destroyRenderTarget(renderTarget->proxyRenderTarget);
+
+            m_WindowProxyRenderTargets.remove(windowData->windowID);
+        }
+    }
+    JumaRE::RenderTarget* Engine::getWindowRenderTarget(const JumaRE::window_id windowID) const
+    {
+        const WindowProxyRenderTarget* renderTarget = m_WindowProxyRenderTargets.find(windowID);
+        if (renderTarget != nullptr)
+        {
+	        return renderTarget->proxyRenderTarget;
+        }
+
+        const JumaRE::WindowData* windowData = m_RenderEngine != nullptr ? m_RenderEngine->getWindowController()->findWindowData(windowID) : nullptr;
+        return windowData != nullptr ? m_RenderEngine->getRenderTarget(windowData->windowRenderTargetID) : nullptr;
     }
 
     void Engine::passInputToGameInstance(const JumaRE::InputActionData& input)

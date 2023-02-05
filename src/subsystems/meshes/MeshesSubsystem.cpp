@@ -95,18 +95,6 @@ namespace JumaEngine
             16, 17, 18, 16, 18, 19,
             20, 21, 22, 20, 22, 23
         };
-        switch (getEngine()->getRenderEngine()->getRenderAPI())
-        {
-        case JumaRE::RenderAPI::OpenGL:
-            {
-                for (auto& vertex : data)
-                {
-                    vertex.textureCoords.y = 1.0f - vertex.textureCoords.y;
-                }
-            }
-            break;
-        default: ;
-        }
 
         Mesh* mesh = getEngine()->registerObject(&m_Meshes.addDefault());
         const bool meshValid = mesh->init({ JumaRE::MakeVertexBufferData({ {

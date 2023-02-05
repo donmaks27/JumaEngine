@@ -42,26 +42,6 @@ namespace JumaEngine
             { jutils::math::vector2{ 0.0f, 1.0f }, { 0.0f, 1.0f } },
             { jutils::math::vector2{ 1.0f, 1.0f }, { 1.0f, 1.0f } }
         };
-        switch (renderEngine->getRenderAPI())
-        {
-        case JumaRE::RenderAPI::OpenGL:
-            {
-                const int32 faceCount = data.getSize() / 3;
-                for (int32 index = 0; index < faceCount; index++)
-                {
-                    const int32 vertexIndex = index * 3;
-	                const vertex_data temp = data[vertexIndex + 1];
-                    data[vertexIndex + 1] = data[vertexIndex + 2];
-                    data[vertexIndex + 2] = temp;
-                }
-                /*for (auto& vertex : data)
-                {
-                    vertex.textureCoords.y = 1.0f - vertex.textureCoords.y;
-                }*/
-            }
-            break;
-        default: ;
-        }
 
         m_VertexBufferUI = renderEngine->createVertexBuffer(JumaRE::MakeVertexBufferData({ {
             meshesSubsystem->getVertexComponentID(VertexComponent::Position2D),

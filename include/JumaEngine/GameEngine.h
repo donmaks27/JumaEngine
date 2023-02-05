@@ -7,11 +7,10 @@
 #ifdef JUMAENGINE_ENABLED_GAMEENGINE
 
 #include "Engine.h"
-#include "ILogicObjectOwner.h"
 
 namespace JumaEngine
 {
-    class GameEngine final : public Engine, public ILogicObjectOwner
+    class GameEngine final : public Engine
     {
         using Super = Engine;
 
@@ -25,7 +24,7 @@ namespace JumaEngine
 
         virtual bool initEngineLoop() override;
         virtual void onEngineLoopStarted() override;
-        virtual void update() override;
+        virtual void update(float deltaTime) override;
         virtual void postUpdate() override;
         virtual void onEngineLoopStopped() override;
 

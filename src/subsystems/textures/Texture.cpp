@@ -71,13 +71,6 @@ namespace JumaEngine
             return false;
         }
 
-        static bool loaderImageInitialized = false;
-        if (!loaderImageInitialized)
-        {
-            loaderImageInitialized = true;
-            stbi_set_flip_vertically_on_load(renderEngine->getRenderAPI() == JumaRE::RenderAPI::OpenGL);
-        }
-
         math::ivector2 textureSize;
         int32 componentsCount = 0;
         stbi_uc* data = stbi_load(textureFilePath.getString(), &textureSize.x, &textureSize.y, &componentsCount, 4);

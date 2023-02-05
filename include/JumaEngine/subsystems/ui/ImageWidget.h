@@ -23,10 +23,14 @@ namespace JumaEngine
         bool shouldUseSolidColor() const { return m_UseSolidColor; }
         math::vector4 getColor() const { return m_MaterialColor; }
         JumaRE::TextureBase* getTexture() const { return m_MaterialTexture; }
+        math::vector2 getTextureOffset() const { return m_MaterialTextureOffset; }
+        math::vector2 getTextureScale() const { return m_MaterialTextureScale; }
 
         void setUsingSolidColor(bool useSolidColor);
         void setColor(const math::vector4& color);
         void setTexture(JumaRE::TextureBase* texture);
+        void setTextureOffset(const math::vector2& value);
+        void setTextureScale(const math::vector2& value);
 
         void setDepth(float depth);
 
@@ -43,7 +47,11 @@ namespace JumaEngine
         Material* m_WidgetMaterial = nullptr;
 
         math::vector4 m_MaterialColor = { 1.0f, 1.0f, 1.0f, 1.0f };
+
         JumaRE::TextureBase* m_MaterialTexture = nullptr;
+        math::vector2 m_MaterialTextureOffset = { 0.0f, 0.0f };
+        math::vector2 m_MaterialTextureScale = { 1.0f, 1.0f };
+
         bool m_UseSolidColor = false;
 
 

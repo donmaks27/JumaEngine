@@ -4,21 +4,18 @@
 
 #ifdef JUMAENGINE_ENABLED_GAMEENGINE
 
-#include <chrono>
-
 namespace JumaEngine
 {
     bool GameEngine::initRenderEngine()
     {
-        m_InitialRenderAPI = JumaRE::RenderAPI::Vulkan;
+        m_InitialRenderAPI = JumaRE::RenderAPI::OpenGL;
         return Super::initRenderEngine();
     }
 
     bool GameEngine::initEngineLoop()
     {
-        const JumaRE::RenderEngine* renderEngine = getRenderEngine();
-        JumaRE::WindowController* windowController = renderEngine->getWindowController();
-        m_InitialGameInstanceRenderTarger = renderEngine->getRenderTarget(windowController->findWindowData(windowController->getMainWindowID())->windowRenderTargetID);
+        JumaRE::WindowController* windowController = getRenderEngine()->getWindowController();
+        m_InitialGameInstanceRenderTarger = getWindowRenderTarget(windowController->getMainWindowID());
         if (!Super::initEngineLoop())
         {
             return false;
@@ -34,17 +31,10 @@ namespace JumaEngine
 
         StartLogicObject(getGameInstance());
     }
-    void GameEngine::update()
+    void GameEngine::update(const float deltaTime)
     {
-        Super::update();
-
-        static std::chrono::time_point<std::chrono::steady_clock> prevTimePoint = std::chrono::steady_clock::now();
-        const std::chrono::time_point<std::chrono::steady_clock> currentTimePoint = std::chrono::steady_clock::now();
-        const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(currentTimePoint - prevTimePoint);
-        prevTimePoint = prevTimePoint + duration;
+        Super::update(deltaTime);
         
-        const float deltaTime = static_cast<float>(duration.count()) / 1000.0f;
-
         UpdateLogicObject(getGameInstance(), deltaTime);
     }
     void GameEngine::postUpdate()
