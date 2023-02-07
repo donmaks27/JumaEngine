@@ -83,9 +83,7 @@ namespace JumaEngine
 
         updateMaterialLocationParams();
         const UISubsystem* uiSubsystem = getEngine()->getSubsystem<UISubsystem>();
-        getEngine()->getRenderEngine()->addPrimitiveToRenderList(
-            widgetContext->getRenderTarget(), uiSubsystem->getVertexBufferUI(), m_WidgetMaterial->getMaterial()
-        );
+        widgetContext->getRenderTarget()->addPrimitiveToRenderList({ uiSubsystem->getVertexBufferUI(), m_WidgetMaterial->getMaterial() });
     }
 
     void ImageWidget::onDestroying()

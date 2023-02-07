@@ -10,6 +10,8 @@
 #include "JumaEngine/subsystems/shaders/ShadersSubsystem.h"
 #include "JumaEngine/subsystems/textures/TexturesSubsystem.h"
 #include "JumaEngine/subsystems/ui/ImageWidget.h"
+#include "JumaEngine/subsystems/ui/OverlayWidget.h"
+#include "JumaEngine/subsystems/ui/CursorWidget.h"
 #include "JumaEngine/subsystems/ui/UISubsystem.h"
 #include "JumaEngine/subsystems/ui/WidgetsCreator.h"
 
@@ -281,33 +283,38 @@ namespace JumaEngine
 
     void Engine::onWindowCreated(JumaRE::WindowController* windowController, const JumaRE::WindowData* windowData)
     {
+		JumaRE::RenderTarget* windowRenderTarget = m_RenderEngine->getRenderTarget(windowData->windowRenderTargetID);
+        JumaRE::RenderTarget* renderTarget = m_RenderEngine->createRenderTarget(windowRenderTarget->getColorFormat(), windowRenderTarget->getSize(), windowRenderTarget->getSampleCount());
+        windowRenderTarget->setSampleCount(JumaRE::TextureSamples::X1);
+        m_RenderEngine->getRenderPipeline()->addRenderTargetDependecy(windowData->windowRenderTargetID, renderTarget->getID());
+
+        ImageWidget* imageWidget = m_EngineWidgetCreator->createWidget<ImageWidget>();
+        imageWidget->setUsingSolidColor(false);
+        imageWidget->setTexture(renderTarget);
         if (m_RenderEngine->getRenderAPI() == JumaRE::RenderAPI::OpenGL)
         {
-			JumaRE::RenderTarget* windowRenderTarget = m_RenderEngine->getRenderTarget(windowData->windowRenderTargetID);
-            JumaRE::RenderTarget* renderTarget = m_RenderEngine->createRenderTarget(windowRenderTarget->getColorFormat(), windowRenderTarget->getSize(), windowRenderTarget->getSampleCount());
-            windowRenderTarget->setSampleCount(JumaRE::TextureSamples::X1);
-            m_RenderEngine->getRenderPipeline()->addRenderTargetDependecy(windowData->windowRenderTargetID, renderTarget->getID());
-
-            ImageWidget* imageWidget = m_EngineWidgetCreator->createWidget<ImageWidget>();
-            imageWidget->setUsingSolidColor(false);
-            imageWidget->setTexture(renderTarget);
             imageWidget->setTextureScale({ 1.0f, -1.0f });
-
-	        WidgetContext* widgetContext = m_EngineWidgetCreator->createWidgetContext(windowRenderTarget);
-            m_EngineWidgetCreator->setRootWidget(widgetContext, imageWidget);
-
-            m_WindowProxyRenderTargets.add(windowData->windowRenderTargetID, { renderTarget, widgetContext });
         }
+
+        CursorWidget* cursorWidget = m_EngineWidgetCreator->createWidget<CursorWidget>();
+
+        OverlayWidget* overlayWidget = m_EngineWidgetCreator->createWidget<OverlayWidget>();
+        overlayWidget->addWidget(imageWidget);
+        overlayWidget->addWidget(cursorWidget);
+
+        WidgetContext* widgetContext = m_EngineWidgetCreator->createWidgetContext(windowRenderTarget);
+        m_EngineWidgetCreator->setRootWidget(widgetContext, overlayWidget);
+
+        m_WindowProxyRenderTargets.add(windowData->windowRenderTargetID, { renderTarget, widgetContext });
     }
     void Engine::onWindowDestroying(JumaRE::WindowController* windowController, const JumaRE::WindowData* windowData)
     {
-        if (m_RenderEngine->getRenderAPI() == JumaRE::RenderAPI::OpenGL)
+        const WindowProxyRenderTarget* renderTarget = m_WindowProxyRenderTargets.find(windowData->windowID);
+        if (renderTarget != nullptr)
         {
-	        const WindowProxyRenderTarget* renderTarget = m_WindowProxyRenderTargets.find(windowData->windowID);
-
             Widget* widget = renderTarget->widgetContext->getRootWidget();
             m_EngineWidgetCreator->destroyWidgetContext(renderTarget->widgetContext);
-            m_EngineWidgetCreator->destroyWidget(widget);
+            m_EngineWidgetCreator->destroyWidget(widget, true);
 
             m_RenderEngine->destroyRenderTarget(renderTarget->proxyRenderTarget);
 

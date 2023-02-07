@@ -1,6 +1,6 @@
 ﻿// Copyright © 2023 Leonov Maksim. All Rights Reserved.
 
-#include "JumaEngine/subsystems/ui/TestWidget.h"
+#include "JumaEngine/subsystems/ui/CursorWidget.h"
 
 #include "JumaEngine/Engine.h"
 #include "JumaEngine/subsystems/shaders/Material.h"
@@ -10,7 +10,7 @@
 
 namespace JumaEngine
 {
-    void TestWidget::onInitialized()
+    void CursorWidget::onInitialized()
     {
 	    Super::onInitialized();
 
@@ -23,7 +23,7 @@ namespace JumaEngine
         }
     }
 
-    void TestWidget::onUpdate(const float deltaTime)
+    void CursorWidget::onUpdate(const float deltaTime)
     {
         Super::onUpdate(deltaTime);
         
@@ -34,14 +34,23 @@ namespace JumaEngine
             m_CursorVisible = true;
 
             const JumaRE::WindowData* windowData = windowController->findWindowData(windowController->getMainWindowID());
-            m_CursorLocation = math::vector2(windowData->cursorPosition) / windowData->size;
+            if (renderEngine->getRenderAPI() != JumaRE::RenderAPI::OpenGL)
+            {
+	            m_CursorLocation = math::vector2(windowData->cursorPosition) / windowData->size;
+            }
+            else
+            {
+	            m_CursorLocation.x = static_cast<float>(windowData->cursorPosition.x) / static_cast<float>(windowData->size.x);
+	            m_CursorLocation.y = static_cast<float>(windowData->cursorPosition.y - m_CursorSizePixels.y) / static_cast<float>(windowData->size.y);
+            }
+            //m_CursorLocation = math::vector2(windowData->cursorPosition) / windowData->size;
         }
         else
         {
             m_CursorVisible = false;
         }
     }
-    void TestWidget::onPreRender()
+    void CursorWidget::onPreRender()
     {
         Super::onPreRender();
 
@@ -51,18 +60,16 @@ namespace JumaEngine
             updateMaterial();
             if (m_CursorVisible && (m_Material != nullptr))
             {
-                const Engine* engine = getEngine();
-                const UISubsystem* uiSubsystem = engine->getSubsystem<UISubsystem>();
+                const UISubsystem* uiSubsystem = getEngine()->getSubsystem<UISubsystem>();
                 if (uiSubsystem != nullptr)
                 {
-                    JumaRE::RenderTarget* renderTarget = widgetContext->getRenderTarget();
-                    engine->getRenderEngine()->addPrimitiveToRenderList(renderTarget, uiSubsystem->getVertexBufferUI(), m_Material->getMaterial());
+                    widgetContext->getRenderTarget()->addPrimitiveToRenderList({ uiSubsystem->getVertexBufferUI(), m_Material->getMaterial() });
                 }
             }
         }
     }
 
-    void TestWidget::onDestroying()
+    void CursorWidget::onDestroying()
     {
         if (m_Material != nullptr)
         {
@@ -73,7 +80,7 @@ namespace JumaEngine
 	    Super::onDestroying();
     }
 
-    void TestWidget::recalculateWidetSize()
+    void CursorWidget::recalculateWidetSize()
     {
         const WidgetContext* widgetContext = getWidgetContext();
         const JumaRE::RenderTarget* renderTarget = widgetContext != nullptr ? widgetContext->getRenderTarget() : nullptr;
@@ -84,16 +91,16 @@ namespace JumaEngine
         else
         {
 	        const math::box2 bounds = getWidgetBounds();
-            m_WidgetRenderSize = math::vector2(24.0f, 24.0f) / renderTarget->getSize() * (bounds.v1 - bounds.v0);
+            m_WidgetRenderSize = math::vector2(m_CursorSizePixels) / renderTarget->getSize() * (bounds.v1 - bounds.v0);
         }
     }
-    math::vector2 TestWidget::getWidgetRenderLocation() const
+    math::vector2 CursorWidget::getWidgetRenderLocation() const
     {
 	    const math::box2 bounds = getWidgetBounds();
         return bounds.v0 + m_CursorLocation * (bounds.v1 - bounds.v0);
     }
 
-    void TestWidget::updateMaterial() const
+    void CursorWidget::updateMaterial() const
     {
         static const jstringID locationParamName = JSTR("uLocation");
         static const jstringID sizeParamName = JSTR("uSize");

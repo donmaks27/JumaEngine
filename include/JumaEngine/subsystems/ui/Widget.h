@@ -39,6 +39,7 @@ namespace JumaEngine
         WidgetsCreator* getWidgetsCreator() const { return m_ParentWidgetsCreator; }
         WidgetContext* getWidgetContext() const { return m_WidgetContext; }
         Widget* getParentWidget() const { return m_ParentWidget; }
+        virtual jarray<Widget*> getChildWidgets() const { return {}; }
         
         const math::box2& getWidgetBounds() const { return m_WidgetBounds; }
         WidgetAlignmentH getWidgetAlignmentH() const { return m_WidgetAlignmentH; }

@@ -11,13 +11,13 @@ namespace JumaEngine
 {
     class Material;
 
-    class TestWidget final : public Widget
+    class CursorWidget final : public Widget
     {
-        JUMAENGINE_CLASS(TestWidget, Widget)
+        JUMAENGINE_CLASS(CursorWidget, Widget)
 
     public:
-        TestWidget() = default;
-        virtual ~TestWidget() override = default;
+        CursorWidget() = default;
+        virtual ~CursorWidget() override = default;
         
         void setDepth(const float depth) { m_Depth = depth; }
 
@@ -35,6 +35,8 @@ namespace JumaEngine
     private:
 
         Material* m_Material = nullptr;
+
+        math::uvector2 m_CursorSizePixels = { 24, 24 };
 
         math::vector2 m_CursorLocation = { 0.0f, 0.0f };
         math::vector2 m_CursorSize = { 1.0f, 1.0f };

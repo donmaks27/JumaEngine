@@ -19,6 +19,8 @@ namespace JumaEngine
         OverlayWidget() = default;
         virtual ~OverlayWidget() override = default;
 
+        virtual jarray<Widget*> getChildWidgets() const override { return m_Widgets; }
+
         void addWidget(Widget* widget);
 
     protected:

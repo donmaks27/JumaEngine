@@ -146,14 +146,28 @@ namespace JumaEngine
         InitializeLogicObject(widget);
         return widget;
     }
-    void WidgetsCreator::destroyWidget(Widget* widget)
+    bool WidgetsCreator::destroyWidget(Widget* widget, const bool destroyChildWidgets)
     {
-        if (widget != nullptr)
+        if ((widget == nullptr) || (widget->getWidgetsCreator() != this))
         {
-            DestroyLogicObject(widget);
-            m_Widgets.remove(widget);
-            delete widget;
+	        return false;
         }
+
+        jarray<Widget*> widgetsToDestroy = { widget };
+        while (!widgetsToDestroy.isEmpty())
+        {
+	        Widget* lastWidget = widgetsToDestroy.getLast();
+            widgetsToDestroy.removeLast();
+            if (lastWidget != nullptr)
+            {
+	            widgetsToDestroy.append(lastWidget->getChildWidgets());
+
+                DestroyLogicObject(lastWidget);
+	            m_Widgets.remove(lastWidget);
+	            delete lastWidget;
+            }
+        }
+        return true;
     }
 
     void WidgetsCreator::setRootWidget(WidgetContext* widgetContext, Widget* widget)

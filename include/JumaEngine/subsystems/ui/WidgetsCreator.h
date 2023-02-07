@@ -29,7 +29,7 @@ namespace JumaEngine
         Widget* createWidget(const EngineSubclass<Widget>& widgetClass);
         template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<Widget, T>)>
         T* createWidget() { return dynamic_cast<T*>(this->createWidget(T::GetClassStatic())); }
-        void destroyWidget(Widget* widget);
+        bool destroyWidget(Widget* widget, bool destroyChildWidgets = false);
 
         void setRootWidget(WidgetContext* widgetContext, Widget* widget);
 
