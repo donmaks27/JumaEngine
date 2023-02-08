@@ -37,12 +37,12 @@ namespace JumaEngine
         T* getGameInstance() const { return dynamic_cast<T*>(this->getGameInstance()); }
 
         JumaRE::RenderEngine* getRenderEngine() const { return m_RenderEngine; }
-        JumaRE::RenderTarget* getWindowRenderTarget(JumaRE::window_id windowID) const;
 
         template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<EngineSubsystem, T>)>
         T* createSubsystem() { return dynamic_cast<T*>(this->createSubsystem(T::GetClassStatic())); }
         template<typename T, TEMPLATE_ENABLE(is_base<EngineSubsystem, T>)>
         T* getSubsystem() const { return dynamic_cast<T*>(this->getSubsystem(T::GetClassStatic())); }
+        WidgetsCreator* getWidgetsCreator() const { return m_EngineWidgetCreator; }
 
     protected:
 
@@ -68,20 +68,12 @@ namespace JumaEngine
         void passInputToGameInstance(const JumaRE::InputActionData& input);
 
     private:
-
-        struct WindowProxyRenderTarget
-        {
-	        JumaRE::RenderTarget* proxyRenderTarget = nullptr;
-            WidgetContext* widgetContext = nullptr;
-        };
-
+        
         GameInstance* m_GameInstance = nullptr;
         JumaRE::RenderEngine* m_RenderEngine = nullptr;
 
         jmap<EngineSubclass<EngineSubsystem>, EngineSubsystem*> m_EngineSubsystems;
         WidgetsCreator* m_EngineWidgetCreator = nullptr;
-
-        jmap<JumaRE::window_id, WindowProxyRenderTarget> m_WindowProxyRenderTargets;
 
 
         EngineContextObject* registerObjectInternal(EngineContextObject* object);
@@ -92,8 +84,5 @@ namespace JumaEngine
 
         EngineSubsystem* createSubsystem(const EngineSubclass<EngineSubsystem>& subsystemClass);
         EngineSubsystem* getSubsystem(const EngineSubclass<EngineSubsystem>& subsystemClass) const;
-
-        void onWindowCreated(JumaRE::WindowController* windowController, const JumaRE::WindowData* windowData);
-        void onWindowDestroying(JumaRE::WindowController* windowController, const JumaRE::WindowData* windowData);
     };
 }

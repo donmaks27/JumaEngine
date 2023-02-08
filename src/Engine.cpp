@@ -7,9 +7,7 @@
 #include <JumaRE/RenderPipeline.h>
 
 #include "JumaEngine/assets/AssetsEngineSubsystem.h"
-#include "JumaEngine/widgets/ImageWidget.h"
-#include "JumaEngine/widgets/OverlayWidget.h"
-#include "JumaEngine/widgets/CursorWidget.h"
+#include "JumaEngine/render/RenderEngineSubsystem.h"
 #include "JumaEngine/widgets/WidgetsCreator.h"
 
 namespace JumaEngine
@@ -92,6 +90,12 @@ namespace JumaEngine
         }
         JUTILS_LOG(info, JSTR("Render engine initialized ({})"), m_InitialRenderAPI);
 
+        RenderEngineSubsystem* renderSubsystem = createSubsystem<RenderEngineSubsystem>();
+        if (renderSubsystem == nullptr)
+        {
+	        JUTILS_LOG(error, JSTR("Failed to init render engine subsystem"));
+            return false;
+        }
         if (createSubsystem<AssetsEngineSubsystem>() == nullptr)
         {
             JUTILS_LOG(error, JSTR("Failed to init assets engine subsystem"));
@@ -101,13 +105,7 @@ namespace JumaEngine
         m_EngineWidgetCreator = createObject<WidgetsCreator>();
         InitializeLogicObject(m_EngineWidgetCreator);
 
-        JumaRE::WindowController* windowController = m_RenderEngine->getWindowController();
-        windowController->onWindowCreated.bind(this, &Engine::onWindowCreated);
-        windowController->onWindowDestroying.bind(this, &Engine::onWindowDestroying);
-        for (const auto& windowID : windowController->getWindowIDs())
-        {
-	        onWindowCreated(windowController, windowController->findWindowData(windowID));
-        }
+        renderSubsystem->createProxyWindowRenderTargets();
         return true;
     }
 
@@ -177,9 +175,7 @@ namespace JumaEngine
     }
     void Engine::onEngineLoopStopped()
     {
-        JumaRE::WindowController* windowController = m_RenderEngine->getWindowController();
-        windowController->onWindowCreated.unbind(this, &Engine::onWindowCreated);
-        windowController->onWindowDestroying.unbind(this, &Engine::onWindowDestroying);
+        getSubsystem<RenderEngineSubsystem>()->destroyProxyWindowRenderTargets();
         DestroyLogicObject(m_EngineWidgetCreator);
     }
 
@@ -204,9 +200,21 @@ namespace JumaEngine
             m_EngineWidgetCreator = nullptr;
         }
 
+        EngineSubsystem* renderSubsystem = nullptr;
         for (const auto& subsystem : m_EngineSubsystems)
         {
-            subsystem.value->clearSubsystem();
+            if (subsystem.key != RenderEngineSubsystem::GetClassStatic())
+            {
+	            subsystem.value->clearSubsystem();
+            }
+            else
+            {
+	            renderSubsystem = subsystem.value;
+            }
+        }
+        if (renderSubsystem != nullptr)
+        {
+	        renderSubsystem->clearSubsystem();
         }
 
         if (m_RenderEngine != nullptr)
@@ -262,59 +270,7 @@ namespace JumaEngine
         EngineSubsystem* const* subsystemPtr = m_EngineSubsystems.find(subsystemClass);
         return subsystemPtr != nullptr ? *subsystemPtr : nullptr;
     }
-
-    void Engine::onWindowCreated(JumaRE::WindowController* windowController, const JumaRE::WindowData* windowData)
-    {
-		JumaRE::RenderTarget* windowRenderTarget = m_RenderEngine->getRenderTarget(windowData->windowRenderTargetID);
-        JumaRE::RenderTarget* renderTarget = m_RenderEngine->createRenderTarget(windowRenderTarget->getColorFormat(), windowRenderTarget->getSize(), windowRenderTarget->getSampleCount());
-        windowRenderTarget->setSampleCount(JumaRE::TextureSamples::X1);
-        m_RenderEngine->getRenderPipeline()->addRenderTargetDependecy(windowData->windowRenderTargetID, renderTarget->getID());
-
-        ImageWidget* imageWidget = m_EngineWidgetCreator->createWidget<ImageWidget>();
-        imageWidget->setUsingSolidColor(false);
-        imageWidget->setTexture(renderTarget);
-        if (m_RenderEngine->getRenderAPI() == JumaRE::RenderAPI::OpenGL)
-        {
-            imageWidget->setTextureScale({ 1.0f, -1.0f });
-        }
-
-        CursorWidget* cursorWidget = m_EngineWidgetCreator->createWidget<CursorWidget>();
-
-        OverlayWidget* overlayWidget = m_EngineWidgetCreator->createWidget<OverlayWidget>();
-        overlayWidget->addWidget(imageWidget);
-        overlayWidget->addWidget(cursorWidget);
-
-        WidgetContext* widgetContext = m_EngineWidgetCreator->createWidgetContext(windowRenderTarget);
-        m_EngineWidgetCreator->setRootWidget(widgetContext, overlayWidget);
-
-        m_WindowProxyRenderTargets.add(windowData->windowRenderTargetID, { renderTarget, widgetContext });
-    }
-    void Engine::onWindowDestroying(JumaRE::WindowController* windowController, const JumaRE::WindowData* windowData)
-    {
-        const WindowProxyRenderTarget* renderTarget = m_WindowProxyRenderTargets.find(windowData->windowID);
-        if (renderTarget != nullptr)
-        {
-            Widget* widget = renderTarget->widgetContext->getRootWidget();
-            m_EngineWidgetCreator->destroyWidgetContext(renderTarget->widgetContext);
-            m_EngineWidgetCreator->destroyWidget(widget, true);
-
-            m_RenderEngine->destroyRenderTarget(renderTarget->proxyRenderTarget);
-
-            m_WindowProxyRenderTargets.remove(windowData->windowID);
-        }
-    }
-    JumaRE::RenderTarget* Engine::getWindowRenderTarget(const JumaRE::window_id windowID) const
-    {
-        const WindowProxyRenderTarget* renderTarget = m_WindowProxyRenderTargets.find(windowID);
-        if (renderTarget != nullptr)
-        {
-	        return renderTarget->proxyRenderTarget;
-        }
-
-        const JumaRE::WindowData* windowData = m_RenderEngine != nullptr ? m_RenderEngine->getWindowController()->findWindowData(windowID) : nullptr;
-        return windowData != nullptr ? m_RenderEngine->getRenderTarget(windowData->windowRenderTargetID) : nullptr;
-    }
-
+    
     void Engine::passInputToGameInstance(const JumaRE::InputActionData& input)
     {
         if (m_GameInstance == nullptr)

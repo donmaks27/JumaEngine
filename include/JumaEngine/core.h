@@ -1,13 +1,13 @@
-﻿// Copyright © 2022 Leonov Maksim. All Rights Reserved.
+﻿// Copyright © 2022-2023 Leonov Maksim. All Rights Reserved.
 
 #pragma once
 
 #include <jutils/jlog.h>
 
-#ifdef JUMAENGINE_ENABLED_EDITORENGINE
-    #undef JUMAENGINE_ENABLED_GAMEENGINE
+#ifdef JUMAENGINE_MODE_EDITOR
+    #undef JUMAENGINE_MODE_GAME
 #else
-    #define JUMAENGINE_ENABLED_GAMEENGINE
+    #define JUMAENGINE_MODE_GAME
 #endif
 
 namespace JumaEngine

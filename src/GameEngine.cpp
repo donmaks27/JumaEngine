@@ -2,7 +2,9 @@
 
 #include "JumaEngine/GameEngine.h"
 
-#ifdef JUMAENGINE_ENABLED_GAMEENGINE
+#ifdef JUMAENGINE_MODE_GAME
+
+#include "JumaEngine/render/RenderEngineSubsystem.h"
 
 namespace JumaEngine
 {
@@ -15,7 +17,7 @@ namespace JumaEngine
     bool GameEngine::initEngineLoop()
     {
         JumaRE::WindowController* windowController = getRenderEngine()->getWindowController();
-        m_InitialGameInstanceRenderTarger = getWindowRenderTarget(windowController->getMainWindowID());
+        m_InitialGameInstanceRenderTarger = getSubsystem<RenderEngineSubsystem>()->getWindowRenderTarget(windowController->getMainWindowID());
         if (!Super::initEngineLoop())
         {
             return false;

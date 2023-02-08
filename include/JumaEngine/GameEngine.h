@@ -4,7 +4,7 @@
 
 #include "core.h"
 
-#ifdef JUMAENGINE_ENABLED_GAMEENGINE
+#ifdef JUMAENGINE_MODE_GAME
 
 #include "Engine.h"
 
