@@ -6,14 +6,11 @@
 #include <JumaRE/RenderEngineImpl.h>
 #include <JumaRE/RenderPipeline.h>
 
-#include "JumaEngine/subsystems/meshes/MeshesSubsystem.h"
-#include "JumaEngine/subsystems/shaders/ShadersSubsystem.h"
-#include "JumaEngine/subsystems/textures/TexturesSubsystem.h"
-#include "JumaEngine/subsystems/ui/ImageWidget.h"
-#include "JumaEngine/subsystems/ui/OverlayWidget.h"
-#include "JumaEngine/subsystems/ui/CursorWidget.h"
-#include "JumaEngine/subsystems/ui/UISubsystem.h"
-#include "JumaEngine/subsystems/ui/WidgetsCreator.h"
+#include "JumaEngine/assets/AssetsEngineSubsystem.h"
+#include "JumaEngine/widgets/ImageWidget.h"
+#include "JumaEngine/widgets/OverlayWidget.h"
+#include "JumaEngine/widgets/CursorWidget.h"
+#include "JumaEngine/widgets/WidgetsCreator.h"
 
 namespace JumaEngine
 {
@@ -95,24 +92,9 @@ namespace JumaEngine
         }
         JUTILS_LOG(info, JSTR("Render engine initialized ({})"), m_InitialRenderAPI);
 
-        if (createSubsystem<ShadersSubsystem>() == nullptr)
+        if (createSubsystem<AssetsEngineSubsystem>() == nullptr)
         {
-            JUTILS_LOG(error, JSTR("Failed to init shaders subsystem"));
-            return false;
-        }
-        if (createSubsystem<TexturesSubsystem>() == nullptr)
-        {
-            JUTILS_LOG(error, JSTR("Failed to init textures subsystem"));
-            return false;
-        }
-        if (createSubsystem<MeshesSubsystem>() == nullptr)
-        {
-            JUTILS_LOG(error, JSTR("Failed to init meshes subsystem"));
-            return false;
-        }
-        if (createSubsystem<UISubsystem>() == nullptr)
-        {
-            JUTILS_LOG(error, JSTR("Failed to init UI subsystem"));
+            JUTILS_LOG(error, JSTR("Failed to init assets engine subsystem"));
             return false;
         }
 

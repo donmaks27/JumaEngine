@@ -8,7 +8,7 @@ namespace JumaEngine
 {
     bool GameEngine::initRenderEngine()
     {
-        m_InitialRenderAPI = JumaRE::RenderAPI::DirectX11;
+        m_InitialRenderAPI = JumaRE::RenderAPI::Vulkan;
         return Super::initRenderEngine();
     }
 

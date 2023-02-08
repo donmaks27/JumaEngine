@@ -7,13 +7,13 @@
 #include <JumaRE/RenderEngine.h>
 
 #include "GameInstance.h"
-#include "subsystems/EngineSubsystem.h"
+#include "EngineSubsystem.h"
 
 namespace JumaEngine
 {
 	class WidgetContext;
 
-	class Engine : public ILogicObjectOwner
+	class Engine : public IEngineObjectOwner
     {
     protected:
         Engine() = default;

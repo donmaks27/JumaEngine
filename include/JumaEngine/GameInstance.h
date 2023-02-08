@@ -3,8 +3,8 @@
 #pragma once
 
 #include "core.h"
-#include "LogicObject.h"
-#include "ILogicObjectOwner.h"
+#include "EngineObject.h"
+#include "IEngineObjectOwner.h"
 
 #include <JumaRE/RenderTarget.h>
 #include <JumaRE/input/InputButtons.h>
@@ -14,9 +14,9 @@ namespace JumaEngine
     class Widget;
     class WidgetsCreator;
 
-    class GameInstance : public LogicObject, public ILogicObjectOwner
+    class GameInstance : public EngineObject, public IEngineObjectOwner
     {
-        JUMAENGINE_CLASS(GameInstance, LogicObject)
+        JUMAENGINE_CLASS(GameInstance, EngineObject)
 
         friend Engine;
 

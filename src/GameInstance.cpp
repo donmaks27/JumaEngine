@@ -3,7 +3,7 @@
 #include "JumaEngine/GameInstance.h"
 
 #include "JumaEngine/Engine.h"
-#include "JumaEngine/subsystems/ui/WidgetsCreator.h"
+#include "JumaEngine/widgets/WidgetsCreator.h"
 
 namespace JumaEngine
 {
