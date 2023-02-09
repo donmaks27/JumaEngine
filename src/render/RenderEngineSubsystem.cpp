@@ -58,6 +58,7 @@ namespace JumaEngine
         JumaRE::RenderTarget* renderTarget = renderEngine->createRenderTarget(windowRenderTarget->getColorFormat(), windowRenderTarget->getSize(), windowRenderTarget->getSampleCount());
         windowRenderTarget->setSampleCount(JumaRE::TextureSamples::X1);
         renderEngine->getRenderPipeline()->addRenderTargetDependecy(windowData->windowRenderTargetID, renderTarget->getID());
+        renderTarget->setupRenderStages({ { false } });
 
         ImageWidget* imageWidget = widgetsCreator->createWidget<ImageWidget>();
         imageWidget->setUsingSolidColor(false);
@@ -73,7 +74,7 @@ namespace JumaEngine
         overlayWidget->addWidget(imageWidget);
         overlayWidget->addWidget(cursorWidget);
 
-        WidgetContext* widgetContext = widgetsCreator->createWidgetContext(windowRenderTarget);
+        WidgetContext* widgetContext = widgetsCreator->createWidgetContext({ windowRenderTarget, 0 });
         widgetsCreator->setRootWidget(widgetContext, overlayWidget);
 
         m_WindowProxyRenderTargets.add(windowData->windowRenderTargetID, { renderTarget, widgetContext });

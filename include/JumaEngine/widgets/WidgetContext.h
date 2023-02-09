@@ -4,7 +4,7 @@
 
 #include "../core.h"
 
-#include <JumaRE/RenderTarget.h>
+#include "../render/RenderContext.h"
 
 namespace JumaEngine
 {
@@ -19,14 +19,15 @@ namespace JumaEngine
         WidgetContext() = default;
 
         WidgetsCreator* getWidgetsCreator() const { return m_ParentWidgetsCreator; }
-        JumaRE::RenderTarget* getRenderTarget() const { return m_RenderTarget; }
+        const RenderContext& getRenderContext() const { return m_RenderContext; }
+        JumaRE::RenderTarget* getRenderTarget() const { return m_RenderContext.renderTarget; }
 
         Widget* getRootWidget() const { return m_RootWidget; }
 
     private:
 
         WidgetsCreator* m_ParentWidgetsCreator = nullptr;
-        JumaRE::RenderTarget* m_RenderTarget = nullptr;
+        RenderContext m_RenderContext;
 
         Widget* m_RootWidget = nullptr;
     };

@@ -6,7 +6,6 @@
 #include "../EngineObject.h"
 #include "../IEngineObjectOwner.h"
 
-#include <JumaRE/RenderTarget.h>
 #include <jutils/jmap.h>
 
 #include "WidgetContext.h"
@@ -23,7 +22,7 @@ namespace JumaEngine
         WidgetsCreator() = default;
         virtual ~WidgetsCreator() override = default;
 
-        WidgetContext* createWidgetContext(JumaRE::RenderTarget* renderTarget);
+        WidgetContext* createWidgetContext(const RenderContext& renderContext);
         void destroyWidgetContext(WidgetContext* widgetContext);
 
         Widget* createWidget(const EngineSubclass<Widget>& widgetClass);
@@ -44,7 +43,7 @@ namespace JumaEngine
 
     private:
 
-        jmap<JumaRE::RenderTarget*, WidgetContext> m_WidgetContexts;
+        jmap<RenderContext, WidgetContext> m_WidgetContexts;
         jarray<Widget*> m_Widgets;
     };
 }

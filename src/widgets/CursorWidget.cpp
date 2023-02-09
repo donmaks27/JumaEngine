@@ -61,7 +61,7 @@ namespace JumaEngine
                 AssetsEngineSubsystem* assetsSubsystem = getEngine()->getSubsystem<AssetsEngineSubsystem>();
                 if (assetsSubsystem != nullptr)
                 {
-                    widgetContext->getRenderTarget()->addPrimitiveToRenderList({
+                    widgetContext->getRenderContext().addPrimitiveToRenderList({
 	                    assetsSubsystem->getVertexBuffer_Plane2D(), m_Material->getMaterial()
                     });
                 }

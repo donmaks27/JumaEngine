@@ -82,8 +82,8 @@ namespace JumaEngine
 
         updateMaterialLocationParams();
         AssetsEngineSubsystem* assetsSubsystem = getEngine()->getSubsystem<AssetsEngineSubsystem>();
-        widgetContext->getRenderTarget()->addPrimitiveToRenderList({
-	        assetsSubsystem->getVertexBuffer_Plane2D(), m_WidgetMaterial->getMaterial()
+        widgetContext->getRenderContext().addPrimitiveToRenderList({
+            assetsSubsystem->getVertexBuffer_Plane2D(), m_WidgetMaterial->getMaterial()
         });
     }
 

@@ -88,7 +88,7 @@ namespace JumaEngine
         Super::onDestroying();
     }
 
-    WidgetContext* WidgetsCreator::createWidgetContext(JumaRE::RenderTarget* renderTarget)
+    WidgetContext* WidgetsCreator::createWidgetContext(const RenderContext& renderContext)
     {
         if (!isInitialized())
         {
@@ -96,34 +96,37 @@ namespace JumaEngine
             return nullptr;
         }
 
-        if (renderTarget == nullptr)
+        if ((renderContext.renderTarget == nullptr) || !renderContext.renderTarget->isRenderStageIndexValid(renderContext.renderStageIndex))
         {
-            JUTILS_LOG(warning, JSTR("Render target is null"));
+            JUTILS_LOG(warning, JSTR("Invalid render context"));
             return nullptr;
         }
 
-        if (m_WidgetContexts.find(renderTarget) != nullptr)
+        if (m_WidgetContexts.find(renderContext) != nullptr)
         {
             JUTILS_LOG(warning, JSTR("Widget context already created"));
             return nullptr;
         }
 
-        WidgetContext& widgetContext = m_WidgetContexts.add(renderTarget);
+        WidgetContext& widgetContext = m_WidgetContexts.add(renderContext);
         widgetContext.m_ParentWidgetsCreator = this;
-        widgetContext.m_RenderTarget = renderTarget;
+        widgetContext.m_RenderContext = renderContext;
         return &widgetContext;
     }
     void WidgetsCreator::destroyWidgetContext(WidgetContext* widgetContext)
     {
-        JumaRE::RenderTarget* renderTarget = widgetContext != nullptr ? widgetContext->getRenderTarget() : nullptr;
-        if ((renderTarget != nullptr) && m_WidgetContexts.contains(renderTarget))
+        if (widgetContext != nullptr)
         {
-            Widget* widget = widgetContext->getRootWidget();
-            if (widget != nullptr)
-            {
-                widget->setParentWidget(nullptr);
-            }
-            m_WidgetContexts.remove(renderTarget);
+            const RenderContext renderContext = widgetContext->getRenderContext();
+	        if (m_WidgetContexts.contains(renderContext))
+	        {
+		        Widget* widget = widgetContext->getRootWidget();
+	            if (widget != nullptr)
+	            {
+	                widget->setParentWidget(nullptr);
+	            }
+	            m_WidgetContexts.remove(renderContext);
+	        }
         }
     }
 
