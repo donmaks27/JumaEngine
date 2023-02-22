@@ -44,6 +44,9 @@ namespace JumaEngine
         T* getSubsystem() const { return dynamic_cast<T*>(this->getSubsystem(T::GetClassStatic())); }
         WidgetsCreator* getWidgetsCreator() const { return m_EngineWidgetCreator; }
 
+        const jstring& getEngineContentDirectory() const { return m_EngineContentDirectory; }
+        const jstring& getGameContentDirectory() const { return m_GameContentDirectory; }
+
     protected:
 
         JumaRE::WindowCreateInfo m_InitialRenderEngineWindow = { JSTR("JumaEngine"), { 800, 600 } };
@@ -74,6 +77,9 @@ namespace JumaEngine
 
         jmap<EngineSubclass<EngineSubsystem>, EngineSubsystem*> m_EngineSubsystems;
         WidgetsCreator* m_EngineWidgetCreator = nullptr;
+
+        jstring m_EngineContentDirectory = JSTR("./content_engine/");
+        jstring m_GameContentDirectory = JSTR("./content/");
 
 
         EngineContextObject* registerObjectInternal(EngineContextObject* object);

@@ -34,7 +34,7 @@ namespace JumaEngine
         jmap<jstringID, jstringID> m_EngineInternalParamNames;
 
 
-        bool loadShader(const jstringID& shaderName, const jstringID& contentFolder);
+        bool loadShader(const jstringID& shaderName, const jstring& contentFolder);
         void clearShader();
     };
 }

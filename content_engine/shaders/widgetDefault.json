@@ -1,16 +1,16 @@
 {
     "shaderFiles": {
         "vertex": {
-            "OpenGL": "content_engine/shaders/widgetDefault.vert",
-            "Vulkan": "content_engine/shaders/widgetDefault.vert.spv",
-            "DirectX11": "content_engine/shaders/widgetDefaultInverted.vert.hlsl.obj",
-            "DirectX12": "content_engine/shaders/widgetDefaultInverted.vert.hlsl.obj"
+            "OpenGL": "shaders/widgetDefault.vert",
+            "Vulkan": "shaders/widgetDefault.vert.spv",
+            "DirectX11": "shaders/widgetDefaultInverted.vert.hlsl.obj",
+            "DirectX12": "shaders/widgetDefaultInverted.vert.hlsl.obj"
         },
         "fragment": {
-            "OpenGL": "content_engine/shaders/widgetDefault.frag",
-            "Vulkan": "content_engine/shaders/widgetDefault.frag.spv",
-            "DirectX11": "content_engine/shaders/widgetDefault.frag.hlsl.obj",
-            "DirectX12": "content_engine/shaders/widgetDefault.frag.hlsl.obj"
+            "OpenGL": "shaders/widgetDefault.frag",
+            "Vulkan": "shaders/widgetDefault.frag.spv",
+            "DirectX11": "shaders/widgetDefault.frag.hlsl.obj",
+            "DirectX12": "shaders/widgetDefault.frag.hlsl.obj"
         }
     },
     "vertexComponents": [ "position2D", "textureCoords" ],

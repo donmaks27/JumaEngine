@@ -5,6 +5,7 @@
 #include <chrono>
 #include <JumaRE/RenderEngineImpl.h>
 #include <JumaRE/RenderPipeline.h>
+#include <jutils/configs/ini_parser.h>
 
 #include "JumaEngine/assets/AssetsEngineSubsystem.h"
 #include "JumaEngine/render/RenderEngineSubsystem.h"
@@ -67,6 +68,21 @@ namespace JumaEngine
     }
     bool Engine::initEngine()
     {
+        jmap<jstring, jmap<jstring, jstring>> configData = ini::parseFile(JSTR("config/engine.ini"));
+        const jmap<jstring, jstring>* engineConfigData = configData.find(JSTR("Engine"));
+        if (engineConfigData != nullptr)
+        {
+	        const jstring* contentEngine = engineConfigData->find(JSTR("contentFolderEngine"));
+            if (contentEngine != nullptr)
+            {
+	            m_EngineContentDirectory = *contentEngine;
+            }
+	        const jstring* content = engineConfigData->find(JSTR("contentFolderGame"));
+            if (content != nullptr)
+            {
+	            m_GameContentDirectory = *content;
+            }
+        }
         return true;
     }
     bool Engine::initGameInstance()
