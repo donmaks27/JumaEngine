@@ -20,30 +20,30 @@ namespace JumaEngine
         virtual ~EngineObject() override = default;
 
         bool isInitialized() const { return m_ObjectInitialized && !isDestroyed(); }
-        bool isLogicActive() const { return m_LogicStarted; }
+        bool isActive() const { return m_ObjectActivated; }
         bool isDestroyed() const { return m_ObjectDestroyed; }
 
     protected:
 
         virtual void onInitialized() {}
-        virtual void onLogicStarted() {}
+        virtual void onActivated() {}
         virtual void onUpdate(float deltaTime) {}
         virtual void onPreRender() {}
-        virtual void onLogicStopping() {}
-        virtual void onDestroying() {}
+        virtual void onDeactivate() {}
+        virtual void onClear() {}
 
     private:
 
         bool m_ObjectInitialized = false;
-        bool m_LogicStarted = false;
+        bool m_ObjectActivated = false;
         bool m_ObjectDestroyed = false;
 
 
-        void initializeLogicObject();
-        void startLogic();
+        void initializeEngineObject();
+        void activateEngineObject();
         void update(float deltaTime);
         void preRender();
-        void stopLogic();
-        void destroyLogicObject();
+        void deactivateEngineObject();
+        void clearEngineObject();
     };
 }

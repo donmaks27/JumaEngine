@@ -1,6 +1,6 @@
 ﻿// Copyright © 2022-2023 Leonov Maksim. All Rights Reserved.
 
-#include "JumaEngine/engine/GameInstance.h"
+#include "JumaEngine/game/GameInstance.h"
 
 #include "JumaEngine/engine/Engine.h"
 #include "JumaEngine/widgets/WidgetsCreator.h"
@@ -19,10 +19,6 @@ namespace JumaEngine
     bool GameInstance::setupRenderTarget(JumaRE::RenderTarget* renderTarget)
     {
         m_GameRenderTarget = renderTarget;
-        return onSetupGameRenderTarget();
-    }
-    bool GameInstance::onSetupGameRenderTarget()
-    {
         return true;
     }
 
@@ -31,41 +27,41 @@ namespace JumaEngine
         Super::onInitialized();
     }
 
-    void GameInstance::onLogicStarted()
+    void GameInstance::onActivated()
     {
-        Super::onLogicStarted();
+        Super::onActivated();
 
         m_GameWidgetsCreator = getEngine()->createObject<WidgetsCreator>();
-        InitializeLogicObject(m_GameWidgetsCreator);
-        StartLogicObject(m_GameWidgetsCreator);
+        InitializeEngineObject(m_GameWidgetsCreator);
+        ActivateEngineObject(m_GameWidgetsCreator);
     }
 
     void GameInstance::onUpdate(float deltaTime)
     {
         Super::onUpdate(deltaTime);
 
-        UpdateLogicObject(m_GameWidgetsCreator, deltaTime);
+        UpdateEngineObject(m_GameWidgetsCreator, deltaTime);
     }
 
     void GameInstance::onPreRender()
     {
         Super::onPreRender();
 
-        PreRenderLogicObject(m_GameWidgetsCreator);
+        PreRenderEngineObject(m_GameWidgetsCreator);
     }
 
-    void GameInstance::onLogicStopping()
+    void GameInstance::onDeactivate()
     {
-        DestroyLogicObject(m_GameWidgetsCreator);
+        ClearEngineObject(m_GameWidgetsCreator);
         delete m_GameWidgetsCreator;
         m_GameWidgetsCreator = nullptr;
 
-        Super::onLogicStopping();
+        Super::onDeactivate();
     }
 
-    void GameInstance::onDestroying()
+    void GameInstance::onClear()
     {
-        Super::onDestroying();
+        Super::onClear();
     }
 
     void GameInstance::clear()

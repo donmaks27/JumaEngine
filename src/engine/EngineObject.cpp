@@ -4,7 +4,7 @@
 
 namespace JumaEngine
 {
-    void EngineObject::initializeLogicObject()
+    void EngineObject::initializeEngineObject()
     {
         if (!m_ObjectInitialized)
         {
@@ -13,47 +13,47 @@ namespace JumaEngine
         }
     }
 
-    void EngineObject::startLogic()
+    void EngineObject::activateEngineObject()
     {
-        if (isInitialized() && !isLogicActive())
+        if (isInitialized() && !isActive())
         {
-            m_LogicStarted = true;
-            onLogicStarted();
+            m_ObjectActivated = true;
+            onActivated();
         }
     }
 
     void EngineObject::update(const float deltaTime)
     {
-        if (isLogicActive())
+        if (isActive())
         {
             onUpdate(deltaTime);
         }
     }
     void EngineObject::preRender()
     {
-        if (isLogicActive())
+        if (isActive())
         {
             onPreRender();
         }
     }
 
-    void EngineObject::stopLogic()
+    void EngineObject::deactivateEngineObject()
     {
-        if (isLogicActive())
+        if (isActive())
         {
-            onLogicStopping();
-            m_LogicStarted = false;
+            onDeactivate();
+            m_ObjectActivated = false;
         }
     }
 
-    void EngineObject::destroyLogicObject()
+    void EngineObject::clearEngineObject()
     {
         if (!isDestroyed())
         {
-            stopLogic();
+            deactivateEngineObject();
             if (isInitialized())
             {
-                onDestroying();
+                onClear();
                 m_ObjectDestroyed = true;
             }
         }

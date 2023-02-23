@@ -1,6 +1,6 @@
 ﻿// Copyright © 2022-2023 Leonov Maksim. All Rights Reserved.
 
-#include "JumaEngine/engine/GameEngine.h"
+#include "JumaEngine/game/GameEngine.h"
 
 #ifdef JUMAENGINE_MODE_GAME
 
@@ -41,6 +41,20 @@ namespace JumaEngine
         }
         return Super::getDesiredRenderAPI();
     }
+    jstring GameEngine::getWindowsTitle() const
+    {
+        const ConfigEngineSubsystem* configSubsytem = getSubsystem<ConfigEngineSubsystem>();
+        if (configSubsytem == nullptr)
+        {
+            return Super::getWindowsTitle();
+        }
+        jstring title;
+        if (!configSubsytem->getValue(JSTR("game"), JSTR("General"), JSTR("title"), title))
+        {
+            return Super::getWindowsTitle();
+        }
+        return title;
+    }
 
     JumaRE::RenderTarget* GameEngine::getGameInstanceRenderTarget() const
     {
@@ -65,32 +79,32 @@ namespace JumaEngine
 
         JumaRE::WindowController* windowController = getRenderEngine()->getWindowController();
         windowController->onWindowInput.bind(this, &GameEngine::onWindowInput);
-        InitializeLogicObject(getGameInstance());
+        InitializeEngineObject(getGameInstance());
         return true;
     }
     void GameEngine::onEngineLoopStarted()
     {
         Super::onEngineLoopStarted();
 
-        StartLogicObject(getGameInstance());
+        ActivateEngineObject(getGameInstance());
     }
     void GameEngine::update(const float deltaTime)
     {
         Super::update(deltaTime);
         
-        UpdateLogicObject(getGameInstance(), deltaTime);
+        UpdateEngineObject(getGameInstance(), deltaTime);
     }
-    void GameEngine::postUpdate()
+    void GameEngine::preRender()
     {
-        Super::postUpdate();
+        Super::preRender();
 
-        PreRenderLogicObject(getGameInstance());
+        PreRenderEngineObject(getGameInstance());
     }
     void GameEngine::onEngineLoopStopping()
     {
         getRenderEngine()->getWindowController()->onWindowInput.unbind(this, &GameEngine::onWindowInput);
 
-        DestroyLogicObject(getGameInstance());
+        ClearEngineObject(getGameInstance());
 
         Super::onEngineLoopStopping();
     }

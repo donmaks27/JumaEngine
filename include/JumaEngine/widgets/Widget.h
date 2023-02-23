@@ -53,7 +53,7 @@ namespace JumaEngine
         math::vector2 m_WidgetRenderSize = { 0.0f, 0.0f };
 
         
-        virtual void onDestroying() override;
+        virtual void onClear() override;
 
         virtual void recalculateWidetSize() { m_WidgetRenderSize = { 0.0f, 0.0f }; }
         

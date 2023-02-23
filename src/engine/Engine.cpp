@@ -5,7 +5,6 @@
 #include <chrono>
 #include <JumaRE/RenderEngineImpl.h>
 #include <JumaRE/RenderPipeline.h>
-#include <jutils/configs/ini_parser.h>
 
 #include "JumaEngine/assets/AssetsEngineSubsystem.h"
 #include "JumaEngine/engine/ConfigEngineSubsystem.h"
@@ -108,14 +107,14 @@ namespace JumaEngine
 		        renderAPI = JumaRE::RenderAPI::DirectX12;
 	        }
         }
-
+        
         m_RenderEngine = JumaRE::CreateRenderEngine(renderAPI);
         if (m_RenderEngine == nullptr)
         {
             JUTILS_LOG(error, JSTR("Failed to create render engine ({})"), renderAPI);
             return false;
         }
-        if (!m_RenderEngine->init(m_InitialRenderEngineWindow))
+        if (!m_RenderEngine->init({ getWindowsTitle(), { 800, 600 } }))
         {
             JUTILS_LOG(error, JSTR("Failed to init render engine ({})"), renderAPI);
             delete m_RenderEngine;
@@ -137,7 +136,7 @@ namespace JumaEngine
         }
 
         m_EngineWidgetCreator = createObject<WidgetsCreator>();
-        InitializeLogicObject(m_EngineWidgetCreator);
+        InitializeEngineObject(m_EngineWidgetCreator);
 
         renderSubsystem->createProxyWindowRenderTargets();
         return true;
@@ -163,7 +162,7 @@ namespace JumaEngine
 	        const float deltaTime = static_cast<float>(duration.count()) / 1000000.0f;
 
             update(deltaTime);
-            postUpdate();
+            preRender();
             if (!m_RenderEngine->render())
             {
                 JUTILS_LOG(error, JSTR("Render failed"));
@@ -192,7 +191,7 @@ namespace JumaEngine
     }
     void Engine::onEngineLoopStarted()
     {
-        StartLogicObject(m_EngineWidgetCreator);
+        ActivateEngineObject(m_EngineWidgetCreator);
     }
     bool Engine::shouldStopEngineLoop()
     {
@@ -200,16 +199,16 @@ namespace JumaEngine
     }
     void Engine::update(const float deltaTime)
     {
-        UpdateLogicObject(m_EngineWidgetCreator, deltaTime);
+        UpdateEngineObject(m_EngineWidgetCreator, deltaTime);
     }
-    void Engine::postUpdate()
+    void Engine::preRender()
     {
-        PreRenderLogicObject(m_EngineWidgetCreator);
+        PreRenderEngineObject(m_EngineWidgetCreator);
     }
     void Engine::onEngineLoopStopping()
     {
         getSubsystem<RenderEngineSubsystem>()->destroyProxyWindowRenderTargets();
-        DestroyLogicObject(m_EngineWidgetCreator);
+        ClearEngineObject(m_EngineWidgetCreator);
     }
 
     void Engine::clear()

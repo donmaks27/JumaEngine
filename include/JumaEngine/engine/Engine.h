@@ -6,8 +6,8 @@
 
 #include <JumaRE/RenderEngine.h>
 
-#include "GameInstance.h"
 #include "EngineSubsystem.h"
+#include "../game/GameInstance.h"
 
 namespace JumaEngine
 {
@@ -48,22 +48,20 @@ namespace JumaEngine
         const jstring& getGameContentDirectory() const { return m_GameContentDirectory; }
 
     protected:
-
-        JumaRE::WindowCreateInfo m_InitialRenderEngineWindow = { JSTR("JumaEngine"), { 800, 600 } };
-
-
+        
         virtual bool initEngine();
         virtual bool initGameInstance();
         virtual bool initRenderEngine();
 
         virtual JumaRE::RenderAPI getDesiredRenderAPI() const { return JumaRE::RenderAPI::Vulkan; }
+        virtual jstring getWindowsTitle() const { return JSTR("JumaEngine"); }
         virtual JumaRE::RenderTarget* getGameInstanceRenderTarget() const { return nullptr; }
 
         virtual bool onEngineLoopStarting();
         virtual void onEngineLoopStarted();
         virtual bool shouldStopEngineLoop();
         virtual void update(float deltaTime);
-        virtual void postUpdate();
+        virtual void preRender();
         virtual void onEngineLoopStopping();
 
         virtual void clearRenderEngine();

@@ -36,11 +36,11 @@ namespace JumaEngine
     protected:
 
         virtual void onInitialized() override;
-        virtual void onLogicStarted() override;
+        virtual void onActivated() override;
         virtual void onUpdate(float deltaTime) override;
         virtual void onPreRender() override;
-        virtual void onLogicStopping() override;
-        virtual void onDestroying() override;
+        virtual void onDeactivate() override;
+        virtual void onClear() override;
 
     private:
 

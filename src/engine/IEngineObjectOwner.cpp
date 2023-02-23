@@ -6,28 +6,28 @@
 
 namespace JumaEngine
 {
-    void IEngineObjectOwner::InitializeLogicObject(EngineObject* object)
+    void IEngineObjectOwner::InitializeEngineObject(EngineObject* object)
     {
-        object->initializeLogicObject();
+        object->initializeEngineObject();
     }
-    void IEngineObjectOwner::StartLogicObject(EngineObject* object)
+    void IEngineObjectOwner::ActivateEngineObject(EngineObject* object)
     {
-        object->startLogic();
+        object->activateEngineObject();
     }
-    void IEngineObjectOwner::UpdateLogicObject(EngineObject* object, const float deltaTime)
+    void IEngineObjectOwner::UpdateEngineObject(EngineObject* object, const float deltaTime)
     {
         object->update(deltaTime);
     }
-    void IEngineObjectOwner::PreRenderLogicObject(EngineObject* object)
+    void IEngineObjectOwner::PreRenderEngineObject(EngineObject* object)
     {
         object->preRender();
     }
-    void IEngineObjectOwner::StopLogicObject(EngineObject* object)
+    void IEngineObjectOwner::DeactivateEngineObject(EngineObject* object)
     {
-        object->stopLogic();
+        object->deactivateEngineObject();
     }
-    void IEngineObjectOwner::DestroyLogicObject(EngineObject* object)
+    void IEngineObjectOwner::ClearEngineObject(EngineObject* object)
     {
-        object->destroyLogicObject();
+        object->clearEngineObject();
     }
 }
