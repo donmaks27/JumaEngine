@@ -10,19 +10,32 @@ namespace JumaEngine
 {
     bool GameEngine::initRenderEngine()
     {
-        m_InitialRenderAPI = JumaRE::RenderAPI::Vulkan;
+        m_InitialRenderAPI = JumaRE::RenderAPI::DirectX11;
         return Super::initRenderEngine();
     }
 
-    bool GameEngine::initEngineLoop()
+    JumaRE::RenderTarget* GameEngine::getGameInstanceRenderTarget() const
     {
-        JumaRE::WindowController* windowController = getRenderEngine()->getWindowController();
-        m_InitialGameInstanceRenderTarger = getSubsystem<RenderEngineSubsystem>()->getWindowRenderTarget(windowController->getMainWindowID());
-        if (!Super::initEngineLoop())
+        const JumaRE::RenderEngine* renderEngine = getRenderEngine();
+        const JumaRE::WindowController* windowController = renderEngine != nullptr ? renderEngine->getWindowController() : nullptr;
+        const JumaRE::window_id windowID = windowController != nullptr ? windowController->getMainWindowID() : JumaRE::window_id_INVALID;
+        if (windowID == JumaRE::window_id_INVALID)
+        {
+	        return nullptr;
+        }
+
+        const RenderEngineSubsystem* renderSubsystem = getSubsystem<RenderEngineSubsystem>();
+        return renderSubsystem != nullptr ? renderSubsystem->getWindowRenderTarget(windowID) : nullptr;
+    }
+
+    bool GameEngine::onEngineLoopStarting()
+    {
+        if (!Super::onEngineLoopStarting())
         {
             return false;
         }
 
+        JumaRE::WindowController* windowController = getRenderEngine()->getWindowController();
         windowController->onWindowInput.bind(this, &GameEngine::onWindowInput);
         InitializeLogicObject(getGameInstance());
         return true;
@@ -45,13 +58,13 @@ namespace JumaEngine
 
         PreRenderLogicObject(getGameInstance());
     }
-    void GameEngine::onEngineLoopStopped()
+    void GameEngine::onEngineLoopStopping()
     {
         getRenderEngine()->getWindowController()->onWindowInput.unbind(this, &GameEngine::onWindowInput);
 
         DestroyLogicObject(getGameInstance());
 
-        Super::onEngineLoopStopped();
+        Super::onEngineLoopStopping();
     }
 
     void GameEngine::onWindowInput(JumaRE::WindowController* windowController, const JumaRE::WindowData* windowData, 

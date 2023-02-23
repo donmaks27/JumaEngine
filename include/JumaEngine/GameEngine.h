@@ -22,11 +22,13 @@ namespace JumaEngine
 
         virtual bool initRenderEngine() override;
 
-        virtual bool initEngineLoop() override;
+        virtual JumaRE::RenderTarget* getGameInstanceRenderTarget() const override;
+
+        virtual bool onEngineLoopStarting() override;
         virtual void onEngineLoopStarted() override;
         virtual void update(float deltaTime) override;
         virtual void postUpdate() override;
-        virtual void onEngineLoopStopped() override;
+        virtual void onEngineLoopStopping() override;
 
     private:
 

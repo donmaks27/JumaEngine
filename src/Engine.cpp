@@ -69,7 +69,7 @@ namespace JumaEngine
     bool Engine::initEngine()
     {
         jmap<jstring, jmap<jstring, jstring>> configData = ini::parseFile(JSTR("config/engine.ini"));
-        const jmap<jstring, jstring>* engineConfigData = configData.find(JSTR("Engine"));
+        const jmap<jstring, jstring>* engineConfigData = configData.find(JSTR("General"));
         if (engineConfigData != nullptr)
         {
 	        const jstring* contentEngine = engineConfigData->find(JSTR("contentFolderEngine"));
@@ -127,18 +127,16 @@ namespace JumaEngine
 
     void Engine::start()
     {
-        JUTILS_LOG(info, JSTR("Initializing engine loop..."));
-        if (!initEngineLoop())
+        JUTILS_LOG(info, JSTR("Starting engine loop..."));
+        if (!onEngineLoopStarting())
         {
-            JUTILS_LOG(error, JSTR("Failed to init engine loop"));
+            JUTILS_LOG(error, JSTR("Failed to start engine loop"));
             return;
         }
-
-        JUTILS_LOG(info, JSTR("Starting engine loop..."));
-        onEngineLoopStarted();
+        
         JUTILS_LOG(info, JSTR("Engine loop started"));
-
-        while (!shouldExit())
+        onEngineLoopStarted();
+        while (!shouldStopEngineLoop())
         {
             static std::chrono::time_point<std::chrono::steady_clock> prevTimePoint = std::chrono::steady_clock::now();
 	        const std::chrono::time_point<std::chrono::steady_clock> currentTimePoint = std::chrono::steady_clock::now();
@@ -157,27 +155,28 @@ namespace JumaEngine
         getRenderEngine()->getRenderPipeline()->waitForRenderFinished();
         
         JUTILS_LOG(info, JSTR("Stopping engine loop..."));
-        onEngineLoopStopped();
+        onEngineLoopStopping();
         JUTILS_LOG(info, JSTR("Engine loop stopped"));
 
         clear();
     }
-    bool Engine::initEngineLoop()
+    bool Engine::onEngineLoopStarting()
     {
-        if (m_InitialGameInstanceRenderTarger == nullptr)
+        JumaRE::RenderTarget* gameInstanceRT = getGameInstanceRenderTarget();
+        if (gameInstanceRT == nullptr)
         {
             JUTILS_LOG(error, JSTR("Invalid game instance render target"));
             return false;
         }
         
-        m_GameInstance->setupRenderTarget(m_InitialGameInstanceRenderTarger);
+        m_GameInstance->setupRenderTarget(gameInstanceRT);
         return true;
     }
     void Engine::onEngineLoopStarted()
     {
         StartLogicObject(m_EngineWidgetCreator);
     }
-    bool Engine::shouldExit()
+    bool Engine::shouldStopEngineLoop()
     {
         return (m_RenderEngine != nullptr) && m_RenderEngine->getWindowController()->isMainWindowClosed();
     }
@@ -189,7 +188,7 @@ namespace JumaEngine
     {
         PreRenderLogicObject(m_EngineWidgetCreator);
     }
-    void Engine::onEngineLoopStopped()
+    void Engine::onEngineLoopStopping()
     {
         getSubsystem<RenderEngineSubsystem>()->destroyProxyWindowRenderTargets();
         DestroyLogicObject(m_EngineWidgetCreator);
