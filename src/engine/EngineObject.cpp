@@ -1,6 +1,6 @@
 ﻿// Copyright © 2023 Leonov Maksim. All Rights Reserved.
 
-#include "JumaEngine/EngineObject.h"
+#include "JumaEngine/engine/EngineObject.h"
 
 namespace JumaEngine
 {

@@ -1,8 +1,8 @@
 ﻿// Copyright © 2022-2023 Leonov Maksim. All Rights Reserved.
 
-#include "JumaEngine/GameInstance.h"
+#include "JumaEngine/engine/GameInstance.h"
 
-#include "JumaEngine/Engine.h"
+#include "JumaEngine/engine/Engine.h"
 #include "JumaEngine/widgets/WidgetsCreator.h"
 
 namespace JumaEngine

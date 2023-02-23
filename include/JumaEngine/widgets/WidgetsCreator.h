@@ -3,8 +3,8 @@
 #pragma once
 
 #include "../core.h"
-#include "../EngineObject.h"
-#include "../IEngineObjectOwner.h"
+#include "../engine/EngineObject.h"
+#include "../engine/IEngineObjectOwner.h"
 
 #include <JumaRE/RenderTarget.h>
 #include <jutils/jmap.h>

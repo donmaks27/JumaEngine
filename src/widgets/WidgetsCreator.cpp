@@ -2,7 +2,7 @@
 
 #include "JumaEngine/widgets/WidgetsCreator.h"
 
-#include "JumaEngine/Engine.h"
+#include "JumaEngine/engine/Engine.h"
 #include "JumaEngine/widgets/Widget.h"
 #include "JumaEngine/widgets/WidgetContext.h"
 

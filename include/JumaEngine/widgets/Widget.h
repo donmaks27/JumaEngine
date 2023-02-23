@@ -3,7 +3,7 @@
 #pragma once
 
 #include "../core.h"
-#include "../EngineObject.h"
+#include "../engine/EngineObject.h"
 
 #include <jutils/jdelegate_multicast.h>
 #include <jutils/math/box2.h>

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "../core.h"
-#include "../EngineSubsystem.h"
+#include "../engine/EngineSubsystem.h"
 
 #include <jutils/jlist.h>
 #include <jutils/jmap.h>

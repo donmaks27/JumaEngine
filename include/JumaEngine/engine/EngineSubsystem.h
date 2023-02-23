@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "core.h"
+#include "../core.h"
 #include "EngineContextObject.h"
 
 namespace JumaEngine

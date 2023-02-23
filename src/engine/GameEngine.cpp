@@ -1,17 +1,45 @@
 ﻿// Copyright © 2022-2023 Leonov Maksim. All Rights Reserved.
 
-#include "JumaEngine/GameEngine.h"
+#include "JumaEngine/engine/GameEngine.h"
 
 #ifdef JUMAENGINE_MODE_GAME
 
+#include "JumaEngine/engine/ConfigEngineSubsystem.h"
 #include "JumaEngine/render/RenderEngineSubsystem.h"
 
 namespace JumaEngine
 {
-    bool GameEngine::initRenderEngine()
+    JumaRE::RenderAPI GameEngine::getDesiredRenderAPI() const
     {
-        m_InitialRenderAPI = JumaRE::RenderAPI::DirectX11;
-        return Super::initRenderEngine();
+        const ConfigEngineSubsystem* configSubsytem = getSubsystem<ConfigEngineSubsystem>();
+        if (configSubsytem == nullptr)
+        {
+            return Super::getDesiredRenderAPI();
+        }
+
+        jstring renderAPIString;
+        if (!configSubsytem->getValue(JSTR("game"), JSTR("General"), JSTR("renderAPI"), renderAPIString))
+        {
+            return Super::getDesiredRenderAPI();
+        }
+
+        if (renderAPIString == JSTR("Vulkan"))
+        {
+            return JumaRE::RenderAPI::Vulkan;
+        }
+        if (renderAPIString == JSTR("OpenGL"))
+        {
+            return JumaRE::RenderAPI::OpenGL;
+        }
+        if (renderAPIString == JSTR("DirectX11"))
+        {
+            return JumaRE::RenderAPI::DirectX11;
+        }
+        if (renderAPIString == JSTR("DirectX12"))
+        {
+            return JumaRE::RenderAPI::DirectX12;
+        }
+        return Super::getDesiredRenderAPI();
     }
 
     JumaRE::RenderTarget* GameEngine::getGameInstanceRenderTarget() const

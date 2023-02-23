@@ -7,7 +7,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 
-#include "JumaEngine/Engine.h"
+#include "JumaEngine/engine/Engine.h"
 
 namespace JumaEngine
 {

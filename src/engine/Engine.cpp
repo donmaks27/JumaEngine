@@ -1,6 +1,6 @@
 ﻿// Copyright © 2022-2023 Leonov Maksim. All Rights Reserved.
 
-#include "JumaEngine/Engine.h"
+#include "JumaEngine/engine/Engine.h"
 
 #include <chrono>
 #include <JumaRE/RenderEngineImpl.h>
@@ -8,6 +8,7 @@
 #include <jutils/configs/ini_parser.h>
 
 #include "JumaEngine/assets/AssetsEngineSubsystem.h"
+#include "JumaEngine/engine/ConfigEngineSubsystem.h"
 #include "JumaEngine/render/RenderEngineSubsystem.h"
 #include "JumaEngine/widgets/WidgetsCreator.h"
 
@@ -68,21 +69,17 @@ namespace JumaEngine
     }
     bool Engine::initEngine()
     {
-        jmap<jstring, jmap<jstring, jstring>> configData = ini::parseFile(JSTR("config/engine.ini"));
-        const jmap<jstring, jstring>* engineConfigData = configData.find(JSTR("General"));
-        if (engineConfigData != nullptr)
+        const ConfigEngineSubsystem* configSubsystem = createSubsystem<ConfigEngineSubsystem>();
+        if (configSubsystem == nullptr)
         {
-	        const jstring* contentEngine = engineConfigData->find(JSTR("contentFolderEngine"));
-            if (contentEngine != nullptr)
-            {
-	            m_EngineContentDirectory = *contentEngine;
-            }
-	        const jstring* content = engineConfigData->find(JSTR("contentFolderGame"));
-            if (content != nullptr)
-            {
-	            m_GameContentDirectory = *content;
-            }
+	        JUTILS_LOG(error, JSTR("Failed to init ConfigEngineSubsystem"));
+            return false;
         }
+
+        const jstringID section = JSTR("General");
+        const jstringID key = JSTR("contentFolder");
+        configSubsystem->getValue(JSTR("engine"), section, key, m_EngineContentDirectory);
+        configSubsystem->getValue(JSTR("game"), section, key, m_GameContentDirectory);
         return true;
     }
     bool Engine::initGameInstance()
@@ -91,30 +88,51 @@ namespace JumaEngine
     }
     bool Engine::initRenderEngine()
     {
-        m_RenderEngine = JumaRE::CreateRenderEngine(m_InitialRenderAPI);
+        JumaRE::RenderAPI renderAPI = getDesiredRenderAPI();
+        if (!JumaRE::IsSupportRenderAPI(renderAPI))
+        {
+	        if (JumaRE::IsSupportRenderAPI(JumaRE::RenderAPI::Vulkan))
+	        {
+		        renderAPI = JumaRE::RenderAPI::Vulkan;
+	        }
+            else if (JumaRE::IsSupportRenderAPI(JumaRE::RenderAPI::OpenGL))
+	        {
+		        renderAPI = JumaRE::RenderAPI::OpenGL;
+	        }
+            else if (JumaRE::IsSupportRenderAPI(JumaRE::RenderAPI::DirectX11))
+	        {
+		        renderAPI = JumaRE::RenderAPI::DirectX11;
+	        }
+            else if (JumaRE::IsSupportRenderAPI(JumaRE::RenderAPI::DirectX12))
+	        {
+		        renderAPI = JumaRE::RenderAPI::DirectX12;
+	        }
+        }
+
+        m_RenderEngine = JumaRE::CreateRenderEngine(renderAPI);
         if (m_RenderEngine == nullptr)
         {
-            JUTILS_LOG(error, JSTR("Failed to create render engine ({})"), m_InitialRenderAPI);
+            JUTILS_LOG(error, JSTR("Failed to create render engine ({})"), renderAPI);
             return false;
         }
         if (!m_RenderEngine->init(m_InitialRenderEngineWindow))
         {
-            JUTILS_LOG(error, JSTR("Failed to init render engine ({})"), m_InitialRenderAPI);
+            JUTILS_LOG(error, JSTR("Failed to init render engine ({})"), renderAPI);
             delete m_RenderEngine;
             m_RenderEngine = nullptr;
             return false;
         }
-        JUTILS_LOG(info, JSTR("Render engine initialized ({})"), m_InitialRenderAPI);
-
+        JUTILS_LOG(info, JSTR("Render engine initialized ({})"), renderAPI);
+        
         RenderEngineSubsystem* renderSubsystem = createSubsystem<RenderEngineSubsystem>();
         if (renderSubsystem == nullptr)
         {
-	        JUTILS_LOG(error, JSTR("Failed to init render engine subsystem"));
+	        JUTILS_LOG(error, JSTR("Failed to init RenderEngineSubsystem"));
             return false;
         }
         if (createSubsystem<AssetsEngineSubsystem>() == nullptr)
         {
-            JUTILS_LOG(error, JSTR("Failed to init assets engine subsystem"));
+            JUTILS_LOG(error, JSTR("Failed to init AssetsEngineSubsystem"));
             return false;
         }
 

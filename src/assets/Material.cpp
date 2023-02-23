@@ -2,7 +2,7 @@
 
 #include "JumaEngine/assets/Material.h"
 
-#include "JumaEngine/Engine.h"
+#include "JumaEngine/engine/Engine.h"
 #include "JumaEngine/assets/AssetsEngineSubsystem.h"
 
 namespace JumaEngine

@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "core.h"
+#include "../core.h"
 
 #ifdef JUMAENGINE_MODE_GAME
 
@@ -19,9 +19,8 @@ namespace JumaEngine
         virtual ~GameEngine() override = default;
 
     protected:
-
-        virtual bool initRenderEngine() override;
-
+        
+        virtual JumaRE::RenderAPI getDesiredRenderAPI() const override;
         virtual JumaRE::RenderTarget* getGameInstanceRenderTarget() const override;
 
         virtual bool onEngineLoopStarting() override;

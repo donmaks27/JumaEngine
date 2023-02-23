@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "core.h"
+#include "../core.h"
 
 #include <JumaRE/RenderEngine.h>
 
@@ -50,13 +50,13 @@ namespace JumaEngine
     protected:
 
         JumaRE::WindowCreateInfo m_InitialRenderEngineWindow = { JSTR("JumaEngine"), { 800, 600 } };
-        JumaRE::RenderAPI m_InitialRenderAPI = JumaRE::RenderAPI::OpenGL;
 
 
         virtual bool initEngine();
         virtual bool initGameInstance();
         virtual bool initRenderEngine();
 
+        virtual JumaRE::RenderAPI getDesiredRenderAPI() const { return JumaRE::RenderAPI::Vulkan; }
         virtual JumaRE::RenderTarget* getGameInstanceRenderTarget() const { return nullptr; }
 
         virtual bool onEngineLoopStarting();

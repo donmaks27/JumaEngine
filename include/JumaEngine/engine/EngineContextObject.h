@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "core.h"
-#include "EngineClass.h"
+#include "../core.h"
+#include "../EngineClass.h"
 
 namespace JumaEngine
 {

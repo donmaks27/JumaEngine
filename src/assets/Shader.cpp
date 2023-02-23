@@ -4,7 +4,7 @@
 
 #include <jutils/configs/json_parser.h>
 
-#include "JumaEngine/Engine.h"
+#include "JumaEngine/engine/Engine.h"
 
 namespace JumaEngine
 {
