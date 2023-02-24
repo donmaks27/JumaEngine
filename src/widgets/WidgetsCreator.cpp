@@ -2,7 +2,7 @@
 
 #include "JumaEngine/widgets/WidgetsCreator.h"
 
-#include "JumaEngine/Engine.h"
+#include "JumaEngine/engine/Engine.h"
 #include "JumaEngine/widgets/Widget.h"
 #include "JumaEngine/widgets/WidgetContext.h"
 
@@ -13,21 +13,21 @@ namespace JumaEngine
         Super::onInitialized();
     }
 
-    void WidgetsCreator::onLogicStarted()
+    void WidgetsCreator::onActivated()
     {
-        Super::onLogicStarted();
+        Super::onActivated();
 
         for (const auto& widgetContext : m_WidgetContexts)
         {
             Widget* rootWidget = widgetContext.value.getRootWidget();
             if (rootWidget != nullptr)
             {
-                StartLogicObject(rootWidget);
+                ActivateEngineObject(rootWidget);
             }
         }
         for (const auto& widget : m_Widgets)
         {
-            StartLogicObject(widget);
+            ActivateEngineObject(widget);
         }
     }
 
@@ -40,7 +40,7 @@ namespace JumaEngine
             Widget* rootWidget = widgetContext.value.getRootWidget();
             if (rootWidget != nullptr)
             {
-                UpdateLogicObject(rootWidget, deltaTime);
+                UpdateEngineObject(rootWidget, deltaTime);
             }
         }
     }
@@ -57,26 +57,26 @@ namespace JumaEngine
                 rootWidget->setWidgetBounds({ { 0.0f, 0.0f }, { 1.0f, 1.0f } }, WidgetAlignmentH::Fill, WidgetAlignmentV::Fill);
                 rootWidget->recalculateWidetSize();
 
-                PreRenderLogicObject(rootWidget);
+                PreRenderEngineObject(rootWidget);
             }
         }
     }
 
-    void WidgetsCreator::onLogicStopping()
+    void WidgetsCreator::onDeactivate()
     {
         for (const auto& widget : m_Widgets)
         {
-            StopLogicObject(widget);
+            DeactivateEngineObject(widget);
         }
 
-        Super::onLogicStopping();
+        Super::onDeactivate();
     }
 
-    void WidgetsCreator::onDestroying()
+    void WidgetsCreator::onClear()
     {
         for (const auto& widget : m_Widgets)
         {
-            DestroyLogicObject(widget);
+            ClearEngineObject(widget);
         }
         for (const auto& widget : m_Widgets)
         {
@@ -85,7 +85,7 @@ namespace JumaEngine
         m_Widgets.clear();
         m_WidgetContexts.clear();
 
-        Super::onDestroying();
+        Super::onClear();
     }
 
     WidgetContext* WidgetsCreator::createWidgetContext(const RenderContext& renderContext)
@@ -146,7 +146,7 @@ namespace JumaEngine
 
         m_Widgets.add(widget);
         widget->m_ParentWidgetsCreator = this;
-        InitializeLogicObject(widget);
+        InitializeEngineObject(widget);
         return widget;
     }
     bool WidgetsCreator::destroyWidget(Widget* widget, const bool destroyChildWidgets)
@@ -165,7 +165,7 @@ namespace JumaEngine
             {
 	            widgetsToDestroy.append(lastWidget->getChildWidgets());
 
-                DestroyLogicObject(lastWidget);
+                ClearEngineObject(lastWidget);
 	            m_Widgets.remove(lastWidget);
 	            delete lastWidget;
             }
@@ -195,9 +195,9 @@ namespace JumaEngine
             widget->setParentWidget(nullptr);
             widget->setWidgetContext(widgetContext);
 
-            if (isLogicActive())
+            if (isActive())
             {
-                StartLogicObject(widget);
+                ActivateEngineObject(widget);
             }
         }
     }

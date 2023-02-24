@@ -1,12 +1,13 @@
 ﻿// Copyright © 2022-2023 Leonov Maksim. All Rights Reserved.
 
-#include "JumaEngine/Engine.h"
+#include "JumaEngine/engine/Engine.h"
 
 #include <chrono>
 #include <JumaRE/RenderEngineImpl.h>
 #include <JumaRE/RenderPipeline.h>
 
 #include "JumaEngine/assets/AssetsEngineSubsystem.h"
+#include "JumaEngine/engine/ConfigEngineSubsystem.h"
 #include "JumaEngine/render/RenderEngineSubsystem.h"
 #include "JumaEngine/widgets/WidgetsCreator.h"
 
@@ -67,6 +68,17 @@ namespace JumaEngine
     }
     bool Engine::initEngine()
     {
+        const ConfigEngineSubsystem* configSubsystem = createSubsystem<ConfigEngineSubsystem>();
+        if (configSubsystem == nullptr)
+        {
+	        JUTILS_LOG(error, JSTR("Failed to init ConfigEngineSubsystem"));
+            return false;
+        }
+
+        const jstringID section = JSTR("General");
+        const jstringID key = JSTR("contentFolder");
+        configSubsystem->getValue(JSTR("engine"), section, key, m_EngineContentDirectory);
+        configSubsystem->getValue(JSTR("game"), section, key, m_GameContentDirectory);
         return true;
     }
     bool Engine::initGameInstance()
@@ -75,35 +87,56 @@ namespace JumaEngine
     }
     bool Engine::initRenderEngine()
     {
-        m_RenderEngine = JumaRE::CreateRenderEngine(m_InitialRenderAPI);
+        JumaRE::RenderAPI renderAPI = getDesiredRenderAPI();
+        if (!JumaRE::IsSupportRenderAPI(renderAPI))
+        {
+	        if (JumaRE::IsSupportRenderAPI(JumaRE::RenderAPI::Vulkan))
+	        {
+		        renderAPI = JumaRE::RenderAPI::Vulkan;
+	        }
+            else if (JumaRE::IsSupportRenderAPI(JumaRE::RenderAPI::OpenGL))
+	        {
+		        renderAPI = JumaRE::RenderAPI::OpenGL;
+	        }
+            else if (JumaRE::IsSupportRenderAPI(JumaRE::RenderAPI::DirectX11))
+	        {
+		        renderAPI = JumaRE::RenderAPI::DirectX11;
+	        }
+            else if (JumaRE::IsSupportRenderAPI(JumaRE::RenderAPI::DirectX12))
+	        {
+		        renderAPI = JumaRE::RenderAPI::DirectX12;
+	        }
+        }
+        
+        m_RenderEngine = JumaRE::CreateRenderEngine(renderAPI);
         if (m_RenderEngine == nullptr)
         {
-            JUTILS_LOG(error, JSTR("Failed to create render engine ({})"), m_InitialRenderAPI);
+            JUTILS_LOG(error, JSTR("Failed to create render engine ({})"), renderAPI);
             return false;
         }
-        if (!m_RenderEngine->init(m_InitialRenderEngineWindow))
+        if (!m_RenderEngine->init({ getWindowsTitle(), { 800, 600 } }))
         {
-            JUTILS_LOG(error, JSTR("Failed to init render engine ({})"), m_InitialRenderAPI);
+            JUTILS_LOG(error, JSTR("Failed to init render engine ({})"), renderAPI);
             delete m_RenderEngine;
             m_RenderEngine = nullptr;
             return false;
         }
-        JUTILS_LOG(info, JSTR("Render engine initialized ({})"), m_InitialRenderAPI);
-
+        JUTILS_LOG(info, JSTR("Render engine initialized ({})"), renderAPI);
+        
         RenderEngineSubsystem* renderSubsystem = createSubsystem<RenderEngineSubsystem>();
         if (renderSubsystem == nullptr)
         {
-	        JUTILS_LOG(error, JSTR("Failed to init render engine subsystem"));
+	        JUTILS_LOG(error, JSTR("Failed to init RenderEngineSubsystem"));
             return false;
         }
         if (createSubsystem<AssetsEngineSubsystem>() == nullptr)
         {
-            JUTILS_LOG(error, JSTR("Failed to init assets engine subsystem"));
+            JUTILS_LOG(error, JSTR("Failed to init AssetsEngineSubsystem"));
             return false;
         }
 
         m_EngineWidgetCreator = createObject<WidgetsCreator>();
-        InitializeLogicObject(m_EngineWidgetCreator);
+        InitializeEngineObject(m_EngineWidgetCreator);
 
         renderSubsystem->createProxyWindowRenderTargets();
         return true;
@@ -111,18 +144,16 @@ namespace JumaEngine
 
     void Engine::start()
     {
-        JUTILS_LOG(info, JSTR("Initializing engine loop..."));
-        if (!initEngineLoop())
+        JUTILS_LOG(info, JSTR("Starting engine loop..."));
+        if (!onEngineLoopStarting())
         {
-            JUTILS_LOG(error, JSTR("Failed to init engine loop"));
+            JUTILS_LOG(error, JSTR("Failed to start engine loop"));
             return;
         }
-
-        JUTILS_LOG(info, JSTR("Starting engine loop..."));
-        onEngineLoopStarted();
+        
         JUTILS_LOG(info, JSTR("Engine loop started"));
-
-        while (!shouldExit())
+        onEngineLoopStarted();
+        while (!shouldStopEngineLoop())
         {
             static std::chrono::time_point<std::chrono::steady_clock> prevTimePoint = std::chrono::steady_clock::now();
 	        const std::chrono::time_point<std::chrono::steady_clock> currentTimePoint = std::chrono::steady_clock::now();
@@ -131,7 +162,7 @@ namespace JumaEngine
 	        const float deltaTime = static_cast<float>(duration.count()) / 1000000.0f;
 
             update(deltaTime);
-            postUpdate();
+            preRender();
             if (!m_RenderEngine->render())
             {
                 JUTILS_LOG(error, JSTR("Render failed"));
@@ -141,42 +172,43 @@ namespace JumaEngine
         getRenderEngine()->getRenderPipeline()->waitForRenderFinished();
         
         JUTILS_LOG(info, JSTR("Stopping engine loop..."));
-        onEngineLoopStopped();
+        onEngineLoopStopping();
         JUTILS_LOG(info, JSTR("Engine loop stopped"));
 
         clear();
     }
-    bool Engine::initEngineLoop()
+    bool Engine::onEngineLoopStarting()
     {
-        if (m_InitialGameInstanceRenderTarger == nullptr)
+        JumaRE::RenderTarget* gameInstanceRT = getGameInstanceRenderTarget();
+        if (gameInstanceRT == nullptr)
         {
             JUTILS_LOG(error, JSTR("Invalid game instance render target"));
             return false;
         }
         
-        m_GameInstance->setupRenderTarget(m_InitialGameInstanceRenderTarger);
+        m_GameInstance->setupRenderTarget(gameInstanceRT);
         return true;
     }
     void Engine::onEngineLoopStarted()
     {
-        StartLogicObject(m_EngineWidgetCreator);
+        ActivateEngineObject(m_EngineWidgetCreator);
     }
-    bool Engine::shouldExit()
+    bool Engine::shouldStopEngineLoop()
     {
         return (m_RenderEngine != nullptr) && m_RenderEngine->getWindowController()->isMainWindowClosed();
     }
     void Engine::update(const float deltaTime)
     {
-        UpdateLogicObject(m_EngineWidgetCreator, deltaTime);
+        UpdateEngineObject(m_EngineWidgetCreator, deltaTime);
     }
-    void Engine::postUpdate()
+    void Engine::preRender()
     {
-        PreRenderLogicObject(m_EngineWidgetCreator);
+        PreRenderEngineObject(m_EngineWidgetCreator);
     }
-    void Engine::onEngineLoopStopped()
+    void Engine::onEngineLoopStopping()
     {
         getSubsystem<RenderEngineSubsystem>()->destroyProxyWindowRenderTargets();
-        DestroyLogicObject(m_EngineWidgetCreator);
+        ClearEngineObject(m_EngineWidgetCreator);
     }
 
     void Engine::clear()

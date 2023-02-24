@@ -2,12 +2,12 @@
 
 #pragma once
 
-#include "core.h"
+#include "../core.h"
 
 #include <JumaRE/RenderEngine.h>
 
-#include "GameInstance.h"
 #include "EngineSubsystem.h"
+#include "../game/GameInstance.h"
 
 namespace JumaEngine
 {
@@ -44,23 +44,25 @@ namespace JumaEngine
         T* getSubsystem() const { return dynamic_cast<T*>(this->getSubsystem(T::GetClassStatic())); }
         WidgetsCreator* getWidgetsCreator() const { return m_EngineWidgetCreator; }
 
+        const jstring& getEngineContentDirectory() const { return m_EngineContentDirectory; }
+        const jstring& getGameContentDirectory() const { return m_GameContentDirectory; }
+
     protected:
-
-        JumaRE::WindowCreateInfo m_InitialRenderEngineWindow = { JSTR("JumaEngine"), { 800, 600 } };
-        JumaRE::RenderTarget* m_InitialGameInstanceRenderTarger = nullptr;
-        JumaRE::RenderAPI m_InitialRenderAPI = JumaRE::RenderAPI::OpenGL;
-
-
+        
         virtual bool initEngine();
         virtual bool initGameInstance();
         virtual bool initRenderEngine();
 
-        virtual bool initEngineLoop();
+        virtual JumaRE::RenderAPI getDesiredRenderAPI() const { return JumaRE::RenderAPI::Vulkan; }
+        virtual jstring getWindowsTitle() const { return JSTR("JumaEngine"); }
+        virtual JumaRE::RenderTarget* getGameInstanceRenderTarget() const { return nullptr; }
+
+        virtual bool onEngineLoopStarting();
         virtual void onEngineLoopStarted();
-        virtual bool shouldExit();
+        virtual bool shouldStopEngineLoop();
         virtual void update(float deltaTime);
-        virtual void postUpdate();
-        virtual void onEngineLoopStopped();
+        virtual void preRender();
+        virtual void onEngineLoopStopping();
 
         virtual void clearRenderEngine();
         virtual void clearEngine();
@@ -74,6 +76,9 @@ namespace JumaEngine
 
         jmap<EngineSubclass<EngineSubsystem>, EngineSubsystem*> m_EngineSubsystems;
         WidgetsCreator* m_EngineWidgetCreator = nullptr;
+        
+        jstring m_EngineContentDirectory = JSTR("./content_engine/");
+        jstring m_GameContentDirectory = JSTR("./content/");
 
 
         EngineContextObject* registerObjectInternal(EngineContextObject* object);

@@ -2,7 +2,7 @@
 
 #include "JumaEngine/widgets/ImageWidget.h"
 
-#include "JumaEngine/Engine.h"
+#include "JumaEngine/engine/Engine.h"
 #include "JumaEngine/assets/AssetsEngineSubsystem.h"
 #include "JumaEngine/widgets/WidgetContext.h"
 
@@ -87,7 +87,7 @@ namespace JumaEngine
         });
     }
 
-    void ImageWidget::onDestroying()
+    void ImageWidget::onClear()
     {
         if (m_WidgetMaterial != nullptr)
         {
@@ -96,7 +96,7 @@ namespace JumaEngine
             m_WidgetMaterial = nullptr;
         }
 
-        Super::onDestroying();
+        Super::onClear();
     }
 
     void ImageWidget::recalculateWidetSize()

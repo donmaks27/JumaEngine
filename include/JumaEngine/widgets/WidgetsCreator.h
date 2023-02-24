@@ -3,8 +3,8 @@
 #pragma once
 
 #include "../core.h"
-#include "../EngineObject.h"
-#include "../IEngineObjectOwner.h"
+#include "../engine/EngineObject.h"
+#include "../engine/IEngineObjectOwner.h"
 
 #include <jutils/jmap.h>
 
@@ -35,11 +35,11 @@ namespace JumaEngine
     protected:
 
         virtual void onInitialized() override;
-        virtual void onLogicStarted() override;
+        virtual void onActivated() override;
         virtual void onUpdate(float deltaTime) override;
         virtual void onPreRender() override;
-        virtual void onLogicStopping() override;
-        virtual void onDestroying() override;
+        virtual void onDeactivate() override;
+        virtual void onClear() override;
 
     private:
 

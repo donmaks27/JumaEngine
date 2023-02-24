@@ -3,7 +3,7 @@
 #pragma once
 
 #include "../core.h"
-#include "../EngineSubsystem.h"
+#include "../engine/EngineSubsystem.h"
 
 #include <jutils/jlist.h>
 #include <jutils/jmap.h>
@@ -87,8 +87,8 @@ namespace JumaEngine
 
 		void onRenderEngineDestroying(JumaRE::RenderEngine* renderEngine) { clear(); }
 
-		Texture* getTexture(jmap<jstringID, Texture>& texturesList, const jstringID& textureName, const jstringID& contentFolder) const;
-		Shader* getShader(jmap<jstringID, Shader>& shadersList, const jstringID& shaderName, const jstringID& contentFolder) const;
+		Texture* getTexture(jmap<jstringID, Texture>& texturesList, const jstringID& textureName, const jstring& contentFolder) const;
+		Shader* getShader(jmap<jstringID, Shader>& shadersList, const jstringID& shaderName, const jstring& contentFolder) const;
 
         void onMaterialClear(Material* material);
 	};

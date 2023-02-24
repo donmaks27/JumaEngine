@@ -2,12 +2,12 @@
 
 #include "JumaEngine/assets/Texture.h"
 
-#include <jutils/json/json_parser.h>
+#include <jutils/configs/json_parser.h>
 #include <jutils/math/vector3.h>
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 
-#include "JumaEngine/Engine.h"
+#include "JumaEngine/engine/Engine.h"
 
 namespace JumaEngine
 {
@@ -20,7 +20,7 @@ namespace JumaEngine
         return JumaRE::TextureFormat::NONE;
     }
     
-    bool Texture::loadTexture(const jstringID& textureName, const jstringID& contentFolder)
+    bool Texture::loadTexture(const jstringID& textureName, const jstring& contentFolder)
     {
         JumaRE::RenderEngine* renderEngine = getEngine()->getRenderEngine();
         if (renderEngine == nullptr)
@@ -30,7 +30,7 @@ namespace JumaEngine
         }
 
         const jstring textureNameString = textureName.toString();
-        const jstring configFilePath = contentFolder.toString() + JSTR("/textures/") + textureNameString + JSTR(".json");
+        const jstring configFilePath = contentFolder + JSTR("/textures/") + textureNameString + JSTR(".json");
         const json::json_value configJsonValue = json::parseFile(configFilePath);
         if (configJsonValue == nullptr)
         {
@@ -45,7 +45,7 @@ namespace JumaEngine
             JUTILS_LOG(error, JSTR("Failed to parse field \"filePath\" from texture config file {}"), configFilePath.getString());
             return false;
         }
-        const jstring& textureFilePath = (*filePathJsonPtr)->asString();
+        const jstring& textureFilePath = contentFolder + (*filePathJsonPtr)->asString();
 
         const json::json_value* formatJsonPtr = configJsonObject.find(JSTR("format"));
         if (formatJsonPtr == nullptr)

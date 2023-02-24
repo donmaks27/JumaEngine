@@ -2,7 +2,7 @@
 
 #include "JumaEngine/assets/Mesh.h"
 
-#include "JumaEngine/Engine.h"
+#include "JumaEngine/engine/Engine.h"
 
 namespace JumaEngine
 {

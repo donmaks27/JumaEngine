@@ -3,7 +3,7 @@
 #pragma once
 
 #include "../core.h"
-#include "../EngineContextObject.h"
+#include "../engine/EngineContextObject.h"
 
 #include <JumaRE/texture/Texture.h>
 #include <jutils/jstringID.h>
@@ -29,7 +29,7 @@ namespace JumaEngine
         JumaRE::Texture* m_Texture = nullptr;
 
         
-        bool loadTexture(const jstringID& textureName, const jstringID& contentFolder);
+        bool loadTexture(const jstringID& textureName, const jstring& contentFolder);
         void clearTexture();
     };
 }

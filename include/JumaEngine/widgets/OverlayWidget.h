@@ -24,7 +24,7 @@ namespace JumaEngine
 
     protected:
 
-        virtual void onLogicStarted() override;
+        virtual void onActivated() override;
         virtual void onUpdate(float deltaTime) override;
         virtual void onPreRender() override;
 

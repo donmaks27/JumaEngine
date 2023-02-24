@@ -3,7 +3,7 @@
 #pragma once
 
 #include "../core.h"
-#include "../IEngineObjectOwner.h"
+#include "../engine/IEngineObjectOwner.h"
 
 #include <jutils/math/box2.h>
 

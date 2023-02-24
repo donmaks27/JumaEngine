@@ -2,7 +2,7 @@
 
 #include "JumaEngine/widgets/CursorWidget.h"
 
-#include "JumaEngine/Engine.h"
+#include "JumaEngine/engine/Engine.h"
 #include "JumaEngine/assets/AssetsEngineSubsystem.h"
 #include "JumaEngine/widgets/WidgetContext.h"
 
@@ -69,7 +69,7 @@ namespace JumaEngine
         }
     }
 
-    void CursorWidget::onDestroying()
+    void CursorWidget::onClear()
     {
         if (m_Material != nullptr)
         {
@@ -77,7 +77,7 @@ namespace JumaEngine
             m_Material = nullptr;
         }
 
-	    Super::onDestroying();
+	    Super::onClear();
     }
 
     void CursorWidget::recalculateWidetSize()

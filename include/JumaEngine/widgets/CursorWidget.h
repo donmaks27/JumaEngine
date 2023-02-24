@@ -28,7 +28,7 @@ namespace JumaEngine
         virtual void onInitialized() override;
         virtual void onUpdate(float deltaTime) override;
         virtual void onPreRender() override;
-        virtual void onDestroying() override;
+        virtual void onClear() override;
 
         virtual void recalculateWidetSize() override;
 

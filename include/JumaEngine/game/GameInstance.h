@@ -2,9 +2,9 @@
 
 #pragma once
 
-#include "core.h"
-#include "EngineObject.h"
-#include "IEngineObjectOwner.h"
+#include "../core.h"
+#include "../engine/EngineObject.h"
+#include "../engine/IEngineObjectOwner.h"
 
 #include <JumaRE/RenderTarget.h>
 #include <JumaRE/input/InputButtons.h>
@@ -30,14 +30,13 @@ namespace JumaEngine
 
         virtual bool init();
         virtual bool initRenderData();
-        virtual bool onSetupGameRenderTarget();
 
         virtual void onInitialized() override;
-        virtual void onLogicStarted() override;
+        virtual void onActivated() override;
         virtual void onUpdate(float deltaTime) override;
         virtual void onPreRender() override;
-        virtual void onLogicStopping() override;
-        virtual void onDestroying() override;
+        virtual void onDeactivate() override;
+        virtual void onClear() override;
 
         virtual void clear();
         virtual void clearRenderData();

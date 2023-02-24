@@ -3,7 +3,7 @@
 #pragma once
 
 #include "../core.h"
-#include "../EngineContextObject.h"
+#include "../engine/EngineContextObject.h"
 
 #include <JumaRE/material/Material.h>
 #include <jutils/jdelegate_multicast.h>

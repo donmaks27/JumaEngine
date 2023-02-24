@@ -3,7 +3,7 @@
 #pragma once
 
 #include "../core.h"
-#include "../EngineObject.h"
+#include "../engine/EngineObject.h"
 
 #include <jutils/jdelegate_multicast.h>
 #include <jutils/math/box2.h>
@@ -53,7 +53,7 @@ namespace JumaEngine
         math::vector2 m_WidgetRenderSize = { 0.0f, 0.0f };
 
         
-        virtual void onDestroying() override;
+        virtual void onClear() override;
 
         virtual void recalculateWidetSize() { m_WidgetRenderSize = { 0.0f, 0.0f }; }
         

@@ -4,11 +4,11 @@
 
 namespace JumaEngine
 {
-    void Widget::onDestroying()
+    void Widget::onClear()
     {
         onWidgetDestroying.call(this);
 
-        Super::onDestroying();
+        Super::onClear();
     }
 
     void Widget::setWidgetContext(WidgetContext* widgetContext)

@@ -11,20 +11,20 @@ namespace JumaEngine
             m_Widgets.add(widget);
             SetParentForChildWidget(widget, this);
 
-            if (isLogicActive())
+            if (isActive())
             {
-                StartLogicObject(widget);
+                ActivateEngineObject(widget);
             }
         }
     }
 
-    void OverlayWidget::onLogicStarted()
+    void OverlayWidget::onActivated()
     {
-        Super::onLogicStarted();
+        Super::onActivated();
 
         for (const auto& widget : m_Widgets)
         {
-            StartLogicObject(widget);
+            ActivateEngineObject(widget);
         }
     }
 
@@ -34,7 +34,7 @@ namespace JumaEngine
 
         for (const auto& widget : m_Widgets)
         {
-            UpdateLogicObject(widget, deltaTime);
+            UpdateEngineObject(widget, deltaTime);
         }
     }
 
@@ -44,7 +44,7 @@ namespace JumaEngine
 
         for (const auto& widget : m_Widgets)
         {
-            PreRenderLogicObject(widget);
+            PreRenderEngineObject(widget);
         }
     }
     void OverlayWidget::recalculateWidetSize()

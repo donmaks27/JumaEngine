@@ -2,11 +2,11 @@
 
 #pragma once
 
-#include "core.h"
+#include "../core.h"
 
 #ifdef JUMAENGINE_MODE_GAME
 
-#include "Engine.h"
+#include "../engine/Engine.h"
 
 namespace JumaEngine
 {
@@ -19,14 +19,16 @@ namespace JumaEngine
         virtual ~GameEngine() override = default;
 
     protected:
+        
+        virtual JumaRE::RenderAPI getDesiredRenderAPI() const override;
+        virtual jstring getWindowsTitle() const override;
+        virtual JumaRE::RenderTarget* getGameInstanceRenderTarget() const override;
 
-        virtual bool initRenderEngine() override;
-
-        virtual bool initEngineLoop() override;
+        virtual bool onEngineLoopStarting() override;
         virtual void onEngineLoopStarted() override;
         virtual void update(float deltaTime) override;
-        virtual void postUpdate() override;
-        virtual void onEngineLoopStopped() override;
+        virtual void preRender() override;
+        virtual void onEngineLoopStopping() override;
 
     private:
 

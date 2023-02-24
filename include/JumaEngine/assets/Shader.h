@@ -3,7 +3,7 @@
 #pragma once
 
 #include "../core.h"
-#include "../EngineContextObject.h"
+#include "../engine/EngineContextObject.h"
 
 #include <JumaRE/material/Shader.h>
 
@@ -34,7 +34,7 @@ namespace JumaEngine
         jmap<jstringID, jstringID> m_EngineInternalParamNames;
 
 
-        bool loadShader(const jstringID& shaderName, const jstringID& contentFolder);
+        bool loadShader(const jstringID& shaderName, const jstring& contentFolder);
         void clearShader();
     };
 }

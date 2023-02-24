@@ -4,7 +4,7 @@
 
 #include <JumaRE/RenderPipeline.h>
 
-#include "JumaEngine/Engine.h"
+#include "JumaEngine/engine/Engine.h"
 #include "JumaEngine/widgets/CursorWidget.h"
 #include "JumaEngine/widgets/ImageWidget.h"
 #include "JumaEngine/widgets/OverlayWidget.h"

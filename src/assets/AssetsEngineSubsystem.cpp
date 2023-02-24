@@ -2,7 +2,7 @@
 
 #include "JumaEngine/assets/AssetsEngineSubsystem.h"
 
-#include "JumaEngine/Engine.h"
+#include "JumaEngine/engine/Engine.h"
 
 namespace JumaEngine
 {
@@ -74,15 +74,13 @@ namespace JumaEngine
 
 	Texture* AssetsEngineSubsystem::getEngineTexture(const jstringID& textureName)
 	{
-		static jstringID contentFolder = JSTR("content_engine");
-        return getTexture(m_EngineTextures, textureName, contentFolder);
+        return getTexture(m_EngineTextures, textureName, getEngine()->getEngineContentDirectory());
 	}
 	Texture* AssetsEngineSubsystem::getTexture(const jstringID& textureName)
 	{
-		static jstringID contentFolder = JSTR("content");
-        return getTexture(m_Textures, textureName, contentFolder);
+        return getTexture(m_Textures, textureName, getEngine()->getGameContentDirectory());
 	}
-	Texture* AssetsEngineSubsystem::getTexture(jmap<jstringID, Texture>& texturesList, const jstringID& textureName, const jstringID& contentFolder) const
+	Texture* AssetsEngineSubsystem::getTexture(jmap<jstringID, Texture>& texturesList, const jstringID& textureName, const jstring& contentFolder) const
 	{
 		Texture* texturePtr = texturesList.find(textureName);
         if (texturePtr != nullptr)
@@ -93,25 +91,23 @@ namespace JumaEngine
         Texture* texture = getEngine()->registerObject(&texturesList.add(textureName));
         if (!texture->loadTexture(textureName, contentFolder))
         {
-            JUTILS_LOG(error, JSTR("Failed to load texture {} from {}"), textureName.toString(), contentFolder.toString());
+            JUTILS_LOG(error, JSTR("Failed to load texture {} from {}"), textureName.toString(), contentFolder);
             return nullptr;
         }
 
-        JUTILS_LOG(correct, JSTR("Loaded texture {} from {}"), textureName.toString(), contentFolder.toString());
+        JUTILS_LOG(correct, JSTR("Loaded texture {} from {}"), textureName.toString(), contentFolder);
         return texture;
 	}
 
     Shader* AssetsEngineSubsystem::getEngineShader(const jstringID& shaderName)
 	{
-        static jstringID contentFolder = JSTR("content_engine");
-        return getShader(m_EngineShaders, shaderName, contentFolder);
+        return getShader(m_EngineShaders, shaderName, getEngine()->getEngineContentDirectory());
 	}
     Shader* AssetsEngineSubsystem::getShader(const jstringID& shaderName)
     {
-        static jstringID contentFolder = JSTR("content");
-        return getShader(m_Shaders, shaderName, contentFolder);
+        return getShader(m_Shaders, shaderName, getEngine()->getGameContentDirectory());
     }
-    Shader* AssetsEngineSubsystem::getShader(jmap<jstringID, Shader>& shadersList, const jstringID& shaderName, const jstringID& contentFolder) const
+    Shader* AssetsEngineSubsystem::getShader(jmap<jstringID, Shader>& shadersList, const jstringID& shaderName, const jstring& contentFolder) const
 	{
         Shader* shaderPtr = shadersList.find(shaderName);
         if (shaderPtr != nullptr)
@@ -122,12 +118,12 @@ namespace JumaEngine
         Shader* shader = getEngine()->registerObject(&shadersList.add(shaderName));
         if (!shader->loadShader(shaderName, contentFolder))
         {
-            JUTILS_LOG(error, JSTR("Failed to create shader {} from {}"), shaderName.toString(), contentFolder.toString());
+            JUTILS_LOG(error, JSTR("Failed to create shader {} from {}"), shaderName.toString(), contentFolder);
             shadersList.remove(shaderName);
             return nullptr;
         }
 
-        JUTILS_LOG(correct, JSTR("Created shader {} from {}"), shaderName.toString(), contentFolder.toString());
+        JUTILS_LOG(correct, JSTR("Created shader {} from {}"), shaderName.toString(), contentFolder);
         return shader;
 	}
 

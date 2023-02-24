@@ -3,7 +3,7 @@
 #pragma once
 
 #include "../core.h"
-#include "../EngineSubsystem.h"
+#include "../engine/EngineSubsystem.h"
 
 #include <JumaRE/RenderTarget.h>
 #include <jutils/jmap.h>

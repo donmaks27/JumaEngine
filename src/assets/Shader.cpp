@@ -2,9 +2,9 @@
 
 #include "JumaEngine/assets/Shader.h"
 
-#include <jutils/json/json_parser.h>
+#include <jutils/configs/json_parser.h>
 
-#include "JumaEngine/Engine.h"
+#include "JumaEngine/engine/Engine.h"
 
 namespace JumaEngine
 {
@@ -22,7 +22,8 @@ namespace JumaEngine
         }
         return false;
     }
-    inline bool ParseShaderFiles(const JumaRE::RenderEngine* renderEngine, const jmap<jstringID, json::json_value>& jsonObject, jmap<JumaRE::ShaderStageFlags, jstring>& outFiles)
+    inline bool ParseShaderFiles(const JumaRE::RenderEngine* renderEngine, const jmap<jstringID, json::json_value>& jsonObject, 
+        const jstring& contentFolder, jmap<JumaRE::ShaderStageFlags, jstring>& outFiles)
     {
         const json::json_value* jsonValue = jsonObject.find("shaderFiles");
         if (jsonValue == nullptr)
@@ -44,7 +45,7 @@ namespace JumaEngine
             const json::json_value* shaderFilePathJsonValue = shaderStage.value->asObject().find(renderAPI);
             if ((shaderFilePathJsonValue != nullptr) && (*shaderFilePathJsonValue)->tryGetString(shaderFilePath))
             {
-                outFiles.add(stage, shaderFilePath);
+                outFiles.add(stage, contentFolder + shaderFilePath);
             }
         }
         return true;
@@ -145,7 +146,7 @@ namespace JumaEngine
         return true;
     }
 
-    bool Shader::loadShader(const jstringID& shaderName, const jstringID& contentFolder)
+    bool Shader::loadShader(const jstringID& shaderName, const jstring& contentFolder)
     {
         JumaRE::RenderEngine* renderEngine = getEngine()->getRenderEngine();
         if (renderEngine == nullptr)
@@ -155,7 +156,7 @@ namespace JumaEngine
         }
 
         const jstring shaderNameString = shaderName.toString();
-        const jstring jsonFileName = contentFolder.toString() + JSTR("/shaders/") + shaderNameString + JSTR(".json");
+        const jstring jsonFileName = contentFolder + JSTR("shaders/") + shaderNameString + JSTR(".json");
         const json::json_value shaderJsonValue = json::parseFile(jsonFileName);
         if (shaderJsonValue == nullptr)
         {
@@ -168,7 +169,7 @@ namespace JumaEngine
         jset<jstringID> vertexComponents;
         jmap<jstringID, JumaRE::ShaderUniform> uniforms;
         jmap<jstringID, jstringID> engineInternalParams;
-        if (!ParseShaderFiles(renderEngine, shaderJsonObject, shaderFiles) || 
+        if (!ParseShaderFiles(renderEngine, shaderJsonObject, contentFolder, shaderFiles) || 
             !ParseVertexComponents(shaderJsonObject, vertexComponents) ||
             !ParseVertexUniforms(shaderJsonObject, uniforms, engineInternalParams))
         {
