@@ -28,7 +28,7 @@ namespace JumaEngine
         virtual void onEngineLoopStarted() override;
         virtual void update(float deltaTime) override;
         virtual void preRender() override;
-        virtual void onEngineLoopStopping() override;
+        virtual void onEngineLoopStopped() override;
 
     private:
 

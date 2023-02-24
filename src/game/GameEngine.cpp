@@ -100,13 +100,13 @@ namespace JumaEngine
 
         PreRenderEngineObject(getGameInstance());
     }
-    void GameEngine::onEngineLoopStopping()
+    void GameEngine::onEngineLoopStopped()
     {
         getRenderEngine()->getWindowController()->onWindowInput.unbind(this, &GameEngine::onWindowInput);
 
         ClearEngineObject(getGameInstance());
 
-        Super::onEngineLoopStopping();
+        Super::onEngineLoopStopped();
     }
 
     void GameEngine::onWindowInput(JumaRE::WindowController* windowController, const JumaRE::WindowData* windowData, 

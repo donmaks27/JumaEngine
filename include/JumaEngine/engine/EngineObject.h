@@ -7,13 +7,13 @@
 
 namespace JumaEngine
 {
-    class IEngineObjectOwner;
+    class EngineObjectOwner;
 
     class EngineObject : public EngineContextObject
     {
         JUMAENGINE_CLASS(EngineObject, EngineContextObject)
 
-        friend IEngineObjectOwner;
+        friend EngineObjectOwner;
 
     public:
         EngineObject() = default;

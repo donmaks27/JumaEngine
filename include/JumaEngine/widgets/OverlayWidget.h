@@ -4,13 +4,13 @@
 
 #include "../core.h"
 #include "Widget.h"
-#include "IWidgetContainer.h"
+#include "WidgetContainer.h"
 
 #include <jutils/jarray.h>
 
 namespace JumaEngine
 {
-    class OverlayWidget : public Widget, public IWidgetContainer
+    class OverlayWidget : public Widget, public WidgetContainer
     {
         JUMAENGINE_CLASS(OverlayWidget, Widget)
 

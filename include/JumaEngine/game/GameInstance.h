@@ -4,7 +4,7 @@
 
 #include "../core.h"
 #include "../engine/EngineObject.h"
-#include "../engine/IEngineObjectOwner.h"
+#include "../engine/EngineObjectOwner.h"
 
 #include <JumaRE/RenderTarget.h>
 #include <JumaRE/input/InputButtons.h>
@@ -14,7 +14,7 @@ namespace JumaEngine
     class Widget;
     class WidgetsCreator;
 
-    class GameInstance : public EngineObject, public IEngineObjectOwner
+    class GameInstance : public EngineObject, public EngineObjectOwner
     {
         JUMAENGINE_CLASS(GameInstance, EngineObject)
 

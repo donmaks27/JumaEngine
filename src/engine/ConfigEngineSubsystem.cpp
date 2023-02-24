@@ -15,31 +15,34 @@ namespace JumaEngine
 		}
 
 		const std::string configDirectory = "./config/";
-		for (const auto& directoryEntry : std::filesystem::directory_iterator(configDirectory))
+		if (std::filesystem::is_directory(configDirectory))
 		{
-			if (directoryEntry.is_directory())
+			for (const auto& directoryEntry : std::filesystem::directory_iterator(configDirectory))
 			{
-				continue;
-			}
-
-			const std::filesystem::path& filePath = directoryEntry.path();
-			if (filePath.extension() != ".ini")
-			{
-				continue;
-			}
-
-			const jmap<jstring, jmap<jstring, jstring>> fileData = jutils::ini::parseFile(jstring(filePath.string()));
-			if (fileData.isEmpty())
-			{
-				continue;
-			}
-			
-			jmap<std::tuple<jstringID, jstringID>, jstring>& configData = m_LoadedConfigs.add(jstring(filePath.stem().string()));
-			for (const auto& fileSectionData : fileData)
-			{
-				for (const auto& fileValue : fileSectionData.value)
+				if (directoryEntry.is_directory())
 				{
-					configData.add({ fileSectionData.key, fileValue.key }, fileValue.value);
+					continue;
+				}
+
+				const std::filesystem::path& filePath = directoryEntry.path();
+				if (filePath.extension() != ".ini")
+				{
+					continue;
+				}
+
+				const jmap<jstring, jmap<jstring, jstring>> fileData = jutils::ini::parseFile(jstring(filePath.string()));
+				if (fileData.isEmpty())
+				{
+					continue;
+				}
+			
+				jmap<std::tuple<jstringID, jstringID>, jstring>& configData = m_LoadedConfigs.add(jstring(filePath.stem().string()));
+				for (const auto& fileSectionData : fileData)
+				{
+					for (const auto& fileValue : fileSectionData.value)
+					{
+						configData.add({ fileSectionData.key, fileValue.key }, fileValue.value);
+					}
 				}
 			}
 		}

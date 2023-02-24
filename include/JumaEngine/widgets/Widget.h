@@ -16,7 +16,7 @@ namespace JumaEngine
     class Widget;
     class WidgetContext;
     class WidgetsCreator;
-    class IWidgetContainer;
+    class WidgetContainer;
 
     JUTILS_CREATE_MULTICAST_DELEGATE1(OnWidgetEvent, Widget*, widget);
 
@@ -25,7 +25,7 @@ namespace JumaEngine
         JUMAENGINE_CLASS_ABSTRACT(Widget, EngineObject)
 
         friend WidgetsCreator;
-        friend IWidgetContainer;
+        friend WidgetContainer;
 
     public:
         Widget() = default;

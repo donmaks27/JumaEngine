@@ -4,7 +4,7 @@
 
 #include "../core.h"
 #include "../engine/EngineObject.h"
-#include "../engine/IEngineObjectOwner.h"
+#include "../engine/EngineObjectOwner.h"
 
 #include <jutils/jmap.h>
 
@@ -14,7 +14,7 @@ namespace JumaEngine
 {
     class Widget;
 
-    class WidgetsCreator final : public EngineObject, public IEngineObjectOwner
+    class WidgetsCreator final : public EngineObject, public EngineObjectOwner
     {
         JUMAENGINE_CLASS(WidgetsCreator, EngineObject)
 

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "../core.h"
-#include "../engine/IEngineObjectOwner.h"
+#include "../engine/EngineObjectOwner.h"
 
 #include <jutils/math/box2.h>
 
@@ -13,12 +13,12 @@ namespace JumaEngine
 {
     class Widget;
 
-    class IWidgetContainer : public IEngineObjectOwner
+    class WidgetContainer : public EngineObjectOwner
     {
     protected:
-        IWidgetContainer() = default;
+        WidgetContainer() = default;
     public:
-        virtual ~IWidgetContainer() override = default;
+        virtual ~WidgetContainer() override = default;
 
     protected:
 

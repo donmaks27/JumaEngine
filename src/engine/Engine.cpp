@@ -171,9 +171,8 @@ namespace JumaEngine
         }
         getRenderEngine()->getRenderPipeline()->waitForRenderFinished();
         
-        JUTILS_LOG(info, JSTR("Stopping engine loop..."));
-        onEngineLoopStopping();
         JUTILS_LOG(info, JSTR("Engine loop stopped"));
+        onEngineLoopStopped();
 
         clear();
     }
@@ -205,7 +204,7 @@ namespace JumaEngine
     {
         PreRenderEngineObject(m_EngineWidgetCreator);
     }
-    void Engine::onEngineLoopStopping()
+    void Engine::onEngineLoopStopped()
     {
         getSubsystem<RenderEngineSubsystem>()->destroyProxyWindowRenderTargets();
         ClearEngineObject(m_EngineWidgetCreator);

@@ -13,7 +13,7 @@ namespace JumaEngine
 {
 	class WidgetContext;
 
-	class Engine : public IEngineObjectOwner
+	class Engine : public EngineObjectOwner
     {
     protected:
         Engine() = default;
@@ -62,7 +62,7 @@ namespace JumaEngine
         virtual bool shouldStopEngineLoop();
         virtual void update(float deltaTime);
         virtual void preRender();
-        virtual void onEngineLoopStopping();
+        virtual void onEngineLoopStopped();
 
         virtual void clearRenderEngine();
         virtual void clearEngine();

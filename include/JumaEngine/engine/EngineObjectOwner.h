@@ -8,12 +8,12 @@ namespace JumaEngine
 {
     class EngineObject;
 
-    class IEngineObjectOwner
+    class EngineObjectOwner
     {
     protected:
-        IEngineObjectOwner() = default;
+        EngineObjectOwner() = default;
     public:
-        virtual ~IEngineObjectOwner() = default;
+        virtual ~EngineObjectOwner() = default;
 
     protected:
 
