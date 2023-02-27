@@ -8,10 +8,11 @@
 #include <JumaRE/material/Material.h>
 #include <jutils/jdelegate_multicast.h>
 
+#include "Shader.h"
+
 namespace JumaEngine
 {
     class Material;
-    class Shader;
     class AssetsEngineSubsystem;
 
     using ShaderUniformType = JumaRE::ShaderUniformType;
@@ -34,7 +35,7 @@ namespace JumaEngine
 
 
         Material* getBaseMaterial() const { return m_BaseMaterial; }
-        Shader* getBaseShader() const { return m_BaseShader != nullptr ? m_BaseShader : (m_BaseMaterial != nullptr ? m_BaseMaterial->getBaseShader() : nullptr); }
+        EngineObjectPtr<Shader> getBaseShader() const { return m_BaseShader != nullptr ? m_BaseShader : (m_BaseMaterial != nullptr ? m_BaseMaterial->getBaseShader() : nullptr); }
 
         JumaRE::Material* getMaterial() const { return m_Material; }
         JumaRE::Shader* getShader() const { return m_Material != nullptr ? m_Material->getShader() : nullptr; }
@@ -63,13 +64,13 @@ namespace JumaEngine
 
     private:
 
-        Shader* m_BaseShader = nullptr;
+        EngineObjectPtr<Shader> m_BaseShader = nullptr;
         Material* m_BaseMaterial = nullptr;
 
         JumaRE::Material* m_Material = nullptr;
 
 
-        bool createMaterial(Shader* shader);
+        bool createMaterial(const EngineObjectPtr<Shader>& shader);
         bool createMaterial(Material* baseMaterial);
         void clearMaterial();
 

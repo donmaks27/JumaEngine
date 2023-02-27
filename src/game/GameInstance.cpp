@@ -31,7 +31,7 @@ namespace JumaEngine
     {
         Super::onActivated();
 
-        m_GameWidgetsCreator = getEngine()->createObject<WidgetsCreator>();
+        m_GameWidgetsCreator = getEngine()->createObject1<WidgetsCreator>();
         InitializeEngineObject(m_GameWidgetsCreator);
         ActivateEngineObject(m_GameWidgetsCreator);
     }

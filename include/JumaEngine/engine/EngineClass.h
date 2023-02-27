@@ -1,8 +1,8 @@
-﻿// Copyright © 2022 Leonov Maksim. All Rights Reserved.
+﻿// Copyright © 2022-2023 Leonov Maksim. All Rights Reserved.
 
 #pragma once
 
-#include "core.h"
+#include "../core.h"
 
 namespace JumaEngine
 {

@@ -33,7 +33,7 @@ namespace JumaEngine
         CopyMaterialParam(type, name, material, name, materialParams);
     }
 
-    bool Material::createMaterial(Shader* shader)
+    bool Material::createMaterial(const EngineObjectPtr<Shader>& shader)
     {
         if (shader == nullptr)
         {
@@ -41,7 +41,7 @@ namespace JumaEngine
             return false;
         }
 
-        Engine* engine = getEngine();
+        const Engine* engine = getEngine();
         JumaRE::Shader* shaderObject = shader->getShader();
         JumaRE::Material* materialObject = engine->getRenderEngine()->createMaterial(shaderObject);
         if (materialObject == nullptr)
@@ -153,7 +153,7 @@ namespace JumaEngine
 
     bool Material::isGlobalMaterialParam(const jstringID& name) const
     {
-        const Shader* shader = getBaseShader();
+        const EngineObjectPtr<Shader> shader = getBaseShader();
         return (shader != nullptr) && shader->getEngineInternalParamNames().contains(name);
     }
     void Material::onGlobalParamChanged(AssetsEngineSubsystem* subsystem, const jstringID& internalParamName)

@@ -13,7 +13,7 @@ namespace JumaEngine
 	    Super::onInitialized();
 
         AssetsEngineSubsystem* assetsSubsystem = getEngine()->getSubsystem<AssetsEngineSubsystem>();
-        Shader* shader = assetsSubsystem->getEngineShader(JSTR("widgetSolidColor"));
+	    const EngineObjectPtr<Shader> shader = assetsSubsystem->getEngineShader(JSTR("widgetSolidColor"));
         if (shader != nullptr)
         {
 	        m_Material = assetsSubsystem->createMaterial(shader);

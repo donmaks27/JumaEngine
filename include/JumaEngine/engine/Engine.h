@@ -20,13 +20,19 @@ namespace JumaEngine
     public:
         virtual ~Engine() override = default;
 
-        template<typename T, TEMPLATE_ENABLE(is_base<EngineContextObject, T>)>
-        T* registerObject(T* object) { return dynamic_cast<T*>(this->registerObjectInternal(object)); }
-        EngineContextObject* createObject(const EngineClass* engineClass);
+        EngineObjectPtr<EngineContextObject> createObject(const EngineClass* objectClass) { return createObjectDescriptor(objectClass); }
         template<typename T>
-        T* createObject(const EngineSubclass<T>& objectClass) { return dynamic_cast<T*>(this->createObject(objectClass.get())); }
+        EngineObjectPtr<T> createObject(const EngineSubclass<T>& objectClass) { return this->createObjectDescriptor(objectClass.get()); }
         template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<EngineContextObject, T>)>
-        T* createObject() { return this->createObject<T>(T::GetClassStatic()); }
+        EngineObjectPtr<T> createObject() { return this->createObject<T>(T::GetClassStatic()); }
+
+        template<typename T, TEMPLATE_ENABLE(is_base<EngineContextObject, T>)>
+        T* registerObject1(T* object) { return dynamic_cast<T*>(this->registerObjectInternal1(object)); }
+        EngineContextObject* createObject1(const EngineClass* engineClass);
+        template<typename T>
+        T* createObject1(const EngineSubclass<T>& objectClass) { return dynamic_cast<T*>(this->createObject1(objectClass.get())); }
+        template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<EngineContextObject, T>)>
+        T* createObject1() { return this->createObject1<T>(T::GetClassStatic()); }
 
         template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<GameInstance, T>)>
         bool init() { return this->init(T::GetClassStatic()); }
@@ -70,7 +76,9 @@ namespace JumaEngine
         void passInputToGameInstance(const JumaRE::InputActionData& input);
 
     private:
-        
+
+        jdescriptor_table<EngineContextObject> m_EngineObjectDescriptors;
+
         GameInstance* m_GameInstance = nullptr;
         JumaRE::RenderEngine* m_RenderEngine = nullptr;
 
@@ -81,7 +89,9 @@ namespace JumaEngine
         jstring m_GameContentDirectory = JSTR("./content/");
 
 
-        EngineContextObject* registerObjectInternal(EngineContextObject* object);
+        jdescriptor_table<EngineContextObject>::pointer createObjectDescriptor(const EngineClass* objectClass);
+
+		EngineContextObject* registerObjectInternal1(EngineContextObject* object);
 
         bool init(const EngineSubclass<GameInstance>& gameInstanceClass);
 

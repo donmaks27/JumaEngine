@@ -143,7 +143,7 @@ namespace JumaEngine
 
         static jstringID textureShaderName = JSTR("widgetDefault");
         static jstringID colorShaderName = JSTR("widgetSolidColor");
-        Shader* shader = assetsSubsystem->getEngineShader(shouldUseSolidColor() ? colorShaderName : textureShaderName);
+        const EngineObjectPtr<Shader> shader = assetsSubsystem->getEngineShader(shouldUseSolidColor() ? colorShaderName : textureShaderName);
         if (shader != nullptr)
         {
             m_WidgetMaterial = assetsSubsystem->createMaterial(shader);

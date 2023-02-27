@@ -138,7 +138,7 @@ namespace JumaEngine
             return nullptr;
         }
 
-        Widget* widget = getEngine()->createObject<Widget>(widgetClass);
+        Widget* widget = getEngine()->createObject1<Widget>(widgetClass);
         if (widget == nullptr)
         {
             return nullptr;

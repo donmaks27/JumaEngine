@@ -31,13 +31,13 @@ namespace JumaEngine
 
 		void clear();
 
-		Texture* getEngineTexture(const jstringID& textureName);
-        Texture* getTexture(const jstringID& textureName);
+		EngineObjectPtr<Texture> getEngineTexture(const jstringID& textureName);
+        EngineObjectPtr<Texture> getTexture(const jstringID& textureName);
 
-		Shader* getEngineShader(const jstringID& shaderName);
-        Shader* getShader(const jstringID& shaderName);
+		EngineObjectPtr<Shader> getEngineShader(const jstringID& shaderName);
+        EngineObjectPtr<Shader> getShader(const jstringID& shaderName);
 
-		Material* createMaterial(Shader* shader);
+		Material* createMaterial(const EngineObjectPtr<Shader>& shader);
         Material* createMaterial(Material* baseMaterial);
         void destroyMaterial(Material* material);
 
@@ -69,11 +69,11 @@ namespace JumaEngine
 
 	private:
 
-        jmap<jstringID, Texture> m_EngineTextures;
-        jmap<jstringID, Texture> m_Textures;
+        jmap<jstringID, EngineObjectPtr<Texture>> m_EngineTextures;
+        jmap<jstringID, EngineObjectPtr<Texture>> m_Textures;
 
-		jmap<jstringID, Shader> m_EngineShaders;
-        jmap<jstringID, Shader> m_Shaders;
+		jmap<jstringID, EngineObjectPtr<Shader>> m_EngineShaders;
+        jmap<jstringID, EngineObjectPtr<Shader>> m_Shaders;
 
 		jlist<Material> m_Materials;
         jarray<const Material*> m_DestroyingMaterials;
@@ -87,8 +87,8 @@ namespace JumaEngine
 
 		void onRenderEngineDestroying(JumaRE::RenderEngine* renderEngine) { clear(); }
 
-		Texture* getTexture(jmap<jstringID, Texture>& texturesList, const jstringID& textureName, const jstring& contentFolder) const;
-		Shader* getShader(jmap<jstringID, Shader>& shadersList, const jstringID& shaderName, const jstring& contentFolder) const;
+		EngineObjectPtr<Texture> getTexture(jmap<jstringID, EngineObjectPtr<Texture>>& texturesList, const jstringID& textureName, const jstring& contentFolder) const;
+		EngineObjectPtr<Shader> getShader(jmap<jstringID, EngineObjectPtr<Shader>>& shadersList, const jstringID& shaderName, const jstring& contentFolder) const;
 
         void onMaterialClear(Material* material);
 	};

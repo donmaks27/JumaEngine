@@ -30,7 +30,7 @@ namespace JumaEngine
         }
 
         const jstring textureNameString = textureName.toString();
-        const jstring configFilePath = contentFolder + JSTR("/textures/") + textureNameString + JSTR(".json");
+        const jstring configFilePath = contentFolder + JSTR("textures/") + textureNameString + JSTR(".json");
         const json::json_value configJsonValue = json::parseFile(configFilePath);
         if (configJsonValue == nullptr)
         {

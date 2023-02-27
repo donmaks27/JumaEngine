@@ -61,37 +61,44 @@ namespace JumaEngine
 
         for (auto& shader : m_Shaders)
         {
-            shader.value.clearShader();
+            if (shader.value != nullptr)
+            {
+	            shader.value->clearShader();
+            }
         }
         m_Shaders.clear();
-
+        
         for (auto& texture : m_Textures)
         {
-            texture.value.clearTexture();
+            if (texture.value != nullptr)
+            {
+	            texture.value->clearTexture();
+            }
         }
         m_Textures.clear();
 	}
 
-	Texture* AssetsEngineSubsystem::getEngineTexture(const jstringID& textureName)
+	EngineObjectPtr<Texture> AssetsEngineSubsystem::getEngineTexture(const jstringID& textureName)
 	{
         return getTexture(m_EngineTextures, textureName, getEngine()->getEngineContentDirectory());
 	}
-	Texture* AssetsEngineSubsystem::getTexture(const jstringID& textureName)
+	EngineObjectPtr<Texture> AssetsEngineSubsystem::getTexture(const jstringID& textureName)
 	{
         return getTexture(m_Textures, textureName, getEngine()->getGameContentDirectory());
 	}
-	Texture* AssetsEngineSubsystem::getTexture(jmap<jstringID, Texture>& texturesList, const jstringID& textureName, const jstring& contentFolder) const
+	EngineObjectPtr<Texture> AssetsEngineSubsystem::getTexture(jmap<jstringID, EngineObjectPtr<Texture>>& texturesList, const jstringID& textureName, const jstring& contentFolder) const
 	{
-		Texture* texturePtr = texturesList.find(textureName);
+        const EngineObjectPtr<Texture>* texturePtr = texturesList.find(textureName);
         if (texturePtr != nullptr)
         {
-            return texturePtr;
+	        return *texturePtr;
         }
 
-        Texture* texture = getEngine()->registerObject(&texturesList.add(textureName));
+        EngineObjectPtr<Texture>& texture = texturesList.add(textureName, getEngine()->createObject<Texture>());
         if (!texture->loadTexture(textureName, contentFolder))
         {
             JUTILS_LOG(error, JSTR("Failed to load texture {} from {}"), textureName.toString(), contentFolder);
+            texture = nullptr;
             return nullptr;
         }
 
@@ -99,40 +106,39 @@ namespace JumaEngine
         return texture;
 	}
 
-    Shader* AssetsEngineSubsystem::getEngineShader(const jstringID& shaderName)
+    EngineObjectPtr<Shader> AssetsEngineSubsystem::getEngineShader(const jstringID& shaderName)
 	{
         return getShader(m_EngineShaders, shaderName, getEngine()->getEngineContentDirectory());
 	}
-    Shader* AssetsEngineSubsystem::getShader(const jstringID& shaderName)
+    EngineObjectPtr<Shader> AssetsEngineSubsystem::getShader(const jstringID& shaderName)
     {
         return getShader(m_Shaders, shaderName, getEngine()->getGameContentDirectory());
     }
-    Shader* AssetsEngineSubsystem::getShader(jmap<jstringID, Shader>& shadersList, const jstringID& shaderName, const jstring& contentFolder) const
+    EngineObjectPtr<Shader> AssetsEngineSubsystem::getShader(jmap<jstringID, EngineObjectPtr<Shader>>& shadersList, const jstringID& shaderName, const jstring& contentFolder) const
 	{
-        Shader* shaderPtr = shadersList.find(shaderName);
+        EngineObjectPtr<Shader>* shaderPtr = shadersList.find(shaderName);
         if (shaderPtr != nullptr)
         {
-            return shaderPtr;
+            return *shaderPtr;
         }
 
-        Shader* shader = getEngine()->registerObject(&shadersList.add(shaderName));
+        EngineObjectPtr<Shader>& shader = shadersList.add(shaderName, getEngine()->createObject<Shader>());
         if (!shader->loadShader(shaderName, contentFolder))
         {
             JUTILS_LOG(error, JSTR("Failed to create shader {} from {}"), shaderName.toString(), contentFolder);
-            shadersList.remove(shaderName);
+            shader = nullptr;
             return nullptr;
         }
-
         JUTILS_LOG(correct, JSTR("Created shader {} from {}"), shaderName.toString(), contentFolder);
         return shader;
 	}
 
-    Material* AssetsEngineSubsystem::createMaterial(Shader* shader)
+    Material* AssetsEngineSubsystem::createMaterial(const EngineObjectPtr<Shader>& shader)
     {
-        Material* material = getEngine()->registerObject(&m_Materials.addDefault());
+        Material* material = getEngine()->registerObject1(&m_Materials.addDefault());
         if (!material->createMaterial(shader))
         {
-            JUTILS_LOG(error, JSTR("Failed to create material from shader "), shader != nullptr ? shader->getName().toString() : JSTR("NULL"));
+            JUTILS_LOG(error, JSTR("Failed to create material from shader {}"), shader != nullptr ? shader->getName().toString() : JSTR("NULL"));
             m_Materials.removeLast();
             return nullptr;
         }
@@ -141,7 +147,7 @@ namespace JumaEngine
     }
     Material* AssetsEngineSubsystem::createMaterial(Material* baseMaterial)
     {
-        Material* material = getEngine()->registerObject(&m_Materials.addDefault());
+        Material* material = getEngine()->registerObject1(&m_Materials.addDefault());
         if (!material->createMaterial(baseMaterial))
         {
             JUTILS_LOG(error, JSTR("Failed to create material instance"));
