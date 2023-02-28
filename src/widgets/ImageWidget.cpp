@@ -89,12 +89,7 @@ namespace JumaEngine
 
     void ImageWidget::onClear()
     {
-        if (m_WidgetMaterial != nullptr)
-        {
-            AssetsEngineSubsystem* assetsSubsystem = getEngine()->getSubsystem<AssetsEngineSubsystem>();
-            assetsSubsystem->destroyMaterial(m_WidgetMaterial);
-            m_WidgetMaterial = nullptr;
-        }
+        m_WidgetMaterial = nullptr;
 
         Super::onClear();
     }
@@ -134,16 +129,12 @@ namespace JumaEngine
             return;
         }
 
-        AssetsEngineSubsystem* assetsSubsystem = getEngine()->getSubsystem<AssetsEngineSubsystem>();
-        if (m_WidgetMaterial != nullptr)
-        {
-            assetsSubsystem->destroyMaterial(m_WidgetMaterial);
-            m_WidgetMaterial = nullptr;
-        }
+        m_WidgetMaterial = nullptr;
 
         static jstringID textureShaderName = JSTR("widgetDefault");
         static jstringID colorShaderName = JSTR("widgetSolidColor");
-        const EngineObjectPtr<Shader> shader = assetsSubsystem->getEngineShader(shouldUseSolidColor() ? colorShaderName : textureShaderName);
+        AssetsEngineSubsystem* assetsSubsystem = getEngine()->getSubsystem<AssetsEngineSubsystem>();
+        const EngineObjectPtr<Shader>& shader = assetsSubsystem->getEngineShader(shouldUseSolidColor() ? colorShaderName : textureShaderName);
         if (shader != nullptr)
         {
             m_WidgetMaterial = assetsSubsystem->createMaterial(shader);

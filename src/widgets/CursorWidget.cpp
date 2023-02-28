@@ -13,7 +13,7 @@ namespace JumaEngine
 	    Super::onInitialized();
 
         AssetsEngineSubsystem* assetsSubsystem = getEngine()->getSubsystem<AssetsEngineSubsystem>();
-	    const EngineObjectPtr<Shader> shader = assetsSubsystem->getEngineShader(JSTR("widgetSolidColor"));
+	    const EngineObjectPtr<Shader>& shader = assetsSubsystem->getEngineShader(JSTR("widgetSolidColor"));
         if (shader != nullptr)
         {
 	        m_Material = assetsSubsystem->createMaterial(shader);
@@ -71,11 +71,7 @@ namespace JumaEngine
 
     void CursorWidget::onClear()
     {
-        if (m_Material != nullptr)
-        {
-	        getEngine()->getSubsystem<AssetsEngineSubsystem>()->destroyMaterial(m_Material);
-            m_Material = nullptr;
-        }
+        m_Material = nullptr;
 
 	    Super::onClear();
     }

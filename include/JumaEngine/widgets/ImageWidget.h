@@ -44,7 +44,7 @@ namespace JumaEngine
 
     private:
 
-        Material* m_WidgetMaterial = nullptr;
+        EngineObjectPtr<Material> m_WidgetMaterial = nullptr;
 
         math::vector4 m_MaterialColor = { 1.0f, 1.0f, 1.0f, 1.0f };
 

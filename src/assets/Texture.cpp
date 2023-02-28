@@ -82,6 +82,11 @@ namespace JumaEngine
         return true;
     }
 
+    void Texture::onEngineObjectDestroying()
+    {
+        clearTexture();
+        Super::onEngineObjectDestroying();
+    }
     void Texture::clearTexture()
     {
         if (m_Texture != nullptr)

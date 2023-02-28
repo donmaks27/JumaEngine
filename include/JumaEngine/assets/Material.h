@@ -8,17 +8,13 @@
 #include <JumaRE/material/Material.h>
 #include <jutils/jdelegate_multicast.h>
 
-#include "Shader.h"
-
 namespace JumaEngine
 {
-    class Material;
     class AssetsEngineSubsystem;
+    class Material;
+    class Shader;
 
     using ShaderUniformType = JumaRE::ShaderUniformType;
-
-    JUTILS_CREATE_MULTICAST_DELEGATE1(OnMaterialEvent, Material*, material);
-    JUTILS_CREATE_MULTICAST_DELEGATE2(OnMaterialParamEvent, Material*, material, const jstringID&, paramName);
 
     class Material final : public EngineContextObject
     {
@@ -29,13 +25,9 @@ namespace JumaEngine
     public:
         Material() = default;
         virtual ~Material() override = default;
-
-        OnMaterialEvent onClear;
-        OnMaterialParamEvent onParamChanged;
-
-
-        Material* getBaseMaterial() const { return m_BaseMaterial; }
-        EngineObjectPtr<Shader> getBaseShader() const { return m_BaseShader != nullptr ? m_BaseShader : (m_BaseMaterial != nullptr ? m_BaseMaterial->getBaseShader() : nullptr); }
+        
+        const EngineObjectPtr<Material>& getBaseMaterial() const { return m_BaseMaterial; }
+        const EngineObjectPtr<Shader>& getBaseShader() const { return m_BaseShader != nullptr ? m_BaseShader : (m_BaseMaterial != nullptr ? m_BaseMaterial->getBaseShader() : m_BaseShader); }
 
         JumaRE::Material* getMaterial() const { return m_Material; }
         JumaRE::Shader* getShader() const { return m_Material != nullptr ? m_Material->getShader() : nullptr; }
@@ -47,7 +39,7 @@ namespace JumaEngine
             {
                 return false;
             }
-            onParamChanged.call(this, name);
+            onParamChanged.call(name);
             return true;
         }
         bool resetParamValue(const jstringID& name)
@@ -56,26 +48,33 @@ namespace JumaEngine
             {
                 return false;
             }
-            onParamChanged.call(this, name);
+            onParamChanged.call(name);
             return true;
         }
         template<ShaderUniformType Type>
         bool getParamValue(const jstringID& name, typename JumaRE::ShaderUniformInfo<Type>::value_type& outValue) const { return m_Material->getParamValue(name, outValue); }
 
+    protected:
+
+        virtual void onEngineObjectDestroying() override;
+
     private:
+        
+        JUTILS_CREATE_MULTICAST_DELEGATE1(OnMaterialParamEvent, const jstringID&, paramName);
+        
+        OnMaterialParamEvent onParamChanged;
 
         EngineObjectPtr<Shader> m_BaseShader = nullptr;
-        Material* m_BaseMaterial = nullptr;
+        EngineObjectPtr<Material> m_BaseMaterial = nullptr;
 
         JumaRE::Material* m_Material = nullptr;
 
 
         bool createMaterial(const EngineObjectPtr<Shader>& shader);
-        bool createMaterial(Material* baseMaterial);
+        bool createMaterial(const EngineObjectPtr<Material>& baseMaterial);
         void clearMaterial();
 
-        void onBaseMaterialParamChanged(Material* baseMaterial, const jstringID& paramName);
-        void onBaseMaterialClear(Material* baseMaterial) { clearMaterial(); }
+        void onBaseMaterialParamChanged(const jstringID& paramName);
 
         bool isGlobalMaterialParam(const jstringID& name) const;
         void onGlobalParamChanged(AssetsEngineSubsystem* subsystem, const jstringID& internalParamName);

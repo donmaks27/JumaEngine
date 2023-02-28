@@ -5,21 +5,19 @@
 #include "../core.h"
 #include "EngineClass.h"
 
-#include <jutils/jdescriptor_table.h>
+#include "EngineObjectPtr.h"
 
 namespace JumaEngine
 {
     class Engine;
-	template<typename T>
-	class EngineObjectPtr;
 
-    class EngineContextObject
+    class EngineContextObject : private jdescriptor_table<EngineContextObject>::enable_pointer_from_this
     {
         friend Engine;
 		friend EngineObjectPtr<EngineContextObject>;
-
-		using WeakPointerType = jdescriptor_table<EngineContextObject>::weak_pointer;
-
+		friend EngineObjectWeakPtr<EngineContextObject>;
+        friend jdescriptor_table<EngineContextObject>;
+        
     public:
 
         class EngineContextObject_Class : public EngineClass
@@ -56,95 +54,14 @@ namespace JumaEngine
         template<typename T, TEMPLATE_ENABLE(is_base<Engine, T>)>
         T* getEngine() const { return dynamic_cast<T*>(getEngine()); }
 
+    protected:
+
+        virtual void onEngineObjectDestroying() {}
+
     private:
 
         Engine* m_Engine = nullptr;
-		WeakPointerType m_ObjectWeakPointer = nullptr;
     };
-	
-	template<typename T>
-	class EngineObjectPtr
-	{
-		static_assert(is_base<EngineContextObject, T>, "Object class should be derrived from EngineContextObject");
-
-		friend Engine;
-
-		using PointerType = jdescriptor_table<EngineContextObject>::pointer;
-
-	public:
-		constexpr EngineObjectPtr() = default;
-		constexpr EngineObjectPtr(nullptr_t) : EngineObjectPtr() {}
-		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1>)>
-		EngineObjectPtr(const EngineObjectPtr<T1>& ptr)
-			: m_ObjectPointer(ptr.m_ObjectPointer)
-		{}
-		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1>)>
-		constexpr EngineObjectPtr(EngineObjectPtr<T1>&& ptr) noexcept
-			: m_ObjectPointer(std::move(ptr.m_ObjectPointer))
-		{}
-		explicit EngineObjectPtr(const T* object)
-			: m_ObjectPointer(object != nullptr ? object->m_ObjectWeakPointer : nullptr)
-		{}
-	private:
-		constexpr EngineObjectPtr(const PointerType& pointer)
-			: m_ObjectPointer(pointer)
-		{}
-		constexpr EngineObjectPtr(PointerType&& pointer)
-			: m_ObjectPointer(std::move(pointer))
-		{}
-	public:
-
-		EngineObjectPtr& operator=(nullptr_t)
-		{
-			m_ObjectPointer = nullptr;
-			return *this;
-		}
-		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1>)>
-		EngineObjectPtr& operator=(const EngineObjectPtr<T1>& ptr)
-		{
-			if (this != &ptr)
-			{
-				m_ObjectPointer = ptr.m_ObjectPointer;
-			}
-			return *this;
-		}
-		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1>)>
-		EngineObjectPtr& operator=(EngineObjectPtr<T1>&& ptr) noexcept
-		{
-			m_ObjectPointer = std::move(ptr.m_ObjectPointer);
-			return *this;
-		}
-	private:
-		EngineObjectPtr& operator=(const PointerType& pointer)
-		{
-			m_ObjectPointer = pointer;
-			return *this;
-		}
-		EngineObjectPtr& operator=(PointerType&& pointer)
-		{
-			m_ObjectPointer = std::move(pointer);
-			return *this;
-		}
-	public:
-
-		bool isValid() const { return m_ObjectPointer.isValid(); }
-
-		T* get() const { return dynamic_cast<T*>(m_ObjectPointer.get()); }
-		T* operator->() const { return dynamic_cast<T*>(m_ObjectPointer.get()); }
-		T& operator*() const { return *get(); }
-
-		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1>)>
-		constexpr bool operator==(const EngineObjectPtr<T1>& ptr) const { return m_ObjectPointer == ptr.m_ObjectPointer; }
-		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1>)>
-		constexpr bool operator!=(const EngineObjectPtr<T1>& ptr) const { return m_ObjectPointer != ptr.m_ObjectPointer; }
-		
-		constexpr bool operator==(nullptr_t) const { return m_ObjectPointer == nullptr; }
-		constexpr bool operator!=(nullptr_t) const { return m_ObjectPointer != nullptr; }
-
-	private:
-
-		PointerType m_ObjectPointer = nullptr;
-	};
 }
 
 #define DECLARE_JUMAENGINE_CLASS(ClassName, ParentClassName)                                                    \

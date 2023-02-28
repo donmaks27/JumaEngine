@@ -26,6 +26,10 @@ namespace JumaEngine
 
         JumaRE::Shader* getShader() const { return m_Shader; }
 
+    protected:
+
+        virtual void onEngineObjectDestroying() override;
+
     private:
 
         JumaRE::Shader* m_Shader = nullptr;

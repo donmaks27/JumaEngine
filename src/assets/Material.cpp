@@ -32,7 +32,7 @@ namespace JumaEngine
     {
         CopyMaterialParam(type, name, material, name, materialParams);
     }
-
+    
     bool Material::createMaterial(const EngineObjectPtr<Shader>& shader)
     {
         if (shader == nullptr)
@@ -71,7 +71,7 @@ namespace JumaEngine
         }
         return true;
     }
-    bool Material::createMaterial(Material* baseMaterial)
+    bool Material::createMaterial(const EngineObjectPtr<Material>& baseMaterial)
     {
         if (baseMaterial == nullptr)
         {
@@ -113,8 +113,14 @@ namespace JumaEngine
             assetsSubsystem->onEngineInternalParamChanged.bind(this, &Material::onGlobalParamChanged);
         }
         m_BaseMaterial->onParamChanged.bind(this, &Material::onBaseMaterialParamChanged);
-        m_BaseMaterial->onClear.bind(this, &Material::onBaseMaterialClear);
         return true;
+    }
+
+    void Material::onEngineObjectDestroying()
+    {
+        clearMaterial();
+
+        Super::onEngineObjectDestroying();
     }
     void Material::clearMaterial()
     {
@@ -126,28 +132,27 @@ namespace JumaEngine
             if (m_BaseMaterial != nullptr)
             {
                 m_BaseMaterial->onParamChanged.unbind(this, &Material::onBaseMaterialParamChanged);
-                m_BaseMaterial->onClear.unbind(this, &Material::onBaseMaterialClear);
             }
-
-            onClear.call(this);
+            
             if (m_Material != nullptr)
             {
                 engine->getRenderEngine()->destroyMaterial(m_Material);
             }
 
+            onParamChanged.clear();
             m_Material = nullptr;
             m_BaseShader = nullptr;
             m_BaseMaterial = nullptr;
         }
     }
 
-    void Material::onBaseMaterialParamChanged(Material* baseMaterial, const jstringID& paramName)
+    void Material::onBaseMaterialParamChanged(const jstringID& paramName)
     {
         const JumaRE::ShaderUniform* uniform = getShader()->getUniforms().find(paramName);
         if (uniform != nullptr)
         {
             CopyMaterialParam(uniform->type, paramName, m_Material, m_BaseMaterial->getMaterial()->getMaterialParams());
-            onParamChanged.call(this, paramName);
+            onParamChanged.call(paramName);
         }
     }
 

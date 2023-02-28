@@ -190,6 +190,11 @@ namespace JumaEngine
         return true;
     }
 
+    void Shader::onEngineObjectDestroying()
+    {
+        clearShader();
+        Super::onEngineObjectDestroying();
+    }
     void Shader::clearShader()
     {
         if (m_Shader != nullptr)

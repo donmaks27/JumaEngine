@@ -24,11 +24,13 @@ namespace JumaEngine
         {
 	        return nullptr;
         }
-        jdescriptor_table<EngineContextObject>::pointer pointer = m_EngineObjectDescriptors.createDescriptor(object);
         object->m_Engine = this;
-        object->m_ObjectWeakPointer = pointer;
-		return pointer;
+		return m_EngineObjectDescriptors.createDescriptor(object);
 	}
+    void Engine::onEngineObjectDestroying(EngineContextObject* object)
+    {
+        object->onEngineObjectDestroying();
+    }
 
     EngineContextObject* Engine::registerObjectInternal1(EngineContextObject* object)
     {
@@ -51,9 +53,12 @@ namespace JumaEngine
             return false;
         }
 
+        m_EngineObjectDescriptors.onObjectDestroying.bind(this, &Engine::onEngineObjectDestroying);
+
         if (!initEngine())
         {
             JUTILS_LOG(error, JSTR("Failed to init engine"));
+            clear();
             return false;
         }
 
@@ -281,8 +286,9 @@ namespace JumaEngine
             delete subsystem.value;
         }
         m_EngineSubsystems.clear();
-
+        
         m_EngineObjectDescriptors.clear();
+        m_EngineObjectDescriptors.onObjectDestroying.unbind(this, &Engine::onEngineObjectDestroying);
     }
 
     EngineSubsystem* Engine::createSubsystem(const EngineSubclass<EngineSubsystem>& subsystemClass)

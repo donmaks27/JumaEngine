@@ -51,11 +51,14 @@ namespace JumaEngine
         m_VertexBuffer_Cube = nullptr;
         m_VertexBuffer_Plane2D = nullptr;
 
-        for (auto& material : m_Materials)
+        for (auto& materialWeakPtr : m_Materials)
         {
-            material.clearMaterial();
+            Material* material = materialWeakPtr.get();
+            if (material != nullptr)
+            {
+                material->clearMaterial();
+            }
         }
-        m_DestroyingMaterials.clear();
         m_Materials.clear();
         m_GlobalMaterialParams.clear();
 
@@ -66,7 +69,15 @@ namespace JumaEngine
 	            shader.value->clearShader();
             }
         }
+        for (auto& shader : m_EngineShaders)
+        {
+            if (shader.value != nullptr)
+            {
+	            shader.value->clearShader();
+            }
+        }
         m_Shaders.clear();
+        m_EngineShaders.clear();
         
         for (auto& texture : m_Textures)
         {
@@ -75,18 +86,26 @@ namespace JumaEngine
 	            texture.value->clearTexture();
             }
         }
+        for (auto& texture : m_EngineTextures)
+        {
+            if (texture.value != nullptr)
+            {
+	            texture.value->clearTexture();
+            }
+        }
         m_Textures.clear();
+        m_EngineTextures.clear();
 	}
 
-	EngineObjectPtr<Texture> AssetsEngineSubsystem::getEngineTexture(const jstringID& textureName)
+	const EngineObjectPtr<Texture>& AssetsEngineSubsystem::getEngineTexture(const jstringID& textureName)
 	{
         return getTexture(m_EngineTextures, textureName, getEngine()->getEngineContentDirectory());
 	}
-	EngineObjectPtr<Texture> AssetsEngineSubsystem::getTexture(const jstringID& textureName)
+	const EngineObjectPtr<Texture>& AssetsEngineSubsystem::getTexture(const jstringID& textureName)
 	{
         return getTexture(m_Textures, textureName, getEngine()->getGameContentDirectory());
 	}
-	EngineObjectPtr<Texture> AssetsEngineSubsystem::getTexture(jmap<jstringID, EngineObjectPtr<Texture>>& texturesList, const jstringID& textureName, const jstring& contentFolder) const
+	const EngineObjectPtr<Texture>& AssetsEngineSubsystem::getTexture(jmap<jstringID, EngineObjectPtr<Texture>>& texturesList, const jstringID& textureName, const jstring& contentFolder) const
 	{
         const EngineObjectPtr<Texture>* texturePtr = texturesList.find(textureName);
         if (texturePtr != nullptr)
@@ -99,22 +118,22 @@ namespace JumaEngine
         {
             JUTILS_LOG(error, JSTR("Failed to load texture {} from {}"), textureName.toString(), contentFolder);
             texture = nullptr;
-            return nullptr;
+            return texture;
         }
 
         JUTILS_LOG(correct, JSTR("Loaded texture {} from {}"), textureName.toString(), contentFolder);
         return texture;
 	}
 
-    EngineObjectPtr<Shader> AssetsEngineSubsystem::getEngineShader(const jstringID& shaderName)
+    const EngineObjectPtr<Shader>& AssetsEngineSubsystem::getEngineShader(const jstringID& shaderName)
 	{
         return getShader(m_EngineShaders, shaderName, getEngine()->getEngineContentDirectory());
 	}
-    EngineObjectPtr<Shader> AssetsEngineSubsystem::getShader(const jstringID& shaderName)
+    const EngineObjectPtr<Shader>& AssetsEngineSubsystem::getShader(const jstringID& shaderName)
     {
         return getShader(m_Shaders, shaderName, getEngine()->getGameContentDirectory());
     }
-    EngineObjectPtr<Shader> AssetsEngineSubsystem::getShader(jmap<jstringID, EngineObjectPtr<Shader>>& shadersList, const jstringID& shaderName, const jstring& contentFolder) const
+    const EngineObjectPtr<Shader>& AssetsEngineSubsystem::getShader(jmap<jstringID, EngineObjectPtr<Shader>>& shadersList, const jstringID& shaderName, const jstring& contentFolder) const
 	{
         EngineObjectPtr<Shader>* shaderPtr = shadersList.find(shaderName);
         if (shaderPtr != nullptr)
@@ -127,60 +146,33 @@ namespace JumaEngine
         {
             JUTILS_LOG(error, JSTR("Failed to create shader {} from {}"), shaderName.toString(), contentFolder);
             shader = nullptr;
-            return nullptr;
+            return shader;
         }
         JUTILS_LOG(correct, JSTR("Created shader {} from {}"), shaderName.toString(), contentFolder);
         return shader;
 	}
 
-    Material* AssetsEngineSubsystem::createMaterial(const EngineObjectPtr<Shader>& shader)
+    EngineObjectPtr<Material> AssetsEngineSubsystem::createMaterial(const EngineObjectPtr<Shader>& shader)
     {
-        Material* material = getEngine()->registerObject1(&m_Materials.addDefault());
+        EngineObjectPtr<Material> material = getEngine()->createObject<Material>();
         if (!material->createMaterial(shader))
         {
             JUTILS_LOG(error, JSTR("Failed to create material from shader {}"), shader != nullptr ? shader->getName().toString() : JSTR("NULL"));
-            m_Materials.removeLast();
             return nullptr;
         }
-        material->onClear.bind(this, &AssetsEngineSubsystem::onMaterialClear);
+        m_Materials.add(material);
         return material;
     }
-    Material* AssetsEngineSubsystem::createMaterial(Material* baseMaterial)
+    EngineObjectPtr<Material> AssetsEngineSubsystem::createMaterial(const EngineObjectPtr<Material>& baseMaterial)
     {
-        Material* material = getEngine()->registerObject1(&m_Materials.addDefault());
+        EngineObjectPtr<Material> material = getEngine()->createObject<Material>();
         if (!material->createMaterial(baseMaterial))
         {
             JUTILS_LOG(error, JSTR("Failed to create material instance"));
-            m_Materials.removeLast();
             return nullptr;
         }
-        material->onClear.bind(this, &AssetsEngineSubsystem::onMaterialClear);
+        m_Materials.add(material);
         return material;
-    }
-    void AssetsEngineSubsystem::destroyMaterial(Material* material)
-    {
-        if (material != nullptr)
-        {
-            material->clearMaterial();
-
-            m_Materials.removeByPredicate([this](const Material& materialObject)
-            {
-                const int32 index = m_DestroyingMaterials.indexOf(&materialObject);
-                if (index == -1)
-                {
-                    return false;
-                }
-
-                m_DestroyingMaterials.removeAt(index);
-                return true;
-            });
-            m_DestroyingMaterials.clear();
-        }
-    }
-    void AssetsEngineSubsystem::onMaterialClear(Material* material)
-    {
-        material->onClear.unbind(this, &AssetsEngineSubsystem::onMaterialClear);
-        m_DestroyingMaterials.add(material);
     }
 
     jstringID AssetsEngineSubsystem::getVertexComponentID(const VertexComponent component) const

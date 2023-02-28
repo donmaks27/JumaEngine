@@ -34,7 +34,7 @@ namespace JumaEngine
 
     private:
 
-        Material* m_Material = nullptr;
+        EngineObjectPtr<Material> m_Material = nullptr;
 
         math::uvector2 m_CursorSizePixels = { 24, 24 };
 

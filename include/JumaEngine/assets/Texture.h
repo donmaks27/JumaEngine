@@ -24,6 +24,10 @@ namespace JumaEngine
 
         JumaRE::Texture* getTexture() const { return m_Texture; }
 
+    protected:
+
+        virtual void onEngineObjectDestroying() override;
+
     private:
 
         JumaRE::Texture* m_Texture = nullptr;
