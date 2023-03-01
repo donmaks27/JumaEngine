@@ -8,26 +8,13 @@
 
 namespace JumaEngine
 {
-    void WidgetsCreator::onInitialized()
-    {
-        Super::onInitialized();
-    }
-
     void WidgetsCreator::onActivated()
     {
         Super::onActivated();
 
         for (const auto& widgetContext : m_WidgetContexts)
         {
-            Widget* rootWidget = widgetContext.value.getRootWidget();
-            if (rootWidget != nullptr)
-            {
-                ActivateEngineObject(rootWidget);
-            }
-        }
-        for (const auto& widget : m_Widgets)
-        {
-            ActivateEngineObject(widget);
+            ActivateEngineObject(widgetContext.value);
         }
     }
 
@@ -37,11 +24,7 @@ namespace JumaEngine
 
         for (const auto& widgetContext : m_WidgetContexts)
         {
-            Widget* rootWidget = widgetContext.value.getRootWidget();
-            if (rootWidget != nullptr)
-            {
-                UpdateEngineObject(rootWidget, deltaTime);
-            }
+            UpdateEngineObject(widgetContext.value, deltaTime);
         }
     }
 
@@ -51,22 +34,15 @@ namespace JumaEngine
 
         for (const auto& widgetContext : m_WidgetContexts)
         {
-            Widget* rootWidget = widgetContext.value.getRootWidget();
-            if (rootWidget != nullptr)
-            {
-                rootWidget->setWidgetBounds({ { 0.0f, 0.0f }, { 1.0f, 1.0f } }, WidgetAlignmentH::Fill, WidgetAlignmentV::Fill);
-                rootWidget->recalculateWidetSize();
-
-                PreRenderEngineObject(rootWidget);
-            }
+            PreRenderEngineObject(widgetContext.value);
         }
     }
 
     void WidgetsCreator::onDeactivate()
     {
-        for (const auto& widget : m_Widgets)
+        for (const auto& widgetContext : m_WidgetContexts)
         {
-            DeactivateEngineObject(widget);
+            DeactivateEngineObject(widgetContext.value);
         }
 
         Super::onDeactivate();
@@ -74,9 +50,17 @@ namespace JumaEngine
 
     void WidgetsCreator::onClear()
     {
+        for (const auto& widgetContext : m_WidgetContexts)
+        {
+            ClearEngineObject(widgetContext.value);
+        }
         for (const auto& widget : m_Widgets)
         {
             ClearEngineObject(widget);
+        }
+        for (const auto& widgetContext : m_WidgetContexts)
+        {
+            delete widgetContext.value;
         }
         for (const auto& widget : m_Widgets)
         {
@@ -108,10 +92,15 @@ namespace JumaEngine
             return nullptr;
         }
 
-        WidgetContext& widgetContext = m_WidgetContexts.add(renderContext);
-        widgetContext.m_ParentWidgetsCreator = this;
-        widgetContext.m_RenderContext = renderContext;
-        return &widgetContext;
+        WidgetContext* widgetContext = m_WidgetContexts.add(renderContext, getEngine()->createObject1<WidgetContext>());
+        widgetContext->m_ParentWidgetsCreator = this;
+        widgetContext->m_RenderContext = renderContext;
+        InitializeEngineObject(widgetContext);
+        if (isActive())
+        {
+            ActivateEngineObject(widgetContext);
+        }
+        return widgetContext;
     }
     void WidgetsCreator::destroyWidgetContext(WidgetContext* widgetContext)
     {
@@ -120,11 +109,8 @@ namespace JumaEngine
             const RenderContext renderContext = widgetContext->getRenderContext();
 	        if (m_WidgetContexts.contains(renderContext))
 	        {
-		        Widget* widget = widgetContext->getRootWidget();
-	            if (widget != nullptr)
-	            {
-	                widget->setParentWidget(nullptr);
-	            }
+                ClearEngineObject(widgetContext);
+                delete widgetContext;
 	            m_WidgetContexts.remove(renderContext);
 	        }
         }
@@ -171,34 +157,5 @@ namespace JumaEngine
             }
         }
         return true;
-    }
-
-    void WidgetsCreator::setRootWidget(WidgetContext* widgetContext, Widget* widget)
-    {
-        if ((widgetContext == nullptr) || (widgetContext->getWidgetsCreator() != this))
-        {
-            return;
-        }
-        Widget* oldRootWidget = widgetContext->getRootWidget();
-        if (oldRootWidget == widget)
-        {
-            return;
-        }
-
-        if (oldRootWidget != nullptr)
-        {
-            oldRootWidget->setWidgetContext(nullptr);
-        }
-        widgetContext->m_RootWidget = widget;
-        if (widget != nullptr)
-        {
-            widget->setParentWidget(nullptr);
-            widget->setWidgetContext(widgetContext);
-
-            if (isActive())
-            {
-                ActivateEngineObject(widget);
-            }
-        }
     }
 }

@@ -29,7 +29,7 @@ namespace JumaEngine
 	}
     void Engine::onEngineObjectDestroying(EngineContextObject* object)
     {
-        object->onEngineObjectDestroying();
+        object->onObjectDescriptorDestroying();
     }
 
     EngineContextObject* Engine::registerObjectInternal1(EngineContextObject* object)

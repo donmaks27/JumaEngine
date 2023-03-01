@@ -190,10 +190,10 @@ namespace JumaEngine
         return true;
     }
 
-    void Shader::onEngineObjectDestroying()
+    void Shader::onObjectDescriptorDestroying()
     {
         clearShader();
-        Super::onEngineObjectDestroying();
+        Super::onObjectDescriptorDestroying();
     }
     void Shader::clearShader()
     {

@@ -32,6 +32,8 @@ namespace JumaEngine
         virtual void onDeactivate() {}
         virtual void onClear() {}
 
+        virtual void onObjectDescriptorDestroying() override { clearEngineObject(); }
+
     private:
 
         bool m_ObjectInitialized = false;

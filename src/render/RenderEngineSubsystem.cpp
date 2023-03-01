@@ -75,7 +75,7 @@ namespace JumaEngine
         overlayWidget->addWidget(cursorWidget);
 
         WidgetContext* widgetContext = widgetsCreator->createWidgetContext({ windowRenderTarget, 0 });
-        widgetsCreator->setRootWidget(widgetContext, overlayWidget);
+        widgetContext->setRootWidget(overlayWidget);
 
         m_WindowProxyRenderTargets.add(windowData->windowRenderTargetID, { renderTarget, widgetContext });
 	}

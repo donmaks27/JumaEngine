@@ -56,7 +56,7 @@ namespace JumaEngine
 
     protected:
 
-        virtual void onEngineObjectDestroying() {}
+        virtual void onObjectDescriptorDestroying() {}
 
     private:
 

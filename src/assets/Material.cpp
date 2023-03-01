@@ -116,11 +116,11 @@ namespace JumaEngine
         return true;
     }
 
-    void Material::onEngineObjectDestroying()
+    void Material::onObjectDescriptorDestroying()
     {
         clearMaterial();
 
-        Super::onEngineObjectDestroying();
+        Super::onObjectDescriptorDestroying();
     }
     void Material::clearMaterial()
     {

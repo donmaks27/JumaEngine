@@ -26,6 +26,7 @@ namespace JumaEngine
 
         friend WidgetsCreator;
         friend WidgetContainer;
+        friend WidgetContext;
 
     public:
         Widget() = default;

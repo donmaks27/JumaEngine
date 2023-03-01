@@ -29,12 +29,9 @@ namespace JumaEngine
         template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<Widget, T>)>
         T* createWidget() { return dynamic_cast<T*>(this->createWidget(T::GetClassStatic())); }
         bool destroyWidget(Widget* widget, bool destroyChildWidgets = false);
-
-        void setRootWidget(WidgetContext* widgetContext, Widget* widget);
-
+        
     protected:
-
-        virtual void onInitialized() override;
+        
         virtual void onActivated() override;
         virtual void onUpdate(float deltaTime) override;
         virtual void onPreRender() override;
@@ -43,7 +40,7 @@ namespace JumaEngine
 
     private:
 
-        jmap<RenderContext, WidgetContext> m_WidgetContexts;
+        jmap<RenderContext, WidgetContext*> m_WidgetContexts;
         jarray<Widget*> m_Widgets;
     };
 }

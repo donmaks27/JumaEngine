@@ -82,10 +82,10 @@ namespace JumaEngine
         return true;
     }
 
-    void Texture::onEngineObjectDestroying()
+    void Texture::onObjectDescriptorDestroying()
     {
         clearTexture();
-        Super::onEngineObjectDestroying();
+        Super::onObjectDescriptorDestroying();
     }
     void Texture::clearTexture()
     {
