@@ -53,6 +53,7 @@ namespace JumaEngine
         }
         m_RootWidget = nullptr;
         m_RenderContext = RenderContext();
+        m_ParentWidgetsCreator = nullptr;
 
         Super::onClear();
     }
@@ -72,7 +73,7 @@ namespace JumaEngine
         if (m_RootWidget != nullptr)
         {
             m_RootWidget->onWidgetContextChanged.unbind(this, &WidgetContext::onRootWidgetContextChanging);
-            m_RootWidget->onWidgetDestroying.unbind(this, &WidgetContext::onRootWidgetDestroying);
+            m_RootWidget->onDestroying.unbind(this, &WidgetContext::onRootWidgetDestroying);
 
             DeactivateEngineObject(m_RootWidget);
             m_RootWidget->setWidgetContext(nullptr);
@@ -86,7 +87,7 @@ namespace JumaEngine
             if (isActive())
             {
                 m_RootWidget->onWidgetContextChanged.bind(this, &WidgetContext::onRootWidgetContextChanging);
-                m_RootWidget->onWidgetDestroying.bind(this, &WidgetContext::onRootWidgetDestroying);
+                m_RootWidget->onDestroying.bind(this, &WidgetContext::onRootWidgetDestroying);
                 ActivateEngineObject(m_RootWidget);
             }
         }

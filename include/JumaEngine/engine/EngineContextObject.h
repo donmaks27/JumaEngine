@@ -14,8 +14,10 @@ namespace JumaEngine
     class EngineContextObject : private jdescriptor_table<EngineContextObject>::enable_pointer_from_this
     {
         friend Engine;
-		friend EngineObjectPtr<EngineContextObject>;
-		friend EngineObjectWeakPtr<EngineContextObject>;
+        template<typename T>
+		friend class EngineObjectPtr;
+        template<typename T>
+		friend class EngineObjectWeakPtr;
         friend jdescriptor_table<EngineContextObject>;
         
     public:

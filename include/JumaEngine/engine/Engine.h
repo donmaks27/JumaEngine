@@ -25,6 +25,10 @@ namespace JumaEngine
         EngineObjectPtr<T> createObject(const EngineSubclass<T>& objectClass) { return this->createObjectDescriptor(objectClass.get()); }
         template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<EngineContextObject, T>)>
         EngineObjectPtr<T> createObject() { return this->createObject<T>(T::GetClassStatic()); }
+        template<typename T>
+        void destroyObject(const EngineObjectPtr<T>& object) { this->destroyObject(object.updatePtr()); }
+        template<typename T>
+        void destroyObject(const EngineObjectWeakPtr<T>& object) { this->destroyObject(object.get()); }
         
         EngineContextObject* createObject1(const EngineClass* engineClass);
         template<typename T>
@@ -76,6 +80,7 @@ namespace JumaEngine
     private:
 
         jdescriptor_table<EngineContextObject> m_EngineObjectDescriptors;
+        jarray<jdescriptor_table<EngineContextObject>::weak_pointer> m_DestroyingEngineObjects;
 
         GameInstance* m_GameInstance = nullptr;
         JumaRE::RenderEngine* m_RenderEngine = nullptr;
@@ -88,6 +93,7 @@ namespace JumaEngine
 
 
         jdescriptor_table<EngineContextObject>::pointer createObjectDescriptor(const EngineClass* objectClass);
+        void destroyObject(EngineContextObject* object);
         void onEngineObjectDestroying(EngineContextObject* object);
 		EngineContextObject* registerObjectInternal1(EngineContextObject* object);
 

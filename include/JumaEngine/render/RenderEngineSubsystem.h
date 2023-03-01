@@ -29,7 +29,7 @@ namespace JumaEngine
 		struct WindowProxyRenderTarget
         {
 	        JumaRE::RenderTarget* proxyRenderTarget = nullptr;
-            WidgetContext* widgetContext = nullptr;
+            EngineObjectPtr<WidgetContext> widgetContext = nullptr;
         };
 
 		jmap<JumaRE::window_id, WindowProxyRenderTarget> m_WindowProxyRenderTargets;

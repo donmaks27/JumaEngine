@@ -69,7 +69,7 @@ namespace JumaEngine
     {
         Super::onPreRender();
 
-        const WidgetContext* widgetContext = getWidgetContext();
+        const WidgetContext* widgetContext = getWidgetContextPtr();
         if (widgetContext == nullptr)
         {
             return;
@@ -106,7 +106,7 @@ namespace JumaEngine
 	        }
             else
             {
-                const math::vector2 imageSize = math::vector2(m_MaterialTexture->getSize()) / getWidgetContext()->getRenderTarget()->getSize();
+                const math::vector2 imageSize = math::vector2(m_MaterialTexture->getSize()) / getWidgetContextPtr()->getRenderTarget()->getSize();
                 m_WidgetRenderSize = {
                     getWidgetAlignmentH() == WidgetAlignmentH::Fill ? boundsSize.x : imageSize.x,
                     getWidgetAlignmentV() == WidgetAlignmentV::Fill ? boundsSize.y : imageSize.y

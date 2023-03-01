@@ -2,15 +2,10 @@
 
 #include "JumaEngine/widgets/Widget.h"
 
+#include "JumaEngine/widgets/WidgetContext.h"
+
 namespace JumaEngine
 {
-    void Widget::onClear()
-    {
-        onWidgetDestroying.call(this);
-
-        Super::onClear();
-    }
-
     void Widget::setWidgetContext(WidgetContext* widgetContext)
     {
         if (m_WidgetContext != widgetContext)
@@ -21,7 +16,12 @@ namespace JumaEngine
     }
     void Widget::onParentWidgetContextChanged(Widget* parentWidget)
     {
-        setWidgetContext(m_ParentWidget->getWidgetContext());
+        setWidgetContext(m_ParentWidget->getWidgetContextPtr());
+    }
+
+    EngineObjectWeakPtr<WidgetContext> Widget::getWidgetContext() const
+    {
+        return EngineObjectWeakPtr(getWidgetContextPtr());
     }
 
     void Widget::setParentWidget(Widget* widget)
@@ -31,7 +31,7 @@ namespace JumaEngine
             if (m_ParentWidget != nullptr)
             {
                 m_ParentWidget->onWidgetContextChanged.unbind(this, &Widget::onParentWidgetContextChanged);
-                m_ParentWidget->onWidgetDestroying.unbind(this, &Widget::onParentWidgetDestroying);
+                m_ParentWidget->onDestroying.unbind(this, &Widget::onParentWidgetDestroying);
                 m_ParentWidget = nullptr;
                 onDetachedFromParent.call(this);
             }
@@ -40,18 +40,14 @@ namespace JumaEngine
             {
                 m_ParentWidget = widget;
                 m_ParentWidget->onWidgetContextChanged.bind(this, &Widget::onParentWidgetContextChanged);
-                m_ParentWidget->onWidgetDestroying.bind(this, &Widget::onParentWidgetDestroying);
-                setWidgetContext(m_ParentWidget->getWidgetContext());
+                m_ParentWidget->onDestroying.bind(this, &Widget::onParentWidgetDestroying);
+                setWidgetContext(m_ParentWidget->getWidgetContextPtr());
             }
             else
             {
                 setWidgetContext(nullptr);
             }
         }
-    }
-    void Widget::onParentWidgetDestroying(Widget* widget)
-    {
-        setParentWidget(nullptr);
     }
     
     void Widget::setWidgetBounds(const math::box2& bounds, const WidgetAlignmentH alignmentH, const WidgetAlignmentV alignmentV)

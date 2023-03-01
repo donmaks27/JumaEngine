@@ -32,19 +32,19 @@ namespace JumaEngine
         {
             destroyProxyWindowRenderTarget(proxyRenderTarget.key);
         }
+        m_WindowProxyRenderTargets.clear();
 	}
     bool RenderEngineSubsystem::destroyProxyWindowRenderTarget(const JumaRE::window_id windowID)
 	{
-        const WindowProxyRenderTarget* renderTarget = m_WindowProxyRenderTargets.find(windowID);
+        WindowProxyRenderTarget* renderTarget = m_WindowProxyRenderTargets.find(windowID);
         if (renderTarget == nullptr)
         {
 	        return false;
         }
         
-        WidgetsCreator* widgetsCreator = getEngine()->getWidgetsCreator();
-        Widget* widget = renderTarget->widgetContext->getRootWidget();
-        widgetsCreator->destroyWidgetContext(renderTarget->widgetContext);
-        widgetsCreator->destroyWidget(widget, true);
+        getEngine()->destroyObject(renderTarget->widgetContext);
+        renderTarget->widgetContext = nullptr;
+        // TODO: Destroy widgets
         getEngine()->getRenderEngine()->destroyRenderTarget(renderTarget->proxyRenderTarget);
         return true;
 	}
@@ -74,10 +74,10 @@ namespace JumaEngine
         overlayWidget->addWidget(imageWidget);
         overlayWidget->addWidget(cursorWidget);
 
-        WidgetContext* widgetContext = widgetsCreator->createWidgetContext({ windowRenderTarget, 0 });
+        EngineObjectPtr<WidgetContext> widgetContext = widgetsCreator->createWidgetContext({ windowRenderTarget, 0 });
         widgetContext->setRootWidget(overlayWidget);
 
-        m_WindowProxyRenderTargets.add(windowData->windowRenderTargetID, { renderTarget, widgetContext });
+        m_WindowProxyRenderTargets.add(windowData->windowRenderTargetID, { renderTarget, std::move(widgetContext) });
 	}
 	void RenderEngineSubsystem::onWindowDestroying(JumaRE::WindowController* windowController, const JumaRE::WindowData* windowData)
 	{

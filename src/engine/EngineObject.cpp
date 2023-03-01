@@ -53,6 +53,7 @@ namespace JumaEngine
             deactivateEngineObject();
             if (isInitialized())
             {
+                onDestroying.call(this);
                 onClear();
                 m_ObjectDestroyed = true;
             }

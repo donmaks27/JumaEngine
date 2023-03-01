@@ -22,8 +22,7 @@ namespace JumaEngine
         WidgetsCreator() = default;
         virtual ~WidgetsCreator() override = default;
 
-        WidgetContext* createWidgetContext(const RenderContext& renderContext);
-        void destroyWidgetContext(WidgetContext* widgetContext);
+        EngineObjectPtr<WidgetContext> createWidgetContext(const RenderContext& renderContext);
 
         Widget* createWidget(const EngineSubclass<Widget>& widgetClass);
         template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<Widget, T>)>
@@ -42,5 +41,8 @@ namespace JumaEngine
 
         jmap<RenderContext, WidgetContext*> m_WidgetContexts;
         jarray<Widget*> m_Widgets;
+
+
+        void onWidgetContextDestroying(EngineObject* object);
     };
 }

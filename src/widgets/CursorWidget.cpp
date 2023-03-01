@@ -52,7 +52,7 @@ namespace JumaEngine
     {
         Super::onPreRender();
 
-        const WidgetContext* widgetContext = getWidgetContext();
+        const WidgetContext* widgetContext = getWidgetContextPtr();
         if (widgetContext != nullptr)
         {
             updateMaterial();
@@ -78,7 +78,7 @@ namespace JumaEngine
 
     void CursorWidget::recalculateWidetSize()
     {
-        const WidgetContext* widgetContext = getWidgetContext();
+        const WidgetContext* widgetContext = getWidgetContextPtr();
         const JumaRE::RenderTarget* renderTarget = widgetContext != nullptr ? widgetContext->getRenderTarget() : nullptr;
         if (renderTarget == nullptr)
         {

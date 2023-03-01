@@ -34,18 +34,18 @@ namespace JumaEngine
 		explicit EngineObjectPtr(const T* object)
             : m_ObjectPointer(object != nullptr ? object->weakPointerFromThis() : nullptr)
 		{
-		    update();
+		    updatePtr();
 		}
 	private:
 		EngineObjectPtr(const PointerType& pointer)
 			: m_ObjectPointer(pointer)
 		{
-		    update();
+		    updatePtr();
 		}
 		EngineObjectPtr(PointerType&& pointer)
 			: m_ObjectPointer(std::move(pointer))
 		{
-		    update();
+		    updatePtr();
 		}
 	public:
 
@@ -73,27 +73,27 @@ namespace JumaEngine
 		EngineObjectPtr& operator=(const PointerType& pointer)
 		{
 			m_ObjectPointer = pointer;
-			update();
+			updatePtr();
 			return *this;
 		}
 		EngineObjectPtr& operator=(PointerType&& pointer)
 		{
 			m_ObjectPointer = std::move(pointer);
-			update();
+			updatePtr();
 			return *this;
 		}
 	public:
 
-		T* update() const { return m_CachedObject = dynamic_cast<T*>(m_ObjectPointer.get()); }
+		T* updatePtr() const { return m_CachedObject = dynamic_cast<T*>(m_ObjectPointer.get()); }
 		constexpr bool isValid() const { return m_CachedObject != nullptr; }
 
 		constexpr T* get() const { return m_CachedObject; }
 		T* operator->() const { return get(); }
 		T& operator*() const { return *get(); }
 
-		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1>)>
+		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1> || is_base<T1, T>)>
 		constexpr bool operator==(const EngineObjectPtr<T1>& ptr) const { return m_CachedObject == ptr.m_CachedObject; }
-		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1>)>
+		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1> || is_base<T1, T>)>
 		constexpr bool operator!=(const EngineObjectPtr<T1>& ptr) const { return m_CachedObject != ptr.m_CachedObject; }
 		
 		constexpr bool operator==(nullptr_t) const { return !isValid(); }
@@ -118,11 +118,14 @@ namespace JumaEngine
 		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1>)>
 		constexpr EngineObjectWeakPtr(const EngineObjectPtr<T1>& ptr) : m_ObjectWeakPointer(ptr.m_ObjectPointer) {}
 		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1>)>
-		constexpr EngineObjectWeakPtr(EngineObjectPtr<T1>&& ptr) noexcept : m_ObjectWeakPointer(ptr.m_ObjectPointer)
+		constexpr EngineObjectWeakPtr(EngineObjectPtr<T1>&& ptr) noexcept
+	        : m_ObjectWeakPointer(ptr.m_ObjectPointer)
 		{
 		    ptr = nullptr;
 		}
-		explicit EngineObjectWeakPtr(const T* object) : m_ObjectWeakPointer(object != nullptr ? object->weakPointerFromThis() : nullptr) {}
+		explicit EngineObjectWeakPtr(const T* object)
+	        : m_ObjectWeakPointer(object != nullptr ? static_cast<const EngineContextObject*>(object)->weakPointerFromThis() : nullptr)
+	    {}
 
 		constexpr EngineObjectWeakPtr& operator=(nullptr_t)
 		{
@@ -157,14 +160,14 @@ namespace JumaEngine
 		T* get() const { return dynamic_cast<T*>(m_ObjectWeakPointer.get()); }
 		EngineObjectPtr<T> getObjectPtr() const { return jdescriptor_table<EngineContextObject>::pointer(m_ObjectWeakPointer); }
 
-		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1>)>
+		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1> || is_base<T1, T>)>
 		constexpr bool operator==(const EngineObjectWeakPtr<T1>& ptr) const { return m_ObjectWeakPointer == ptr.m_ObjectWeakPointer; }
-		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1>)>
+		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1> || is_base<T1, T>)>
 		constexpr bool operator!=(const EngineObjectWeakPtr<T1>& ptr) const { return m_ObjectWeakPointer != ptr.m_ObjectWeakPointer; }
 		
-		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1>)>
+		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1> || is_base<T1, T>)>
 		constexpr bool operator==(const EngineObjectPtr<T1>& ptr) const { return m_ObjectWeakPointer == ptr.m_ObjectPointer; }
-		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1>)>
+		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1> || is_base<T1, T>)>
 		constexpr bool operator!=(const EngineObjectPtr<T1>& ptr) const { return m_ObjectWeakPointer != ptr.m_ObjectPointer; }
 
 		constexpr bool operator==(nullptr_t) const { return m_ObjectWeakPointer == nullptr; }

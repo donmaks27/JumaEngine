@@ -17,7 +17,6 @@ namespace JumaEngine
             ActivateEngineObject(widgetContext.value);
         }
     }
-
     void WidgetsCreator::onUpdate(const float deltaTime)
     {
         Super::onUpdate(deltaTime);
@@ -27,7 +26,6 @@ namespace JumaEngine
             UpdateEngineObject(widgetContext.value, deltaTime);
         }
     }
-
     void WidgetsCreator::onPreRender()
     {
         Super::onPreRender();
@@ -37,7 +35,6 @@ namespace JumaEngine
             PreRenderEngineObject(widgetContext.value);
         }
     }
-
     void WidgetsCreator::onDeactivate()
     {
         for (const auto& widgetContext : m_WidgetContexts)
@@ -47,20 +44,16 @@ namespace JumaEngine
 
         Super::onDeactivate();
     }
-
     void WidgetsCreator::onClear()
     {
         for (const auto& widgetContext : m_WidgetContexts)
         {
+            widgetContext.value->onDestroying.unbind(this, &WidgetsCreator::onWidgetContextDestroying);
             ClearEngineObject(widgetContext.value);
         }
         for (const auto& widget : m_Widgets)
         {
             ClearEngineObject(widget);
-        }
-        for (const auto& widgetContext : m_WidgetContexts)
-        {
-            delete widgetContext.value;
         }
         for (const auto& widget : m_Widgets)
         {
@@ -72,11 +65,11 @@ namespace JumaEngine
         Super::onClear();
     }
 
-    WidgetContext* WidgetsCreator::createWidgetContext(const RenderContext& renderContext)
+    EngineObjectPtr<WidgetContext> WidgetsCreator::createWidgetContext(const RenderContext& renderContext)
     {
         if (!isInitialized())
         {
-            JUTILS_LOG(error, JSTR("Widgets creator not initialized"));
+            JUTILS_LOG(error, JSTR("WidgetsCreator is not initialized"));
             return nullptr;
         }
 
@@ -86,34 +79,36 @@ namespace JumaEngine
             return nullptr;
         }
 
-        if (m_WidgetContexts.find(renderContext) != nullptr)
+        if (m_WidgetContexts.contains(renderContext))
         {
-            JUTILS_LOG(warning, JSTR("Widget context already created"));
+            JUTILS_LOG(warning, JSTR("WidgetContext for this RenderContext is already created"));
             return nullptr;
         }
 
-        WidgetContext* widgetContext = m_WidgetContexts.add(renderContext, getEngine()->createObject1<WidgetContext>());
+        EngineObjectPtr<WidgetContext> widgetContext = getEngine()->createObject<WidgetContext>();
+        if (widgetContext == nullptr)
+        {
+            JUTILS_LOG(error, JSTR("Failed to create WidgetContext"));
+            return nullptr;
+        }
+
+        m_WidgetContexts.add(renderContext, widgetContext.get());
         widgetContext->m_ParentWidgetsCreator = this;
         widgetContext->m_RenderContext = renderContext;
-        InitializeEngineObject(widgetContext);
+        widgetContext->onDestroying.bind(this, &WidgetsCreator::onWidgetContextDestroying);
+
+        InitializeEngineObject(widgetContext.get());
         if (isActive())
         {
-            ActivateEngineObject(widgetContext);
+            ActivateEngineObject(widgetContext.get());
         }
         return widgetContext;
     }
-    void WidgetsCreator::destroyWidgetContext(WidgetContext* widgetContext)
+    void WidgetsCreator::onWidgetContextDestroying(EngineObject* object)
     {
-        if (widgetContext != nullptr)
-        {
-            const RenderContext renderContext = widgetContext->getRenderContext();
-	        if (m_WidgetContexts.contains(renderContext))
-	        {
-                ClearEngineObject(widgetContext);
-                delete widgetContext;
-	            m_WidgetContexts.remove(renderContext);
-	        }
-        }
+        WidgetContext* widgetContext = dynamic_cast<WidgetContext*>(object);
+        widgetContext->onDestroying.unbind(this, &WidgetsCreator::onWidgetContextDestroying);
+        m_WidgetContexts.remove(widgetContext->getRenderContext());
     }
 
     Widget* WidgetsCreator::createWidget(const EngineSubclass<Widget>& widgetClass)

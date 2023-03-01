@@ -27,6 +27,18 @@ namespace JumaEngine
         object->m_Engine = this;
 		return m_EngineObjectDescriptors.createDescriptor(object);
 	}
+    void Engine::destroyObject(EngineContextObject* object)
+    {
+        if (object != nullptr)
+        {
+            EngineObject* engineObject = dynamic_cast<EngineObject*>(object);
+            if (engineObject != nullptr)
+            {
+                ClearEngineObject(engineObject);
+            }
+            m_DestroyingEngineObjects.add(object->weakPointerFromThis());
+        }
+    }
     void Engine::onEngineObjectDestroying(EngineContextObject* object)
     {
         object->onObjectDescriptorDestroying();
@@ -184,6 +196,12 @@ namespace JumaEngine
 	        const float deltaTime = static_cast<float>(duration.count()) / 1000000.0f;
 
             update(deltaTime);
+
+            for (const auto& pointer : m_DestroyingEngineObjects)
+            {
+                m_EngineObjectDescriptors.destroy(pointer);
+            }
+            m_DestroyingEngineObjects.clear();
             m_EngineObjectDescriptors.cleanup();
 
             preRender();

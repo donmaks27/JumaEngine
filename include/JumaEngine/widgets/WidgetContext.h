@@ -12,7 +12,8 @@ namespace JumaEngine
 {
     class WidgetsCreator;
     class Widget;
-
+    class WidgetContext;
+    
     class WidgetContext final : public EngineObject, public EngineObjectOwner
     {
         JUMAENGINE_CLASS(WidgetContext, EngineObject)
@@ -47,6 +48,6 @@ namespace JumaEngine
 
 
         void onRootWidgetContextChanging(Widget* widget) { setRootWidget(nullptr); }
-        void onRootWidgetDestroying(Widget* widget) { setRootWidget(nullptr); }
+        void onRootWidgetDestroying(EngineObject* widget) { setRootWidget(nullptr); }
     };
 }
