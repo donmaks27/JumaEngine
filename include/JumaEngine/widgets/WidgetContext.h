@@ -28,8 +28,8 @@ namespace JumaEngine
         const RenderContext& getRenderContext() const { return m_RenderContext; }
         JumaRE::RenderTarget* getRenderTarget() const { return m_RenderContext.renderTarget; }
 
-        Widget* getRootWidget() const { return m_RootWidget; }
-        void setRootWidget(Widget* widget);
+        const EngineObjectPtr<Widget>& getRootWidget() const { return m_RootWidget; }
+        void setRootWidget(EngineObjectPtr<Widget> widget);
 
     protected:
         
@@ -44,7 +44,7 @@ namespace JumaEngine
         WidgetsCreator* m_ParentWidgetsCreator = nullptr;
         RenderContext m_RenderContext;
 
-        Widget* m_RootWidget = nullptr;
+        EngineObjectPtr<Widget> m_RootWidget = nullptr;
 
 
         void onRootWidgetContextChanging(Widget* widget) { setRootWidget(nullptr); }

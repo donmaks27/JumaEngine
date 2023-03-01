@@ -38,7 +38,7 @@ namespace JumaEngine
 
         WidgetsCreator* getWidgetsCreator() const { return m_ParentWidgetsCreator; }
         EngineObjectWeakPtr<WidgetContext> getWidgetContext() const;
-        Widget* getParentWidget() const { return m_ParentWidget; }
+        EngineObjectWeakPtr<Widget> getParentWidget() const { return EngineObjectWeakPtr(m_ParentWidget); }
         virtual jarray<Widget*> getChildWidgets() const { return {}; }
         
         const math::box2& getWidgetBounds() const { return m_WidgetBounds; }
@@ -48,10 +48,14 @@ namespace JumaEngine
         math::vector2 getWidgetRenderSize() const { return m_WidgetRenderSize; }
         virtual math::vector2 getWidgetRenderLocation() const;
 
+        void destroyWidget(bool destroyChildWidgets);
+
     protected:
 
         math::vector2 m_WidgetRenderSize = { 0.0f, 0.0f };
 
+
+        virtual void onClear() override;
 
         WidgetContext* getWidgetContextPtr() const { return m_WidgetContext; }
         
@@ -69,9 +73,9 @@ namespace JumaEngine
 
 
         void setWidgetContext(WidgetContext* widgetContext);
-        void onParentWidgetContextChanged(Widget* parentWidget);
 
         void setParentWidget(Widget* widget);
+        void onParentWidgetContextChanged(Widget* parentWidget) { setWidgetContext(m_ParentWidget->getWidgetContextPtr()); }
         void onParentWidgetDestroying(EngineObject* widget) { setParentWidget(nullptr); }
 
         void setWidgetBounds(const math::box2& bounds, WidgetAlignmentH alignmentH, WidgetAlignmentV alignmentV);

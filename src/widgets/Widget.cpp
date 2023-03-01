@@ -2,10 +2,20 @@
 
 #include "JumaEngine/widgets/Widget.h"
 
+#include "JumaEngine/engine/Engine.h"
 #include "JumaEngine/widgets/WidgetContext.h"
 
 namespace JumaEngine
 {
+    void Widget::onClear()
+    {
+        setParentWidget(nullptr);
+        setWidgetContext(nullptr);
+        m_ParentWidgetsCreator = nullptr;
+
+        Super::onClear();
+    }
+
     void Widget::setWidgetContext(WidgetContext* widgetContext)
     {
         if (m_WidgetContext != widgetContext)
@@ -13,10 +23,6 @@ namespace JumaEngine
             m_WidgetContext = widgetContext;
             onWidgetContextChanged.call(this);
         }
-    }
-    void Widget::onParentWidgetContextChanged(Widget* parentWidget)
-    {
-        setWidgetContext(m_ParentWidget->getWidgetContextPtr());
     }
 
     EngineObjectWeakPtr<WidgetContext> Widget::getWidgetContext() const
@@ -89,4 +95,16 @@ namespace JumaEngine
         }
         return location;
 	}
+
+    void Widget::destroyWidget(const bool destroyChildWidgets)
+    {
+        if (destroyChildWidgets)
+        {
+            for (const auto& widget : getChildWidgets())
+            {
+                widget->destroyWidget(true);
+            }
+        }
+        destroy();
+    }
 }

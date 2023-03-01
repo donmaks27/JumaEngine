@@ -49,15 +49,12 @@ namespace JumaEngine
         for (const auto& widgetContext : m_WidgetContexts)
         {
             widgetContext.value->onDestroying.unbind(this, &WidgetsCreator::onWidgetContextDestroying);
-            ClearEngineObject(widgetContext.value);
+            widgetContext.value->destroy();
         }
         for (const auto& widget : m_Widgets)
         {
-            ClearEngineObject(widget);
-        }
-        for (const auto& widget : m_Widgets)
-        {
-            delete widget;
+            widget->onDestroying.unbind(this, &WidgetsCreator::onWidgetDestroying);
+            widget->destroy();
         }
         m_Widgets.clear();
         m_WidgetContexts.clear();
@@ -111,7 +108,7 @@ namespace JumaEngine
         m_WidgetContexts.remove(widgetContext->getRenderContext());
     }
 
-    Widget* WidgetsCreator::createWidget(const EngineSubclass<Widget>& widgetClass)
+    EngineObjectPtr<Widget> WidgetsCreator::createWidget(const EngineSubclass<Widget>& widgetClass)
     {
         if (!isInitialized())
         {
@@ -119,38 +116,22 @@ namespace JumaEngine
             return nullptr;
         }
 
-        Widget* widget = getEngine()->createObject1<Widget>(widgetClass);
+        EngineObjectPtr<Widget> widget = getEngine()->createObject(widgetClass);
         if (widget == nullptr)
         {
             return nullptr;
         }
 
-        m_Widgets.add(widget);
+        m_Widgets.add(widget.get());
         widget->m_ParentWidgetsCreator = this;
-        InitializeEngineObject(widget);
+        widget->onDestroying.bind(this, &WidgetsCreator::onWidgetDestroying);
+
+        InitializeEngineObject(widget.get());
         return widget;
     }
-    bool WidgetsCreator::destroyWidget(Widget* widget, const bool destroyChildWidgets)
+    void WidgetsCreator::onWidgetDestroying(EngineObject* widget)
     {
-        if ((widget == nullptr) || (widget->getWidgetsCreator() != this))
-        {
-	        return false;
-        }
-
-        jarray<Widget*> widgetsToDestroy = { widget };
-        while (!widgetsToDestroy.isEmpty())
-        {
-	        Widget* lastWidget = widgetsToDestroy.getLast();
-            widgetsToDestroy.removeLast();
-            if (lastWidget != nullptr)
-            {
-	            widgetsToDestroy.append(lastWidget->getChildWidgets());
-
-                ClearEngineObject(lastWidget);
-	            m_Widgets.remove(lastWidget);
-	            delete lastWidget;
-            }
-        }
-        return true;
+        widget->onDestroying.unbind(this, &WidgetsCreator::onWidgetDestroying);
+        m_Widgets.remove(dynamic_cast<Widget*>(widget));
     }
 }

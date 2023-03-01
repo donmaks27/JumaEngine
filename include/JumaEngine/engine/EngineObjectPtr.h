@@ -88,13 +88,37 @@ namespace JumaEngine
 		constexpr bool isValid() const { return m_CachedObject != nullptr; }
 
 		constexpr T* get() const { return m_CachedObject; }
+		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1>)>
+		EngineObjectPtr<T1> cast() const
+		{
+		    EngineContextObject* objectBase = m_ObjectPointer.get();
+
+			T1* object = dynamic_cast<T1*>(objectBase);
+			if (object == nullptr)
+			{
+			    m_CachedObject = dynamic_cast<T*>(objectBase);
+				return nullptr;
+			}
+			m_CachedObject = object;
+
+			EngineObjectPtr<T1> pointer;
+			pointer.m_ObjectPointer = m_ObjectPointer;
+			pointer.m_CachedObject = object;
+			return pointer;
+		}
+
 		T* operator->() const { return get(); }
 		T& operator*() const { return *get(); }
 
 		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1> || is_base<T1, T>)>
-		constexpr bool operator==(const EngineObjectPtr<T1>& ptr) const { return m_CachedObject == ptr.m_CachedObject; }
+		constexpr bool operator==(const EngineObjectPtr<T1>& ptr) const { return m_ObjectPointer == ptr.m_ObjectPointer; }
 		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1> || is_base<T1, T>)>
-		constexpr bool operator!=(const EngineObjectPtr<T1>& ptr) const { return m_CachedObject != ptr.m_CachedObject; }
+		constexpr bool operator!=(const EngineObjectPtr<T1>& ptr) const { return m_ObjectPointer != ptr.m_ObjectPointer; }
+		
+		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1> || is_base<T1, T>)>
+		constexpr bool operator==(const EngineObjectWeakPtr<T1>& ptr) const;
+		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1> || is_base<T1, T>)>
+		constexpr bool operator!=(const EngineObjectWeakPtr<T1>& ptr) const { return !this->operator==(ptr); }
 		
 		constexpr bool operator==(nullptr_t) const { return !isValid(); }
 		constexpr bool operator!=(nullptr_t) const { return isValid(); }
@@ -177,4 +201,11 @@ namespace JumaEngine
 
 		PointerType m_ObjectWeakPointer = nullptr;
 	};
+
+	template<typename T>
+    template<typename T1, TEMPLATE_ENABLE_IMPL(is_base<T, T1> || is_base<T1, T>)>
+    constexpr bool EngineObjectPtr<T>::operator==(const EngineObjectWeakPtr<T1>& ptr) const
+    {
+		return ptr == *this;
+    }
 }

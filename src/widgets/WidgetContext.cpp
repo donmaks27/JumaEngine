@@ -12,7 +12,7 @@ namespace JumaEngine
 
         if (m_RootWidget != nullptr)
         {
-            ActivateEngineObject(m_RootWidget);
+            ActivateEngineObject(m_RootWidget.get());
         }
     }
     void WidgetContext::onUpdate(const float deltaTime)
@@ -21,7 +21,7 @@ namespace JumaEngine
 
         if (m_RootWidget != nullptr)
         {
-            UpdateEngineObject(m_RootWidget, deltaTime);
+            UpdateEngineObject(m_RootWidget.get(), deltaTime);
         }
     }
     void WidgetContext::onPreRender()
@@ -33,32 +33,28 @@ namespace JumaEngine
             m_RootWidget->setWidgetBounds({ { 0.0f, 0.0f }, { 1.0f, 1.0f } }, WidgetAlignmentH::Fill, WidgetAlignmentV::Fill);
             m_RootWidget->recalculateWidetSize();
 
-            PreRenderEngineObject(m_RootWidget);
+            PreRenderEngineObject(m_RootWidget.get());
         }
     }
     void WidgetContext::onDeactivate()
     {
         if (m_RootWidget != nullptr)
         {
-            DeactivateEngineObject(m_RootWidget);
+            DeactivateEngineObject(m_RootWidget.get());
         }
 
         Super::onDeactivate();
     }
     void WidgetContext::onClear()
     {
-        if (m_RootWidget != nullptr)
-        {
-            m_RootWidget->setWidgetContext(nullptr);
-        }
-        m_RootWidget = nullptr;
+        setRootWidget(nullptr);
         m_RenderContext = RenderContext();
         m_ParentWidgetsCreator = nullptr;
 
         Super::onClear();
     }
 
-    void WidgetContext::setRootWidget(Widget* widget)
+    void WidgetContext::setRootWidget(EngineObjectPtr<Widget> widget)
     {
         if (m_RootWidget == widget)
         {
@@ -75,10 +71,10 @@ namespace JumaEngine
             m_RootWidget->onWidgetContextChanged.unbind(this, &WidgetContext::onRootWidgetContextChanging);
             m_RootWidget->onDestroying.unbind(this, &WidgetContext::onRootWidgetDestroying);
 
-            DeactivateEngineObject(m_RootWidget);
+            DeactivateEngineObject(m_RootWidget.get());
             m_RootWidget->setWidgetContext(nullptr);
         }
-        m_RootWidget = widget;
+        m_RootWidget = std::move(widget);
         if (m_RootWidget != nullptr)
         {
             m_RootWidget->setParentWidget(nullptr);
@@ -88,7 +84,7 @@ namespace JumaEngine
             {
                 m_RootWidget->onWidgetContextChanged.bind(this, &WidgetContext::onRootWidgetContextChanging);
                 m_RootWidget->onDestroying.bind(this, &WidgetContext::onRootWidgetDestroying);
-                ActivateEngineObject(m_RootWidget);
+                ActivateEngineObject(m_RootWidget.get());
             }
         }
     }

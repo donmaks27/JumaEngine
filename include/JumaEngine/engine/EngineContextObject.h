@@ -56,6 +56,8 @@ namespace JumaEngine
         template<typename T, TEMPLATE_ENABLE(is_base<Engine, T>)>
         T* getEngine() const { return dynamic_cast<T*>(getEngine()); }
 
+        void destroy();
+
     protected:
 
         virtual void onObjectDescriptorDestroying() {}

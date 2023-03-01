@@ -42,9 +42,9 @@ namespace JumaEngine
 	        return false;
         }
         
-        getEngine()->destroyObject(renderTarget->widgetContext);
+        renderTarget->widgetContext->getRootWidget()->destroyWidget(true);
+        renderTarget->widgetContext->destroy();
         renderTarget->widgetContext = nullptr;
-        // TODO: Destroy widgets
         getEngine()->getRenderEngine()->destroyRenderTarget(renderTarget->proxyRenderTarget);
         return true;
 	}
@@ -60,7 +60,7 @@ namespace JumaEngine
         renderEngine->getRenderPipeline()->addRenderTargetDependecy(windowData->windowRenderTargetID, renderTarget->getID());
         renderTarget->setupRenderStages({ { false } });
 
-        ImageWidget* imageWidget = widgetsCreator->createWidget<ImageWidget>();
+        EngineObjectPtr<ImageWidget> imageWidget = widgetsCreator->createWidget<ImageWidget>();
         imageWidget->setUsingSolidColor(false);
         imageWidget->setTexture(renderTarget);
         if (renderEngine->getRenderAPI() == JumaRE::RenderAPI::OpenGL)
@@ -68,9 +68,9 @@ namespace JumaEngine
             imageWidget->setTextureScale({ 1.0f, -1.0f });
         }
 
-        CursorWidget* cursorWidget = widgetsCreator->createWidget<CursorWidget>();
+        EngineObjectPtr<CursorWidget> cursorWidget = widgetsCreator->createWidget<CursorWidget>();
 
-        OverlayWidget* overlayWidget = widgetsCreator->createWidget<OverlayWidget>();
+        EngineObjectPtr<OverlayWidget> overlayWidget = widgetsCreator->createWidget<OverlayWidget>();
         overlayWidget->addWidget(imageWidget);
         overlayWidget->addWidget(cursorWidget);
 

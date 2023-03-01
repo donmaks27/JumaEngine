@@ -24,10 +24,9 @@ namespace JumaEngine
 
         EngineObjectPtr<WidgetContext> createWidgetContext(const RenderContext& renderContext);
 
-        Widget* createWidget(const EngineSubclass<Widget>& widgetClass);
+        EngineObjectPtr<Widget> createWidget(const EngineSubclass<Widget>& widgetClass);
         template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<Widget, T>)>
-        T* createWidget() { return dynamic_cast<T*>(this->createWidget(T::GetClassStatic())); }
-        bool destroyWidget(Widget* widget, bool destroyChildWidgets = false);
+        EngineObjectPtr<T> createWidget() { return this->createWidget(T::GetClassStatic()).template cast<T>(); }
         
     protected:
         
@@ -44,5 +43,6 @@ namespace JumaEngine
 
 
         void onWidgetContextDestroying(EngineObject* object);
+        void onWidgetDestroying(EngineObject* widget);
     };
 }

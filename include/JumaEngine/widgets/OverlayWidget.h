@@ -18,20 +18,27 @@ namespace JumaEngine
         OverlayWidget() = default;
         virtual ~OverlayWidget() override = default;
 
-        virtual jarray<Widget*> getChildWidgets() const override { return m_Widgets; }
+        virtual jarray<Widget*> getChildWidgets() const override;
 
-        void addWidget(Widget* widget);
+        void addWidget(EngineObjectPtr<Widget> widget);
+        void clearChildWidgets();
 
     protected:
 
         virtual void onActivated() override;
         virtual void onUpdate(float deltaTime) override;
         virtual void onPreRender() override;
+        virtual void onDeactivate() override;
+        virtual void onClear() override;
 
         virtual void recalculateWidetSize() override;
 
     private:
 
-        jarray<Widget*> m_Widgets;
+        jarray<EngineObjectPtr<Widget>> m_Widgets;
+
+
+        void onChildWidgetDestroying(EngineObject* object) { detachChildWidget(dynamic_cast<Widget*>(object)); }
+        void detachChildWidget(Widget* widget);
     };
 }

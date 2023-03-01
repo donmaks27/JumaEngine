@@ -90,6 +90,7 @@ namespace JumaEngine
     void ImageWidget::onClear()
     {
         m_WidgetMaterial = nullptr;
+        m_MaterialTexture = nullptr;
 
         Super::onClear();
     }
