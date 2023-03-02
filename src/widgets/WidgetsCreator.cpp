@@ -70,7 +70,8 @@ namespace JumaEngine
             return nullptr;
         }
 
-        if ((renderContext.renderTarget == nullptr) || !renderContext.renderTarget->isRenderStageIndexValid(renderContext.renderStageIndex))
+        const EngineObjectPtr<RenderTarget>& renderTarget = renderContext.getRenderTarget();
+        if ((renderTarget.updatePtr() == nullptr) || !renderTarget->getRenderTarget()->isRenderStageIndexValid(renderContext.renderStageIndex))
         {
             JUTILS_LOG(warning, JSTR("Invalid render context"));
             return nullptr;

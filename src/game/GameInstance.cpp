@@ -7,9 +7,9 @@
 
 namespace JumaEngine
 {
-    bool GameInstance::setupRenderTarget(JumaRE::RenderTarget* renderTarget)
+    bool GameInstance::setupRenderTarget(EngineObjectPtr<RenderTarget> renderTarget)
     {
-        m_GameRenderTarget = renderTarget;
+        m_GameRenderTarget = std::move(renderTarget);
         return true;
     }
 

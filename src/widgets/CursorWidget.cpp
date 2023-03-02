@@ -17,7 +17,7 @@ namespace JumaEngine
         if (shader != nullptr)
         {
 	        m_Material = assetsSubsystem->createMaterial(shader);
-            m_Material->setParamValue<ShaderUniformType::Vec4>(JSTR("uColor"), { 1.0f, 0.0f, 1.0f, 1.0f });
+            m_Material->setParamValue<MaterialParamType::Vec4>(JSTR("uColor"), { 1.0f, 0.0f, 1.0f, 1.0f });
         }
     }
 
@@ -79,15 +79,15 @@ namespace JumaEngine
     void CursorWidget::recalculateWidetSize()
     {
         const WidgetContext* widgetContext = getWidgetContextPtr();
-        const JumaRE::RenderTarget* renderTarget = widgetContext != nullptr ? widgetContext->getRenderTarget() : nullptr;
-        if (renderTarget == nullptr)
+        const EngineObjectPtr<RenderTarget>& renderTarget = widgetContext != nullptr ? widgetContext->getRenderTarget() : nullptr;
+        if (renderTarget.updatePtr() == nullptr)
         {
 	        m_WidgetRenderSize = { 0.0f, 0.0f };
         }
         else
         {
 	        const math::box2 bounds = getWidgetBounds();
-            m_WidgetRenderSize = math::vector2(m_CursorSizePixels) / renderTarget->getSize() * (bounds.v1 - bounds.v0);
+            m_WidgetRenderSize = math::vector2(m_CursorSizePixels) / renderTarget->getRenderTarget()->getSize() * (bounds.v1 - bounds.v0);
         }
     }
     math::vector2 CursorWidget::getWidgetRenderLocation() const
@@ -104,9 +104,9 @@ namespace JumaEngine
 
         if (m_Material != nullptr)
         {
-            m_Material->setParamValue<ShaderUniformType::Vec2>(locationParamName, getWidgetRenderLocation());
-            m_Material->setParamValue<ShaderUniformType::Vec2>(sizeParamName, getWidgetRenderSize());
-            m_Material->setParamValue<ShaderUniformType::Float>(depthParamName, m_Depth);
+            m_Material->setParamValue<MaterialParamType::Vec2>(locationParamName, getWidgetRenderLocation());
+            m_Material->setParamValue<MaterialParamType::Vec2>(sizeParamName, getWidgetRenderSize());
+            m_Material->setParamValue<MaterialParamType::Float>(depthParamName, m_Depth);
         }
     }
 }

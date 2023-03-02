@@ -26,7 +26,7 @@ namespace JumaEngine
 
         WidgetsCreator* getWidgetsCreator() const { return m_ParentWidgetsCreator; }
         const RenderContext& getRenderContext() const { return m_RenderContext; }
-        JumaRE::RenderTarget* getRenderTarget() const { return m_RenderContext.renderTarget; }
+        const EngineObjectPtr<RenderTarget>& getRenderTarget() const { return m_RenderContext.getRenderTarget(); }
 
         const EngineObjectPtr<Widget>& getRootWidget() const { return m_RootWidget; }
         void setRootWidget(EngineObjectPtr<Widget> widget);

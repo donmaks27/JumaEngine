@@ -94,6 +94,7 @@ namespace JumaEngine
 
         AssetsEngineSubsystem* assetsSubsystem = engine->getSubsystem<AssetsEngineSubsystem>();
         const JumaRE::MaterialParamsStorage& internalParams = assetsSubsystem->getGlobalParams();
+        const JumaRE::MaterialParamsStorage& baseMaterialParams = baseMaterialObject->getMaterialParams();
         const jmap<jstringID, jstringID>& shaderInternalParamNames = getBaseShader()->getEngineInternalParamNames();
         for (const auto& uniform : shaderObject->getUniforms())
         {
@@ -104,7 +105,7 @@ namespace JumaEngine
             }
             else
             {
-                CopyMaterialParam(uniform.value.type, uniform.key, materialObject, baseMaterialObject->getMaterialParams());
+                CopyMaterialParam(uniform.value.type, uniform.key, materialObject, baseMaterialParams);
             }
         }
 
@@ -148,11 +149,14 @@ namespace JumaEngine
 
     void Material::onBaseMaterialParamChanged(const jstringID& paramName)
     {
-        const JumaRE::ShaderUniform* uniform = getShader()->getUniforms().find(paramName);
-        if (uniform != nullptr)
+        if (!m_OverridedParams.contains(paramName))
         {
-            CopyMaterialParam(uniform->type, paramName, m_Material, m_BaseMaterial->getMaterial()->getMaterialParams());
-            onParamChanged.call(paramName);
+            const JumaRE::ShaderUniform* uniform = getShader()->getUniforms().find(paramName);
+            if (uniform != nullptr)
+            {
+                CopyMaterialParam(uniform->type, paramName, m_Material, m_BaseMaterial->getMaterial()->getMaterialParams());
+                onParamChanged.call(paramName);
+            }
         }
     }
 
@@ -177,5 +181,35 @@ namespace JumaEngine
             }
             break;
         }
+    }
+    
+    template<>
+    bool Material::setParamValue<MaterialParamType::Texture>(const jstringID& name, const EngineObjectPtr<TextureBase>& value)
+    {
+        if (isGlobalMaterialParam(name))
+        {
+            return false;
+        }
+        JumaRE::TextureBase* textureBase = value.updatePtr() != nullptr ? value->getTextureBase() : nullptr;
+        if (!m_Material->setParamValue<JumaRE::ShaderUniformType::Texture>(name, textureBase))
+        {
+            return false;
+        }
+        m_OverridedParams.add(name);
+        m_ReferencedTextures.add(name, value);
+        onParamChanged.call(name);
+        return true;
+    }
+
+    bool Material::resetParamValue(const jstringID& name)
+    {
+        if (isGlobalMaterialParam(name) || !m_Material->resetParamValue(name))
+        {
+            return false;
+        }
+        m_OverridedParams.remove(name);
+        m_ReferencedTextures.remove(name);
+        onParamChanged.call(name);
+        return true;
     }
 }

@@ -11,6 +11,7 @@
 
 namespace JumaEngine
 {
+    class RenderTarget;
     class Widget;
     class WidgetsCreator;
 
@@ -35,7 +36,7 @@ namespace JumaEngine
         virtual void onDeactivate() override;
         virtual void onClear() override;
 
-        JumaRE::RenderTarget* getGameRenderTarget() const { return m_GameRenderTarget; }
+        const EngineObjectPtr<RenderTarget>& getGameRenderTarget() const { return m_GameRenderTarget; }
 
         virtual void onInputButton(JumaRE::InputDevice device, JumaRE::InputButton button, JumaRE::InputButtonAction action) {}
         virtual void onInputAxis(JumaRE::InputDevice device, JumaRE::InputAxis axis, float value) {}
@@ -43,11 +44,11 @@ namespace JumaEngine
 
     private:
 
-        JumaRE::RenderTarget* m_GameRenderTarget = nullptr;
+        EngineObjectPtr<RenderTarget> m_GameRenderTarget = nullptr;
 
         EngineObjectPtr<WidgetsCreator> m_GameWidgetsCreator = nullptr;
 
 
-        bool setupRenderTarget(JumaRE::RenderTarget* renderTarget);
+        bool setupRenderTarget(EngineObjectPtr<RenderTarget> renderTarget);
     };
 }

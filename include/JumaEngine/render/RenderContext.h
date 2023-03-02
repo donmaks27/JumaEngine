@@ -4,19 +4,19 @@
 
 #include "../core.h"
 
-#include <JumaRE/RenderTarget.h>
+#include "RenderTarget.h"
 
 namespace JumaEngine
 {
 	struct RenderContext
 	{
-		JumaRE::RenderTarget* renderTarget = nullptr;
+		EngineObjectPtr<RenderTarget> renderTarget = nullptr;
 		int32 renderStageIndex = 0;
 
-		JumaRE::RenderTarget* getRenderTarget() const { return renderTarget; }
+		const EngineObjectPtr<RenderTarget>& getRenderTarget() const { return renderTarget; }
 		bool addPrimitiveToRenderList(const JumaRE::RenderPrimitive& primitive) const
 		{
-			return (renderTarget != nullptr) && renderTarget->addPrimitiveToRenderStage(renderStageIndex, primitive);
+			return (renderTarget != nullptr) && renderTarget->getRenderTarget()->addPrimitiveToRenderStage(renderStageIndex, primitive);
 		}
 
 		constexpr bool operator<(const RenderContext& context) const

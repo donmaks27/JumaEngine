@@ -10,7 +10,8 @@
 
 namespace JumaEngine
 {
-	class WidgetContext;
+    class RenderTarget;
+    class WidgetContext;
 
 	class RenderEngineSubsystem final : public EngineSubsystem
 	{
@@ -22,23 +23,30 @@ namespace JumaEngine
 		RenderEngineSubsystem() = default;
 		virtual ~RenderEngineSubsystem() override = default;
 
-		JumaRE::RenderTarget* getWindowRenderTarget(JumaRE::window_id windowID) const;
+		EngineObjectPtr<RenderTarget> createRenderTarget(JumaRE::RenderTarget* renderTarget);
+		EngineObjectPtr<RenderTarget> getWindowRenderTarget(JumaRE::window_id windowID) const;
+
+	protected:
+
+		virtual void clearSubsystem() override;
 		
 	private:
 
 		struct WindowProxyRenderTarget
         {
-	        JumaRE::RenderTarget* proxyRenderTarget = nullptr;
+			EngineObjectPtr<RenderTarget> renderTarget = nullptr;
+	        EngineObjectPtr<RenderTarget> proxyRenderTarget = nullptr;
             EngineObjectPtr<WidgetContext> widgetContext = nullptr;
         };
 
+		jarray<EngineObjectWeakPtr<RenderTarget>> m_RenderTargets;
 		jmap<JumaRE::window_id, WindowProxyRenderTarget> m_WindowProxyRenderTargets;
 
 
 		void createProxyWindowRenderTargets();
-		void destroyProxyWindowRenderTargets();
-		bool destroyProxyWindowRenderTarget(JumaRE::window_id windowID);
 		void onWindowCreated(JumaRE::WindowController* windowController, const JumaRE::WindowData* windowData);
         void onWindowDestroying(JumaRE::WindowController* windowController, const JumaRE::WindowData* windowData);
+		void destroyProxyWindowRenderTargets();
+		bool destroyProxyWindowRenderTarget(JumaRE::window_id windowID);
 	};
 }

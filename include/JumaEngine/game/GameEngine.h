@@ -22,7 +22,7 @@ namespace JumaEngine
         
         virtual JumaRE::RenderAPI getDesiredRenderAPI() const override;
         virtual jstring getWindowsTitle() const override;
-        virtual JumaRE::RenderTarget* getGameInstanceRenderTarget() const override;
+        virtual EngineObjectPtr<RenderTarget> getGameInstanceRenderTarget() const override;
 
         virtual bool onEngineLoopStarting() override;
         virtual void onEngineLoopStarted() override;

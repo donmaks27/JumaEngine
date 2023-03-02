@@ -8,13 +8,13 @@
 #include <JumaRE/material/Material.h>
 #include <jutils/jdelegate_multicast.h>
 
+#include "MaterialParamType.h"
+
 namespace JumaEngine
 {
     class AssetsEngineSubsystem;
     class Material;
     class Shader;
-
-    using ShaderUniformType = JumaRE::ShaderUniformType;
 
     class Material final : public EngineContextObject
     {
@@ -32,27 +32,13 @@ namespace JumaEngine
         JumaRE::Material* getMaterial() const { return m_Material; }
         JumaRE::Shader* getShader() const { return m_Material != nullptr ? m_Material->getShader() : nullptr; }
 
-        template<ShaderUniformType Type>
-        bool setParamValue(const jstringID& name, const typename JumaRE::ShaderUniformInfo<Type>::value_type& value)
-        {
-            if (isGlobalMaterialParam(name) || !m_Material->setParamValue<Type>(name, value))
-            {
-                return false;
-            }
-            onParamChanged.call(name);
-            return true;
-        }
-        bool resetParamValue(const jstringID& name)
-        {
-            if (isGlobalMaterialParam(name) || !m_Material->resetParamValue(name))
-            {
-                return false;
-            }
-            onParamChanged.call(name);
-            return true;
-        }
-        template<ShaderUniformType Type>
-        bool getParamValue(const jstringID& name, typename JumaRE::ShaderUniformInfo<Type>::value_type& outValue) const { return m_Material->getParamValue(name, outValue); }
+        template<MaterialParamType Type>
+        bool setParamValue(const jstringID& name, const typename MaterialParamInfo<Type>::value_type& value);
+        template<>
+        bool setParamValue<MaterialParamType::Texture>(const jstringID& name, const EngineObjectPtr<TextureBase>& value);
+        bool resetParamValue(const jstringID& name);
+        template<MaterialParamType Type>
+        bool getParamValue(const jstringID& name, typename MaterialParamInfo<Type>::value_type& outValue) const;
 
     protected:
 
@@ -68,6 +54,8 @@ namespace JumaEngine
         EngineObjectPtr<Material> m_BaseMaterial = nullptr;
 
         JumaRE::Material* m_Material = nullptr;
+        jset<jstringID> m_OverridedParams;
+        jmap<jstringID, EngineObjectPtr<TextureBase>> m_ReferencedTextures;
 
 
         bool createMaterial(const EngineObjectPtr<Shader>& shader);
@@ -79,4 +67,22 @@ namespace JumaEngine
         bool isGlobalMaterialParam(const jstringID& name) const;
         void onGlobalParamChanged(AssetsEngineSubsystem* subsystem, const jstringID& internalParamName);
     };
+
+    template<MaterialParamType Type>
+    bool Material::setParamValue(const jstringID& name, const typename MaterialParamInfo<Type>::value_type& value)
+    {
+        if (isGlobalMaterialParam(name) || !m_Material->setParamValue<Type>(name, value))
+        {
+            return false;
+        }
+        m_OverridedParams.add(name);
+        onParamChanged.call(name);
+        return true;
+    }
+
+    template<MaterialParamType Type>
+    bool Material::getParamValue(const jstringID& name, typename MaterialParamInfo<Type>::value_type& outValue) const
+    {
+        return m_Material->getParamValue(name, outValue);
+    }
 }

@@ -185,14 +185,14 @@ namespace JumaEngine
     }
     bool Engine::onEngineLoopStarting()
     {
-        JumaRE::RenderTarget* gameInstanceRT = getGameInstanceRenderTarget();
+        EngineObjectPtr<RenderTarget> gameInstanceRT = getGameInstanceRenderTarget();
         if (gameInstanceRT == nullptr)
         {
             JUTILS_LOG(error, JSTR("Invalid game instance render target"));
             return false;
         }
         
-        m_GameInstance->setupRenderTarget(gameInstanceRT);
+        m_GameInstance->setupRenderTarget(std::move(gameInstanceRT));
         return true;
     }
     void Engine::onEngineLoopStarted()

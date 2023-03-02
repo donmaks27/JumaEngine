@@ -56,7 +56,7 @@ namespace JumaEngine
         return title;
     }
 
-    JumaRE::RenderTarget* GameEngine::getGameInstanceRenderTarget() const
+    EngineObjectPtr<RenderTarget> GameEngine::getGameInstanceRenderTarget() const
     {
         const JumaRE::RenderEngine* renderEngine = getRenderEngine();
         const JumaRE::WindowController* windowController = renderEngine != nullptr ? renderEngine->getWindowController() : nullptr;

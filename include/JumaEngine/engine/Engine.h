@@ -11,7 +11,8 @@
 
 namespace JumaEngine
 {
-	class WidgetContext;
+    class RenderTarget;
+    class WidgetContext;
 
 	class Engine : public EngineObjectOwner
     {
@@ -54,7 +55,7 @@ namespace JumaEngine
 
         virtual JumaRE::RenderAPI getDesiredRenderAPI() const { return JumaRE::RenderAPI::Vulkan; }
         virtual jstring getWindowsTitle() const { return JSTR("JumaEngine"); }
-        virtual JumaRE::RenderTarget* getGameInstanceRenderTarget() const { return nullptr; }
+        virtual EngineObjectPtr<RenderTarget> getGameInstanceRenderTarget() const { return nullptr; }
 
         virtual bool onEngineLoopStarting();
         virtual void onEngineLoopStarted();

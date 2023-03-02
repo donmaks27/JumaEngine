@@ -123,7 +123,12 @@ namespace JumaEngine
 		constexpr bool operator==(nullptr_t) const { return !isValid(); }
 		constexpr bool operator!=(nullptr_t) const { return isValid(); }
 
-	private:
+		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1> || is_base<T1, T>)>
+		constexpr bool operator<(const EngineObjectPtr<T1>& ptr) const { return m_ObjectPointer < ptr.m_ObjectPointer; }
+		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1> || is_base<T1, T>)>
+		constexpr bool operator<(const EngineObjectWeakPtr<T1>& ptr) const;
+
+    private:
 
 		mutable T* m_CachedObject = nullptr;
 		PointerType m_ObjectPointer = nullptr;
@@ -197,6 +202,11 @@ namespace JumaEngine
 		constexpr bool operator==(nullptr_t) const { return m_ObjectWeakPointer == nullptr; }
 		constexpr bool operator!=(nullptr_t) const { return m_ObjectWeakPointer != nullptr; }
 
+		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1> || is_base<T1, T>)>
+		constexpr bool operator<(const EngineObjectWeakPtr<T1>& ptr) const { return m_ObjectWeakPointer < ptr.m_ObjectWeakPointer; }
+		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1> || is_base<T1, T>)>
+		constexpr bool operator<(const EngineObjectPtr<T1>& ptr) const { return m_ObjectWeakPointer < ptr.m_ObjectPointer; }
+
 	private:
 
 		PointerType m_ObjectWeakPointer = nullptr;
@@ -208,4 +218,10 @@ namespace JumaEngine
     {
 		return ptr == *this;
     }
+    template<typename T>
+    template<typename T1, std::enable_if_t<(is_base<T, T1> || is_base<T1, T>)>*>
+    constexpr bool EngineObjectPtr<T>::operator<(const EngineObjectWeakPtr<T1>& ptr) const
+	{
+	    return m_ObjectPointer < ptr.m_ObjectWeakPointer;
+	}
 }
