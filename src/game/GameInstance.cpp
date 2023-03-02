@@ -7,15 +7,6 @@
 
 namespace JumaEngine
 {
-    bool GameInstance::init()
-    {
-        return true;
-    }
-    bool GameInstance::initRenderData()
-    {
-        return true;
-    }
-
     bool GameInstance::setupRenderTarget(JumaRE::RenderTarget* renderTarget)
     {
         m_GameRenderTarget = renderTarget;
@@ -25,50 +16,44 @@ namespace JumaEngine
     void GameInstance::onInitialized()
     {
         Super::onInitialized();
+
+        m_GameWidgetsCreator = getEngine()->createObject<WidgetsCreator>();
+        InitializeEngineObject(m_GameWidgetsCreator.get());
     }
 
     void GameInstance::onActivated()
     {
         Super::onActivated();
 
-        m_GameWidgetsCreator = getEngine()->createObject1<WidgetsCreator>();
-        InitializeEngineObject(m_GameWidgetsCreator);
-        ActivateEngineObject(m_GameWidgetsCreator);
+        ActivateEngineObject(m_GameWidgetsCreator.get());
     }
 
-    void GameInstance::onUpdate(float deltaTime)
+    void GameInstance::onUpdate(const float deltaTime)
     {
         Super::onUpdate(deltaTime);
 
-        UpdateEngineObject(m_GameWidgetsCreator, deltaTime);
+        UpdateEngineObject(m_GameWidgetsCreator.get(), deltaTime);
     }
 
     void GameInstance::onPreRender()
     {
         Super::onPreRender();
 
-        PreRenderEngineObject(m_GameWidgetsCreator);
+        PreRenderEngineObject(m_GameWidgetsCreator.get());
     }
 
     void GameInstance::onDeactivate()
     {
-        ClearEngineObject(m_GameWidgetsCreator);
-        delete m_GameWidgetsCreator;
-        m_GameWidgetsCreator = nullptr;
+        DeactivateEngineObject(m_GameWidgetsCreator.get());
 
         Super::onDeactivate();
     }
 
     void GameInstance::onClear()
     {
-        Super::onClear();
-    }
+        ClearEngineObject(m_GameWidgetsCreator.get());
+        m_GameWidgetsCreator = nullptr;
 
-    void GameInstance::clear()
-    {
-        clearRenderData();
-    }
-    void GameInstance::clearRenderData()
-    {
+        Super::onClear();
     }
 }

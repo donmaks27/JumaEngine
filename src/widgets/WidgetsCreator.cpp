@@ -54,7 +54,7 @@ namespace JumaEngine
         for (const auto& widget : m_Widgets)
         {
             widget->onDestroying.unbind(this, &WidgetsCreator::onWidgetDestroying);
-            widget->destroy();
+            widget->destroy(false);
         }
         m_Widgets.clear();
         m_WidgetContexts.clear();
@@ -128,6 +128,10 @@ namespace JumaEngine
 
         InitializeEngineObject(widget.get());
         return widget;
+    }
+    void WidgetsCreator::destroyWidget(Widget* widget)
+    {
+        ClearEngineObject(widget);
     }
     void WidgetsCreator::onWidgetDestroying(EngineObject* widget)
     {

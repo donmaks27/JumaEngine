@@ -37,9 +37,8 @@ namespace JumaEngine
 
 
         WidgetsCreator* getWidgetsCreator() const { return m_ParentWidgetsCreator; }
-        EngineObjectWeakPtr<WidgetContext> getWidgetContext() const;
-        EngineObjectWeakPtr<Widget> getParentWidget() const { return EngineObjectWeakPtr(m_ParentWidget); }
-        virtual jarray<Widget*> getChildWidgets() const { return {}; }
+        EngineObjectPtr<WidgetContext> getWidgetContext() const;
+        EngineObjectPtr<Widget> getParentWidget() const { return EngineObjectPtr(m_ParentWidget); }
         
         const math::box2& getWidgetBounds() const { return m_WidgetBounds; }
         WidgetAlignmentH getWidgetAlignmentH() const { return m_WidgetAlignmentH; }
@@ -48,7 +47,7 @@ namespace JumaEngine
         math::vector2 getWidgetRenderSize() const { return m_WidgetRenderSize; }
         virtual math::vector2 getWidgetRenderLocation() const;
 
-        void destroyWidget(bool destroyChildWidgets);
+        void destroy(bool destroyChildWidgets);
 
     protected:
 
@@ -58,6 +57,7 @@ namespace JumaEngine
         virtual void onClear() override;
 
         WidgetContext* getWidgetContextPtr() const { return m_WidgetContext; }
+        virtual jarray<Widget*> getChildWidgetPtrs() const { return {}; }
         
         virtual void recalculateWidetSize() { m_WidgetRenderSize = { 0.0f, 0.0f }; }
         

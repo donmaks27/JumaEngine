@@ -18,8 +18,6 @@ namespace JumaEngine
         OverlayWidget() = default;
         virtual ~OverlayWidget() override = default;
 
-        virtual jarray<Widget*> getChildWidgets() const override;
-
         void addWidget(EngineObjectPtr<Widget> widget);
         void clearChildWidgets();
 
@@ -30,6 +28,8 @@ namespace JumaEngine
         virtual void onPreRender() override;
         virtual void onDeactivate() override;
         virtual void onClear() override;
+        
+        virtual jarray<Widget*> getChildWidgetPtrs() const override;
 
         virtual void recalculateWidetSize() override;
 

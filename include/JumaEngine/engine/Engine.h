@@ -15,6 +15,8 @@ namespace JumaEngine
 
 	class Engine : public EngineObjectOwner
     {
+        friend EngineObject;
+
     protected:
         Engine() = default;
     public:
@@ -25,22 +27,12 @@ namespace JumaEngine
         EngineObjectPtr<T> createObject(const EngineSubclass<T>& objectClass) { return this->createObjectDescriptor(objectClass.get()); }
         template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<EngineContextObject, T>)>
         EngineObjectPtr<T> createObject() { return this->createObject<T>(T::GetClassStatic()); }
-        template<typename T>
-        void destroyObject(const EngineObjectPtr<T>& object) { this->destroyObject(object.updatePtr()); }
-        template<typename T>
-        void destroyObject(const EngineObjectWeakPtr<T>& object) { this->destroyObject(object.get()); }
         
-        EngineContextObject* createObject1(const EngineClass* engineClass);
-        template<typename T>
-        T* createObject1(const EngineSubclass<T>& objectClass) { return dynamic_cast<T*>(this->createObject1(objectClass.get())); }
-        template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<EngineContextObject, T>)>
-        T* createObject1() { return this->createObject1<T>(T::GetClassStatic()); }
-
         template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<GameInstance, T>)>
         bool init() { return this->init(T::GetClassStatic()); }
         void start();
 
-        GameInstance* getGameInstance() const { return m_GameInstance; }
+        GameInstance* getGameInstance() const { return m_GameInstance.get(); }
         template<typename T, TEMPLATE_ENABLE(is_base<GameInstance, T>)>
         T* getGameInstance() const { return dynamic_cast<T*>(this->getGameInstance()); }
 
@@ -50,7 +42,7 @@ namespace JumaEngine
         T* createSubsystem() { return dynamic_cast<T*>(this->createSubsystem(T::GetClassStatic())); }
         template<typename T, TEMPLATE_ENABLE(is_base<EngineSubsystem, T>)>
         T* getSubsystem() const { return dynamic_cast<T*>(this->getSubsystem(T::GetClassStatic())); }
-        WidgetsCreator* getWidgetsCreator() const { return m_EngineWidgetCreator; }
+        WidgetsCreator* getWidgetsCreator() const { return m_EngineWidgetCreator.get(); }
 
         const jstring& getEngineContentDirectory() const { return m_EngineContentDirectory; }
         const jstring& getGameContentDirectory() const { return m_GameContentDirectory; }
@@ -58,7 +50,6 @@ namespace JumaEngine
     protected:
         
         virtual bool initEngine();
-        virtual bool initGameInstance();
         virtual bool initRenderEngine();
 
         virtual JumaRE::RenderAPI getDesiredRenderAPI() const { return JumaRE::RenderAPI::Vulkan; }
@@ -82,20 +73,19 @@ namespace JumaEngine
         jdescriptor_table<EngineContextObject> m_EngineObjectDescriptors;
         jarray<jdescriptor_table<EngineContextObject>::weak_pointer> m_DestroyingEngineObjects;
 
-        GameInstance* m_GameInstance = nullptr;
+        EngineObjectPtr<GameInstance> m_GameInstance = nullptr;
         JumaRE::RenderEngine* m_RenderEngine = nullptr;
 
-        jmap<EngineSubclass<EngineSubsystem>, EngineSubsystem*> m_EngineSubsystems;
-        WidgetsCreator* m_EngineWidgetCreator = nullptr;
+        jmap<EngineSubclass<EngineSubsystem>, EngineObjectPtr<EngineSubsystem>> m_EngineSubsystems;
+        EngineObjectPtr<WidgetsCreator> m_EngineWidgetCreator = nullptr;
         
         jstring m_EngineContentDirectory = JSTR("./content_engine/");
         jstring m_GameContentDirectory = JSTR("./content/");
 
 
         jdescriptor_table<EngineContextObject>::pointer createObjectDescriptor(const EngineClass* objectClass);
-        void destroyObject(EngineContextObject* object);
-        void onEngineObjectDestroying(EngineContextObject* object);
-		EngineContextObject* registerObjectInternal1(EngineContextObject* object);
+        void onEngineObjectDestroying(EngineObject* object);
+        void onEngineObjectDescriptorDestroying(EngineContextObject* object);
 
         bool init(const EngineSubclass<GameInstance>& gameInstanceClass);
 

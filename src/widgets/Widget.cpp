@@ -4,6 +4,7 @@
 
 #include "JumaEngine/engine/Engine.h"
 #include "JumaEngine/widgets/WidgetContext.h"
+#include "JumaEngine/widgets/WidgetsCreator.h"
 
 namespace JumaEngine
 {
@@ -25,9 +26,9 @@ namespace JumaEngine
         }
     }
 
-    EngineObjectWeakPtr<WidgetContext> Widget::getWidgetContext() const
+    EngineObjectPtr<WidgetContext> Widget::getWidgetContext() const
     {
-        return EngineObjectWeakPtr(getWidgetContextPtr());
+        return EngineObjectPtr(getWidgetContextPtr());
     }
 
     void Widget::setParentWidget(Widget* widget)
@@ -96,15 +97,15 @@ namespace JumaEngine
         return location;
 	}
 
-    void Widget::destroyWidget(const bool destroyChildWidgets)
+    void Widget::destroy(const bool destroyChildWidgets)
     {
         if (destroyChildWidgets)
         {
-            for (const auto& widget : getChildWidgets())
+            for (const auto& widget : getChildWidgetPtrs())
             {
-                widget->destroyWidget(true);
+                widget->destroy(true);
             }
         }
-        destroy();
+        getWidgetsCreator()->destroyWidget(this);
     }
 }

@@ -18,6 +18,8 @@ namespace JumaEngine
     {
         JUMAENGINE_CLASS(WidgetsCreator, EngineObject)
 
+        friend Widget;
+            
     public:
         WidgetsCreator() = default;
         virtual ~WidgetsCreator() override = default;
@@ -43,6 +45,8 @@ namespace JumaEngine
 
 
         void onWidgetContextDestroying(EngineObject* object);
+
+        void destroyWidget(Widget* widget);
         void onWidgetDestroying(EngineObject* widget);
     };
 }

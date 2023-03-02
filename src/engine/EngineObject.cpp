@@ -2,6 +2,8 @@
 
 #include "JumaEngine/engine/EngineObject.h"
 
+#include "JumaEngine/engine/Engine.h"
+
 namespace JumaEngine
 {
     void EngineObject::initializeEngineObject()
@@ -46,17 +48,28 @@ namespace JumaEngine
         }
     }
 
-    void EngineObject::clearEngineObject()
+    void EngineObject::clearEngineObject(const bool notifyEngine)
     {
         if (!isDestroyed())
         {
-            deactivateEngineObject();
+            if (notifyEngine)
+            {
+                getEngine()->onEngineObjectDestroying(this);
+            }
             if (isInitialized())
             {
+                deactivateEngineObject();
+
                 onDestroying.call(this);
                 onClear();
                 m_ObjectDestroyed = true;
             }
         }
+    }
+
+    void EngineObject::onObjectDescriptorDestroying()
+    {
+        clearEngineObject(false);
+        Super::onObjectDescriptorDestroying();
     }
 }

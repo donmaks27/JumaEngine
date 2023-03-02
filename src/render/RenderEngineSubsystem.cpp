@@ -42,7 +42,7 @@ namespace JumaEngine
 	        return false;
         }
         
-        renderTarget->widgetContext->getRootWidget()->destroyWidget(true);
+        renderTarget->widgetContext->getRootWidget()->destroy(true);
         renderTarget->widgetContext->destroy();
         renderTarget->widgetContext = nullptr;
         getEngine()->getRenderEngine()->destroyRenderTarget(renderTarget->proxyRenderTarget);

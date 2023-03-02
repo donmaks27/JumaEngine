@@ -3,6 +3,7 @@
 #include "JumaEngine/widgets/WidgetContext.h"
 
 #include "JumaEngine/widgets/Widget.h"
+#include "JumaEngine/widgets/WidgetsCreator.h"
 
 namespace JumaEngine
 {
@@ -87,5 +88,10 @@ namespace JumaEngine
                 ActivateEngineObject(m_RootWidget.get());
             }
         }
+    }
+
+    void WidgetContext::destroy()
+    {
+        ClearEngineObject(this);
     }
 }

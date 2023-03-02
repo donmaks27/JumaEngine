@@ -38,7 +38,7 @@ namespace JumaEngine
         virtual void onDeactivate() {}
         virtual void onClear() {}
 
-        virtual void onObjectDescriptorDestroying() override { clearEngineObject(); }
+        virtual void onObjectDescriptorDestroying() override;
 
     private:
 
@@ -52,6 +52,6 @@ namespace JumaEngine
         void update(float deltaTime);
         void preRender();
         void deactivateEngineObject();
-        void clearEngineObject();
+        void clearEngineObject(bool notifyEngine = true);
     };
 }

@@ -31,6 +31,8 @@ namespace JumaEngine
         const EngineObjectPtr<Widget>& getRootWidget() const { return m_RootWidget; }
         void setRootWidget(EngineObjectPtr<Widget> widget);
 
+        void destroy();
+
     protected:
         
         virtual void onActivated() override;

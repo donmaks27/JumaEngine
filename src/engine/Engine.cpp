@@ -27,34 +27,13 @@ namespace JumaEngine
         object->m_Engine = this;
 		return m_EngineObjectDescriptors.createDescriptor(object);
 	}
-    void Engine::destroyObject(EngineContextObject* object)
+    void Engine::onEngineObjectDestroying(EngineObject* object)
     {
-        if (object != nullptr)
-        {
-            EngineObject* engineObject = dynamic_cast<EngineObject*>(object);
-            if (engineObject != nullptr)
-            {
-                ClearEngineObject(engineObject);
-            }
-            m_DestroyingEngineObjects.add(object->weakPointerFromThis());
-        }
+        m_DestroyingEngineObjects.add(object->weakPointerFromThis());
     }
-    void Engine::onEngineObjectDestroying(EngineContextObject* object)
+    void Engine::onEngineObjectDescriptorDestroying(EngineContextObject* object)
     {
         object->onObjectDescriptorDestroying();
-    }
-
-    EngineContextObject* Engine::registerObjectInternal1(EngineContextObject* object)
-    {
-        if (object != nullptr)
-        {
-            object->m_Engine = this;
-        }
-        return object;
-    }
-    EngineContextObject* Engine::createObject1(const EngineClass* engineClass)
-    {
-        return engineClass != nullptr ? registerObjectInternal1(engineClass->createBaseObject()) : nullptr;
     }
 
     bool Engine::init(const EngineSubclass<GameInstance>& gameInstanceClass)
@@ -65,7 +44,7 @@ namespace JumaEngine
             return false;
         }
 
-        m_EngineObjectDescriptors.onObjectDestroying.bind(this, &Engine::onEngineObjectDestroying);
+        m_EngineObjectDescriptors.onObjectDestroying.bind(this, &Engine::onEngineObjectDescriptorDestroying);
 
         if (!initEngine())
         {
@@ -74,13 +53,10 @@ namespace JumaEngine
             return false;
         }
 
-        m_GameInstance = createObject1(gameInstanceClass);
-        if (!initGameInstance())
+        m_GameInstance = createObject(gameInstanceClass);
+        if (m_GameInstance == nullptr)
         {
             JUTILS_LOG(error, JSTR("Failed to init game instance"));
-            m_GameInstance->clear();
-            delete m_GameInstance;
-            m_GameInstance = nullptr;
             clear();
             return false;
         }
@@ -88,13 +64,6 @@ namespace JumaEngine
         if (!initRenderEngine())
         {
             JUTILS_LOG(error, JSTR("Failed to init render engine"));
-            clear();
-            return false;
-        }
-
-        if (!m_GameInstance->initRenderData())
-        {
-            JUTILS_LOG(error, JSTR("Failed to init render data of game instance"));
             clear();
             return false;
         }
@@ -114,10 +83,6 @@ namespace JumaEngine
         configSubsystem->getValue(JSTR("engine"), section, key, m_EngineContentDirectory);
         configSubsystem->getValue(JSTR("game"), section, key, m_GameContentDirectory);
         return true;
-    }
-    bool Engine::initGameInstance()
-    {
-        return m_GameInstance->init();
     }
     bool Engine::initRenderEngine()
     {
@@ -169,8 +134,8 @@ namespace JumaEngine
             return false;
         }
 
-        m_EngineWidgetCreator = createObject1<WidgetsCreator>();
-        InitializeEngineObject(m_EngineWidgetCreator);
+        m_EngineWidgetCreator = createObject<WidgetsCreator>();
+        InitializeEngineObject(m_EngineWidgetCreator.get());
 
         renderSubsystem->createProxyWindowRenderTargets();
         return true;
@@ -232,7 +197,7 @@ namespace JumaEngine
     }
     void Engine::onEngineLoopStarted()
     {
-        ActivateEngineObject(m_EngineWidgetCreator);
+        ActivateEngineObject(m_EngineWidgetCreator.get());
     }
     bool Engine::shouldStopEngineLoop()
     {
@@ -240,27 +205,24 @@ namespace JumaEngine
     }
     void Engine::update(const float deltaTime)
     {
-        UpdateEngineObject(m_EngineWidgetCreator, deltaTime);
+        UpdateEngineObject(m_EngineWidgetCreator.get(), deltaTime);
     }
     void Engine::preRender()
     {
-        PreRenderEngineObject(m_EngineWidgetCreator);
+        PreRenderEngineObject(m_EngineWidgetCreator.get());
     }
     void Engine::onEngineLoopStopped()
     {
         getSubsystem<RenderEngineSubsystem>()->destroyProxyWindowRenderTargets();
-        ClearEngineObject(m_EngineWidgetCreator);
+        ClearEngineObject(m_EngineWidgetCreator.get());
     }
 
     void Engine::clear()
     {
+        clearRenderEngine();
         if (m_GameInstance != nullptr)
         {
-            m_GameInstance->clearRenderData();
-            clearRenderEngine();
-
-            m_GameInstance->clear();
-            delete m_GameInstance;
+            m_EngineObjectDescriptors.destroy(m_GameInstance.m_ObjectPointer);
             m_GameInstance = nullptr;
         }
         clearEngine();
@@ -269,7 +231,6 @@ namespace JumaEngine
     {
         if (m_EngineWidgetCreator != nullptr)
         {
-	        delete m_EngineWidgetCreator;
             m_EngineWidgetCreator = nullptr;
         }
 
@@ -282,7 +243,7 @@ namespace JumaEngine
             }
             else
             {
-	            renderSubsystem = subsystem.value;
+	            renderSubsystem = subsystem.value.get();
             }
         }
         if (renderSubsystem != nullptr)
@@ -299,14 +260,10 @@ namespace JumaEngine
     }
     void Engine::clearEngine()
     {
-        for (const auto& subsystem : m_EngineSubsystems)
-        {
-            delete subsystem.value;
-        }
         m_EngineSubsystems.clear();
         
         m_EngineObjectDescriptors.clear();
-        m_EngineObjectDescriptors.onObjectDestroying.unbind(this, &Engine::onEngineObjectDestroying);
+        m_EngineObjectDescriptors.onObjectDestroying.unbind(this, &Engine::onEngineObjectDescriptorDestroying);
     }
 
     EngineSubsystem* Engine::createSubsystem(const EngineSubclass<EngineSubsystem>& subsystemClass)
@@ -315,12 +272,12 @@ namespace JumaEngine
         {
             return nullptr;
         }
-        EngineSubsystem* const* subsystemPtr = m_EngineSubsystems.find(subsystemClass);
+        const EngineObjectPtr<EngineSubsystem>* subsystemPtr = m_EngineSubsystems.find(subsystemClass);
         if (subsystemPtr != nullptr)
         {
-            return *subsystemPtr;
+            return subsystemPtr->get();
         }
-        EngineSubsystem* subsystem = createObject1(subsystemClass);
+        const EngineObjectPtr<EngineSubsystem> subsystem = createObject(subsystemClass);
         if (subsystem == nullptr)
         {
             JUTILS_LOG(error, JSTR("Failed to create subsystem {}"), subsystemClass->getClassName());
@@ -332,10 +289,9 @@ namespace JumaEngine
         {
             JUTILS_LOG(error, JSTR("Failed to init subsystem {}"), subsystemClass->getClassName());
             m_EngineSubsystems.remove(subsystemClass);
-            delete subsystem;
             return nullptr;
         }
-        return subsystem;
+        return subsystem.get();
     }
     EngineSubsystem* Engine::getSubsystem(const EngineSubclass<EngineSubsystem>& subsystemClass) const
     {
@@ -343,8 +299,8 @@ namespace JumaEngine
         {
             return nullptr;
         }
-        EngineSubsystem* const* subsystemPtr = m_EngineSubsystems.find(subsystemClass);
-        return subsystemPtr != nullptr ? *subsystemPtr : nullptr;
+        const EngineObjectPtr<EngineSubsystem>* subsystemPtr = m_EngineSubsystems.find(subsystemClass);
+        return subsystemPtr != nullptr ? subsystemPtr->get() : nullptr;
     }
     
     void Engine::passInputToGameInstance(const JumaRE::InputActionData& input)

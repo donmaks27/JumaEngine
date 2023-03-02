@@ -24,12 +24,9 @@ namespace JumaEngine
         GameInstance() = default;
         virtual ~GameInstance() override = default;
 
-        WidgetsCreator* getWidgetsCreator() const { return m_GameWidgetsCreator; }
+        WidgetsCreator* getWidgetsCreator() const { return m_GameWidgetsCreator.get(); }
 
     protected:
-
-        virtual bool init();
-        virtual bool initRenderData();
 
         virtual void onInitialized() override;
         virtual void onActivated() override;
@@ -37,9 +34,6 @@ namespace JumaEngine
         virtual void onPreRender() override;
         virtual void onDeactivate() override;
         virtual void onClear() override;
-
-        virtual void clear();
-        virtual void clearRenderData();
 
         JumaRE::RenderTarget* getGameRenderTarget() const { return m_GameRenderTarget; }
 
@@ -51,7 +45,7 @@ namespace JumaEngine
 
         JumaRE::RenderTarget* m_GameRenderTarget = nullptr;
 
-        WidgetsCreator* m_GameWidgetsCreator = nullptr;
+        EngineObjectPtr<WidgetsCreator> m_GameWidgetsCreator = nullptr;
 
 
         bool setupRenderTarget(JumaRE::RenderTarget* renderTarget);

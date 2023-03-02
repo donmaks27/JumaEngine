@@ -33,15 +33,6 @@ namespace JumaEngine
             PreRenderEngineObject(widget.get());
         }
     }
-    void OverlayWidget::recalculateWidetSize()
-    {
-        const math::box2 bounds = getWidgetBounds();
-        m_WidgetRenderSize = bounds.v1 - bounds.v0;
-	    for (const auto& widget : m_Widgets)
-	    {
-		    RecalculateChildWidgetSize(widget.get(), getWidgetBounds(), WidgetAlignmentH::Fill, WidgetAlignmentV::Fill);
-	    }
-    }
 
     void OverlayWidget::onDeactivate()
     {
@@ -58,16 +49,6 @@ namespace JumaEngine
         clearChildWidgets();
 
         Super::onClear();
-    }
-
-    jarray<Widget*> OverlayWidget::getChildWidgets() const
-    {
-        jarray<Widget*> widgets;
-        for (const auto& widget : m_Widgets)
-        {
-            widgets.add(widget.get());
-        }
-        return widgets;
     }
     
     void OverlayWidget::addWidget(EngineObjectPtr<Widget> widget)
@@ -108,5 +89,25 @@ namespace JumaEngine
             widget->onDetachedFromParent.unbind(this, &OverlayWidget::detachChildWidget);
         }
         m_Widgets.clear();
+    }
+    
+    jarray<Widget*> OverlayWidget::getChildWidgetPtrs() const
+    {
+        jarray<Widget*> widgets;
+        for (const auto& widget : m_Widgets)
+        {
+            widgets.add(widget.get());
+        }
+        return widgets;
+    }
+
+    void OverlayWidget::recalculateWidetSize()
+    {
+        const math::box2 bounds = getWidgetBounds();
+        m_WidgetRenderSize = bounds.v1 - bounds.v0;
+	    for (const auto& widget : m_Widgets)
+	    {
+		    RecalculateChildWidgetSize(widget.get(), getWidgetBounds(), WidgetAlignmentH::Fill, WidgetAlignmentV::Fill);
+	    }
     }
 }
