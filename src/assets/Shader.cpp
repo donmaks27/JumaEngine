@@ -168,10 +168,10 @@ namespace JumaEngine
         jmap<JumaRE::ShaderStageFlags, jstring> shaderFiles;
         jset<jstringID> vertexComponents;
         jmap<jstringID, JumaRE::ShaderUniform> uniforms;
-        jmap<jstringID, jstringID> engineInternalParams;
+        jmap<jstringID, jstringID> shaderGlobalParams;
         if (!ParseShaderFiles(renderEngine, shaderJsonObject, contentFolder, shaderFiles) || 
             !ParseVertexComponents(shaderJsonObject, vertexComponents) ||
-            !ParseVertexUniforms(shaderJsonObject, uniforms, engineInternalParams))
+            !ParseVertexUniforms(shaderJsonObject, uniforms, shaderGlobalParams))
         {
             JUTILS_LOG(error, JSTR("Failed to parse shader JSON file {}"), jsonFileName);
             return false;
@@ -186,7 +186,7 @@ namespace JumaEngine
 
         m_Shader = shader;
         m_ShaderName = shaderName;
-        m_EngineInternalParamNames = engineInternalParams;
+        m_GlobalParamNames = shaderGlobalParams;
         return true;
     }
 

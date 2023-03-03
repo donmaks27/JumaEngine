@@ -44,9 +44,9 @@ namespace JumaEngine
         jarray<Widget*> m_Widgets;
 
 
-        void onWidgetContextDestroying(EngineObject* object);
+        void onWidgetContextDestroying(EngineContextObject* object);
 
         void destroyWidget(Widget* widget);
-        void onWidgetDestroying(EngineObject* widget);
+        void onWidgetDestroying(EngineContextObject* widget);
     };
 }

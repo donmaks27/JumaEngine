@@ -84,8 +84,8 @@ namespace JumaEngine
 
     void Texture::onObjectDescriptorDestroying()
     {
+        onDestroying.call(this);
         clearTexture();
-        Super::onObjectDescriptorDestroying();
     }
     void Texture::clearTexture()
     {

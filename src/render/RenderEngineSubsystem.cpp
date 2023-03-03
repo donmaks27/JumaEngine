@@ -68,7 +68,7 @@ namespace JumaEngine
         EngineObjectPtr<WidgetContext> widgetContext = widgetsCreator->createWidgetContext({ windowRenderTarget, 0 });
         widgetContext->setRootWidget(overlayWidget);
 
-        m_WindowProxyRenderTargets.add(windowData->windowRenderTargetID, { windowRenderTarget, std::move(renderTarget), std::move(widgetContext) });
+        m_WindowProxyRenderTargets.add(windowData->windowRenderTargetID, { std::move(windowRenderTarget), std::move(renderTarget), std::move(widgetContext) });
 	}
 
 	void RenderEngineSubsystem::onWindowDestroying(JumaRE::WindowController* windowController, const JumaRE::WindowData* windowData)
@@ -101,7 +101,7 @@ namespace JumaEngine
         renderTarget->widgetContext->getRootWidget()->destroy(true);
         renderTarget->widgetContext->destroy();
         renderTarget->widgetContext = nullptr;
-        renderTarget->renderTarget->m_RenderTarget = nullptr;
+        renderTarget->renderTarget->destroyRenderTarget();
         renderTarget->renderTarget = nullptr;
         renderTarget->proxyRenderTarget->destroyRenderTarget();
         renderTarget->proxyRenderTarget = nullptr;

@@ -7,10 +7,7 @@
 
 namespace JumaEngine
 {
-    class EngineObject;
     class EngineObjectOwner;
-
-    JUTILS_CREATE_MULTICAST_DELEGATE1(OnEngineObjectEvent, EngineObject*, engineObject);
 
     class EngineObject : public EngineContextObject
     {
@@ -21,9 +18,6 @@ namespace JumaEngine
     public:
         EngineObject() = default;
         virtual ~EngineObject() override = default;
-
-        OnEngineObjectEvent onDestroying;
-
 
         bool isInitialized() const { return m_ObjectInitialized && !isDestroyed(); }
         bool isActive() const { return m_ObjectActivated; }
@@ -38,7 +32,7 @@ namespace JumaEngine
         virtual void onDeactivate() {}
         virtual void onClear() {}
 
-        virtual void onObjectDescriptorDestroying() override;
+        virtual void onObjectDescriptorDestroying() override { clearEngineObject(false); }
 
     private:
 

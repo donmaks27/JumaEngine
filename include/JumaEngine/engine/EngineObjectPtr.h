@@ -34,18 +34,18 @@ namespace JumaEngine
 		explicit EngineObjectPtr(const T* object)
             : m_ObjectPointer(object != nullptr ? object->weakPointerFromThis() : nullptr)
 		{
-		    updatePtr();
+		    forsceUpdatePtr();
 		}
 	private:
 		EngineObjectPtr(const PointerType& pointer)
 			: m_ObjectPointer(pointer)
 		{
-		    updatePtr();
+		    forsceUpdatePtr();
 		}
 		EngineObjectPtr(PointerType&& pointer)
 			: m_ObjectPointer(std::move(pointer))
 		{
-		    updatePtr();
+		    forsceUpdatePtr();
 		}
 	public:
 
@@ -73,18 +73,18 @@ namespace JumaEngine
 		EngineObjectPtr& operator=(const PointerType& pointer)
 		{
 			m_ObjectPointer = pointer;
-			updatePtr();
+			forsceUpdatePtr();
 			return *this;
 		}
 		EngineObjectPtr& operator=(PointerType&& pointer)
 		{
 			m_ObjectPointer = std::move(pointer);
-			updatePtr();
+			forsceUpdatePtr();
 			return *this;
 		}
 	public:
 
-		T* updatePtr() const { return m_CachedObject = dynamic_cast<T*>(m_ObjectPointer.get()); }
+		T* updatePtr() const { return m_CachedObject != nullptr ? forsceUpdatePtr() : nullptr; }
 		constexpr bool isValid() const { return m_CachedObject != nullptr; }
 
 		constexpr T* get() const { return m_CachedObject; }
@@ -132,6 +132,9 @@ namespace JumaEngine
 
 		mutable T* m_CachedObject = nullptr;
 		PointerType m_ObjectPointer = nullptr;
+
+
+		T* forsceUpdatePtr() const { return m_CachedObject = dynamic_cast<T*>(m_ObjectPointer.get()); }
 	};
 
 	template<typename T>

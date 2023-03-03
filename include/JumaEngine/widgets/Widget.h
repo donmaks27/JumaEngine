@@ -76,7 +76,7 @@ namespace JumaEngine
 
         void setParentWidget(Widget* widget);
         void onParentWidgetContextChanged(Widget* parentWidget) { setWidgetContext(m_ParentWidget->getWidgetContextPtr()); }
-        void onParentWidgetDestroying(EngineObject* widget) { setParentWidget(nullptr); }
+        void onParentWidgetDestroying(EngineContextObject* widget) { setParentWidget(nullptr); }
 
         void setWidgetBounds(const math::box2& bounds, WidgetAlignmentH alignmentH, WidgetAlignmentV alignmentV);
     };

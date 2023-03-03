@@ -26,7 +26,7 @@ namespace JumaEngine
 
     protected:
 
-        virtual void onObjectDescriptorDestroying() override;
+        virtual void onObjectDescriptorDestroying() override { destroyRenderTarget(); }
 
     private:
 

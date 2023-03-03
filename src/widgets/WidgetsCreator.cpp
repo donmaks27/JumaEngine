@@ -102,7 +102,7 @@ namespace JumaEngine
         }
         return widgetContext;
     }
-    void WidgetsCreator::onWidgetContextDestroying(EngineObject* object)
+    void WidgetsCreator::onWidgetContextDestroying(EngineContextObject* object)
     {
         WidgetContext* widgetContext = dynamic_cast<WidgetContext*>(object);
         widgetContext->onDestroying.unbind(this, &WidgetsCreator::onWidgetContextDestroying);
@@ -134,9 +134,9 @@ namespace JumaEngine
     {
         ClearEngineObject(widget);
     }
-    void WidgetsCreator::onWidgetDestroying(EngineObject* widget)
+    void WidgetsCreator::onWidgetDestroying(EngineContextObject* widget)
     {
         widget->onDestroying.unbind(this, &WidgetsCreator::onWidgetDestroying);
-        m_Widgets.remove(dynamic_cast<Widget*>(widget));
+        m_Widgets.remove(reinterpret_cast<Widget*>(widget));
     }
 }

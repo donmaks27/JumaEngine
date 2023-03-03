@@ -6,17 +6,15 @@
 
 namespace JumaEngine
 {
-    void RenderTarget::onObjectDescriptorDestroying()
-    {
-        destroyRenderTarget();
-        Super::onObjectDescriptorDestroying();
-    }
-
     void RenderTarget::destroyRenderTarget()
     {
         if (m_RenderTarget != nullptr)
         {
-            getEngine()->getRenderEngine()->destroyRenderTarget(m_RenderTarget);
+            onDestroying.call(this);
+            if (!m_RenderTarget->isWindowRenderTarget())
+            {
+	            getEngine()->getRenderEngine()->destroyRenderTarget(m_RenderTarget);
+            }
             m_RenderTarget = nullptr;
         }
     }

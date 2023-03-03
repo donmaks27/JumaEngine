@@ -50,6 +50,6 @@ namespace JumaEngine
 
 
         void onRootWidgetContextChanging(Widget* widget) { setRootWidget(nullptr); }
-        void onRootWidgetDestroying(EngineObject* widget) { setRootWidget(nullptr); }
+        void onRootWidgetDestroying(EngineContextObject* widget) { setRootWidget(nullptr); }
     };
 }

@@ -38,7 +38,7 @@ namespace JumaEngine
         jarray<EngineObjectPtr<Widget>> m_Widgets;
 
 
-        void onChildWidgetDestroying(EngineObject* object) { detachChildWidget(dynamic_cast<Widget*>(object)); }
+        void onChildWidgetDestroying(EngineContextObject* object) { detachChildWidget(dynamic_cast<Widget*>(object)); }
         void detachChildWidget(Widget* widget);
     };
 }

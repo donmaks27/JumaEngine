@@ -66,10 +66,4 @@ namespace JumaEngine
             }
         }
     }
-
-    void EngineObject::onObjectDescriptorDestroying()
-    {
-        clearEngineObject(false);
-        Super::onObjectDescriptorDestroying();
-    }
 }
