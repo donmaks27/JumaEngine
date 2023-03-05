@@ -5,7 +5,6 @@
 #include "../core.h"
 #include "Widget.h"
 
-#include <JumaRE/texture/TextureBase.h>
 #include <jutils/math/vector4.h>
 
 namespace JumaEngine

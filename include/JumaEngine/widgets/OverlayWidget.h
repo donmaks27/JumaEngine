@@ -6,8 +6,6 @@
 #include "Widget.h"
 #include "WidgetContainer.h"
 
-#include <jutils/jarray.h>
-
 namespace JumaEngine
 {
     class OverlayWidget : public Widget, public WidgetContainer

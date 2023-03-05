@@ -47,8 +47,6 @@ namespace JumaEngine
     template<typename T>
     class EngineSubclass
     {
-        static_assert(is_base<EngineContextObject, T>);
-
     public:
 
         using Type = T;

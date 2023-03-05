@@ -7,14 +7,12 @@
 
 #include <JumaRE/material/Material.h>
 #include <JumaRE/material/Shader.h>
-#include <jutils/jdelegate_multicast.h>
 
 #include "MaterialParamType.h"
 
 namespace JumaEngine
 {
     class AssetsEngineSubsystem;
-    class Material;
     class Shader;
 
     class Material final : public EngineContextObject

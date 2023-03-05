@@ -14,14 +14,10 @@ namespace JumaEngine
     
     JUTILS_CREATE_MULTICAST_DELEGATE1(OnEngineContextObjectEvent, EngineContextObject*, object);
 
-    class EngineContextObject : private jdescriptor_table<EngineContextObject>::enable_pointer_from_this
+    class EngineContextObject
     {
         friend Engine;
-        template<typename T>
-		friend class EngineObjectPtr;
-        template<typename T>
-		friend class EngineObjectWeakPtr;
-        friend jdescriptor_table<EngineContextObject>;
+        friend EngineObjectPtrBase;
         
     public:
 
@@ -58,7 +54,7 @@ namespace JumaEngine
         OnEngineContextObjectEvent onDestroying;
 
 
-        Engine* getEngine() const { return m_Engine; }
+        Engine* getEngine() const { return EngineObjectPtrBase::s_Engine; }
         template<typename T, TEMPLATE_ENABLE(is_base<Engine, T>)>
         T* getEngine() const { return dynamic_cast<T*>(getEngine()); }
 
@@ -68,7 +64,7 @@ namespace JumaEngine
 
     private:
 
-        Engine* m_Engine = nullptr;
+        jdescriptor_table_pointer<> m_ObjectDescriptor;
     };
 }
 

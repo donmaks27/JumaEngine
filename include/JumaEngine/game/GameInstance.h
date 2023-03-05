@@ -6,13 +6,11 @@
 #include "../engine/EngineObject.h"
 #include "../engine/EngineObjectOwner.h"
 
-#include <JumaRE/RenderTarget.h>
 #include <JumaRE/input/InputButtons.h>
 
 namespace JumaEngine
 {
     class RenderTarget;
-    class Widget;
     class WidgetsCreator;
 
     class GameInstance : public EngineObject, public EngineObjectOwner

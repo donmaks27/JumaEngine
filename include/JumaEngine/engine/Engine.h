@@ -3,20 +3,22 @@
 #pragma once
 
 #include "../core.h"
+#include "EngineObjectOwner.h"
 
 #include <JumaRE/RenderEngine.h>
 
 #include "EngineSubsystem.h"
-#include "../game/GameInstance.h"
 
 namespace JumaEngine
 {
+	class GameInstance;
     class RenderTarget;
-    class WidgetContext;
+	class WidgetsCreator;
 
 	class Engine : public EngineObjectOwner
     {
         friend EngineObject;
+        friend EngineObjectPtrBase;
 
     protected:
         Engine() = default;
@@ -72,7 +74,7 @@ namespace JumaEngine
     private:
 
         jdescriptor_table<EngineContextObject> m_EngineObjectDescriptors;
-        jarray<jdescriptor_table<EngineContextObject>::weak_pointer> m_DestroyingEngineObjects;
+        jarray<jdescriptor_table_pointer<>> m_DestroyingEngineObjects;
 
         EngineObjectPtr<GameInstance> m_GameInstance = nullptr;
         JumaRE::RenderEngine* m_RenderEngine = nullptr;
@@ -84,9 +86,9 @@ namespace JumaEngine
         jstring m_GameContentDirectory = JSTR("./content/");
 
 
-        jdescriptor_table<EngineContextObject>::pointer createObjectDescriptor(const EngineClass* objectClass);
-        void onEngineObjectDestroying(EngineObject* object);
+        jdescriptor_table_pointer<> createObjectDescriptor(const EngineClass* objectClass);
         void onEngineObjectDescriptorDestroying(EngineContextObject* object);
+        void onEngineObjectDestroying(EngineObject* object);
 
         bool init(const EngineSubclass<GameInstance>& gameInstanceClass);
 

@@ -6,7 +6,6 @@
 #include "../engine/EngineSubsystem.h"
 
 #include <jutils/jlist.h>
-#include <jutils/jmap.h>
 
 #include "Material.h"
 #include "Mesh.h"

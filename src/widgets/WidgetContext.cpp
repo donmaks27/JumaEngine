@@ -3,7 +3,6 @@
 #include "JumaEngine/widgets/WidgetContext.h"
 
 #include "JumaEngine/widgets/Widget.h"
-#include "JumaEngine/widgets/WidgetsCreator.h"
 
 namespace JumaEngine
 {

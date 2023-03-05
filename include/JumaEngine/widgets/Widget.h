@@ -5,7 +5,6 @@
 #include "../core.h"
 #include "../engine/EngineObject.h"
 
-#include <jutils/jdelegate_multicast.h>
 #include <jutils/math/box2.h>
 #include <jutils/math/vector2.h>
 
@@ -14,9 +13,9 @@
 namespace JumaEngine
 {
     class Widget;
+    class WidgetContainer;
     class WidgetContext;
     class WidgetsCreator;
-    class WidgetContainer;
 
     JUTILS_CREATE_MULTICAST_DELEGATE1(OnWidgetEvent, Widget*, widget);
 
@@ -24,9 +23,9 @@ namespace JumaEngine
     {
         JUMAENGINE_CLASS_ABSTRACT(Widget, EngineObject)
 
-        friend WidgetsCreator;
         friend WidgetContainer;
         friend WidgetContext;
+        friend WidgetsCreator;
 
     public:
         Widget() = default;

@@ -41,7 +41,6 @@ namespace JumaEngine
 	            m_CursorLocation.x = static_cast<float>(windowData->cursorPosition.x) / static_cast<float>(windowData->size.x);
 	            m_CursorLocation.y = static_cast<float>(windowData->cursorPosition.y - m_CursorSizePixels.y) / static_cast<float>(windowData->size.y);
             }
-            //m_CursorLocation = math::vector2(windowData->cursorPosition) / windowData->size;
         }
         else
         {

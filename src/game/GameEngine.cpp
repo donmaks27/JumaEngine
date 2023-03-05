@@ -5,6 +5,7 @@
 #ifdef JUMAENGINE_MODE_GAME
 
 #include "JumaEngine/engine/ConfigEngineSubsystem.h"
+#include "JumaEngine/game/GameInstance.h"
 #include "JumaEngine/render/RenderEngineSubsystem.h"
 
 namespace JumaEngine

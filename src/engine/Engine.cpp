@@ -8,12 +8,13 @@
 
 #include "JumaEngine/assets/AssetsEngineSubsystem.h"
 #include "JumaEngine/engine/ConfigEngineSubsystem.h"
+#include "JumaEngine/game/GameInstance.h"
 #include "JumaEngine/render/RenderEngineSubsystem.h"
 #include "JumaEngine/widgets/WidgetsCreator.h"
 
 namespace JumaEngine
 {
-	jdescriptor_table<EngineContextObject>::pointer Engine::createObjectDescriptor(const EngineClass* objectClass)
+	jdescriptor_table_pointer<> Engine::createObjectDescriptor(const EngineClass* objectClass)
 	{
         if (objectClass == nullptr)
         {
@@ -24,16 +25,17 @@ namespace JumaEngine
         {
 	        return nullptr;
         }
-        object->m_Engine = this;
-		return m_EngineObjectDescriptors.createDescriptor(object);
+        const jdescriptor_table_pointer<> pointer = m_EngineObjectDescriptors.createDescriptor(object);
+        object->m_ObjectDescriptor = pointer;
+		return pointer;
 	}
-    void Engine::onEngineObjectDestroying(EngineObject* object)
-    {
-        m_DestroyingEngineObjects.add(object->weakPointerFromThis());
-    }
     void Engine::onEngineObjectDescriptorDestroying(EngineContextObject* object)
     {
         object->onObjectDescriptorDestroying();
+    }
+    void Engine::onEngineObjectDestroying(EngineObject* object)
+    {
+        m_DestroyingEngineObjects.add(object->m_ObjectDescriptor);
     }
 
     bool Engine::init(const EngineSubclass<GameInstance>& gameInstanceClass)
@@ -44,6 +46,7 @@ namespace JumaEngine
             return false;
         }
 
+        EngineObjectPtrBase::s_Engine = this;
         m_EngineObjectDescriptors.onObjectDestroying.bind(this, &Engine::onEngineObjectDescriptorDestroying);
 
         if (!initEngine())
@@ -226,6 +229,8 @@ namespace JumaEngine
             m_GameInstance = nullptr;
         }
         clearEngine();
+
+        EngineObjectPtrBase::s_Engine = nullptr;
     }
     void Engine::clearRenderEngine()
     {

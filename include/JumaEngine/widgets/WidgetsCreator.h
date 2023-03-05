@@ -12,8 +12,6 @@
 
 namespace JumaEngine
 {
-    class Widget;
-
     class WidgetsCreator final : public EngineObject, public EngineObjectOwner
     {
         JUMAENGINE_CLASS(WidgetsCreator, EngineObject)

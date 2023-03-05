@@ -11,97 +11,102 @@ namespace JumaEngine
 	class Engine;
 	class EngineContextObject;
 	template<typename T>
-	class EngineObjectWeakPtr;
+	class EngineObjectPtr;
 
-    template<typename T>
-	class EngineObjectPtr
+	class EngineObjectPtrBase
 	{
 		friend Engine;
-		template<typename T1>
-		friend class EngineObjectPtr;
-		template<typename T1>
-		friend class EngineObjectWeakPtr;
+		friend EngineContextObject;
 
-		using PointerType = jdescriptor_table<EngineContextObject>::pointer;
+	protected:
 
+		using TableType = jdescriptor_table<EngineContextObject>;
+		using PointerType = jdescriptor_table_pointer<TableType::uid_type>;
+
+		constexpr EngineObjectPtrBase() = default;
+		constexpr EngineObjectPtrBase(const EngineObjectPtrBase&) = default;
 	public:
-		constexpr EngineObjectPtr() = default;
-		constexpr EngineObjectPtr(nullptr_t) : EngineObjectPtr() {}
-		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1>)>
-		EngineObjectPtr(const EngineObjectPtr<T1>& ptr) : EngineObjectPtr(ptr.m_ObjectPointer) {}
-		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1>)>
-		EngineObjectPtr(EngineObjectPtr<T1>&& ptr) noexcept : EngineObjectPtr(std::move(ptr.m_ObjectPointer)) {}
-		explicit EngineObjectPtr(const T* object)
-            : m_ObjectPointer(object != nullptr ? object->weakPointerFromThis() : nullptr)
-		{
-		    forsceUpdatePtr();
-		}
+
+		constexpr bool operator<(const EngineObjectPtrBase& ptr) const { return m_ObjectPointer < ptr.m_ObjectPointer; }
+
+	protected:
+
+		PointerType m_ObjectPointer;
+
+
+		bool isDescriptorValid() const;
+		EngineContextObject* getObject() const;
+		template<typename T>
+		T* getObject() const { return dynamic_cast<T*>(getObject()); }
+		static PointerType GetPointerFromObject(EngineContextObject* object);
+
+		bool addReference();
+		bool removeReference();
+		
 	private:
-		EngineObjectPtr(const PointerType& pointer)
-			: m_ObjectPointer(pointer)
-		{
-		    forsceUpdatePtr();
-		}
-		EngineObjectPtr(PointerType&& pointer)
-			: m_ObjectPointer(std::move(pointer))
-		{
-		    forsceUpdatePtr();
-		}
-	public:
 
-		constexpr EngineObjectPtr& operator=(nullptr_t)
+		static Engine* s_Engine;
+	};
+
+	template<typename T>
+	class EngineObjectWeakPtr : public EngineObjectPtrBase
+	{
+		template<typename Type>
+		friend class EngineObjectWeakPtr;
+		template<typename Type>
+		friend class EngineObjectPtr;
+
+	public:
+		constexpr EngineObjectWeakPtr() = default;
+		constexpr EngineObjectWeakPtr(nullptr_t) : EngineObjectWeakPtr() {}
+		EngineObjectWeakPtr(const EngineObjectWeakPtr& ptr)
+		{
+			m_ObjectPointer = ptr.m_ObjectPointer;
+			m_CachedObject = ptr.updatePtr();
+		}
+		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1>)>
+		EngineObjectWeakPtr(const EngineObjectWeakPtr<T1>& ptr)
+		{
+			m_ObjectPointer = ptr.m_ObjectPointer;
+			m_CachedObject = ptr.updatePtr();
+		}
+		explicit EngineObjectWeakPtr(T* object)
+		{
+			m_ObjectPointer = EngineObjectPtrBase::GetPointerFromObject(object);
+			if (m_ObjectPointer != nullptr)
+			{
+				m_CachedObject = object;
+			}
+		}
+
+		constexpr EngineObjectWeakPtr& operator=(nullptr_t)
 		{
 			m_ObjectPointer = nullptr;
 			m_CachedObject = nullptr;
 			return *this;
 		}
+		EngineObjectWeakPtr& operator=(const EngineObjectWeakPtr& ptr) { return this->_assignWeak(ptr); }
 		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1>)>
-		EngineObjectPtr& operator=(const EngineObjectPtr<T1>& ptr)
+		EngineObjectWeakPtr& operator=(const EngineObjectWeakPtr<T1>& ptr) { return this->_assignWeak(ptr); }
+
+		T* updatePtr() const
 		{
-			if (this != &ptr)
+			if ((m_CachedObject != nullptr) && !isDescriptorValid())
 			{
-				this->operator=(ptr.m_ObjectPointer);
+				m_CachedObject = nullptr;
 			}
-			return *this;
+			return m_CachedObject;
 		}
+		T* get() const { return m_CachedObject; }
 		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1>)>
-		EngineObjectPtr& operator=(EngineObjectPtr<T1>&& ptr) noexcept
+		EngineObjectWeakPtr<T1> castWeak() const
 		{
-			return this->operator=(std::move(ptr.m_ObjectPointer));
-		}
-	private:
-		EngineObjectPtr& operator=(const PointerType& pointer)
-		{
-			m_ObjectPointer = pointer;
-			forsceUpdatePtr();
-			return *this;
-		}
-		EngineObjectPtr& operator=(PointerType&& pointer)
-		{
-			m_ObjectPointer = std::move(pointer);
-			forsceUpdatePtr();
-			return *this;
-		}
-	public:
-
-		T* updatePtr() const { return m_CachedObject != nullptr ? forsceUpdatePtr() : nullptr; }
-		constexpr bool isValid() const { return m_CachedObject != nullptr; }
-
-		constexpr T* get() const { return m_CachedObject; }
-		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1>)>
-		EngineObjectPtr<T1> cast() const
-		{
-		    EngineContextObject* objectBase = m_ObjectPointer.get();
-
-			T1* object = dynamic_cast<T1*>(objectBase);
+			T1* object = dynamic_cast<T1*>(updatePtr());
 			if (object == nullptr)
 			{
-			    m_CachedObject = dynamic_cast<T*>(objectBase);
 				return nullptr;
 			}
-			m_CachedObject = object;
-
-			EngineObjectPtr<T1> pointer;
+			EngineObjectWeakPtr<T1> pointer;
 			pointer.m_ObjectPointer = m_ObjectPointer;
 			pointer.m_CachedObject = object;
 			return pointer;
@@ -110,121 +115,181 @@ namespace JumaEngine
 		T* operator->() const { return get(); }
 		T& operator*() const { return *get(); }
 
-		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1> || is_base<T1, T>)>
-		constexpr bool operator==(const EngineObjectPtr<T1>& ptr) const { return m_ObjectPointer == ptr.m_ObjectPointer; }
-		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1> || is_base<T1, T>)>
-		constexpr bool operator!=(const EngineObjectPtr<T1>& ptr) const { return m_ObjectPointer != ptr.m_ObjectPointer; }
-		
-		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1> || is_base<T1, T>)>
-		constexpr bool operator==(const EngineObjectWeakPtr<T1>& ptr) const;
-		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1> || is_base<T1, T>)>
-		constexpr bool operator!=(const EngineObjectWeakPtr<T1>& ptr) const { return !this->operator==(ptr); }
-		
-		constexpr bool operator==(nullptr_t) const { return !isValid(); }
-		constexpr bool operator!=(nullptr_t) const { return isValid(); }
+		bool operator==(nullptr_t) const { return updatePtr() == nullptr; }
+		bool operator!=(nullptr_t) const { return !this->operator==(nullptr); }
 
 		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1> || is_base<T1, T>)>
-		constexpr bool operator<(const EngineObjectPtr<T1>& ptr) const { return m_ObjectPointer < ptr.m_ObjectPointer; }
+		bool operator==(const EngineObjectWeakPtr<T1>& ptr) const { return updatePtr() == ptr.updatePtr(); }
 		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1> || is_base<T1, T>)>
-		constexpr bool operator<(const EngineObjectWeakPtr<T1>& ptr) const;
-
-    private:
+		bool operator!=(const EngineObjectWeakPtr<T1>& ptr) const { return !this->operator==(ptr); }
+		
+	protected:
 
 		mutable T* m_CachedObject = nullptr;
-		PointerType m_ObjectPointer = nullptr;
-
-
-		T* forsceUpdatePtr() const { return m_CachedObject = dynamic_cast<T*>(m_ObjectPointer.get()); }
-	};
-
-	template<typename T>
-	class EngineObjectWeakPtr
-	{
-	    using PointerType = jdescriptor_table<EngineContextObject>::weak_pointer;
-
-	public:
-		constexpr EngineObjectWeakPtr() = default;
-		constexpr EngineObjectWeakPtr(nullptr_t) : EngineObjectWeakPtr() {}
-		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1>)>
-		constexpr EngineObjectWeakPtr(const EngineObjectWeakPtr<T1>& ptr) : m_ObjectWeakPointer(ptr.m_ObjectWeakPointer) {}
-		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1>)>
-		constexpr EngineObjectWeakPtr(const EngineObjectPtr<T1>& ptr) : m_ObjectWeakPointer(ptr.m_ObjectPointer) {}
-		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1>)>
-		constexpr EngineObjectWeakPtr(EngineObjectPtr<T1>&& ptr) noexcept
-	        : m_ObjectWeakPointer(ptr.m_ObjectPointer)
-		{
-		    ptr = nullptr;
-		}
-		explicit EngineObjectWeakPtr(const T* object)
-	        : m_ObjectWeakPointer(object != nullptr ? static_cast<const EngineContextObject*>(object)->weakPointerFromThis() : nullptr)
-	    {}
-
-		constexpr EngineObjectWeakPtr& operator=(nullptr_t)
-		{
-		    m_ObjectWeakPointer = nullptr;
-			return *this;
-		}
-		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1>)>
-		constexpr EngineObjectWeakPtr& operator=(const EngineObjectWeakPtr<T1>& ptr)
-		{
-		    if (this != &ptr)
-		    {
-		        m_ObjectWeakPointer = ptr.m_ObjectWeakPointer;
-		    }
-			return *this;
-		}
-		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1>)>
-		constexpr EngineObjectWeakPtr& operator=(const EngineObjectPtr<T1>& ptr)
-		{
-		    m_ObjectWeakPointer = ptr.m_ObjectPointer;
-			return *this;
-		}
-		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1>)>
-		constexpr EngineObjectWeakPtr& operator=(EngineObjectPtr<T1>&& ptr) noexcept
-		{
-		    m_ObjectWeakPointer = ptr.m_ObjectPointer;
-			ptr = nullptr;
-			return *this;
-		}
-
-		constexpr bool isValid() const { return m_ObjectWeakPointer != nullptr; }
-
-		T* get() const { return dynamic_cast<T*>(m_ObjectWeakPointer.get()); }
-		EngineObjectPtr<T> getObjectPtr() const { return jdescriptor_table<EngineContextObject>::pointer(m_ObjectWeakPointer); }
-
-		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1> || is_base<T1, T>)>
-		constexpr bool operator==(const EngineObjectWeakPtr<T1>& ptr) const { return m_ObjectWeakPointer == ptr.m_ObjectWeakPointer; }
-		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1> || is_base<T1, T>)>
-		constexpr bool operator!=(const EngineObjectWeakPtr<T1>& ptr) const { return m_ObjectWeakPointer != ptr.m_ObjectWeakPointer; }
-		
-		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1> || is_base<T1, T>)>
-		constexpr bool operator==(const EngineObjectPtr<T1>& ptr) const { return m_ObjectWeakPointer == ptr.m_ObjectPointer; }
-		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1> || is_base<T1, T>)>
-		constexpr bool operator!=(const EngineObjectPtr<T1>& ptr) const { return m_ObjectWeakPointer != ptr.m_ObjectPointer; }
-
-		constexpr bool operator==(nullptr_t) const { return m_ObjectWeakPointer == nullptr; }
-		constexpr bool operator!=(nullptr_t) const { return m_ObjectWeakPointer != nullptr; }
-
-		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1> || is_base<T1, T>)>
-		constexpr bool operator<(const EngineObjectWeakPtr<T1>& ptr) const { return m_ObjectWeakPointer < ptr.m_ObjectWeakPointer; }
-		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1> || is_base<T1, T>)>
-		constexpr bool operator<(const EngineObjectPtr<T1>& ptr) const { return m_ObjectWeakPointer < ptr.m_ObjectPointer; }
 
 	private:
 
-		PointerType m_ObjectWeakPointer = nullptr;
+		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1>)>
+		EngineObjectWeakPtr& _assignWeak(const EngineObjectWeakPtr<T1>& ptr)
+		{
+			if (this != &ptr)
+			{
+				if (m_ObjectPointer != ptr.m_ObjectPointer)
+				{
+					m_ObjectPointer = ptr.m_ObjectPointer;
+					m_CachedObject = ptr.updatePtr();
+				}
+				else
+				{
+					m_CachedObject = ptr.updatePtr();
+				}
+			}
+			return *this;
+		}
 	};
 
 	template<typename T>
-    template<typename T1, TEMPLATE_ENABLE_IMPL(is_base<T, T1> || is_base<T1, T>)>
-    constexpr bool EngineObjectPtr<T>::operator==(const EngineObjectWeakPtr<T1>& ptr) const
-    {
-		return ptr == *this;
-    }
-    template<typename T>
-    template<typename T1, std::enable_if_t<(is_base<T, T1> || is_base<T1, T>)>*>
-    constexpr bool EngineObjectPtr<T>::operator<(const EngineObjectWeakPtr<T1>& ptr) const
+	class EngineObjectPtr : public EngineObjectWeakPtr<T>
 	{
-	    return m_ObjectPointer < ptr.m_ObjectWeakPointer;
-	}
+		friend Engine;
+		template<typename Type>
+		friend class EngineObjectPtr;
+
+		using Super = EngineObjectWeakPtr<T>;
+
+	public:
+		constexpr EngineObjectPtr() = default;
+		constexpr EngineObjectPtr(nullptr_t) : EngineObjectPtr() {}
+		EngineObjectPtr(const EngineObjectPtr& ptr)
+			: Super(ptr)
+		{
+			EngineObjectPtrBase::addReference();
+		}
+		EngineObjectPtr(EngineObjectPtr&& ptr) noexcept
+			: Super(ptr)
+		{
+			EngineObjectPtrBase::m_ObjectPointer = ptr.m_ObjectPointer;
+			Super::m_CachedObject = ptr.m_CachedObject;
+			Super::updatePtr();
+
+			ptr.m_ObjectPointer = nullptr;
+			ptr.m_CachedObject = nullptr;
+		}
+		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1>)>
+		EngineObjectPtr(const EngineObjectPtr<T1>& ptr)
+			: Super(ptr)
+		{
+			EngineObjectPtrBase::addReference();
+		}
+		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1>)>
+		EngineObjectPtr(EngineObjectPtr<T1>&& ptr) noexcept
+		{
+			EngineObjectPtrBase::m_ObjectPointer = ptr.m_ObjectPointer;
+			Super::m_CachedObject = ptr.m_CachedObject;
+			Super::updatePtr();
+
+			ptr.m_ObjectPointer = nullptr;
+			ptr.m_CachedObject = nullptr;
+		}
+		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1>)>
+		EngineObjectPtr(const EngineObjectWeakPtr<T1>& ptr)
+			: Super(ptr)
+		{
+			EngineObjectPtrBase::addReference();
+		}
+		explicit EngineObjectPtr(T* object)
+			: Super(object)
+		{
+			EngineObjectPtrBase::addReference();
+		}
+		~EngineObjectPtr()
+		{
+			EngineObjectPtrBase::removeReference();
+		}
+	private:
+		EngineObjectPtr(const EngineObjectPtrBase::PointerType& pointer)
+		{
+			EngineObjectPtrBase::m_ObjectPointer = pointer;
+			Super::m_CachedObject = EngineObjectPtrBase::getObject<T>();
+			EngineObjectPtrBase::addReference();
+		}
+	public:
+
+		EngineObjectPtr& operator=(nullptr_t)
+		{
+			if (EngineObjectPtrBase::m_ObjectPointer != nullptr)
+			{
+				EngineObjectPtrBase::removeReference();
+				EngineObjectPtrBase::m_ObjectPointer = nullptr;
+				Super::m_CachedObject = nullptr;
+			}
+			return *this;
+		}
+		EngineObjectPtr& operator=(const EngineObjectPtr& ptr) { return this->_assign(ptr); }
+		EngineObjectPtr& operator=(EngineObjectPtr&& ptr) noexcept { return this->_assign(std::move(ptr)); }
+		template<typename T1, TEMPLATE_ENABLE(is_base_and_not_same<T, T1>)>
+		EngineObjectPtr& operator=(const EngineObjectPtr<T1>& ptr) { return this->_assign(ptr); }
+		template<typename T1, TEMPLATE_ENABLE(is_base_and_not_same<T, T1>)>
+		EngineObjectPtr& operator=(EngineObjectPtr<T1>&& ptr) noexcept { return this->_assign(std::move(ptr)); }
+		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1>)>
+		EngineObjectPtr& operator=(const EngineObjectWeakPtr<T1>& ptr) { return this->_assign(ptr); }
+
+		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1>)>
+		EngineObjectPtr<T1> cast() const
+		{
+			T1* object = dynamic_cast<T1*>(Super::updatePtr());
+			if (object == nullptr)
+			{
+				return nullptr;
+			}
+			EngineObjectPtr<T1> pointer;
+			pointer.m_ObjectPointer = EngineObjectPtrBase::m_ObjectPointer;
+			pointer.m_CachedObject = object;
+			pointer.addReference();
+			return pointer;
+		}
+
+	private:
+
+		template<typename T1>
+		EngineObjectPtr& _assign(const EngineObjectWeakPtr<T1>& ptr)
+		{
+			if (this != &ptr)
+			{
+				if (EngineObjectPtrBase::m_ObjectPointer != ptr.m_ObjectPointer)
+				{
+					EngineObjectPtrBase::removeReference();
+					EngineObjectPtrBase::m_ObjectPointer = ptr.m_ObjectPointer;
+					Super::m_CachedObject = ptr.updatePtr();
+					EngineObjectPtrBase::addReference();
+				}
+				else
+				{
+					Super::m_CachedObject = ptr.updatePtr();
+				}
+			}
+			return *this;
+		}
+		template<typename T1>
+		EngineObjectPtr& _assign(EngineObjectPtr<T1>&& ptr) noexcept
+		{
+			if (EngineObjectPtrBase::m_ObjectPointer != ptr.m_ObjectPointer)
+			{
+				EngineObjectPtrBase::removeReference();
+
+				EngineObjectPtrBase::m_ObjectPointer = ptr.m_ObjectPointer;
+				Super::m_CachedObject = ptr.m_CachedObject;
+				Super::updatePtr();
+
+				ptr.m_ObjectPointer = nullptr;
+				ptr.m_CachedObject = nullptr;
+			}
+			else
+			{
+				Super::updatePtr();
+				ptr = nullptr;
+			}
+			return *this;
+		}
+	};
 }
