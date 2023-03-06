@@ -86,7 +86,7 @@ namespace JumaEngine
         else
         {
 	        const math::box2 bounds = getWidgetBounds();
-            m_WidgetRenderSize = math::vector2(m_CursorSizePixels) / renderTarget->getRenderTarget()->getSize() * (bounds.v1 - bounds.v0);
+            m_WidgetRenderSize = math::vector2(m_CursorSizePixels) / renderTarget->getSize() * (bounds.v1 - bounds.v0);
         }
     }
     math::vector2 CursorWidget::getWidgetRenderLocation() const

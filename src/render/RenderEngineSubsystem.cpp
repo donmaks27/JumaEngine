@@ -17,10 +17,9 @@ namespace JumaEngine
     {
         for (const auto& renderTarget : m_RenderTargets)
         {
-            RenderTarget* renderTargetPtr = renderTarget.get();
-            if (renderTargetPtr != nullptr)
+            if (renderTarget.updatePtr() != nullptr)
             {
-                renderTargetPtr->destroyRenderTarget();
+                renderTarget->destroyRenderTarget();
             }
         }
         m_RenderTargets.clear();
@@ -44,12 +43,11 @@ namespace JumaEngine
         WidgetsCreator* widgetsCreator = getEngine()->getWidgetsCreator();
 
 		JumaRE::RenderTarget* windowRenderTargetPtr = renderEngine->getRenderTarget(windowData->windowRenderTargetID);
-        JumaRE::RenderTarget* renderTargetPtr = renderEngine->createRenderTarget(windowRenderTargetPtr->getColorFormat(), windowRenderTargetPtr->getSize(), windowRenderTargetPtr->getSampleCount());
         EngineObjectPtr<RenderTarget> windowRenderTarget = createRenderTarget(windowRenderTargetPtr);
-        EngineObjectPtr<RenderTarget> renderTarget = createRenderTarget(renderTargetPtr);
+        EngineObjectPtr<RenderTarget> renderTarget = createRenderTarget(windowRenderTargetPtr->getColorFormat(), windowRenderTargetPtr->getSize(), windowRenderTargetPtr->getSampleCount());
         windowRenderTargetPtr->setSampleCount(JumaRE::TextureSamples::X1);
-        renderEngine->getRenderPipeline()->addRenderTargetDependecy(windowData->windowRenderTargetID, renderTargetPtr->getID());
-        renderTargetPtr->setupRenderStages({ { false } });
+        renderEngine->getRenderPipeline()->addRenderTargetDependecy(windowData->windowRenderTargetID, renderTarget->getRenderTarget()->getID());
+        renderTarget->getRenderTarget()->setupRenderStages({ { false } });
 
         const EngineObjectPtr<ImageWidget> imageWidget = widgetsCreator->createWidget<ImageWidget>();
         imageWidget->setUsingSolidColor(false);
@@ -108,6 +106,12 @@ namespace JumaEngine
         return true;
 	}
 
+    EngineObjectPtr<RenderTarget> RenderEngineSubsystem::createRenderTarget(const JumaRE::TextureFormat format,
+	    const math::uvector2& size, const JumaRE::TextureSamples samples)
+    {
+        JumaRE::RenderEngine* renderEngine = getEngine()->getRenderEngine();
+        return renderEngine != nullptr ? createRenderTarget(renderEngine->createRenderTarget(format, size, samples)) : nullptr;
+    }
     EngineObjectPtr<RenderTarget> RenderEngineSubsystem::createRenderTarget(JumaRE::RenderTarget* renderTarget)
     {
         if (renderTarget == nullptr)
@@ -115,15 +119,15 @@ namespace JumaEngine
             return nullptr;
         }
 
-        EngineObjectPtr<RenderTarget> createdRenderTarget = getEngine()->createObject<RenderTarget>();
-        if (createdRenderTarget == nullptr)
+        EngineObjectPtr<RenderTarget> renderTargetPtr = getEngine()->createObject<RenderTarget>();
+        if (renderTargetPtr == nullptr)
         {
             return nullptr;
         }
 
-        createdRenderTarget->m_RenderTarget = renderTarget;
-        m_RenderTargets.add(createdRenderTarget);
-        return createdRenderTarget;
+        renderTargetPtr->m_RenderTarget = renderTarget;
+        m_RenderTargets.add(renderTargetPtr);
+        return renderTargetPtr;
     }
     EngineObjectPtr<RenderTarget> RenderEngineSubsystem::getWindowRenderTarget(const JumaRE::window_id windowID) const
 	{

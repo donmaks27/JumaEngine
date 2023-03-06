@@ -18,5 +18,11 @@ namespace JumaEngine
         virtual ~TextureBase() override = default;
 
         virtual JumaRE::TextureBase* getTextureBase() const { return nullptr; }
+
+        math::uvector2 getSize() const
+        {
+	        const JumaRE::TextureBase* textureBase = getTextureBase();
+            return textureBase != nullptr ? textureBase->getSize() : math::uvector2{ 0, 0 };
+        }
     };
 }

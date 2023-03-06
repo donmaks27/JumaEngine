@@ -23,7 +23,7 @@ namespace JumaEngine
 		RenderEngineSubsystem() = default;
 		virtual ~RenderEngineSubsystem() override = default;
 
-		EngineObjectPtr<RenderTarget> createRenderTarget(JumaRE::RenderTarget* renderTarget);
+		EngineObjectPtr<RenderTarget> createRenderTarget(JumaRE::TextureFormat format, const math::uvector2& size, JumaRE::TextureSamples samples);
 		EngineObjectPtr<RenderTarget> getWindowRenderTarget(JumaRE::window_id windowID) const;
 
 	protected:
@@ -42,6 +42,8 @@ namespace JumaEngine
 		jarray<EngineObjectWeakPtr<RenderTarget>> m_RenderTargets;
 		jmap<JumaRE::window_id, WindowProxyRenderTarget> m_WindowProxyRenderTargets;
 
+
+		EngineObjectPtr<RenderTarget> createRenderTarget(JumaRE::RenderTarget* renderTarget);
 
 		void createProxyWindowRenderTargets();
 		void onWindowCreated(JumaRE::WindowController* windowController, const JumaRE::WindowData* windowData);

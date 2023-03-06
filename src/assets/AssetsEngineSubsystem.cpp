@@ -51,12 +51,11 @@ namespace JumaEngine
         m_VertexBuffer_Cube = nullptr;
         m_VertexBuffer_Plane2D = nullptr;
 
-        for (auto& materialWeakPtr : m_Materials)
+        for (auto& material : m_Materials)
         {
-            Material* material = materialWeakPtr.get();
-            if (material != nullptr)
+            if (material.updatePtr() != nullptr)
             {
-                material->clearMaterial();
+	            material->clearMaterial();
             }
         }
         m_Materials.clear();
