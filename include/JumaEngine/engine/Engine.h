@@ -46,10 +46,7 @@ namespace JumaEngine
         template<typename T, TEMPLATE_ENABLE(is_base<EngineSubsystem, T>)>
         T* getSubsystem() const { return dynamic_cast<T*>(this->getSubsystem(T::GetClassStatic())); }
         WidgetsCreator* getWidgetsCreator() const { return m_EngineWidgetCreator.get(); }
-
-        const jstring& getEngineContentDirectory() const { return m_EngineContentDirectory; }
-        const jstring& getGameContentDirectory() const { return m_GameContentDirectory; }
-
+        
     protected:
         
         virtual bool initEngine();
@@ -81,9 +78,6 @@ namespace JumaEngine
 
         jmap<EngineSubclass<EngineSubsystem>, EngineObjectPtr<EngineSubsystem>> m_EngineSubsystems;
         EngineObjectPtr<WidgetsCreator> m_EngineWidgetCreator = nullptr;
-        
-        jstring m_EngineContentDirectory = JSTR("./content_engine/");
-        jstring m_GameContentDirectory = JSTR("./content/");
 
 
         jdescriptor_table_pointer<> createObjectDescriptor(const EngineClass* objectClass);

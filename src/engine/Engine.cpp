@@ -80,11 +80,6 @@ namespace JumaEngine
 	        JUTILS_LOG(error, JSTR("Failed to init ConfigEngineSubsystem"));
             return false;
         }
-
-        const jstringID section = JSTR("General");
-        const jstringID key = JSTR("contentFolder");
-        configSubsystem->getValue(JSTR("engine"), section, key, m_EngineContentDirectory);
-        configSubsystem->getValue(JSTR("game"), section, key, m_GameContentDirectory);
         return true;
     }
     bool Engine::initRenderEngine()

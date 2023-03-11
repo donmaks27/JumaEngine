@@ -80,6 +80,9 @@ namespace JumaEngine
         jlist<Mesh> m_Meshes;
         JumaRE::VertexBuffer* m_VertexBuffer_Cube = nullptr;
         JumaRE::VertexBuffer* m_VertexBuffer_Plane2D = nullptr;
+        
+        jstring m_EngineContentDirectory = JSTR("./content_engine/");
+        jstring m_GameContentDirectory = JSTR("./content/");
 
 
 		void onRenderEngineDestroying(JumaRE::RenderEngine* renderEngine) { clear(); }

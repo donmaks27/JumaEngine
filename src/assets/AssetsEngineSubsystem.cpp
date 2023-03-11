@@ -2,6 +2,7 @@
 
 #include "JumaEngine/assets/AssetsEngineSubsystem.h"
 
+#include "JumaEngine/engine/ConfigEngineSubsystem.h"
 #include "JumaEngine/engine/Engine.h"
 
 namespace JumaEngine
@@ -12,6 +13,17 @@ namespace JumaEngine
         {
             return false;
         }
+
+		const ConfigEngineSubsystem* configSubsystem = getEngine()->getSubsystem<ConfigEngineSubsystem>();
+        if (configSubsystem == nullptr)
+        {
+            JUTILS_LOG(error, JSTR("Can't find ConfigEngineSubsystem"));
+	        return false;
+        }
+        const jstringID section = JSTR("General");
+        const jstringID key = JSTR("contentFolder");
+        configSubsystem->getValue(JSTR("engine"), section, key, m_EngineContentDirectory);
+        configSubsystem->getValue(JSTR("game"), section, key, m_GameContentDirectory);
 
         JumaRE::RenderEngine* renderEngine = getEngine()->getRenderEngine();
         renderEngine->registerVertexComponent(m_VertexComponentIDs.add(VertexComponent::Position2D, JSTR("position2D")), { 
@@ -98,11 +110,11 @@ namespace JumaEngine
 
 	const EngineObjectPtr<Texture>& AssetsEngineSubsystem::getEngineTexture(const jstringID& textureName)
 	{
-        return getTexture(m_EngineTextures, textureName, getEngine()->getEngineContentDirectory());
+        return getTexture(m_EngineTextures, textureName, m_EngineContentDirectory);
 	}
 	const EngineObjectPtr<Texture>& AssetsEngineSubsystem::getTexture(const jstringID& textureName)
 	{
-        return getTexture(m_Textures, textureName, getEngine()->getGameContentDirectory());
+        return getTexture(m_Textures, textureName, m_GameContentDirectory);
 	}
 	const EngineObjectPtr<Texture>& AssetsEngineSubsystem::getTexture(jmap<jstringID, EngineObjectPtr<Texture>>& texturesList, const jstringID& textureName, const jstring& contentFolder) const
 	{
@@ -126,11 +138,11 @@ namespace JumaEngine
 
     const EngineObjectPtr<Shader>& AssetsEngineSubsystem::getEngineShader(const jstringID& shaderName)
 	{
-        return getShader(m_EngineShaders, shaderName, getEngine()->getEngineContentDirectory());
+        return getShader(m_EngineShaders, shaderName, m_EngineContentDirectory);
 	}
     const EngineObjectPtr<Shader>& AssetsEngineSubsystem::getShader(const jstringID& shaderName)
     {
-        return getShader(m_Shaders, shaderName, getEngine()->getGameContentDirectory());
+        return getShader(m_Shaders, shaderName, m_GameContentDirectory);
     }
     const EngineObjectPtr<Shader>& AssetsEngineSubsystem::getShader(jmap<jstringID, EngineObjectPtr<Shader>>& shadersList, const jstringID& shaderName, const jstring& contentFolder) const
 	{
