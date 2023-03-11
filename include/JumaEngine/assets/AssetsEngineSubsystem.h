@@ -30,8 +30,9 @@ namespace JumaEngine
 
 		void clear();
 
-		const EngineObjectPtr<Texture>& getEngineTexture(const jstringID& textureName);
-        const EngineObjectPtr<Texture>& getTexture(const jstringID& textureName);
+        jstring getAssetPath(const jstring& assetID) const;
+        
+        EngineObjectPtr<Texture> getTextureAsset(const jstringID& assetID);
 
 		const EngineObjectPtr<Shader>& getEngineShader(const jstringID& shaderName);
         const EngineObjectPtr<Shader>& getShader(const jstringID& shaderName);
@@ -67,9 +68,8 @@ namespace JumaEngine
 
 	private:
 
-        jmap<jstringID, EngineObjectPtr<Texture>> m_EngineTextures;
-        jmap<jstringID, EngineObjectPtr<Texture>> m_Textures;
-
+        jmap<jstringID, EngineObjectPtr<Asset>> m_LoadedAssets;
+        
 		jmap<jstringID, EngineObjectPtr<Shader>> m_EngineShaders;
         jmap<jstringID, EngineObjectPtr<Shader>> m_Shaders;
 
@@ -86,8 +86,9 @@ namespace JumaEngine
 
 
 		void onRenderEngineDestroying(JumaRE::RenderEngine* renderEngine) { clear(); }
-
-		const EngineObjectPtr<Texture>& getTexture(jmap<jstringID, EngineObjectPtr<Texture>>& texturesList, const jstringID& textureName, const jstring& contentFolder) const;
+        
 		const EngineObjectPtr<Shader>& getShader(jmap<jstringID, EngineObjectPtr<Shader>>& shadersList, const jstringID& shaderName, const jstring& contentFolder) const;
+
+        EngineObjectPtr<Asset> loadAsset(const jstringID& assetID, AssetType expectedAssetType);
 	};
 }

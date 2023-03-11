@@ -248,6 +248,22 @@ namespace JumaEngine
 			pointer.addReference();
 			return pointer;
 		}
+		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1>)>
+		EngineObjectPtr<T1> castMove()
+		{
+			T1* object = dynamic_cast<T1*>(Super::updatePtr());
+			if (object == nullptr)
+			{
+				this->operator=(nullptr);
+				return nullptr;
+			}
+			EngineObjectPtr<T1> pointer;
+			pointer.m_ObjectPointer = EngineObjectPtrBase::m_ObjectPointer;
+			pointer.m_CachedObject = object;
+			EngineObjectPtrBase::m_ObjectPointer = nullptr;
+			Super::m_CachedObject = nullptr;
+			return pointer;
+		}
 
 	private:
 

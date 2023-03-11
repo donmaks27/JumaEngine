@@ -2,11 +2,96 @@
 
 #include "JumaEngine/assets/AssetsEngineSubsystem.h"
 
+#include <jutils/configs/json_parser.h>
+
 #include "JumaEngine/engine/ConfigEngineSubsystem.h"
 #include "JumaEngine/engine/Engine.h"
 
 namespace JumaEngine
 {
+    bool LoadAssetFile(const jstring& assetPath, AssetType& outAssetType, json::json_value& outConfig)
+    {
+        static const jstringID assetTypeField = JSTR("assetType");
+        static const jstringID assetTypeTexture = JSTR("texture");
+
+	    const json::json_value config = json::parseFile(assetPath);
+        if (config == nullptr)
+        {
+            JUTILS_LOG(warning, JSTR("Can't find asset file {}"), assetPath);
+	        return false;
+        }
+        const jmap<jstringID, json::json_value>* jsonObject = nullptr;
+        if (!config->tryGetObject(jsonObject))
+        {
+            JUTILS_LOG(warning, JSTR("Invalid asset file {}"), assetPath);
+	        return false;
+        }
+        
+        const json::json_value* typeJsonValue = jsonObject->find(assetTypeField);
+        if (typeJsonValue == nullptr)
+        {
+	        JUTILS_LOG(warning, JSTR("Can't find field \"assetType\" in asset file {}"), assetPath);
+	        return false;
+        }
+        jstringID type = jstringID_NONE;
+        {
+	        jstring typeStr;
+			if ((*typeJsonValue)->tryGetString(typeStr))
+			{
+				type = typeStr;
+			}
+        }
+        if (type == assetTypeTexture)
+        {
+	        outAssetType = AssetType::Texture;
+        }
+        else
+        {
+	        JUTILS_LOG(warning, JSTR("Invalid value in field \"assetType\" in asset file {}"), assetPath);
+            return false;
+        }
+        outConfig = config;
+        return true;
+    }
+    
+    bool ParseTextureAssetFile(const jstring& assetPath, const json::json_value& config, TextureAssetDescription& outDescription)
+    {
+        static const jstringID assetTextureField = JSTR("textureFile");
+        static const jstringID assetTextureFormatField = JSTR("textureFormat");
+        static const jstringID formatRGBA8 = JSTR("RGBA8");
+        
+        jstring jsonString;
+        const jmap<jstringID, json::json_value>& jsonObject = config->asObject();
+        const json::json_value* formatJsonValue = jsonObject.find(assetTextureFormatField);
+        if ((formatJsonValue == nullptr) || !(*formatJsonValue)->tryGetString(jsonString))
+        {
+            JUTILS_LOG(warning, JSTR("Can't find field \"textureFormat\" in asset file {}"), assetPath);
+	        return false;
+        }
+        JumaRE::TextureFormat format = JumaRE::TextureFormat::NONE;
+        const jstringID formatStringID = jsonString;
+        if (formatStringID == formatRGBA8)
+        {
+	        format = JumaRE::TextureFormat::RGBA8;
+        }
+        else
+        {
+	        JUTILS_LOG(warning, JSTR("Invalid value in field \"textureFormat\" in asset file {}"), assetPath);
+            return false;
+        }
+
+        const json::json_value* textureJsonValue = jsonObject.find(assetTextureField);
+        if ((textureJsonValue == nullptr) || !(*textureJsonValue)->tryGetString(jsonString))
+        {
+            JUTILS_LOG(warning, JSTR("Can't find field \"textureFile\" in asset file {}"), assetPath);
+	        return false;
+        }
+
+        outDescription.textureDataPath = std::move(jsonString);
+        outDescription.textureFormat = format;
+        return true;
+    }
+
 	bool AssetsEngineSubsystem::initSubsystem()
 	{
 		if (!Super::initSubsystem())
@@ -24,6 +109,11 @@ namespace JumaEngine
         const jstringID key = JSTR("contentFolder");
         configSubsystem->getValue(JSTR("engine"), section, key, m_EngineContentDirectory);
         configSubsystem->getValue(JSTR("game"), section, key, m_GameContentDirectory);
+        if (m_EngineContentDirectory == m_GameContentDirectory)
+        {
+            JUTILS_LOG(error, JSTR("Engine content directory is the same as game content directory ({})"), m_EngineContentDirectory);
+	        return false;
+        }
 
         JumaRE::RenderEngine* renderEngine = getEngine()->getRenderEngine();
         renderEngine->registerVertexComponent(m_VertexComponentIDs.add(VertexComponent::Position2D, JSTR("position2D")), { 
@@ -90,52 +180,13 @@ namespace JumaEngine
         m_Shaders.clear();
         m_EngineShaders.clear();
         
-        for (auto& texture : m_Textures)
+        for (const auto& asset : m_LoadedAssets)
         {
-            if (texture.value != nullptr)
-            {
-	            texture.value->clearTexture();
-            }
+	        asset.value->clearAsset();
         }
-        for (auto& texture : m_EngineTextures)
-        {
-            if (texture.value != nullptr)
-            {
-	            texture.value->clearTexture();
-            }
-        }
-        m_Textures.clear();
-        m_EngineTextures.clear();
+        m_LoadedAssets.clear();
 	}
-
-	const EngineObjectPtr<Texture>& AssetsEngineSubsystem::getEngineTexture(const jstringID& textureName)
-	{
-        return getTexture(m_EngineTextures, textureName, m_EngineContentDirectory);
-	}
-	const EngineObjectPtr<Texture>& AssetsEngineSubsystem::getTexture(const jstringID& textureName)
-	{
-        return getTexture(m_Textures, textureName, m_GameContentDirectory);
-	}
-	const EngineObjectPtr<Texture>& AssetsEngineSubsystem::getTexture(jmap<jstringID, EngineObjectPtr<Texture>>& texturesList, const jstringID& textureName, const jstring& contentFolder) const
-	{
-        const EngineObjectPtr<Texture>* texturePtr = texturesList.find(textureName);
-        if (texturePtr != nullptr)
-        {
-	        return *texturePtr;
-        }
-
-        EngineObjectPtr<Texture>& texture = texturesList.add(textureName, getEngine()->createObject<Texture>());
-        if (!texture->loadTexture(textureName, contentFolder))
-        {
-            JUTILS_LOG(error, JSTR("Failed to load texture {} from {}"), textureName.toString(), contentFolder);
-            texture = nullptr;
-            return texture;
-        }
-
-        JUTILS_LOG(correct, JSTR("Loaded texture {} from {}"), textureName.toString(), contentFolder);
-        return texture;
-	}
-
+    
     const EngineObjectPtr<Shader>& AssetsEngineSubsystem::getEngineShader(const jstringID& shaderName)
 	{
         return getShader(m_EngineShaders, shaderName, m_EngineContentDirectory);
@@ -288,4 +339,90 @@ namespace JumaEngine
         } }, data));
         return m_VertexBuffer_Plane2D;
     }
+
+    jstring AssetsEngineSubsystem::getAssetPath(const jstring& assetID) const
+	{
+        if ((assetID.getSize() <= 2) || (assetID[1] != ':'))
+	    {
+		    return {};
+	    }
+	    switch (assetID[0])
+	    {
+	    case 'e': return m_EngineContentDirectory + assetID.substr(2);
+	    case 'g': return m_GameContentDirectory + assetID.substr(2);
+        default: ;
+	    }
+        return {};
+	}
+
+    EngineObjectPtr<Asset> AssetsEngineSubsystem::loadAsset(const jstringID& assetID, const AssetType expectedAssetType)
+    {
+        const jstring assetIDStr = assetID.toString();
+        const EngineObjectPtr<Asset>* assetPtr = m_LoadedAssets.find(assetID);
+        if (assetPtr != nullptr)
+        {
+            const AssetType type = (*assetPtr)->getAssetType();
+            if (type != expectedAssetType)
+            {
+                JUTILS_LOG(warning, JSTR("Asset type {} of asset {} is not expected type {}"), type, assetIDStr, expectedAssetType);
+	            return nullptr;
+            }
+	        return assetPtr->cast<Texture>();
+        }
+
+        jstring assetPath = getAssetPath(assetIDStr);
+        if (assetPath.isEmpty())
+        {
+            JUTILS_LOG(warning, JSTR("Invalid asset ID {}"), assetIDStr);
+	        return nullptr;
+        }
+        assetPath += JSTR(".json");
+
+        AssetType type;
+        json::json_value config = nullptr;
+        if (!LoadAssetFile(assetPath, type, config))
+        {
+	        JUTILS_LOG(warning, JSTR("Failed to load asset {}"), assetIDStr);
+	        return nullptr;
+        }
+        if (type != expectedAssetType)
+        {
+	        JUTILS_LOG(warning, JSTR("Failed to load asset {}"), assetIDStr);
+	        return nullptr;
+        }
+
+        EngineObjectPtr<Asset> assetObject = nullptr;
+        switch (type)
+        {
+        case AssetType::Texture:
+	        {
+		        TextureAssetDescription description;
+		        if (!ParseTextureAssetFile(assetPath, config, description))
+		        {
+		            JUTILS_LOG(warning, JSTR("Failed parse asset {}"), assetIDStr);
+			        return nullptr;
+		        }
+
+                EngineObjectPtr<Texture> texture = getEngine()->createObject<Texture>();
+		        if ((texture == nullptr) || !texture->loadAsset(description))
+		        {
+			        JUTILS_LOG(error, JSTR("Failed to load texture asset {}"), assetIDStr);
+		            return nullptr;
+		        }
+                assetObject = std::move(texture);
+	        }
+            break;
+        default: ;
+        }
+
+        JUTILS_LOG(correct, JSTR("Loaded asset {} ({})"), assetIDStr, expectedAssetType);
+        assetObject->m_AssetID = assetID;
+        m_LoadedAssets.add(assetID, assetObject);
+        return assetObject;
+    }
+    EngineObjectPtr<Texture> AssetsEngineSubsystem::getTextureAsset(const jstringID& assetID)
+	{
+        EngineObjectPtr<Asset> asset = loadAsset(assetID, AssetType::Texture);
+        return asset != nullptr ? asset.castMove<Texture>() : nullptr;
+	}
 }

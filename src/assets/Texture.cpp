@@ -3,10 +3,10 @@
 #include "JumaEngine/assets/Texture.h"
 
 #include <jutils/configs/json_parser.h>
-#include <jutils/math/vector3.h>
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 
+#include "JumaEngine/assets/AssetsEngineSubsystem.h"
 #include "JumaEngine/engine/Engine.h"
 
 namespace JumaEngine
@@ -19,8 +19,8 @@ namespace JumaEngine
         }
         return JumaRE::TextureFormat::NONE;
     }
-    
-    bool Texture::loadTexture(const jstringID& textureName, const jstring& contentFolder)
+
+    bool Texture::loadAsset(const TextureAssetDescription& description)
     {
         JumaRE::RenderEngine* renderEngine = getEngine()->getRenderEngine();
         if (renderEngine == nullptr)
@@ -29,37 +29,8 @@ namespace JumaEngine
             return false;
         }
 
-        const jstring textureNameString = textureName.toString();
-        const jstring configFilePath = contentFolder + JSTR("textures/") + textureNameString + JSTR(".json");
-        const json::json_value configJsonValue = json::parseFile(configFilePath);
-        if (configJsonValue == nullptr)
-        {
-            JUTILS_LOG(error, JSTR("Failed to parse texture config file {}"), configFilePath.getString());
-            return false;
-        }
-
-        const jmap<jstringID, json::json_value>& configJsonObject = configJsonValue->asObject();
-        const json::json_value* filePathJsonPtr = configJsonObject.find(JSTR("filePath"));
-        if (filePathJsonPtr == nullptr)
-        {
-            JUTILS_LOG(error, JSTR("Failed to parse field \"filePath\" from texture config file {}"), configFilePath.getString());
-            return false;
-        }
-        const jstring& textureFilePath = contentFolder + (*filePathJsonPtr)->asString();
-
-        const json::json_value* formatJsonPtr = configJsonObject.find(JSTR("format"));
-        if (formatJsonPtr == nullptr)
-        {
-            JUTILS_LOG(error, JSTR("Failed to parse field \"format\" from texture config file {}"), configFilePath.getString());
-            return false;
-        }
-        const jstring& textureFormatString = (*formatJsonPtr)->asString();
-        const JumaRE::TextureFormat textureFormat = ParseTextureFormatString(textureFormatString);
-        if (textureFormat == JumaRE::TextureFormat::NONE)
-        {
-            JUTILS_LOG(error, JSTR("Failed to parse field \"format\" from texture config file {}"), configFilePath.getString());
-            return false;
-        }
+        const AssetsEngineSubsystem* assetsSubsystem = getEngine()->getSubsystem<AssetsEngineSubsystem>();
+        const jstring textureFilePath = assetsSubsystem->getAssetPath(description.textureDataPath);
 
         math::ivector2 textureSize;
         int32 componentsCount = 0;
@@ -70,11 +41,11 @@ namespace JumaEngine
             return false;
         }
 
-        JumaRE::Texture* texture = renderEngine->createTexture(textureSize, textureFormat, data);
+        JumaRE::Texture* texture = renderEngine->createTexture(textureSize, description.textureFormat, data);
         stbi_image_free(data);
         if (texture == nullptr)
         {
-            JUTILS_LOG(error, JSTR("Failed to create texture {}"), textureNameString);
+            JUTILS_LOG(error, JSTR("Failed to create texture from file {}"), textureFilePath);
             return false;
         }
 

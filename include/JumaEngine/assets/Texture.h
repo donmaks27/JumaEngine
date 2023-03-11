@@ -10,7 +10,11 @@
 
 namespace JumaEngine
 {
-    class AssetsEngineSubsystem;
+    struct TextureAssetDescription
+    {
+	    jstring textureDataPath;
+        JumaRE::TextureFormat textureFormat = JumaRE::TextureFormat::NONE;
+    };
 
     class Texture final : public TextureBase
     {
@@ -19,7 +23,7 @@ namespace JumaEngine
         friend AssetsEngineSubsystem;
 
     public:
-        Texture() = default;
+        Texture() : TextureBase(AssetType::Texture) {}
         virtual ~Texture() override = default;
 
         JumaRE::Texture* getTexture() const { return m_Texture; }
@@ -27,6 +31,7 @@ namespace JumaEngine
 
     protected:
 
+        virtual void clearAsset() override { clearTexture(); }
         virtual void onObjectDescriptorDestroying() override;
 
     private:
@@ -34,7 +39,7 @@ namespace JumaEngine
         JumaRE::Texture* m_Texture = nullptr;
 
         
-        bool loadTexture(const jstringID& textureName, const jstring& contentFolder);
+        bool loadAsset(const TextureAssetDescription& description);
         void clearTexture();
     };
 }
