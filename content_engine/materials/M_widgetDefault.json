@@ -1,0 +1,81 @@
+{
+    "assetType": "material",
+    
+    "shaderFiles": {
+        "vertex": {
+            "OpenGL": "e:shaders/widgetDefault.vert",
+            "Vulkan": "e:shaders/widgetDefault.vert.spv",
+            "DirectX11": "e:shaders/widgetDefaultInverted.vert.hlsl.obj",
+            "DirectX12": "e:shaders/widgetDefaultInverted.vert.hlsl.obj"
+        },
+        "fragment": {
+            "OpenGL": "e:shaders/widgetDefault.frag",
+            "Vulkan": "e:shaders/widgetDefault.frag.spv",
+            "DirectX11": "e:shaders/widgetDefault.frag.hlsl.obj",
+            "DirectX12": "e:shaders/widgetDefault.frag.hlsl.obj"
+        }
+    },
+    "vertexComponents": [ "position2D", "textureCoords" ],
+    "uniforms": {
+        "uLocation": {
+            "type": "vec2",
+            "stages": [ "vertex" ],
+            "shaderLocation": 0,
+            "shaderBlockOffset": 0
+        },
+        "uSize": {
+            "type": "vec2",
+            "stages": [ "vertex" ],
+            "shaderLocation": 0,
+            "shaderBlockOffset": 8
+        },
+        "uDepth": {
+            "type": "float",
+            "stages": [ "vertex" ],
+            "shaderLocation": 0,
+            "shaderBlockOffset": 16
+        },
+        "uTextureOffset": {
+            "type": "vec2",
+            "stages": [ "vertex" ],
+            "shaderLocation": 1,
+            "shaderBlockOffset": 0
+        },
+        "uTextureScale": {
+            "type": "vec2",
+            "stages": [ "vertex" ],
+            "shaderLocation": 1,
+            "shaderBlockOffset": 8
+        },
+        "uTexture": {
+            "type": "texture",
+            "stages": [ "fragment" ],
+            "shaderLocation": 2,
+            "shaderBlockOffset": 0
+        }
+    },
+
+    "materialParams": [
+        {
+            "uniform": "uTexture",
+            "name": "texture",
+            "defaultValue": null
+        },
+        {
+            "uniform": "uTextureOffset",
+            "name": "offset",
+            "defaultValue": { 
+                "x": 0, 
+                "y": 0 
+            }
+        },
+        {
+            "uniform": "uTextureScale",
+            "name": "scale",
+            "defaultValue": { 
+                "x": 1, 
+                "y": 1 
+            }
+        }
+    ]
+}

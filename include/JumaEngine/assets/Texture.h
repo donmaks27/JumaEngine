@@ -10,7 +10,7 @@
 
 namespace JumaEngine
 {
-    struct TextureAssetDescription
+    struct TextureAssetCreateInfo
     {
 	    jstring textureDataPath;
         JumaRE::TextureFormat textureFormat = JumaRE::TextureFormat::NONE;
@@ -31,15 +31,13 @@ namespace JumaEngine
 
     protected:
 
-        virtual void clearAsset() override { clearTexture(); }
-        virtual void onObjectDescriptorDestroying() override;
+        virtual void clearAsset() override;
 
     private:
 
         JumaRE::Texture* m_Texture = nullptr;
 
         
-        bool loadAsset(const TextureAssetDescription& description);
-        void clearTexture();
+        bool loadAsset(const TextureAssetCreateInfo& createInfo);
     };
 }

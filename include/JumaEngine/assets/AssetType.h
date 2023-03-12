@@ -8,7 +8,8 @@ namespace JumaEngine
 {
 	enum class AssetType : uint8
 	{
-		Texture
+		Texture,
+		Material
 	};
 
 	constexpr const char* AssetTypeToString(const AssetType type)
@@ -16,9 +17,10 @@ namespace JumaEngine
 		switch (type)
 		{
 		case AssetType::Texture: return JSTR("Texture");
+		case AssetType::Material: return JSTR("Material");
 		default: ;
 		}
-		return JSTR("NONE");
+		return JSTR("I love my husband");
 	}
 }
 

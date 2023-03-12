@@ -2,7 +2,6 @@
 
 #include "JumaEngine/assets/Texture.h"
 
-#include <jutils/configs/json_parser.h>
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 
@@ -20,7 +19,7 @@ namespace JumaEngine
         return JumaRE::TextureFormat::NONE;
     }
 
-    bool Texture::loadAsset(const TextureAssetDescription& description)
+    bool Texture::loadAsset(const TextureAssetCreateInfo& createInfo)
     {
         JumaRE::RenderEngine* renderEngine = getEngine()->getRenderEngine();
         if (renderEngine == nullptr)
@@ -30,7 +29,7 @@ namespace JumaEngine
         }
 
         const AssetsEngineSubsystem* assetsSubsystem = getEngine()->getSubsystem<AssetsEngineSubsystem>();
-        const jstring textureFilePath = assetsSubsystem->getAssetPath(description.textureDataPath);
+        const jstring textureFilePath = assetsSubsystem->getAssetPath(createInfo.textureDataPath);
 
         math::ivector2 textureSize;
         int32 componentsCount = 0;
@@ -41,7 +40,7 @@ namespace JumaEngine
             return false;
         }
 
-        JumaRE::Texture* texture = renderEngine->createTexture(textureSize, description.textureFormat, data);
+        JumaRE::Texture* texture = renderEngine->createTexture(textureSize, createInfo.textureFormat, data);
         stbi_image_free(data);
         if (texture == nullptr)
         {
@@ -53,15 +52,12 @@ namespace JumaEngine
         return true;
     }
 
-    void Texture::onObjectDescriptorDestroying()
+    void Texture::clearAsset()
     {
-        onDestroying.call(this);
-        clearTexture();
-    }
-    void Texture::clearTexture()
-    {
-        if (m_Texture != nullptr)
+	    if (m_Texture != nullptr)
         {
+            Super::clearAsset();
+
             getEngine()->getRenderEngine()->destroyTexture(m_Texture);
             m_Texture = nullptr;
         }

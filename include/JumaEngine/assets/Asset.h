@@ -31,7 +31,8 @@ namespace JumaEngine
 
 	protected:
 
-		virtual void clearAsset() {}
+		virtual void clearAsset() { onDestroying.call(this); }
+		virtual void onObjectDescriptorDestroying() override { clearAsset(); }
 		
 	private:
 

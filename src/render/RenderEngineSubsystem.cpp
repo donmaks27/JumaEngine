@@ -17,7 +17,7 @@ namespace JumaEngine
     {
         for (const auto& renderTarget : m_RenderTargets)
         {
-            if (renderTarget.updatePtr() != nullptr)
+            if (renderTarget != nullptr)
             {
                 renderTarget->destroyRenderTarget();
             }
@@ -47,7 +47,7 @@ namespace JumaEngine
         EngineObjectPtr<RenderTarget> renderTarget = createRenderTarget(windowRenderTargetPtr->getColorFormat(), windowRenderTargetPtr->getSize(), windowRenderTargetPtr->getSampleCount());
         windowRenderTargetPtr->setSampleCount(JumaRE::TextureSamples::X1);
         renderEngine->getRenderPipeline()->addRenderTargetDependecy(windowData->windowRenderTargetID, renderTarget->getRenderTarget()->getID());
-        renderTarget->getRenderTarget()->setupRenderStages({ { false } });
+        windowRenderTarget->getRenderTarget()->setupRenderStages({ { false } });
 
         const EngineObjectPtr<ImageWidget> imageWidget = widgetsCreator->createWidget<ImageWidget>();
         imageWidget->setUsingSolidColor(false);
@@ -56,12 +56,10 @@ namespace JumaEngine
         {
             imageWidget->setTextureScale({ 1.0f, -1.0f });
         }
-
-        const EngineObjectPtr<CursorWidget> cursorWidget = widgetsCreator->createWidget<CursorWidget>();
-
+        
         const EngineObjectPtr<OverlayWidget> overlayWidget = widgetsCreator->createWidget<OverlayWidget>();
         overlayWidget->addWidget(imageWidget);
-        overlayWidget->addWidget(cursorWidget);
+        overlayWidget->addWidget(widgetsCreator->createWidget<CursorWidget>());
 
         EngineObjectPtr<WidgetContext> widgetContext = widgetsCreator->createWidgetContext({ windowRenderTarget, 0 });
         widgetContext->setRootWidget(overlayWidget);

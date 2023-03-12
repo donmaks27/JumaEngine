@@ -4,6 +4,8 @@
 
 #include <jutils/configs/json_parser.h>
 
+#include "JumaEngine/assets/MaterialBase.h"
+#include "JumaEngine/assets/MaterialInstance.h"
 #include "JumaEngine/engine/ConfigEngineSubsystem.h"
 #include "JumaEngine/engine/Engine.h"
 
@@ -13,6 +15,7 @@ namespace JumaEngine
     {
         static const jstringID assetTypeField = JSTR("assetType");
         static const jstringID assetTypeTexture = JSTR("texture");
+        static const jstringID assetTypeMaterial = JSTR("material");
 
 	    const json::json_value config = json::parseFile(assetPath);
         if (config == nullptr)
@@ -41,10 +44,8 @@ namespace JumaEngine
 				type = typeStr;
 			}
         }
-        if (type == assetTypeTexture)
-        {
-	        outAssetType = AssetType::Texture;
-        }
+        if (type == assetTypeTexture) { outAssetType = AssetType::Texture; }
+        else if (type == assetTypeMaterial) { outAssetType = AssetType::Material; }
         else
         {
 	        JUTILS_LOG(warning, JSTR("Invalid value in field \"assetType\" in asset file {}"), assetPath);
@@ -54,7 +55,7 @@ namespace JumaEngine
         return true;
     }
     
-    bool ParseTextureAssetFile(const jstring& assetPath, const json::json_value& config, TextureAssetDescription& outDescription)
+    bool ParseTextureAssetFile(const jstring& assetPath, const json::json_value& config, TextureAssetCreateInfo& outCreateInfo)
     {
         static const jstringID assetTextureField = JSTR("textureFile");
         static const jstringID assetTextureFormatField = JSTR("textureFormat");
@@ -68,7 +69,7 @@ namespace JumaEngine
             JUTILS_LOG(warning, JSTR("Can't find field \"textureFormat\" in asset file {}"), assetPath);
 	        return false;
         }
-        JumaRE::TextureFormat format = JumaRE::TextureFormat::NONE;
+        JumaRE::TextureFormat format;
         const jstringID formatStringID = jsonString;
         if (formatStringID == formatRGBA8)
         {
@@ -87,10 +88,186 @@ namespace JumaEngine
 	        return false;
         }
 
-        outDescription.textureDataPath = std::move(jsonString);
-        outDescription.textureFormat = format;
+        outCreateInfo.textureDataPath = std::move(jsonString);
+        outCreateInfo.textureFormat = format;
         return true;
     }
+
+    bool ParseMaterialAssetFile_ShaderFiles(const jstring& assetPath, const jmap<jstringID, json::json_value>& jsonObject, 
+        const JumaRE::RenderAPI renderAPI, jmap<JumaRE::ShaderStageFlags, jstring>& outShaderFiles)
+    {
+	    static const jstringID assetShadersField = JSTR("shaderFiles");
+        static const jstringID shaderVertex = JSTR("vertex");
+        static const jstringID shaderFragment = JSTR("fragment");
+
+        const json::json_value* shadersValue = jsonObject.find(assetShadersField);
+        const jmap<jstringID, json::json_value>* shadersObject = nullptr;
+        if ((shadersValue == nullptr) || !(*shadersValue)->tryGetObject(shadersObject))
+        {
+	        JUTILS_LOG(warning, JSTR("Can't get field \"shaderFiles\" in asset file {}"), assetPath);
+	        return false;
+        }
+        jmap<JumaRE::ShaderStageFlags, jstring> shaderFiles;
+        for (const auto& shaderValue : *shadersObject)
+        {
+            JumaRE::ShaderStageFlags stage;
+	        if (shaderValue.key == shaderVertex)        { stage = JumaRE::ShaderStageFlags::SHADER_STAGE_VERTEX; }
+            else if (shaderValue.key == shaderFragment) { stage = JumaRE::ShaderStageFlags::SHADER_STAGE_FRAGMENT; }
+            else { continue; }
+
+            const jmap<jstringID, json::json_value>* shaderFilesObject = nullptr;
+            if ((shaderValue.value == nullptr) || !shaderValue.value->tryGetObject(shaderFilesObject))
+            {
+	            continue;
+            }
+            jstring shaderFile;
+            const json::json_value* shaderFileValue = shaderFilesObject->find(JumaRE::RenderAPIToString(renderAPI));
+            if ((shaderFileValue == nullptr) || !(*shaderFileValue)->tryGetString(shaderFile))
+            {
+	            continue;
+            }
+
+            shaderFiles.add(stage, shaderFile);
+        }
+        if (!shaderFiles.contains(JumaRE::ShaderStageFlags::SHADER_STAGE_VERTEX) || !shaderFiles.contains(JumaRE::ShaderStageFlags::SHADER_STAGE_FRAGMENT))
+        {
+	        JUTILS_LOG(warning, JSTR("Failed parse material asset file {}({}): there should be at least vertex AND fragment shader files"), assetPath, JumaRE::RenderAPIToString(renderAPI));
+	        return false;
+        }
+
+        outShaderFiles = std::move(shaderFiles);
+        return true;
+    }
+    bool ParseMaterialAssetFile_VertexComponents(const jstring& assetPath, const jmap<jstringID, json::json_value>& jsonObject, 
+        jset<jstringID>& outComponents)
+    {
+	    static const jstringID assetComponenentsField = JSTR("vertexComponents");
+
+	    const json::json_value* vertexComponentsValue = jsonObject.find(assetComponenentsField);
+        if (vertexComponentsValue == nullptr)
+        {
+            JUTILS_LOG(error, JSTR("Failed to find \"vertexComponents\" field in asset file {}"), assetPath);
+            return false;
+        }
+        jset<jstringID> vertexComponents;
+        for (const auto& vertexComponentValue : (*vertexComponentsValue)->asArray())
+        {
+	        jstring vertexComponent;
+            if ((vertexComponentValue != nullptr) && vertexComponentValue->tryGetString(vertexComponent))
+            {
+                vertexComponents.add(vertexComponent);
+            }
+        }
+        if (vertexComponents.isEmpty())
+        {
+	        JUTILS_LOG(error, JSTR("Failed parse material asset file {}: there should be at least one vertex component"), assetPath);
+            return false;
+        }
+
+        outComponents = std::move(vertexComponents);
+        return true;
+    }
+    jmap<jstringID, JumaRE::ShaderUniform> ParseMaterialAssetFile_Uniforms(const jmap<jstringID, json::json_value>& jsonObject)
+    {
+	    static const jstringID assetUniformsField = JSTR("uniforms");
+	    static const jstringID typeStringID = JSTR("type");
+	    static const jstringID stagesStringID = JSTR("stages");
+	    static const jstringID shaderLocationStringID = JSTR("shaderLocation");
+	    static const jstringID shaderOffsetStringID = JSTR("shaderBlockOffset");
+
+        const json::json_value* uniformsValue = jsonObject.find(assetUniformsField);
+        const jmap<jstringID, json::json_value>* uniformsObject = nullptr;
+        if ((uniformsValue == nullptr) || !(*uniformsValue)->tryGetObject(uniformsObject))
+        {
+	        return {};
+        }
+        jmap<jstringID, JumaRE::ShaderUniform> uniforms;
+        for (const auto& uniform : *uniformsObject)
+        {
+	        const jmap<jstringID, json::json_value>* uniformObject = nullptr;
+            if ((uniform.value == nullptr) || !uniform.value->tryGetObject(uniformObject))
+            {
+	            continue;
+            }
+
+            jstring uniformTypeString;
+            const json::json_value* typeValue = uniformObject->find(typeStringID);
+            if ((typeValue == nullptr) || !(*typeValue)->tryGetString(uniformTypeString))
+            {
+	            continue;
+            }
+            JumaRE::ShaderUniformType uniformType;
+            if (uniformTypeString == JSTR("float")) { uniformType = JumaRE::ShaderUniformType::Float; }
+            else if (uniformTypeString == JSTR("vec2")) { uniformType = JumaRE::ShaderUniformType::Vec2; }
+            else if (uniformTypeString == JSTR("vec4")) { uniformType = JumaRE::ShaderUniformType::Vec4; }
+            else if (uniformTypeString == JSTR("mat4")) { uniformType = JumaRE::ShaderUniformType::Mat4; }
+            else if (uniformTypeString == JSTR("texture")) { uniformType = JumaRE::ShaderUniformType::Texture; }
+            else { continue; }
+
+            const jarray<json::json_value>* stagesArray = nullptr;
+            const json::json_value* stagesValue = uniformObject->find(stagesStringID);
+            if ((stagesValue == nullptr) || !(*stagesValue)->tryGetArray(stagesArray))
+            {
+	            continue;
+            }
+            uint8 uniformStages = 0;
+            for (const auto& stageValue : *stagesArray)
+            {
+	            jstring uniformStageString;
+                if ((stageValue == nullptr) || !stageValue->tryGetString(uniformStageString))
+                {
+	                continue;
+                }
+                if (uniformStageString == JSTR("vertex"))
+                {
+	                uniformStages |= JumaRE::SHADER_STAGE_VERTEX;
+                }
+                else if (uniformStageString == JSTR("fragment"))
+                {
+	                uniformStages |= JumaRE::SHADER_STAGE_FRAGMENT;
+                }
+            }
+
+            uint32 uniformLocation = 0;
+            const json::json_value* uniformLocationValue = uniformObject->find(shaderLocationStringID);
+            if ((uniformLocationValue == nullptr) || !(*uniformLocationValue)->tryGetNumber(uniformLocation))
+            {
+	            continue;
+            }
+
+            uint32 uniformBlockOffset = 0;
+            const json::json_value* uniformBlockOffsetValue = uniformObject->find(shaderOffsetStringID);
+            if ((uniformBlockOffsetValue == nullptr) || !(*uniformBlockOffsetValue)->tryGetNumber(uniformBlockOffset))
+            {
+	            continue;
+            }
+
+            uniforms.add(uniform.key, { uniformType, uniformStages, uniformLocation, uniformBlockOffset });
+        }
+        return uniforms;
+    }
+    bool ParseMaterialAssetFile(const jstring& assetPath, const json::json_value& config, const JumaRE::RenderAPI renderAPI, 
+        MaterialBaseCreateInfo& outCreateInfo)
+    {
+        const jmap<jstringID, json::json_value>& jsonObject = config->asObject();
+        jmap<JumaRE::ShaderStageFlags, jstring> shaderFiles;
+        if (!ParseMaterialAssetFile_ShaderFiles(assetPath, jsonObject, renderAPI, shaderFiles))
+        {
+	        return false;
+        }
+        jset<jstringID> vertexComponents;
+        if (!ParseMaterialAssetFile_VertexComponents(assetPath, jsonObject, vertexComponents))
+        {
+	        return false;
+        }
+        outCreateInfo = { std::move(shaderFiles), std::move(vertexComponents), ParseMaterialAssetFile_Uniforms(jsonObject) };
+        return true;
+    }
+    /*bool ParseMaterialInstanceAssetFile(const jstring& assetPath, const json::json_value& config, jstringID& outParentAssetID, 
+        MaterialInstanceCreateInfo& outCreateInfo)
+    {
+	    
+    }*/
 
 	bool AssetsEngineSubsystem::initSubsystem()
 	{
@@ -152,33 +329,6 @@ namespace JumaEngine
         renderEngine->destroyVertexBuffer(m_VertexBuffer_Plane2D);
         m_VertexBuffer_Cube = nullptr;
         m_VertexBuffer_Plane2D = nullptr;
-
-        for (auto& material : m_Materials)
-        {
-            if (material.updatePtr() != nullptr)
-            {
-	            material->clearMaterial();
-            }
-        }
-        m_Materials.clear();
-        m_GlobalMaterialParams.clear();
-
-        for (auto& shader : m_Shaders)
-        {
-            if (shader.value != nullptr)
-            {
-	            shader.value->clearShader();
-            }
-        }
-        for (auto& shader : m_EngineShaders)
-        {
-            if (shader.value != nullptr)
-            {
-	            shader.value->clearShader();
-            }
-        }
-        m_Shaders.clear();
-        m_EngineShaders.clear();
         
         for (const auto& asset : m_LoadedAssets)
         {
@@ -187,56 +337,6 @@ namespace JumaEngine
         m_LoadedAssets.clear();
 	}
     
-    const EngineObjectPtr<Shader>& AssetsEngineSubsystem::getEngineShader(const jstringID& shaderName)
-	{
-        return getShader(m_EngineShaders, shaderName, m_EngineContentDirectory);
-	}
-    const EngineObjectPtr<Shader>& AssetsEngineSubsystem::getShader(const jstringID& shaderName)
-    {
-        return getShader(m_Shaders, shaderName, m_GameContentDirectory);
-    }
-    const EngineObjectPtr<Shader>& AssetsEngineSubsystem::getShader(jmap<jstringID, EngineObjectPtr<Shader>>& shadersList, const jstringID& shaderName, const jstring& contentFolder) const
-	{
-        EngineObjectPtr<Shader>* shaderPtr = shadersList.find(shaderName);
-        if (shaderPtr != nullptr)
-        {
-            return *shaderPtr;
-        }
-
-        EngineObjectPtr<Shader>& shader = shadersList.add(shaderName, getEngine()->createObject<Shader>());
-        if (!shader->loadShader(shaderName, contentFolder))
-        {
-            JUTILS_LOG(error, JSTR("Failed to create shader {} from {}"), shaderName.toString(), contentFolder);
-            shader = nullptr;
-            return shader;
-        }
-        JUTILS_LOG(correct, JSTR("Created shader {} from {}"), shaderName.toString(), contentFolder);
-        return shader;
-	}
-
-    EngineObjectPtr<Material> AssetsEngineSubsystem::createMaterial(const EngineObjectPtr<Shader>& shader)
-    {
-        EngineObjectPtr<Material> material = getEngine()->createObject<Material>();
-        if (!material->createMaterial(shader))
-        {
-            JUTILS_LOG(error, JSTR("Failed to create material from shader {}"), shader != nullptr ? shader->getName().toString() : JSTR("NULL"));
-            return nullptr;
-        }
-        m_Materials.add(material);
-        return material;
-    }
-    EngineObjectPtr<Material> AssetsEngineSubsystem::createMaterial(const EngineObjectPtr<Material>& baseMaterial)
-    {
-        EngineObjectPtr<Material> material = getEngine()->createObject<Material>();
-        if (!material->createMaterial(baseMaterial))
-        {
-            JUTILS_LOG(error, JSTR("Failed to create material instance"));
-            return nullptr;
-        }
-        m_Materials.add(material);
-        return material;
-    }
-
     jstringID AssetsEngineSubsystem::getVertexComponentID(const VertexComponent component) const
 	{
         const jstringID* componentID = m_VertexComponentIDs.find(component);
@@ -367,7 +467,7 @@ namespace JumaEngine
                 JUTILS_LOG(warning, JSTR("Asset type {} of asset {} is not expected type {}"), type, assetIDStr, expectedAssetType);
 	            return nullptr;
             }
-	        return assetPtr->cast<Texture>();
+	        return *assetPtr;
         }
 
         jstring assetPath = getAssetPath(assetIDStr);
@@ -396,20 +496,50 @@ namespace JumaEngine
         {
         case AssetType::Texture:
 	        {
-		        TextureAssetDescription description;
-		        if (!ParseTextureAssetFile(assetPath, config, description))
+		        TextureAssetCreateInfo createInfo;
+		        if (!ParseTextureAssetFile(assetPath, config, createInfo))
 		        {
 		            JUTILS_LOG(warning, JSTR("Failed parse asset {}"), assetIDStr);
 			        return nullptr;
 		        }
 
                 EngineObjectPtr<Texture> texture = getEngine()->createObject<Texture>();
-		        if ((texture == nullptr) || !texture->loadAsset(description))
+		        if ((texture == nullptr) || !texture->loadAsset(createInfo))
 		        {
-			        JUTILS_LOG(error, JSTR("Failed to load texture asset {}"), assetIDStr);
+			        JUTILS_LOG(error, JSTR("Failed to create texture asset {}"), assetIDStr);
 		            return nullptr;
 		        }
                 assetObject = std::move(texture);
+	        }
+            break;
+        case AssetType::Material:
+	        {
+                static const jstringID parentStringID = JSTR("parent");
+		        if (config->asObject().contains(parentStringID))
+		        {
+			        return nullptr;
+		        }
+                else
+                {
+                    MaterialBaseCreateInfo createInfo;
+	                if (!ParseMaterialAssetFile(assetPath, config, getEngine()->getRenderEngine()->getRenderAPI(), createInfo))
+	                {
+		                JUTILS_LOG(error, JSTR("Failed to parse material asset file {}"), assetIDStr);
+						return nullptr;
+	                }
+                    for (auto& shaderFile : createInfo.shaderFiles)
+                    {
+	                    shaderFile.value = getAssetPath(shaderFile.value);
+                    }
+
+                    EngineObjectPtr<MaterialBase> material = getEngine()->createObject<MaterialBase>();
+                    if ((material == nullptr) || !material->loadMaterial(createInfo))
+                    {
+	                    JUTILS_LOG(error, JSTR("Failed to load material asset {}"), assetIDStr);
+						return nullptr;
+                    }
+                    assetObject = std::move(material);
+                }
 	        }
             break;
         default: ;
@@ -425,4 +555,23 @@ namespace JumaEngine
         EngineObjectPtr<Asset> asset = loadAsset(assetID, AssetType::Texture);
         return asset != nullptr ? asset.castMove<Texture>() : nullptr;
 	}
+    EngineObjectPtr<Material> AssetsEngineSubsystem::getMaterialAsset(const jstringID& assetID)
+    {
+        EngineObjectPtr<Asset> asset = loadAsset(assetID, AssetType::Material);
+        return asset != nullptr ? asset.castMove<Material>() : nullptr;
+    }
+    EngineObjectPtr<Material> AssetsEngineSubsystem::createMaterial(const EngineObjectPtr<Material>& parentMaterial)
+    {
+        if (parentMaterial == nullptr)
+        {
+	        return nullptr;
+        }
+        EngineObjectPtr<MaterialInstance> material = getEngine()->createObject<MaterialInstance>();
+        if ((material == nullptr) || !material->createMaterial({ parentMaterial }))
+        {
+	        JUTILS_LOG(error, JSTR("Failed to create material from {}"), parentMaterial->getAssetID().toString());
+			return nullptr;
+        }
+        return material;
+    }
 }

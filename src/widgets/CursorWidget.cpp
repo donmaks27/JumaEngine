@@ -13,11 +13,10 @@ namespace JumaEngine
 	    Super::onInitialized();
 
         AssetsEngineSubsystem* assetsSubsystem = getEngine()->getSubsystem<AssetsEngineSubsystem>();
-	    const EngineObjectPtr<Shader>& shader = assetsSubsystem->getEngineShader(JSTR("widgetSolidColor"));
-        if (shader != nullptr)
+        m_Material = assetsSubsystem->createMaterial(assetsSubsystem->getMaterialAsset(JSTR("e:materials/M_widgetSolidColor")));
+        if (m_Material != nullptr)
         {
-	        m_Material = assetsSubsystem->createMaterial(shader);
-            m_Material->setParamValue<MaterialParamType::Vec4>(JSTR("uColor"), { 1.0f, 0.0f, 1.0f, 1.0f });
+	        m_Material->setParamValue<MaterialParamType::Vec4>(JSTR("uColor"), { 1.0f, 0.0f, 1.0f, 1.0f });
         }
     }
 
@@ -39,7 +38,7 @@ namespace JumaEngine
             else
             {
 	            m_CursorLocation.x = static_cast<float>(windowData->cursorPosition.x) / static_cast<float>(windowData->size.x);
-	            m_CursorLocation.y = static_cast<float>(windowData->cursorPosition.y - m_CursorSizePixels.y) / static_cast<float>(windowData->size.y);
+	            m_CursorLocation.y = static_cast<float>(static_cast<int64>(windowData->cursorPosition.y) - static_cast<int64>(m_CursorSizePixels.y)) / static_cast<float>(windowData->size.y);
             }
         }
         else
@@ -79,7 +78,7 @@ namespace JumaEngine
     {
         const WidgetContext* widgetContext = getWidgetContextPtr();
         const EngineObjectPtr<RenderTarget>& renderTarget = widgetContext != nullptr ? widgetContext->getRenderTarget() : nullptr;
-        if (renderTarget.updatePtr() == nullptr)
+        if (renderTarget == nullptr)
         {
 	        m_WidgetRenderSize = { 0.0f, 0.0f };
         }
