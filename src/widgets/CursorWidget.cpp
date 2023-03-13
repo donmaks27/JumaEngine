@@ -91,7 +91,15 @@ namespace JumaEngine
     math::vector2 CursorWidget::getWidgetRenderLocation() const
     {
 	    const math::box2 bounds = getWidgetBounds();
-        return bounds.v0 + m_CursorLocation * (bounds.v1 - bounds.v0);
+        math::vector2 result = m_CursorLocation * (bounds.v1 - bounds.v0);
+        if (getEngine()->getRenderEngine()->getRenderAPI() != JumaRE::RenderAPI::OpenGL)
+        {
+	        return bounds.v0 + result;
+        }
+
+        result.x += bounds.v0.x;
+        result.y = bounds.v1.y - result.y;
+        return result;
     }
 
     void CursorWidget::updateMaterial() const
