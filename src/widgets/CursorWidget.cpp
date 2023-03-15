@@ -110,9 +110,9 @@ namespace JumaEngine
 
         if (m_Material != nullptr)
         {
-            m_Material->getMaterial()->setParamValue<JumaRE::ShaderUniformType::Vec2>(locationParamName, getWidgetRenderLocation());
-            m_Material->getMaterial()->setParamValue<JumaRE::ShaderUniformType::Vec2>(sizeParamName, getWidgetRenderSize());
-            m_Material->getMaterial()->setParamValue<JumaRE::ShaderUniformType::Float>(depthParamName, m_Depth);
+            m_Material->setUniformValue<JumaRE::ShaderUniformType::Vec2>(locationParamName, getWidgetRenderLocation());
+            m_Material->setUniformValue<JumaRE::ShaderUniformType::Vec2>(sizeParamName, getWidgetRenderSize());
+            m_Material->setUniformValue<JumaRE::ShaderUniformType::Float>(depthParamName, m_Depth);
         }
     }
 }

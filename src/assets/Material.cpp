@@ -119,7 +119,7 @@ namespace JumaEngine
         onParamChanged.clear();
         m_ReferencedTextures.clear();
         m_MaterialParamsUniform.clear();
-        m_MaterialParamsOrder.clear();
+        m_MaterialParams.clear();
         m_Material = nullptr;
     }
 }

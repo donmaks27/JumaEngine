@@ -41,13 +41,13 @@ namespace JumaEngine
 				continue;
 			}
 			m_MaterialParamsUniform.add(materialParam.materialParamName, materialParam.uniformName);
-			m_MaterialParamsOrder.add(materialParam.materialParamName);
+			m_MaterialParams.add(materialParam.materialParamName);
 			usedUniforms.add(materialParam.uniformName);
 		}
 		if (!createInfo.params.isEmpty())
 		{
 			m_DefaultParamValues = std::move(createInfo.defaultValues);
-			for (const auto& param : m_MaterialParamsOrder)
+			for (const auto& param : m_MaterialParams)
 			{
 				resetParamValue(param);
 			}

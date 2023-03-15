@@ -54,7 +54,7 @@ namespace JumaEngine
         if (m_WidgetMaterial != nullptr)
         {
             static const jstringID depthParamName = JSTR("uDepth");
-            m_WidgetMaterial->getMaterial()->setParamValue<JumaRE::ShaderUniformType::Float>(depthParamName, depth);
+            m_WidgetMaterial->setUniformValue<JumaRE::ShaderUniformType::Float>(depthParamName, depth);
         }
     }
 
@@ -170,9 +170,9 @@ namespace JumaEngine
             static const jstringID sizeParamName = JSTR("uSize");
             static const jstringID depthParamName = JSTR("uDepth");
 
-            m_WidgetMaterial->getMaterial()->setParamValue<JumaRE::ShaderUniformType::Vec2>(locationParamName, getWidgetRenderLocation());
-            m_WidgetMaterial->getMaterial()->setParamValue<JumaRE::ShaderUniformType::Vec2>(sizeParamName, getWidgetRenderSize());
-            m_WidgetMaterial->getMaterial()->setParamValue<JumaRE::ShaderUniformType::Float>(depthParamName, 0.4f);
+            m_WidgetMaterial->setUniformValue<JumaRE::ShaderUniformType::Vec2>(locationParamName, getWidgetRenderLocation());
+            m_WidgetMaterial->setUniformValue<JumaRE::ShaderUniformType::Vec2>(sizeParamName, getWidgetRenderSize());
+            m_WidgetMaterial->setUniformValue<JumaRE::ShaderUniformType::Float>(depthParamName, 0.4f);
         }
     }
 }

@@ -10,6 +10,7 @@ namespace JumaEngine
 	struct MaterialInstanceCreateInfo
 	{
 		EngineObjectPtr<Material> parentMaterial = nullptr;
+		MaterialDefaultParamValues overridedParams;
 	};
 
 	class MaterialInstance final : public Material

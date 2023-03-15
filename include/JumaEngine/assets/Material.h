@@ -15,6 +15,15 @@ namespace JumaEngine
 	class MaterialBase;
 	class MaterialInstance;
 
+	struct MaterialDefaultParamValues
+	{
+		jmap<jstringID, float> values_float;
+		jmap<jstringID, math::vector2> values_vec2;
+		jmap<jstringID, math::vector4> values_vec4;
+		jmap<jstringID, math::matrix4> values_mat4;
+		jmap<jstringID, jstringID> values_texture;
+	};
+
 	class Material : public Asset
 	{
 		JUMAENGINE_CLASS_ABSTRACT(Material, Asset)
@@ -28,6 +37,9 @@ namespace JumaEngine
 		
 		JumaRE::Material* getMaterial() const { return m_Material; }
 		JumaRE::Shader* getShader() const { return m_Material != nullptr ? m_Material->getShader() : nullptr; }
+
+		const jarray<jstringID>& getMaterialParams() const { return m_MaterialParams; }
+		bool getUniformNameForParam(const jstringID& paramName, jstringID& outUniformName) const;
 
 		template<MaterialParamType T>
 		bool setParamValue(const jstringID& paramName, const typename MaterialParamInfo<T>::value_type& value);
@@ -43,12 +55,22 @@ namespace JumaEngine
 	        return (m_Material != nullptr) && getTextureParamValue(paramName, outValue);
         }
 
+		template<JumaRE::ShaderUniformType T>
+		bool setUniformValue(const jstringID& uniformName, const typename JumaRE::ShaderUniformInfo<T>::value_type& value)
+		{
+			return (m_Material != nullptr) && m_Material->setParamValue<T>(uniformName, value);
+		}
+		bool resetUniformValue(const jstringID& uniformName) { return (m_Material != nullptr) && m_Material->resetParamValue(uniformName); }
+		template<JumaRE::ShaderUniformType T>
+		bool getUniformValue(const jstringID& uniformName, typename JumaRE::ShaderUniformInfo<T>::value_type& value) const
+		{
+			return (m_Material != nullptr) && m_Material->getParamValue<T>(uniformName, value);
+		}
+
 	protected:
 		
 		virtual const Material* getBaseMaterial() const { return this; }
 		
-		bool getUniformNameForParam(const jstringID& paramName, jstringID& outUniformName) const;
-
 		virtual void onParamValueChanging(const jstringID& paramName) {}
 		virtual bool resetParamValueInternal(const jstringID& paramName, const jstringID& uniformName);
 		virtual bool getTextureParamValue(const jstringID& paramName, EngineObjectPtr<TextureBase>& outValue) const;
@@ -64,8 +86,8 @@ namespace JumaEngine
 
 		JumaRE::Material* m_Material = nullptr;
 
+		jarray<jstringID> m_MaterialParams;
 		jmap<jstringID, jstringID> m_MaterialParamsUniform;
-		jarray<jstringID> m_MaterialParamsOrder;
 
 		jmap<jstringID, EngineObjectPtr<TextureBase>> m_ReferencedTextures;
 

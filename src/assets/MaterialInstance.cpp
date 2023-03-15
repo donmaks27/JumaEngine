@@ -2,6 +2,7 @@
 
 #include "JumaEngine/assets/MaterialInstance.h"
 
+#include "JumaEngine/assets/AssetsEngineSubsystem.h"
 #include "JumaEngine/engine/Engine.h"
 
 namespace JumaEngine
@@ -76,16 +77,80 @@ namespace JumaEngine
         m_Material = material;
         m_ParentMaterial = createInfo.parentMaterial;
         m_MaterialParamsUniform = m_ParentMaterial->m_MaterialParamsUniform;
-        m_MaterialParamsOrder = m_ParentMaterial->m_MaterialParamsOrder;
-
-        const JumaRE::MaterialParamsStorage& parentMaterialParams = m_ParentMaterial->getMaterial()->getMaterialParams();
-        for (const auto& uniform : shader->getUniforms())
-        {
-	        CopyMaterialParam(uniform.value.type, material, parentMaterialParams, uniform.key);
-        }
+        m_MaterialParams = m_ParentMaterial->m_MaterialParams;
 
         m_ParentMaterial->onParamChanged.bind(this, &MaterialInstance::onBaseMaterialParamChanged);
         m_ParentMaterial->onDestroying.bind(this, &MaterialInstance::onBaseMaterialDestroying);
+
+        const jmap<jstringID, JumaRE::ShaderUniform>& uniforms = shader->getUniforms();
+        const JumaRE::MaterialParamsStorage& parentMaterialParams = m_ParentMaterial->getMaterial()->getMaterialParams();
+        for (const auto& materialParam : m_MaterialParams)
+        {
+            jstringID uniformName;
+            getUniformNameForParam(materialParam, uniformName);
+            const JumaRE::ShaderUniform* uniform = uniforms.find(uniformName);
+            if (uniform == nullptr)
+            {
+                continue;
+            }
+            switch (uniform->type)
+            {
+            case JumaRE::ShaderUniformType::Float:
+                {
+                    const auto* value = createInfo.overridedParams.values_float.find(materialParam);
+                    if (value != nullptr)
+                    {
+                        setParamValue<MaterialParamType::Float>(materialParam, *value);
+                        continue;
+                    }
+                }
+                break;
+            case JumaRE::ShaderUniformType::Vec2:
+                {
+                    const auto* value = createInfo.overridedParams.values_vec2.find(materialParam);
+                    if (value != nullptr)
+                    {
+                        setParamValue<MaterialParamType::Vec2>(materialParam, *value);
+                        continue;
+                    }
+                }
+                break;
+            case JumaRE::ShaderUniformType::Vec4:
+                {
+                    const auto* value = createInfo.overridedParams.values_vec4.find(materialParam);
+                    if (value != nullptr)
+                    {
+                        setParamValue<MaterialParamType::Vec4>(materialParam, *value);
+                        continue;
+                    }
+                }
+                break;
+            case JumaRE::ShaderUniformType::Mat4:
+                {
+                    const auto* value = createInfo.overridedParams.values_mat4.find(materialParam);
+                    if (value != nullptr)
+                    {
+                        setParamValue<MaterialParamType::Mat4>(materialParam, *value);
+                        continue;
+                    }
+                }
+                break;
+            case JumaRE::ShaderUniformType::Texture:
+                {
+                    const auto* value = createInfo.overridedParams.values_texture.find(materialParam);
+                    if (value != nullptr)
+                    {
+                        setParamValue<MaterialParamType::Texture>(
+                            materialParam, getEngine()->getSubsystem<AssetsEngineSubsystem>()->getTextureAsset(*value)
+                        );
+                        continue;
+                    }
+                }
+                break;
+            default: ;
+            }
+            CopyMaterialParam(uniform->type, material, parentMaterialParams, uniformName);
+        }
         return true;
 	}
 

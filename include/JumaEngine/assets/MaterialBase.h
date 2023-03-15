@@ -7,15 +7,6 @@
 
 namespace JumaEngine
 {
-	struct MaterialDefaultParamValues
-	{
-		jmap<jstringID, float> values_float;
-		jmap<jstringID, math::vector2> values_vec2;
-		jmap<jstringID, math::vector4> values_vec4;
-		jmap<jstringID, math::matrix4> values_mat4;
-		jmap<jstringID, jstringID> values_texture;
-	};
-
 	struct MaterialParamCreateInfo
 	{
 		jstringID materialParamName;
