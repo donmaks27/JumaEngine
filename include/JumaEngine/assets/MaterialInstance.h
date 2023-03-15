@@ -27,8 +27,7 @@ namespace JumaEngine
 		virtual const Material* getBaseMaterial() const override { return m_ParentMaterial != nullptr ? m_ParentMaterial->getBaseMaterial() : nullptr; }
 
 		virtual void onParamValueChanging(const jstringID& name) override;
-		virtual bool resetParamValueInternal(const jstringID& name) override;
-
+		virtual bool resetParamValueInternal(const jstringID& name, const jstringID& uniformName) override;
 		virtual bool getTextureParamValue(const jstringID& name, EngineObjectPtr<TextureBase>& outValue) const override;
 
 		virtual void clearMaterial() override;
@@ -42,7 +41,7 @@ namespace JumaEngine
 
 		bool createMaterial(const MaterialInstanceCreateInfo& createInfo);
 
-		void onBaseMaterialParamChanged(const jstringID& paramName);
+		void onBaseMaterialParamChanged(const jstringID& paramName, const jstringID& uniformName);
 		void onBaseMaterialDestroying(EngineContextObject* object);
 	};
 }

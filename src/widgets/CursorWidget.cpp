@@ -16,7 +16,7 @@ namespace JumaEngine
         m_Material = assetsSubsystem->createMaterial(assetsSubsystem->getMaterialAsset(JSTR("e:materials/M_widgetSolidColor")));
         if (m_Material != nullptr)
         {
-	        m_Material->setParamValue<MaterialParamType::Vec4>(JSTR("uColor"), { 1.0f, 0.0f, 1.0f, 1.0f });
+	        m_Material->setParamValue<MaterialParamType::Vec4>(JSTR("color"), { 1.0f, 0.0f, 1.0f, 1.0f });
         }
     }
 
@@ -110,9 +110,9 @@ namespace JumaEngine
 
         if (m_Material != nullptr)
         {
-            m_Material->setParamValue<MaterialParamType::Vec2>(locationParamName, getWidgetRenderLocation());
-            m_Material->setParamValue<MaterialParamType::Vec2>(sizeParamName, getWidgetRenderSize());
-            m_Material->setParamValue<MaterialParamType::Float>(depthParamName, m_Depth);
+            m_Material->getMaterial()->setParamValue<JumaRE::ShaderUniformType::Vec2>(locationParamName, getWidgetRenderLocation());
+            m_Material->getMaterial()->setParamValue<JumaRE::ShaderUniformType::Vec2>(sizeParamName, getWidgetRenderSize());
+            m_Material->getMaterial()->setParamValue<JumaRE::ShaderUniformType::Float>(depthParamName, m_Depth);
         }
     }
 }

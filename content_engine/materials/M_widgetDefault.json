@@ -64,18 +64,12 @@
         {
             "uniform": "uTextureOffset",
             "name": "offset",
-            "defaultValue": { 
-                "x": 0, 
-                "y": 0 
-            }
+            "defaultValue": [ 0, 0 ]
         },
         {
             "uniform": "uTextureScale",
             "name": "scale",
-            "defaultValue": { 
-                "x": 1, 
-                "y": 1 
-            }
+            "defaultValue": [ 1, 1 ]
         }
     ]
 }

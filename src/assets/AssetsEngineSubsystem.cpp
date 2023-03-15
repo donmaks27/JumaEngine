@@ -246,6 +246,143 @@ namespace JumaEngine
         }
         return uniforms;
     }
+    bool ParseMaterialAssetFile_ValueVec2(const jarray<json::json_value>& jsonArray, math::vector2& outValue)
+    {
+        if (jsonArray.getSize() < 2) 
+        {
+            return false;
+        }
+        outValue = { static_cast<float>(jsonArray[0]->asNumber()), static_cast<float>(jsonArray[1]->asNumber()) };
+        return true;
+    }
+    bool ParseMaterialAssetFile_ValueVec4(const jarray<json::json_value>& jsonArray, math::vector4& outValue)
+    {
+        if (jsonArray.getSize() < 4) 
+        {
+            return false;
+        }
+        outValue = { 
+            static_cast<float>(jsonArray[0]->asNumber()), static_cast<float>(jsonArray[1]->asNumber()), 
+            static_cast<float>(jsonArray[2]->asNumber()), static_cast<float>(jsonArray[3]->asNumber())
+        };
+        return true;
+    }
+    bool ParseMaterialAssetFile_ValueMat4(const jarray<json::json_value>& jsonArray, math::matrix4& outValue)
+    {
+        if (jsonArray.getSize() < 4) 
+        {
+            return false;
+        }
+        math::matrix4 value;
+        if (!ParseMaterialAssetFile_ValueVec4(jsonArray[0]->asArray(), value[0]) || 
+            !ParseMaterialAssetFile_ValueVec4(jsonArray[1]->asArray(), value[1]) || 
+            !ParseMaterialAssetFile_ValueVec4(jsonArray[2]->asArray(), value[2]) || 
+            !ParseMaterialAssetFile_ValueVec4(jsonArray[3]->asArray(), value[3]))
+        {
+            return false;
+        }
+        outValue = value;
+        return true;
+    }
+    void ParseMaterialAssetFile_Params(const jmap<jstringID, json::json_value>& jsonObject, 
+        const jmap<jstringID, JumaRE::ShaderUniform>& uniforms, jarray<MaterialParamCreateInfo>& outParams, 
+        MaterialDefaultParamValues& outDefaultValues)
+    {
+        static const jstringID fieldMaterialParams = JSTR("materialParams");
+        static const jstringID fieldUniform = JSTR("uniform");
+        static const jstringID fieldName = JSTR("name");
+        static const jstringID fieldDefaultValue = JSTR("defaultValue");
+
+        const json::json_value* paramsValue = jsonObject.find(fieldMaterialParams);
+        if (paramsValue == nullptr)
+        {
+            return;
+        }
+        jset<jstringID> addedUniforms, addedParams;
+        for (const auto& paramValue : (*paramsValue)->asArray())
+        {
+            if (paramValue == nullptr)
+            {
+                continue;
+            }
+            const jmap<jstringID, json::json_value>& paramObject = paramValue->asObject();
+
+            jstring uniformName, paramName;
+            const json::json_value* uniformValue = paramObject.find(fieldUniform);
+            const json::json_value* nameValue = paramObject.find(fieldName);
+            if ((uniformValue == nullptr) || (nameValue == nullptr) || 
+                !(*uniformValue)->tryGetString(uniformName) || !(*nameValue)->tryGetString(paramName))
+            {
+                continue;
+            }
+            jstringID uniformNameID = uniformName, paramNameID = paramName;
+            if (addedUniforms.contains(uniformNameID) || addedParams.contains(paramNameID))
+            {
+                continue;
+            }
+            const JumaRE::ShaderUniform* uniform = uniforms.find(uniformNameID);
+            if (uniform == nullptr)
+            {
+                continue;
+            }
+            addedUniforms.add(uniformNameID); addedParams.add(paramNameID);
+            outParams.add({ paramNameID, uniformNameID });
+
+            const json::json_value* defaultValue = paramObject.find(fieldDefaultValue);
+            if (defaultValue != nullptr)
+            {
+                switch (uniform->type)
+                {
+                case JumaRE::ShaderUniformType::Float: 
+                    {
+                        double value = 0.0;
+                        if ((*defaultValue)->tryGetNumber(value))
+                        {
+                            outDefaultValues.values_float.add(paramNameID, static_cast<float>(value));
+                        }
+                    }
+                    break;
+                case JumaRE::ShaderUniformType::Vec2: 
+                    {
+                        math::vector2 value;
+                        if (ParseMaterialAssetFile_ValueVec2((*defaultValue)->asArray(), value))
+                        {
+                            outDefaultValues.values_vec2.add(paramNameID, value);
+                        }
+                    }
+                    break;
+                case JumaRE::ShaderUniformType::Vec4: 
+                    {
+                        math::vector4 value;
+                        if (ParseMaterialAssetFile_ValueVec4((*defaultValue)->asArray(), value))
+                        {
+                            outDefaultValues.values_vec4.add(paramNameID, value);
+                        }
+                    }
+                    break;
+                case JumaRE::ShaderUniformType::Mat4: 
+                    {
+                        math::matrix4 value;
+                        if (ParseMaterialAssetFile_ValueMat4((*defaultValue)->asArray(), value))
+                        {
+                            outDefaultValues.values_mat4.add(paramNameID, value);
+                        }
+                    }
+                    break;
+                case JumaRE::ShaderUniformType::Texture: 
+                    {
+                        jstring value;
+                        if ((*defaultValue)->tryGetString(value))
+                        {
+                            outDefaultValues.values_texture.add(paramNameID, value);
+                        }
+                    }
+                    break;
+                default: ;
+                }
+            }
+        }
+    }
     bool ParseMaterialAssetFile(const jstring& assetPath, const json::json_value& config, const JumaRE::RenderAPI renderAPI, 
         MaterialBaseCreateInfo& outCreateInfo)
     {
@@ -261,6 +398,7 @@ namespace JumaEngine
 	        return false;
         }
         outCreateInfo = { std::move(shaderFiles), std::move(vertexComponents), ParseMaterialAssetFile_Uniforms(jsonObject) };
+        ParseMaterialAssetFile_Params(jsonObject, outCreateInfo.shaderUniforms, outCreateInfo.params, outCreateInfo.defaultValues);
         return true;
     }
     /*bool ParseMaterialInstanceAssetFile(const jstring& assetPath, const json::json_value& config, jstringID& outParentAssetID, 

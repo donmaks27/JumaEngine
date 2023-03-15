@@ -225,13 +225,14 @@ namespace JumaEngine
 			}
 			return *this;
 		}
-		EngineObjectPtr& operator=(const EngineObjectPtr& ptr) { return this->_assign(ptr); }
+		EngineObjectPtr& operator=(const EngineObjectPtr& ptr) { return (this != &ptr) ? this->_assign(ptr) : *this; }
+		EngineObjectPtr& operator=(const EngineObjectWeakPtr<T>& ptr) { return (this != &ptr) ? this->_assign(ptr) : *this; }
 		EngineObjectPtr& operator=(EngineObjectPtr&& ptr) noexcept { return this->_assign(std::move(ptr)); }
 		template<typename T1, TEMPLATE_ENABLE(is_base_and_not_same<T, T1>)>
 		EngineObjectPtr& operator=(const EngineObjectPtr<T1>& ptr) { return this->_assign(ptr); }
 		template<typename T1, TEMPLATE_ENABLE(is_base_and_not_same<T, T1>)>
 		EngineObjectPtr& operator=(EngineObjectPtr<T1>&& ptr) noexcept { return this->_assign(std::move(ptr)); }
-		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1>)>
+		template<typename T1, TEMPLATE_ENABLE(is_base_and_not_same<T, T1>)>
 		EngineObjectPtr& operator=(const EngineObjectWeakPtr<T1>& ptr) { return this->_assign(ptr); }
 
 		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1>)>
@@ -270,19 +271,16 @@ namespace JumaEngine
 		template<typename T1>
 		EngineObjectPtr& _assign(const EngineObjectWeakPtr<T1>& ptr)
 		{
-			if (this != &ptr)
+			if (EngineObjectPtrBase::m_ObjectPointer != ptr.m_ObjectPointer)
 			{
-				if (EngineObjectPtrBase::m_ObjectPointer != ptr.m_ObjectPointer)
-				{
-					EngineObjectPtrBase::removeReference();
-					EngineObjectPtrBase::m_ObjectPointer = ptr.m_ObjectPointer;
-					Super::m_CachedObject = ptr.updatePtr();
-					EngineObjectPtrBase::addReference();
-				}
-				else
-				{
-					Super::m_CachedObject = ptr.updatePtr();
-				}
+				EngineObjectPtrBase::removeReference();
+				EngineObjectPtrBase::m_ObjectPointer = ptr.m_ObjectPointer;
+				Super::m_CachedObject = ptr.updatePtr();
+				EngineObjectPtrBase::addReference();
+			}
+			else
+			{
+				Super::m_CachedObject = ptr.updatePtr();
 			}
 			return *this;
 		}

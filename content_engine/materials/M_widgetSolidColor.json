@@ -47,12 +47,7 @@
         {
             "uniform": "uColor",
             "name": "color",
-            "defaultValue": {
-                "x": 0,
-                "y": 0,
-                "z": 0,
-                "w": 0
-            }
+            "defaultValue": [ 0, 0, 0, 0 ]
         }
     ]
 }

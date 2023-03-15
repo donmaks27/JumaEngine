@@ -75,6 +75,8 @@ namespace JumaEngine
 
         m_Material = material;
         m_ParentMaterial = createInfo.parentMaterial;
+        m_MaterialParamsUniform = m_ParentMaterial->m_MaterialParamsUniform;
+        m_MaterialParamsOrder = m_ParentMaterial->m_MaterialParamsOrder;
 
         const JumaRE::MaterialParamsStorage& parentMaterialParams = m_ParentMaterial->getMaterial()->getMaterialParams();
         for (const auto& uniform : shader->getUniforms())
@@ -87,29 +89,29 @@ namespace JumaEngine
         return true;
 	}
 
-	void MaterialInstance::onParamValueChanging(const jstringID& name)
+	void MaterialInstance::onParamValueChanging(const jstringID& paramName)
 	{
-		m_OverridedParams.add(name);
-		Super::onParamValueChanging(name);
+		m_OverridedParams.add(paramName);
+		Super::onParamValueChanging(paramName);
 	}
-	bool MaterialInstance::resetParamValueInternal(const jstringID& name)
+	bool MaterialInstance::resetParamValueInternal(const jstringID& paramName, const jstringID& uniformName)
 	{
-		m_OverridedParams.remove(name);
-        return CopyMaterialParam(getMaterial(), m_ParentMaterial->getMaterial()->getMaterialParams(), name);
+		m_OverridedParams.remove(paramName);
+        Super::resetParamValueInternal(paramName, uniformName);
+        return CopyMaterialParam(getMaterial(), m_ParentMaterial->getMaterial()->getMaterialParams(), uniformName);
+	}
+	bool MaterialInstance::getTextureParamValue(const jstringID& paramName, EngineObjectPtr<TextureBase>& outValue) const
+	{
+        return m_OverridedParams.contains(paramName) ? Super::getTextureParamValue(paramName, outValue) : m_ParentMaterial->getParamValue<MaterialParamType::Texture>(paramName, outValue);
 	}
 
-	bool MaterialInstance::getTextureParamValue(const jstringID& name, EngineObjectPtr<TextureBase>& outValue) const
-	{
-        return m_OverridedParams.contains(name) ? Super::getTextureParamValue(name, outValue) : m_ParentMaterial->getParamValue<MaterialParamType::Texture>(name, outValue);
-	}
-
-	void MaterialInstance::onBaseMaterialParamChanged(const jstringID& paramName)
+	void MaterialInstance::onBaseMaterialParamChanged(const jstringID& paramName, const jstringID& uniformName)
 	{
         if (!m_OverridedParams.contains(paramName))
         {
-	        if (CopyMaterialParam(getMaterial(), m_ParentMaterial->getMaterial()->getMaterialParams(), paramName))
+	        if (CopyMaterialParam(getMaterial(), m_ParentMaterial->getMaterial()->getMaterialParams(), uniformName))
 	        {
-		        onParamChanged.call(paramName);
+		        onParamChanged.call(paramName, uniformName);
 	        }
         }
 	}
