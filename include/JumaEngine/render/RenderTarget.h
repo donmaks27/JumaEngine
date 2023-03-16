@@ -11,6 +11,13 @@ namespace JumaEngine
 {
     class RenderEngineSubsystem;
 
+    struct RenderTargetCreateInfo
+    {
+        JumaRE::TextureFormat format; 
+        math::uvector2 size; 
+        JumaRE::TextureSamples samples;
+    };
+
     class RenderTarget final : public TextureBase
     {
         JUMAENGINE_CLASS(RenderTarget, TextureBase)
@@ -18,7 +25,7 @@ namespace JumaEngine
         friend RenderEngineSubsystem;
 
     public:
-        RenderTarget() = default;
+        RenderTarget() : TextureBase(AssetType::RenderTarget) {}
         virtual ~RenderTarget() override = default;
 
         JumaRE::RenderTarget* getRenderTarget() const { return m_RenderTarget; }
@@ -26,13 +33,14 @@ namespace JumaEngine
 
     protected:
 
-        virtual void onObjectDescriptorDestroying() override { destroyRenderTarget(); }
+        virtual void clearAsset() override;
 
     private:
 
         JumaRE::RenderTarget* m_RenderTarget = nullptr;
 
 
-        void destroyRenderTarget();
+        bool createAsset(JumaRE::window_id windowID);
+        bool createAsset(const RenderTargetCreateInfo& createInfo);
     };
 }

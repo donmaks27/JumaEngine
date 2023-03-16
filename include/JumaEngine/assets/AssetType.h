@@ -9,6 +9,7 @@ namespace JumaEngine
 	enum class AssetType : uint8
 	{
 		Texture,
+		RenderTarget,
 		Material
 	};
 
@@ -17,6 +18,7 @@ namespace JumaEngine
 		switch (type)
 		{
 		case AssetType::Texture: return JSTR("Texture");
+		case AssetType::RenderTarget: return JSTR("RenderTarget");
 		case AssetType::Material: return JSTR("Material");
 		default: ;
 		}

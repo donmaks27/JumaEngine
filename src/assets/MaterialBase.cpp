@@ -139,7 +139,7 @@ namespace JumaEngine
 		{
 			return false;
 		}
-		EngineObjectPtr<Texture> texture = getEngine()->getSubsystem<AssetsEngineSubsystem>()->getTextureAsset(*textureID);
+		EngineObjectPtr<TextureBase> texture = getEngine()->getSubsystem<AssetsEngineSubsystem>()->getAsset<TextureBase>(*textureID);
 		if (texture == nullptr)
 		{
 			return false;

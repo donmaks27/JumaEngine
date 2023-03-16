@@ -26,7 +26,7 @@ namespace JumaEngine
 
         EngineObjectPtr<Widget> createWidget(const EngineSubclass<Widget>& widgetClass);
         template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<Widget, T>)>
-        EngineObjectPtr<T> createWidget() { return this->createWidget(T::GetClassStatic()).template cast<T>(); }
+        EngineObjectPtr<T> createWidget() { return this->createWidget(T::GetClassStatic()).template castMove<T>(); }
         
     protected:
         

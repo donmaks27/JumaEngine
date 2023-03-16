@@ -6,6 +6,7 @@
 #include "JumaEngine/assets/MaterialInstance.h"
 #include "JumaEngine/engine/ConfigEngineSubsystem.h"
 #include "JumaEngine/engine/Engine.h"
+#include "JumaEngine/render/RenderEngineSubsystem.h"
 
 namespace JumaEngine
 {
@@ -195,18 +196,12 @@ namespace JumaEngine
         return {};
 	}
 
-    EngineObjectPtr<Asset> AssetsEngineSubsystem::loadAsset(const jstringID& assetID, const AssetType expectedAssetType)
+    EngineObjectPtr<Asset> AssetsEngineSubsystem::getAsset(const jstringID& assetID)
     {
         const jstring assetIDStr = assetID.toString();
         const EngineObjectPtr<Asset>* assetPtr = m_LoadedAssets.find(assetID);
         if (assetPtr != nullptr)
         {
-            const AssetType type = (*assetPtr)->getAssetType();
-            if (type != expectedAssetType)
-            {
-                JUTILS_LOG(warning, JSTR("Asset type {} of asset {} is not expected type {}"), type, assetIDStr, expectedAssetType);
-	            return nullptr;
-            }
 	        return *assetPtr;
         }
 
@@ -221,11 +216,6 @@ namespace JumaEngine
         AssetType type;
         json::json_value config = nullptr;
         if (!LoadAssetFile(assetPath, type, config))
-        {
-	        JUTILS_LOG(warning, JSTR("Failed to load asset {}"), assetIDStr);
-	        return nullptr;
-        }
-        if (type != expectedAssetType)
         {
 	        JUTILS_LOG(warning, JSTR("Failed to load asset {}"), assetIDStr);
 	        return nullptr;
@@ -252,6 +242,24 @@ namespace JumaEngine
                 assetObject = std::move(texture);
 	        }
             break;
+        case AssetType::RenderTarget:
+            {
+                RenderTargetCreateInfo createInfo;
+                if (!ParseRenderTargetAssetFile(assetPath, config, createInfo))
+                {
+                    JUTILS_LOG(warning, JSTR("Failed parse asset {}"), assetIDStr);
+			        return nullptr;
+                }
+                RenderEngineSubsystem* renderSubsystem = getEngine()->getSubsystem<RenderEngineSubsystem>();
+                EngineObjectPtr<RenderTarget> renderTarget = renderSubsystem != nullptr ? renderSubsystem->createRenderTarget(createInfo) : nullptr;
+                if (renderTarget == nullptr)
+                {
+                    JUTILS_LOG(error, JSTR("Failed to create render target asset {}"), assetIDStr);
+		            return nullptr;
+                }
+                assetObject = std::move(renderTarget);
+            }
+            break;
         case AssetType::Material:
 	        {
                 static const jstringID parentStringID = JSTR("parentMaterial");
@@ -259,7 +267,7 @@ namespace JumaEngine
 		        if (parentMaterialValue != nullptr)
 		        {
                     MaterialInstanceCreateInfo createInfo;
-                    if (!ParseMaterialInstanceAssetFile(assetPath, config, getMaterialAsset((*parentMaterialValue)->asString()), createInfo))
+                    if (!ParseMaterialInstanceAssetFile(assetPath, config, getAsset<Material>((*parentMaterialValue)->asString()), createInfo))
                     {
                         return nullptr;
                     }
@@ -296,20 +304,10 @@ namespace JumaEngine
         default: ;
         }
 
-        JUTILS_LOG(correct, JSTR("Loaded asset {} ({})"), assetIDStr, expectedAssetType);
+        JUTILS_LOG(correct, JSTR("Loaded asset {} ({})"), assetIDStr, type);
         assetObject->m_AssetID = assetID;
         m_LoadedAssets.add(assetID, assetObject);
         return assetObject;
-    }
-    EngineObjectPtr<Texture> AssetsEngineSubsystem::getTextureAsset(const jstringID& assetID)
-	{
-        EngineObjectPtr<Asset> asset = loadAsset(assetID, AssetType::Texture);
-        return asset != nullptr ? asset.castMove<Texture>() : nullptr;
-	}
-    EngineObjectPtr<Material> AssetsEngineSubsystem::getMaterialAsset(const jstringID& assetID)
-    {
-        EngineObjectPtr<Asset> asset = loadAsset(assetID, AssetType::Material);
-        return asset != nullptr ? asset.castMove<Material>() : nullptr;
     }
     EngineObjectPtr<Material> AssetsEngineSubsystem::createMaterial(const EngineObjectPtr<Material>& parentMaterial)
     {

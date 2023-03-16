@@ -24,8 +24,9 @@ namespace JumaEngine
         
         jstring getAssetPath(const jstring& assetID) const;
         
-        EngineObjectPtr<Texture> getTextureAsset(const jstringID& assetID);
-        EngineObjectPtr<Material> getMaterialAsset(const jstringID& assetID);
+        EngineObjectPtr<Asset> getAsset(const jstringID& assetID);
+        template<typename T, TEMPLATE_ENABLE(is_base<Asset, T>)>
+        EngineObjectPtr<T> getAsset(const jstringID& assetID) { return getAsset(assetID).castMove<T>(); }
         EngineObjectPtr<Material> createMaterial(const EngineObjectPtr<Material>& parentMaterial);
         
         jstringID getVertexComponentID(VertexComponent component) const;
@@ -53,7 +54,5 @@ namespace JumaEngine
 
 
 		void onRenderEngineDestroying(JumaRE::RenderEngine* renderEngine) { clear(); }
-        
-        EngineObjectPtr<Asset> loadAsset(const jstringID& assetID, AssetType expectedAssetType);
 	};
 }

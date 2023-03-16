@@ -19,7 +19,7 @@ namespace JumaEngine
         {
             if (renderTarget != nullptr)
             {
-                renderTarget->destroyRenderTarget();
+                renderTarget->clearAsset();
             }
         }
         m_RenderTargets.clear();
@@ -39,32 +39,53 @@ namespace JumaEngine
 	}
 	void RenderEngineSubsystem::onWindowCreated(JumaRE::WindowController* windowController, const JumaRE::WindowData* windowData)
 	{
+        EngineObjectPtr<RenderTarget> windowRenderTarget = createRenderTarget(windowData->windowRenderTargetID);
+        if (windowRenderTarget == nullptr)
+        {
+            JUTILS_LOG(error, JSTR("Failed to create render target for window {}"), windowData->windowID);
+            return;
+        }
+        JumaRE::RenderTarget* windowRenderTargetPtr = windowRenderTarget->getRenderTarget();
+        EngineObjectPtr<RenderTarget> proxyRenderTarget = createRenderTarget({
+            windowRenderTargetPtr->getColorFormat(), windowRenderTargetPtr->getSize(), windowRenderTargetPtr->getSampleCount()
+        });
+        if (proxyRenderTarget == nullptr)
+        {
+            JUTILS_LOG(error, JSTR("Failed to create proxy render target for window {}"), windowData->windowID);
+            return;
+        }
+        JumaRE::RenderTarget* proxyRenderTargetPtr = proxyRenderTarget->getRenderTarget();
+
         JumaRE::RenderEngine* renderEngine = getEngine()->getRenderEngine();
+        windowRenderTargetPtr->setSampleCount(JumaRE::TextureSamples::X1);
+        windowRenderTarget->getRenderTarget()->setupRenderStages({ { false } });
+        renderEngine->getRenderPipeline()->addRenderTargetDependecy(windowData->windowRenderTargetID, proxyRenderTargetPtr->getID());
+
         WidgetsCreator* widgetsCreator = getEngine()->getWidgetsCreator();
 
-		JumaRE::RenderTarget* windowRenderTargetPtr = renderEngine->getRenderTarget(windowData->windowRenderTargetID);
-        EngineObjectPtr<RenderTarget> windowRenderTarget = createRenderTarget(windowRenderTargetPtr);
-        EngineObjectPtr<RenderTarget> renderTarget = createRenderTarget(windowRenderTargetPtr->getColorFormat(), windowRenderTargetPtr->getSize(), windowRenderTargetPtr->getSampleCount());
-        windowRenderTargetPtr->setSampleCount(JumaRE::TextureSamples::X1);
-        renderEngine->getRenderPipeline()->addRenderTargetDependecy(windowData->windowRenderTargetID, renderTarget->getRenderTarget()->getID());
-        windowRenderTarget->getRenderTarget()->setupRenderStages({ { false } });
-
         const EngineObjectPtr<ImageWidget> imageWidget = widgetsCreator->createWidget<ImageWidget>();
+        const EngineObjectPtr<OverlayWidget> overlayWidget = widgetsCreator->createWidget<OverlayWidget>();
+        EngineObjectPtr<WidgetContext> widgetContext = widgetsCreator->createWidgetContext({ windowRenderTarget, 0 });
+        if ((imageWidget == nullptr) || (overlayWidget == nullptr) || (widgetContext == nullptr))
+        {
+            JUTILS_LOG(error, JSTR("Failed to create widgets for window {}"), windowData->windowID);
+            return;
+        }
+
         imageWidget->setUsingSolidColor(false);
-        imageWidget->setTexture(renderTarget);
+        imageWidget->setTexture(proxyRenderTarget);
         if (renderEngine->getRenderAPI() == JumaRE::RenderAPI::OpenGL)
         {
             imageWidget->setTextureScale({ 1.0f, -1.0f });
         }
-        
-        const EngineObjectPtr<OverlayWidget> overlayWidget = widgetsCreator->createWidget<OverlayWidget>();
         overlayWidget->addWidget(imageWidget);
-        overlayWidget->addWidget(widgetsCreator->createWidget<CursorWidget>());
+        overlayWidget->addWidget(widgetsCreator->createWidget(CursorWidget::GetClassStatic()));
 
-        EngineObjectPtr<WidgetContext> widgetContext = widgetsCreator->createWidgetContext({ windowRenderTarget, 0 });
         widgetContext->setRootWidget(overlayWidget);
 
-        m_WindowProxyRenderTargets.add(windowData->windowRenderTargetID, { std::move(windowRenderTarget), std::move(renderTarget), std::move(widgetContext) });
+        m_WindowProxyRenderTargets.add(windowData->windowRenderTargetID, {
+            std::move(windowRenderTarget), std::move(proxyRenderTarget), std::move(widgetContext)
+        });
 	}
 
 	void RenderEngineSubsystem::onWindowDestroying(JumaRE::WindowController* windowController, const JumaRE::WindowData* windowData)
@@ -97,18 +118,32 @@ namespace JumaEngine
         renderTarget->widgetContext->getRootWidget()->destroy(true);
         renderTarget->widgetContext->destroy();
         renderTarget->widgetContext = nullptr;
-        renderTarget->renderTarget->destroyRenderTarget();
-        renderTarget->renderTarget = nullptr;
-        renderTarget->proxyRenderTarget->destroyRenderTarget();
+        renderTarget->windowRenderTarget->clearAsset();
+        renderTarget->windowRenderTarget = nullptr;
+        renderTarget->proxyRenderTarget->clearAsset();
         renderTarget->proxyRenderTarget = nullptr;
         return true;
 	}
 
-    EngineObjectPtr<RenderTarget> RenderEngineSubsystem::createRenderTarget(const JumaRE::TextureFormat format,
-	    const math::uvector2& size, const JumaRE::TextureSamples samples)
+    EngineObjectPtr<RenderTarget> RenderEngineSubsystem::createRenderTarget(const RenderTargetCreateInfo& createInfo)
     {
-        JumaRE::RenderEngine* renderEngine = getEngine()->getRenderEngine();
-        return renderEngine != nullptr ? createRenderTarget(renderEngine->createRenderTarget(format, size, samples)) : nullptr;
+        EngineObjectPtr<RenderTarget> renderTarget = getEngine()->createObject<RenderTarget>();
+        if ((renderTarget == nullptr) || !renderTarget->createAsset(createInfo))
+        {
+            return nullptr;
+        }
+        m_RenderTargets.add(renderTarget);
+        return renderTarget;
+    }
+    EngineObjectPtr<RenderTarget> RenderEngineSubsystem::createRenderTarget(const JumaRE::window_id windowID)
+    {
+        EngineObjectPtr<RenderTarget> renderTarget = getEngine()->createObject<RenderTarget>();
+        if ((renderTarget == nullptr) || !renderTarget->createAsset(windowID))
+        {
+            return nullptr;
+        }
+        m_RenderTargets.add(renderTarget);
+        return renderTarget;
     }
     EngineObjectPtr<RenderTarget> RenderEngineSubsystem::createRenderTarget(JumaRE::RenderTarget* renderTarget)
     {

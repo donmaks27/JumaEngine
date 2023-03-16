@@ -136,7 +136,7 @@ namespace JumaEngine
         static jstringID colorShaderName = JSTR("e:materials/M_widgetSolidColor");
         AssetsEngineSubsystem* assetsSubsystem = getEngine()->getSubsystem<AssetsEngineSubsystem>();
         m_WidgetMaterial = assetsSubsystem->createMaterial(
-            assetsSubsystem->getMaterialAsset(shouldUseSolidColor() ? colorShaderName : textureShaderName)
+            assetsSubsystem->getAsset<Material>(shouldUseSolidColor() ? colorShaderName : textureShaderName)
         );
 
         updateMaterialColorParams();

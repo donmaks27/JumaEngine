@@ -5,12 +5,12 @@
 #include "../core.h"
 #include "../engine/EngineSubsystem.h"
 
-#include <JumaRE/RenderTarget.h>
 #include <jutils/jmap.h>
+
+#include "RenderTarget.h"
 
 namespace JumaEngine
 {
-    class RenderTarget;
     class WidgetContext;
 
 	class RenderEngineSubsystem final : public EngineSubsystem
@@ -23,7 +23,7 @@ namespace JumaEngine
 		RenderEngineSubsystem() = default;
 		virtual ~RenderEngineSubsystem() override = default;
 
-		EngineObjectPtr<RenderTarget> createRenderTarget(JumaRE::TextureFormat format, const math::uvector2& size, JumaRE::TextureSamples samples);
+		EngineObjectPtr<RenderTarget> createRenderTarget(const RenderTargetCreateInfo& createInfo);
 		EngineObjectPtr<RenderTarget> getWindowRenderTarget(JumaRE::window_id windowID) const;
 
 	protected:
@@ -34,7 +34,7 @@ namespace JumaEngine
 
 		struct WindowProxyRenderTarget
         {
-			EngineObjectPtr<RenderTarget> renderTarget = nullptr;
+			EngineObjectPtr<RenderTarget> windowRenderTarget = nullptr;
 	        EngineObjectPtr<RenderTarget> proxyRenderTarget = nullptr;
             EngineObjectPtr<WidgetContext> widgetContext = nullptr;
         };
@@ -43,6 +43,7 @@ namespace JumaEngine
 		jmap<JumaRE::window_id, WindowProxyRenderTarget> m_WindowProxyRenderTargets;
 
 
+		EngineObjectPtr<RenderTarget> createRenderTarget(JumaRE::window_id windowID);
 		EngineObjectPtr<RenderTarget> createRenderTarget(JumaRE::RenderTarget* renderTarget);
 
 		void createProxyWindowRenderTargets();

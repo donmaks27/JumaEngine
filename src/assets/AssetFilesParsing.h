@@ -11,12 +11,15 @@
 #include "JumaEngine/assets/MaterialBase.h"
 #include "JumaEngine/assets/MaterialInstance.h"
 #include "JumaEngine/assets/Texture.h"
+#include "JumaEngine/render/RenderTarget.h"
 
 namespace JumaEngine
 {
     bool LoadAssetFile(const jstring& assetPath, AssetType& outAssetType, json::json_value& outConfig);
 
     bool ParseTextureAssetFile(const jstring& assetPath, const json::json_value& config, TextureAssetCreateInfo& outCreateInfo);
+
+    bool ParseRenderTargetAssetFile(const jstring& assetPath, const json::json_value& config, RenderTargetCreateInfo& outCreateInfo);
 
     bool ParseMaterialAssetFile(const jstring& assetPath, const json::json_value& config, const JumaRE::RenderAPI renderAPI, 
         MaterialBaseCreateInfo& outCreateInfo);

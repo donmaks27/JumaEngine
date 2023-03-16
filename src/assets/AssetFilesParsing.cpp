@@ -10,6 +10,7 @@ namespace JumaEngine
     {
         static const jstringID assetTypeField = JSTR("assetType");
         static const jstringID assetTypeTexture = JSTR("texture");
+        static const jstringID assetTypeRenderTarget = JSTR("renderTarget");
         static const jstringID assetTypeMaterial = JSTR("material");
 
 	    const json::json_value config = json::parseFile(assetPath);
@@ -40,6 +41,7 @@ namespace JumaEngine
 			}
         }
         if (type == assetTypeTexture) { outAssetType = AssetType::Texture; }
+        else if (type == assetTypeRenderTarget) { outAssetType = AssetType::RenderTarget; }
         else if (type == assetTypeMaterial) { outAssetType = AssetType::Material; }
         else
         {
@@ -50,11 +52,60 @@ namespace JumaEngine
         return true;
     }
 
+    JumaRE::TextureFormat ParseAssetFile_TextureFormat(const jstring& format)
+    {
+        static const jstringID formatRGBA8 = JSTR("RGBA8");
+
+        const jstringID formatStringID = format;
+        if (formatStringID == formatRGBA8)
+        {
+	        return JumaRE::TextureFormat::RGBA8;
+        }
+        return JumaRE::TextureFormat::NONE;
+    }
+    bool ParseAssetFile_Vec2(const jarray<json::json_value>& jsonArray, math::vector2& outValue)
+    {
+        if (jsonArray.getSize() < 2) 
+        {
+            return false;
+        }
+        outValue = { static_cast<float>(jsonArray[0]->asNumber()), static_cast<float>(jsonArray[1]->asNumber()) };
+        return true;
+    }
+    bool ParseAssetFile_Vec4(const jarray<json::json_value>& jsonArray, math::vector4& outValue)
+    {
+        if (jsonArray.getSize() < 4) 
+        {
+            return false;
+        }
+        outValue = { 
+            static_cast<float>(jsonArray[0]->asNumber()), static_cast<float>(jsonArray[1]->asNumber()), 
+            static_cast<float>(jsonArray[2]->asNumber()), static_cast<float>(jsonArray[3]->asNumber())
+        };
+        return true;
+    }
+    bool ParseAssetFile_Mat4(const jarray<json::json_value>& jsonArray, math::matrix4& outValue)
+    {
+        if (jsonArray.getSize() < 4) 
+        {
+            return false;
+        }
+        math::matrix4 value;
+        if (!ParseAssetFile_Vec4(jsonArray[0]->asArray(), value[0]) || 
+            !ParseAssetFile_Vec4(jsonArray[1]->asArray(), value[1]) || 
+            !ParseAssetFile_Vec4(jsonArray[2]->asArray(), value[2]) || 
+            !ParseAssetFile_Vec4(jsonArray[3]->asArray(), value[3]))
+        {
+            return false;
+        }
+        outValue = value;
+        return true;
+    }
+
     bool ParseTextureAssetFile(const jstring& assetPath, const json::json_value& config, TextureAssetCreateInfo& outCreateInfo)
     {
         static const jstringID assetTextureField = JSTR("textureFile");
         static const jstringID assetTextureFormatField = JSTR("textureFormat");
-        static const jstringID formatRGBA8 = JSTR("RGBA8");
         
         jstring jsonString;
         const jmap<jstringID, json::json_value>& jsonObject = config->asObject();
@@ -64,13 +115,8 @@ namespace JumaEngine
             JUTILS_LOG(warning, JSTR("Can't find field \"textureFormat\" in asset file {}"), assetPath);
 	        return false;
         }
-        JumaRE::TextureFormat format;
-        const jstringID formatStringID = jsonString;
-        if (formatStringID == formatRGBA8)
-        {
-	        format = JumaRE::TextureFormat::RGBA8;
-        }
-        else
+        const JumaRE::TextureFormat format = ParseAssetFile_TextureFormat(jsonString);
+        if (format == JumaRE::TextureFormat::NONE)
         {
 	        JUTILS_LOG(warning, JSTR("Invalid value in field \"textureFormat\" in asset file {}"), assetPath);
             return false;
@@ -85,6 +131,66 @@ namespace JumaEngine
 
         outCreateInfo.textureDataPath = std::move(jsonString);
         outCreateInfo.textureFormat = format;
+        return true;
+    }
+
+    bool ParseRenderTargetAssetFile(const jstring &assetPath, const json::json_value &config, RenderTargetCreateInfo &outCreateInfo)
+    {
+        static const jstringID fieldFormat = JSTR("format");
+        static const jstringID fieldSamples = JSTR("samples");
+        static const jstringID fieldSize = JSTR("size");
+
+        jstring jsonString;
+        const jmap<jstringID, json::json_value>& jsonObject = config->asObject();
+        const json::json_value* formatJsonValue = jsonObject.find(fieldFormat);
+        if ((formatJsonValue == nullptr) || !(*formatJsonValue)->tryGetString(jsonString))
+        {
+            JUTILS_LOG(warning, JSTR("Can't find field \"format\" in asset file {}"), assetPath);
+	        return false;
+        }
+        const JumaRE::TextureFormat format = ParseAssetFile_TextureFormat(jsonString);
+        if (format == JumaRE::TextureFormat::NONE)
+        {
+	        JUTILS_LOG(warning, JSTR("Invalid value in field \"format\" in asset file {}"), assetPath);
+            return false;
+        }
+
+        int32 samplesNumber = 0;
+        const json::json_value* samplesJsonValue = jsonObject.find(fieldSamples);
+        if ((samplesJsonValue == nullptr) || !(*samplesJsonValue)->tryGetNumber(samplesNumber))
+        {
+            JUTILS_LOG(warning, JSTR("Can't find field \"samples\" in asset file {}"), assetPath);
+            return false;
+        }
+        JumaRE::TextureSamples samples;
+        switch (samplesNumber)
+        {
+        case 1:  samples = JumaRE::TextureSamples::X1;  break;
+        case 2:  samples = JumaRE::TextureSamples::X2;  break;
+        case 4:  samples = JumaRE::TextureSamples::X4;  break;
+        case 8:  samples = JumaRE::TextureSamples::X8;  break;
+        case 16: samples = JumaRE::TextureSamples::X16; break;
+        default: 
+            JUTILS_LOG(warning, JSTR("Invalid value in field \"samples\" in asset file {}"), assetPath);
+            return false;
+        }
+
+        const json::json_value* sizeJsonValue = jsonObject.find(fieldSize);
+        if (sizeJsonValue == nullptr)
+        {
+            JUTILS_LOG(warning, JSTR("Can't find field \"size\" in asset file {}"), assetPath);
+            return false;
+        }
+        math::vector2 size;
+        if (!ParseAssetFile_Vec2((*sizeJsonValue)->asArray(), size))
+        {
+            JUTILS_LOG(warning, JSTR("Invalid value in field \"size\" in asset file {}"), assetPath);
+            return false;
+        }
+
+        outCreateInfo.format = format;
+        outCreateInfo.samples = samples;
+        outCreateInfo.size = size;
         return true;
     }
 
@@ -241,44 +347,6 @@ namespace JumaEngine
         }
         return uniforms;
     }
-    bool ParseMaterialAssetFile_ValueVec2(const jarray<json::json_value>& jsonArray, math::vector2& outValue)
-    {
-        if (jsonArray.getSize() < 2) 
-        {
-            return false;
-        }
-        outValue = { static_cast<float>(jsonArray[0]->asNumber()), static_cast<float>(jsonArray[1]->asNumber()) };
-        return true;
-    }
-    bool ParseMaterialAssetFile_ValueVec4(const jarray<json::json_value>& jsonArray, math::vector4& outValue)
-    {
-        if (jsonArray.getSize() < 4) 
-        {
-            return false;
-        }
-        outValue = { 
-            static_cast<float>(jsonArray[0]->asNumber()), static_cast<float>(jsonArray[1]->asNumber()), 
-            static_cast<float>(jsonArray[2]->asNumber()), static_cast<float>(jsonArray[3]->asNumber())
-        };
-        return true;
-    }
-    bool ParseMaterialAssetFile_ValueMat4(const jarray<json::json_value>& jsonArray, math::matrix4& outValue)
-    {
-        if (jsonArray.getSize() < 4) 
-        {
-            return false;
-        }
-        math::matrix4 value;
-        if (!ParseMaterialAssetFile_ValueVec4(jsonArray[0]->asArray(), value[0]) || 
-            !ParseMaterialAssetFile_ValueVec4(jsonArray[1]->asArray(), value[1]) || 
-            !ParseMaterialAssetFile_ValueVec4(jsonArray[2]->asArray(), value[2]) || 
-            !ParseMaterialAssetFile_ValueVec4(jsonArray[3]->asArray(), value[3]))
-        {
-            return false;
-        }
-        outValue = value;
-        return true;
-    }
     void ParseMaterialAssetFile_Params(const jmap<jstringID, json::json_value>& jsonObject, 
         const jmap<jstringID, JumaRE::ShaderUniform>& uniforms, jarray<MaterialParamCreateInfo>& outParams, 
         MaterialDefaultParamValues& outDefaultValues)
@@ -340,7 +408,7 @@ namespace JumaEngine
                 case JumaRE::ShaderUniformType::Vec2: 
                     {
                         math::vector2 value;
-                        if (ParseMaterialAssetFile_ValueVec2((*defaultValue)->asArray(), value))
+                        if (ParseAssetFile_Vec2((*defaultValue)->asArray(), value))
                         {
                             outDefaultValues.values_vec2.add(paramNameID, value);
                         }
@@ -349,7 +417,7 @@ namespace JumaEngine
                 case JumaRE::ShaderUniformType::Vec4: 
                     {
                         math::vector4 value;
-                        if (ParseMaterialAssetFile_ValueVec4((*defaultValue)->asArray(), value))
+                        if (ParseAssetFile_Vec4((*defaultValue)->asArray(), value))
                         {
                             outDefaultValues.values_vec4.add(paramNameID, value);
                         }
@@ -358,7 +426,7 @@ namespace JumaEngine
                 case JumaRE::ShaderUniformType::Mat4: 
                     {
                         math::matrix4 value;
-                        if (ParseMaterialAssetFile_ValueMat4((*defaultValue)->asArray(), value))
+                        if (ParseAssetFile_Mat4((*defaultValue)->asArray(), value))
                         {
                             outDefaultValues.values_mat4.add(paramNameID, value);
                         }
@@ -440,7 +508,7 @@ namespace JumaEngine
                 case JumaRE::ShaderUniformType::Vec2:
                     {
                         math::vector2 value;
-                        if (ParseMaterialAssetFile_ValueVec2(overridedParamValue.value->asArray(), value))
+                        if (ParseAssetFile_Vec2(overridedParamValue.value->asArray(), value))
                         {
                             outCreateInfo.overridedParams.values_vec2.add(overridedParamValue.key, value);
                         }
@@ -449,7 +517,7 @@ namespace JumaEngine
                 case JumaRE::ShaderUniformType::Vec4:
                     {
                         math::vector4 value;
-                        if (ParseMaterialAssetFile_ValueVec4(overridedParamValue.value->asArray(), value))
+                        if (ParseAssetFile_Vec4(overridedParamValue.value->asArray(), value))
                         {
                             outCreateInfo.overridedParams.values_vec4.add(overridedParamValue.key, value);
                         }
@@ -458,7 +526,7 @@ namespace JumaEngine
                 case JumaRE::ShaderUniformType::Mat4:
                     {
                         math::matrix4 value;
-                        if (ParseMaterialAssetFile_ValueMat4(overridedParamValue.value->asArray(), value))
+                        if (ParseAssetFile_Mat4(overridedParamValue.value->asArray(), value))
                         {
                             outCreateInfo.overridedParams.values_mat4.add(overridedParamValue.key, value);
                         }

@@ -141,7 +141,7 @@ namespace JumaEngine
                     if (value != nullptr)
                     {
                         setParamValue<MaterialParamType::Texture>(
-                            materialParam, getEngine()->getSubsystem<AssetsEngineSubsystem>()->getTextureAsset(*value)
+                            materialParam, getEngine()->getSubsystem<AssetsEngineSubsystem>()->getAsset<TextureBase>(*value)
                         );
                         continue;
                     }
