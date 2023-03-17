@@ -37,6 +37,6 @@ namespace JumaEngine
 	private:
 
 		jstringID m_AssetID = jstringID_NONE;
-		AssetType m_AssetType = AssetType::Texture;
+		AssetType m_AssetType = AssetType::None;
 	};
 }

@@ -286,7 +286,7 @@ namespace JumaEngine
 		                JUTILS_LOG(error, JSTR("Failed to parse material asset file {}"), assetIDStr);
 						return nullptr;
 	                }
-                    for (auto& shaderFile : createInfo.shaderFiles)
+                    for (auto& shaderFile : createInfo.shaderInfo.fileNames)
                     {
 	                    shaderFile.value = getAssetPath(shaderFile.value);
                     }

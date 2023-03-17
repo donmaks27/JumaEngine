@@ -5,6 +5,8 @@
 #include "../core.h"
 #include "Material.h"
 
+#include <JumaRE/RenderEngine.h>
+
 namespace JumaEngine
 {
 	struct MaterialParamCreateInfo
@@ -14,9 +16,7 @@ namespace JumaEngine
 	};
 	struct MaterialBaseCreateInfo
 	{
-		jmap<JumaRE::ShaderStageFlags, jstring> shaderFiles;
-		jset<jstringID> shaderVertexComponents;
-		jmap<jstringID, JumaRE::ShaderUniform> shaderUniforms;
+		JumaRE::RenderEngine::ShaderCreateInfo shaderInfo;
 
 		jarray<MaterialParamCreateInfo> params;
 		MaterialDefaultParamValues defaultValues;
@@ -43,7 +43,7 @@ namespace JumaEngine
 		MaterialDefaultParamValues m_DefaultParamValues;
 
 
-		bool loadMaterial(MaterialBaseCreateInfo createInfo);
+		bool loadMaterial(const MaterialBaseCreateInfo& createInfo);
 
 		template<MaterialParamType T>
 		bool getDefaultParamValue(const jstringID& paramName, typename MaterialParamInfo<T>::value_type& outValue) const { return false; }

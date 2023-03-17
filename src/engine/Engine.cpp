@@ -111,7 +111,7 @@ namespace JumaEngine
             JUTILS_LOG(error, JSTR("Failed to create render engine ({})"), renderAPI);
             return false;
         }
-        if (!m_RenderEngine->init({ getWindowsTitle(), { 800, 600 } }))
+        if (!m_RenderEngine->init({ { getWindowsTitle(), { 800, 600 } } }))
         {
             JUTILS_LOG(error, JSTR("Failed to init render engine ({})"), renderAPI);
             delete m_RenderEngine;

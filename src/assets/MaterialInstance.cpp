@@ -67,7 +67,7 @@ namespace JumaEngine
         }
 
         JumaRE::Shader* shader = createInfo.parentMaterial->getShader();
-        JumaRE::Material* material = getEngine()->getRenderEngine()->createMaterial(shader);
+        JumaRE::Material* material = getEngine()->getRenderEngine()->createMaterialSync(shader);
         if (material == nullptr)
         {
 	        JUTILS_LOG(error, JSTR("Failed to create material"));

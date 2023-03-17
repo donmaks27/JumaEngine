@@ -460,8 +460,9 @@ namespace JumaEngine
         {
 	        return false;
         }
-        outCreateInfo = { std::move(shaderFiles), std::move(vertexComponents), ParseMaterialAssetFile_Uniforms(jsonObject) };
-        ParseMaterialAssetFile_Params(jsonObject, outCreateInfo.shaderUniforms, outCreateInfo.params, outCreateInfo.defaultValues);
+        outCreateInfo.shaderInfo = { std::move(shaderFiles), std::move(vertexComponents), ParseMaterialAssetFile_Uniforms(jsonObject) };
+        ParseMaterialAssetFile_Params(jsonObject, outCreateInfo.shaderInfo.uniforms, outCreateInfo.params, 
+            outCreateInfo.defaultValues);
         return true;
     }
 

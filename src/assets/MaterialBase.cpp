@@ -7,17 +7,30 @@
 
 namespace JumaEngine
 {
-	bool MaterialBase::loadMaterial(MaterialBaseCreateInfo createInfo)
+	bool MaterialBase::loadMaterial(const MaterialBaseCreateInfo& createInfo)
 	{
 		JumaRE::RenderEngine* renderEngine = getEngine()->getRenderEngine();
-		JumaRE::Shader* shader = renderEngine->createShader(createInfo.shaderFiles, std::move(createInfo.shaderVertexComponents), std::move(createInfo.shaderUniforms));
+
+		std::atomic_bool flag = false;
+		JumaRE::Shader* shader = nullptr;
+		JumaRE::Material* material = nullptr;
+		const bool result = renderEngine->createShader(createInfo.shaderInfo, [renderEngine, &flag, &shader, &material](JumaRE::Shader* createdShader)
+		{
+		    shader = createdShader;
+			material = renderEngine->createMaterialSync(shader);
+			flag = true;
+		});
+		if (result)
+		{
+		    while (!flag);
+		}
+		//JumaRE::Shader* shader = renderEngine->createShaderSync(createInfo.shaderInfo);
 		if (shader == nullptr)
 		{
 			JUTILS_LOG(error, JSTR("Failed to create shader"));
 			return false;
 		}
-
-		JumaRE::Material* material = renderEngine->createMaterial(shader);
+		//JumaRE::Material* material = renderEngine->createMaterialSync(shader);
 		if (material == nullptr)
 		{
 			JUTILS_LOG(error, JSTR("Failed to create material"));
