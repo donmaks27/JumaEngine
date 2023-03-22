@@ -14,23 +14,23 @@ namespace JumaEngine
 		std::atomic_bool flag = false;
 		JumaRE::Shader* shader = nullptr;
 		JumaRE::Material* material = nullptr;
-		const bool result = renderEngine->createShader(createInfo.shaderInfo, [renderEngine, &flag, &shader, &material](JumaRE::Shader* createdShader)
+		const bool result = renderEngine->createShaderAsync(createInfo.shaderInfo, [renderEngine, &flag, &shader, &material](JumaRE::Shader* createdShader)
 		{
 		    shader = createdShader;
-			material = renderEngine->createMaterialSync(shader);
+			material = renderEngine->createMaterial(shader);
 			flag = true;
 		});
 		if (result)
 		{
 		    while (!flag);
 		}
-		//JumaRE::Shader* shader = renderEngine->createShaderSync(createInfo.shaderInfo);
+		//JumaRE::Shader* shader = renderEngine->createShader(createInfo.shaderInfo);
 		if (shader == nullptr)
 		{
 			JUTILS_LOG(error, JSTR("Failed to create shader"));
 			return false;
 		}
-		//JumaRE::Material* material = renderEngine->createMaterialSync(shader);
+		//JumaRE::Material* material = renderEngine->createMaterial(shader);
 		if (material == nullptr)
 		{
 			JUTILS_LOG(error, JSTR("Failed to create material"));

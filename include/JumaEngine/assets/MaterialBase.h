@@ -16,7 +16,7 @@ namespace JumaEngine
 	};
 	struct MaterialBaseCreateInfo
 	{
-		JumaRE::RenderEngine::ShaderCreateInfo shaderInfo;
+		JumaRE::ShaderCreateInfo shaderInfo;
 
 		jarray<MaterialParamCreateInfo> params;
 		MaterialDefaultParamValues defaultValues;
