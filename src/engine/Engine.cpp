@@ -7,6 +7,7 @@
 #include <JumaRE/RenderPipeline.h>
 
 #include "JumaEngine/assets/AssetsEngineSubsystem.h"
+#include "JumaEngine/engine/AsyncEngineSubsystem.h"
 #include "JumaEngine/engine/ConfigEngineSubsystem.h"
 #include "JumaEngine/game/GameInstance.h"
 #include "JumaEngine/render/RenderEngineSubsystem.h"
@@ -120,6 +121,11 @@ namespace JumaEngine
         }
         JUTILS_LOG(info, JSTR("Render engine initialized ({})"), renderAPI);
         
+        if (createSubsystem<AsyncEngineSubsystem>() == nullptr)
+        {
+            JUTILS_LOG(error, JSTR("Failed to init AsyncEngineSussystem"));
+            return false;
+        }
         RenderEngineSubsystem* renderSubsystem = createSubsystem<RenderEngineSubsystem>();
         if (renderSubsystem == nullptr)
         {
@@ -203,6 +209,8 @@ namespace JumaEngine
     }
     void Engine::update(const float deltaTime)
     {
+        getSubsystem<AsyncEngineSubsystem>()->executeGameThreadTasks();
+
         UpdateEngineObject(m_EngineWidgetCreator.get(), deltaTime);
     }
     void Engine::preRender()
