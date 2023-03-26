@@ -34,7 +34,7 @@ namespace JumaEngine
 		if (material == nullptr)
 		{
 			JUTILS_LOG(error, JSTR("Failed to create material"));
-			renderEngine->destroyShader(shader);
+			renderEngine->destroyAsset(shader);
 			return false;
 		}
 
@@ -77,7 +77,7 @@ namespace JumaEngine
 
 		if (shader != nullptr)
 		{
-			getEngine()->getRenderEngine()->destroyShader(shader);
+			getEngine()->getRenderEngine()->destroyAsset(shader);
 		}
 		m_DefaultParamValues = {};
 	}
