@@ -21,7 +21,7 @@ namespace JumaEngine
         AsyncEngineSubsystem() = default;
         virtual ~AsyncEngineSubsystem() override = default;
 
-        bool addTask(AsyncTaskType type, std::function<void()> task);
+        bool addTask(AsyncTaskType type, jasync_task* task);
 
     protected:
 
@@ -32,8 +32,9 @@ namespace JumaEngine
 
         jasync_task_queue<> m_AsyncTaskQueue;
         
-        jlist<std::function<void()>> m_AsyncTasks_GameThread;
         std::mutex m_AsyncTasks_GameThreadMutex;
+        jlist<jasync_task*> m_AsyncTasks_GameThread;
+        jlist<jasync_task*> m_AsyncTasks_GameThreadTemp;
 
 
         void executeGameThreadTasks();

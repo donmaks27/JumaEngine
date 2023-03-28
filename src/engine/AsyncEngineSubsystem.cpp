@@ -24,15 +24,15 @@ namespace JumaEngine
         Super::clearSubsystem();
     }
 
-    bool AsyncEngineSubsystem::addTask(const AsyncTaskType type, std::function<void()> task)
+    bool AsyncEngineSubsystem::addTask(const AsyncTaskType type, jasync_task* task)
     {
         switch (type)
         {
-        case AsyncTaskType::Worker: return m_AsyncTaskQueue.createTask<jasync_task_default>(std::move(task));
+        case AsyncTaskType::Worker: return m_AsyncTaskQueue.addTask(task);
         case AsyncTaskType::GameThread:
             {
                 std::lock_guard lock(m_AsyncTasks_GameThreadMutex);
-                m_AsyncTasks_GameThread.add(std::move(task));
+                m_AsyncTasks_GameThread.add(task);
             }
             return true;
         default: ;
@@ -40,19 +40,24 @@ namespace JumaEngine
         return false;
     }
 
-    void JumaEngine::AsyncEngineSubsystem::executeGameThreadTasks()
+    void AsyncEngineSubsystem::executeGameThreadTasks()
     {
         m_AsyncTasks_GameThreadMutex.lock();
-        jlist<std::function<void()>> tasks = m_AsyncTasks_GameThread;
+        m_AsyncTasks_GameThreadTemp = m_AsyncTasks_GameThread;
         m_AsyncTasks_GameThread.clear();
         m_AsyncTasks_GameThreadMutex.unlock();
 
-        for (const auto& task : tasks)
+        for (const auto& task : m_AsyncTasks_GameThreadTemp)
         {
             if (task != nullptr)
             {
-                task();
+                task->run();
+                if (task->shouldDeleteAfterExecution())
+                {
+                    delete task;
+                }
             }
         }
+        m_AsyncTasks_GameThreadTemp.clear();
     }
 }
