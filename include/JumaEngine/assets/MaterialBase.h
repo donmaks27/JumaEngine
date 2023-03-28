@@ -40,10 +40,63 @@ namespace JumaEngine
 
 	private:
 
+		JUTILS_CREATE_DELEGATE2(OnMaterialCreatedEvent, MaterialBase*, material, bool, success);
+
+		class MaterialBaseAsyncTask
+		{
+		protected:
+			MaterialBaseAsyncTask() = default;
+		public:
+			virtual ~MaterialBaseAsyncTask() = default;
+			
+			virtual void clearTask() = 0;
+		};
+		class OnShaderCreatedTask final : public JumaRE::RenderEngine::OnAssetCreatedTask<JumaRE::Shader>, public MaterialBaseAsyncTask
+		{
+		public:
+			OnShaderCreatedTask() = default;
+			OnShaderCreatedTask(MaterialBase* ptr, const MaterialBaseCreateInfo& createInfo)
+			    : m_CreateInfo(createInfo)
+		        , m_Material(ptr)
+			{}
+
+			virtual void run() override;
+			virtual void clearTask() override;
+
+		private:
+			
+			std::mutex m_Mutex;
+			MaterialBaseCreateInfo m_CreateInfo;
+			MaterialBase* m_Material = nullptr;
+		};
+		class NotifyShaderCreatedTask final : public jasync_task, public MaterialBaseAsyncTask
+		{
+		public:
+			NotifyShaderCreatedTask() = default;
+			NotifyShaderCreatedTask(MaterialBase* material, JumaRE::Shader* shader)
+			    : m_Material(material), m_Shader(shader)
+			{}
+
+			virtual void run() override;
+			virtual void clearTask() override;
+
+		private:
+
+			MaterialBase* m_Material = nullptr;
+			JumaRE::Shader* m_Shader = nullptr;
+		};
+
 		MaterialDefaultParamValues m_DefaultParamValues;
+
+		OnMaterialCreatedEvent onMaterialCreated;
+		MaterialBaseAsyncTask* m_CreateAsyncTask = nullptr;
+		static constexpr auto a = sizeof(MaterialBaseCreateInfo);
 
 
 		bool loadMaterial(const MaterialBaseCreateInfo& createInfo);
+		bool createMaterial(const MaterialBaseCreateInfo& createInfo);
+		bool onShaderCreated_WorkerThread(JumaRE::Shader* shader, const MaterialBaseCreateInfo& createInfo);
+		bool onShaderCreated_GameThread(JumaRE::Shader* shader);
 
 		template<MaterialParamType T>
 		bool getDefaultParamValue(const jstringID& paramName, typename MaterialParamInfo<T>::value_type& outValue) const { return false; }
