@@ -4,6 +4,7 @@
 
 #include "AssetFilesParsing.h"
 #include "JumaEngine/assets/MaterialInstance.h"
+#include "JumaEngine/engine/AsyncEngineSubsystem.h"
 #include "JumaEngine/engine/ConfigEngineSubsystem.h"
 #include "JumaEngine/engine/Engine.h"
 #include "JumaEngine/render/RenderEngineSubsystem.h"
@@ -322,5 +323,169 @@ namespace JumaEngine
 			return nullptr;
         }
         return material;
+    }
+
+    bool AssetsEngineSubsystem::getAssetAsync(EngineContextObject* context, const jstringID& assetID, std::function<void(const EngineObjectPtr<Asset>&)> callback)
+    {
+        EngineObjectWeakPtr weakContext(context);
+        if ((weakContext == nullptr) || (callback == nullptr))
+        {
+            return false;
+        }
+
+        EngineObjectPtr<Asset>* loadedAsset = m_LoadedAssets.find(assetID);
+        if (loadedAsset != nullptr)
+        {
+            getEngine()->getSubsystem<AsyncEngineSubsystem>()->addTask(AsyncTaskType::GameThread, new jasync_task_default([weakContext, callback, asset = *loadedAsset]()
+            {
+                if (weakContext != nullptr)
+                {
+                    callback(asset);
+                }
+            }));
+            return true;
+        }
+        AsyncAssetCreateTask* loadTask = m_LoadAssetTasks.find(assetID);
+        if (loadTask != nullptr)
+        {
+            loadTask->addCallback(weakContext, std::move(callback));
+            return true;
+        }
+
+        AsyncAssetCreateTask* task = &m_LoadAssetTasks.put(assetID, this, assetID);
+        task->addCallback(weakContext, std::move(callback));
+        if (!getEngine()->getSubsystem<AsyncEngineSubsystem>()->addTask(AsyncTaskType::Worker, task))
+        {
+            m_LoadAssetTasks.remove(assetID);
+            JUTILS_LOG(error, JSTR("Failed to start loading asset {}"), assetID);
+            return false;
+        }
+        return true;
+    }
+    void AssetsEngineSubsystem::AsyncAssetCreateTask::run()
+    {
+        if (!m_AssetDataLoaded)
+        {
+            readAssetData();
+            m_AssetDataLoaded = true;
+            m_Subsystem->getEngine()->getSubsystem<AsyncEngineSubsystem>()->addTask(AsyncTaskType::GameThread, this);
+        }
+        else
+        {
+            if (!m_ErrorMessage.isEmpty())
+            {
+                JUTILS_LOG(error, *m_ErrorMessage);
+                m_Subsystem->onAssetCreateFailed(m_AssetID);
+            }
+            else if ((m_AssetCreateFunction == nullptr) || !m_AssetCreateFunction())
+            {
+                m_Subsystem->onAssetCreateFailed(m_AssetID);
+            }
+        }
+    }
+
+    bool AssetsEngineSubsystem::AsyncAssetCreateTask::readAssetData()
+    {
+        const jstring assetIDStr = m_AssetID.toString();
+        jstring assetPath = m_Subsystem->getAssetPath(assetIDStr);
+        if (assetPath.isEmpty())
+        {
+            return false;
+        }
+        assetPath += JSTR(".json");
+
+        AssetType type;
+        json::json_value config = nullptr;
+        if (!LoadAssetFile(assetPath, type, config, m_ErrorMessage))
+        {
+            return false;
+        }
+
+        switch (type)
+        {
+        case AssetType::Material:
+            {
+                static const jstringID parentStringID = JSTR("parentMaterial");
+                const json::json_value* parentMaterialValue = config->asObject().find(parentStringID);
+                if (parentMaterialValue == nullptr)
+                {
+                    MaterialBaseCreateInfo createInfo;
+                    const JumaRE::RenderAPI renderAPI = m_Subsystem->getEngine()->getRenderEngine()->getRenderAPI();
+                    if (!ParseMaterialAssetFile(assetPath, config, renderAPI, createInfo, m_ErrorMessage))
+                    {
+                        return false;
+                    }
+                    for (auto& shaderFile : createInfo.shaderInfo.fileNames)
+                    {
+	                    shaderFile.value = m_Subsystem->getAssetPath(shaderFile.value);
+                    }
+                    m_AssetCreateFunction = [this, createInfo]() -> bool
+                    {
+                        EngineObjectPtr<MaterialBase> material = m_Subsystem->getEngine()->createObject<MaterialBase>();
+                        m_Asset = material;
+                        if (!m_Subsystem->prepareAssetForCreation(m_Asset, m_AssetID) || !material->createMaterial(createInfo))
+                        {
+                            m_Asset = nullptr;
+                            return false;
+                        }
+                        return true;
+                    };
+                    return true;
+                }
+            }
+            break;
+        
+        default: ;
+        }
+        return false;
+    }
+    bool AssetsEngineSubsystem::prepareAssetForCreation(const EngineObjectPtr<Asset>& asset, const jstringID& assetID)
+    {
+        if (asset == nullptr)
+        {
+            JUTILS_LOG(error, JSTR("Failed to create asset {}"), assetID);
+            return false;
+        }
+        asset->m_AssetID = assetID;
+        asset->onAssetCreated.bind(this, &AssetsEngineSubsystem::onAssetCreated);
+        return true;
+    }
+
+    void AssetsEngineSubsystem::onAssetCreateFailed(const jstringID& assetID)
+    {
+        getEngine()->getSubsystem<AsyncEngineSubsystem>()->addTask(AsyncTaskType::GameThread, new jasync_task_default([this, assetID = assetID]()
+        {
+            onAssetCreateTaskFinished(assetID, false);
+        }));
+    }
+    void AssetsEngineSubsystem::onAssetCreated(Asset* asset, const bool success)
+    {
+        if (asset != nullptr)
+        {
+            onAssetCreateTaskFinished(asset->getAssetID(), success);
+        }
+    }
+    void AssetsEngineSubsystem::onAssetCreateTaskFinished(const jstringID& assetID, bool success)
+    {
+        AsyncAssetCreateTask* task = m_LoadAssetTasks.find(assetID);
+        if (task == nullptr)
+        {
+            return;
+        }
+
+        m_LoadedAssets.add(assetID, success ? task->getAsset() : nullptr);
+        task->notify(success);
+        m_LoadAssetTasks.remove(assetID);
+    }
+    void AssetsEngineSubsystem::AsyncAssetCreateTask::notify(const bool success)
+    {
+        for (const auto& callback : m_Callbacks)
+        {
+            if ((callback.first != nullptr) && (callback.second != nullptr))
+            {
+                callback.second(success ? m_Asset : nullptr);
+            }
+        }
+        m_Callbacks.clear();
     }
 }

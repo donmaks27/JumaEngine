@@ -5,7 +5,7 @@
 #include "../core.h"
 #include "../engine/EngineSubsystem.h"
 
-#include <jutils/jlist.h>
+#include <jutils/jasync_task_queue.h>
 
 #include "Material.h"
 #include "Mesh.h"
@@ -28,7 +28,9 @@ namespace JumaEngine
         template<typename T, TEMPLATE_ENABLE(is_base<Asset, T>)>
         EngineObjectPtr<T> getAsset(const jstringID& assetID) { return getAsset(assetID).castMove<T>(); }
         EngineObjectPtr<Material> createMaterial(const EngineObjectPtr<Material>& parentMaterial);
-        
+
+        bool getAssetAsync(EngineContextObject* context, const jstringID& assetID, std::function<void(const EngineObjectPtr<Asset>&)> callback);
+
         jstringID getVertexComponentID(VertexComponent component) const;
         JumaRE::VertexBuffer* getVertexBuffer_Cube();
         JumaRE::VertexBuffer* getVertexBuffer_Plane2D();
@@ -42,7 +44,43 @@ namespace JumaEngine
 
 	private:
 
+        class AsyncAssetCreateTask : public jasync_task
+        {
+        public:
+            AsyncAssetCreateTask() = delete;
+            AsyncAssetCreateTask(AssetsEngineSubsystem* subsystem, const jstringID& assetID)
+                : m_Subsystem(subsystem), m_AssetID(assetID)
+            {}
+
+            void addCallback(const EngineObjectWeakPtr<EngineContextObject>& context, std::function<void(const EngineObjectPtr<Asset>&)>&& callback)
+            {
+                m_Callbacks.put(context, std::move(callback));
+            }
+            void notify(bool success);
+
+            virtual void run() override;
+            virtual bool shouldDeleteAfterExecution() const override { return false; }
+
+            const EngineObjectPtr<Asset>& getAsset() const { return m_Asset; }
+
+        private:
+        
+            jarray<std::pair<EngineObjectWeakPtr<EngineContextObject>, std::function<void(const EngineObjectPtr<Asset>&)>>> m_Callbacks;
+            AssetsEngineSubsystem* m_Subsystem = nullptr;
+            jstringID m_AssetID = jstringID_NONE;
+
+            std::function<bool()> m_AssetCreateFunction = nullptr;
+            EngineObjectPtr<Asset> m_Asset = nullptr;
+            jstring m_ErrorMessage = jstring();
+
+            bool m_AssetDataLoaded = false;
+
+
+            bool readAssetData();
+        };
+
         jmap<jstringID, EngineObjectPtr<Asset>> m_LoadedAssets;
+        jmap<jstringID, AsyncAssetCreateTask> m_LoadAssetTasks;
 
         jmap<VertexComponent, jstringID> m_VertexComponentIDs;
         jlist<Mesh> m_Meshes;
@@ -53,6 +91,11 @@ namespace JumaEngine
         jstring m_GameContentDirectory = JSTR("./content/");
 
 
-		void onRenderEngineDestroying(JumaRE::RenderEngine* renderEngine) { clear(); }
+		bool prepareAssetForCreation(const EngineObjectPtr<Asset>& asset, const jstringID& assetID);
+        void onAssetCreateFailed(const jstringID& assetID);
+        void onAssetCreated(Asset* asset, bool success);
+        void onAssetCreateTaskFinished(const jstringID& assetID, bool success);
+        
+        void onRenderEngineDestroying(JumaRE::RenderEngine* renderEngine) { clear(); }
 	};
 }

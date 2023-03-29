@@ -117,7 +117,7 @@ namespace JumaEngine
 		}
 		if (m_Material->onShaderCreated_GameThread(m_Shader))
 		{
-		    m_Material->onMaterialCreated.call(m_Material, true);
+		    m_Material->onAssetCreated.call(m_Material, true);
 		}
 		else
 		{
@@ -125,9 +125,9 @@ namespace JumaEngine
 			{
 				m_Shader->getRenderEngine()->destroyAsset(m_Shader);
 			}
-			m_Material->onMaterialCreated.call(m_Material, false);
+			m_Material->onAssetCreated.call(m_Material, false);
 		}
-		m_Material->onMaterialCreated.clear();
+		m_Material->onAssetCreated.clear();
     }
 	bool MaterialBase::onShaderCreated_WorkerThread(JumaRE::Shader* shader, const MaterialBaseCreateInfo& createInfo)
     {

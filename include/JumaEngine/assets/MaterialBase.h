@@ -40,8 +40,6 @@ namespace JumaEngine
 
 	private:
 
-		JUTILS_CREATE_DELEGATE2(OnMaterialCreatedEvent, MaterialBase*, material, bool, success);
-
 		class MaterialBaseAsyncTask
 		{
 		protected:
@@ -88,9 +86,7 @@ namespace JumaEngine
 
 		MaterialDefaultParamValues m_DefaultParamValues;
 
-		OnMaterialCreatedEvent onMaterialCreated;
 		MaterialBaseAsyncTask* m_CreateAsyncTask = nullptr;
-		static constexpr auto a = sizeof(MaterialBaseCreateInfo);
 
 
 		bool loadMaterial(const MaterialBaseCreateInfo& createInfo);

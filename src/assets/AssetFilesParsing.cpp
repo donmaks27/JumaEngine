@@ -6,7 +6,13 @@
 
 namespace JumaEngine
 {
-    bool LoadAssetFile(const jstring& assetPath, AssetType& outAssetType, json::json_value& outConfig)
+#ifndef JUTILS_LOG_DISABLED
+    #define ERROR_MESSAGE(str, formatStr, ...) str = jstring::format(formatStr, __VA_ARGS__)
+#else
+    #define ERROR_MESSAGE(str, formatStr, ...)
+#endif
+
+    bool LoadAssetFile(const jstring& assetPath, AssetType& outAssetType, json::json_value& outConfig, jstring& outErrorMessage)
     {
         static const jstringID assetTypeField = JSTR("assetType");
         static const jstringID assetTypeTexture = JSTR("texture");
@@ -16,20 +22,20 @@ namespace JumaEngine
 	    const json::json_value config = json::parseFile(assetPath);
         if (config == nullptr)
         {
-            JUTILS_LOG(warning, JSTR("Can't find asset file {}"), assetPath);
+            ERROR_MESSAGE(outErrorMessage, JSTR("Can't find asset file {}"), assetPath);
 	        return false;
         }
         const jmap<jstringID, json::json_value>* jsonObject = nullptr;
         if (!config->tryGetObject(jsonObject))
         {
-            JUTILS_LOG(warning, JSTR("Invalid asset file {}"), assetPath);
+            ERROR_MESSAGE(outErrorMessage, JSTR("Invalid asset file {}"), assetPath);
 	        return false;
         }
         
         const json::json_value* typeJsonValue = jsonObject->find(assetTypeField);
         if (typeJsonValue == nullptr)
         {
-	        JUTILS_LOG(warning, JSTR("Can't find field \"assetType\" in asset file {}"), assetPath);
+            ERROR_MESSAGE(outErrorMessage, JSTR("Can't find field \"{}\" in asset file {}"), assetTypeField, assetPath);
 	        return false;
         }
         jstringID type = jstringID_NONE;
@@ -45,11 +51,16 @@ namespace JumaEngine
         else if (type == assetTypeMaterial) { outAssetType = AssetType::Material; }
         else
         {
-	        JUTILS_LOG(warning, JSTR("Invalid value in field \"assetType\" in asset file {}"), assetPath);
+            ERROR_MESSAGE(outErrorMessage, JSTR("Invalid value in field \"{}\" in asset file {}"), assetTypeField, assetPath);
             return false;
         }
         outConfig = config;
         return true;
+    }
+    bool LoadAssetFile(const jstring& assetPath, AssetType& outAssetType, json::json_value& outConfig)
+    {
+        jstring errorMessage;
+        return LoadAssetFile(assetPath, outAssetType, outConfig, errorMessage);
     }
 
     JumaRE::TextureFormat ParseAssetFile_TextureFormat(const jstring& format)
@@ -195,7 +206,7 @@ namespace JumaEngine
     }
 
     bool ParseMaterialAssetFile_ShaderFiles(const jstring& assetPath, const jmap<jstringID, json::json_value>& jsonObject, 
-        const JumaRE::RenderAPI renderAPI, jmap<JumaRE::ShaderStageFlags, jstring>& outShaderFiles)
+        const JumaRE::RenderAPI renderAPI, jmap<JumaRE::ShaderStageFlags, jstring>& outShaderFiles, jstring &outErrorMessage)
     {
 	    static const jstringID assetShadersField = JSTR("shaderFiles");
         static const jstringID shaderVertex = JSTR("vertex");
@@ -205,7 +216,7 @@ namespace JumaEngine
         const jmap<jstringID, json::json_value>* shadersObject = nullptr;
         if ((shadersValue == nullptr) || !(*shadersValue)->tryGetObject(shadersObject))
         {
-	        JUTILS_LOG(warning, JSTR("Can't get field \"shaderFiles\" in asset file {}"), assetPath);
+            ERROR_MESSAGE(outErrorMessage, JSTR("Can't get field \"{}\" in asset file {}"), assetShadersField, assetPath);
 	        return false;
         }
         jmap<JumaRE::ShaderStageFlags, jstring> shaderFiles;
@@ -232,7 +243,7 @@ namespace JumaEngine
         }
         if (!shaderFiles.contains(JumaRE::ShaderStageFlags::SHADER_STAGE_VERTEX) || !shaderFiles.contains(JumaRE::ShaderStageFlags::SHADER_STAGE_FRAGMENT))
         {
-	        JUTILS_LOG(warning, JSTR("Failed parse material asset file {}({}): there should be at least vertex AND fragment shader files"), assetPath, JumaRE::RenderAPIToString(renderAPI));
+            ERROR_MESSAGE(outErrorMessage, JSTR("Failed parse material asset file {}({}): there should be at least vertex AND fragment shader files"), assetPath, renderAPI);
 	        return false;
         }
 
@@ -240,14 +251,14 @@ namespace JumaEngine
         return true;
     }
     bool ParseMaterialAssetFile_VertexComponents(const jstring& assetPath, const jmap<jstringID, json::json_value>& jsonObject, 
-        jset<jstringID>& outComponents)
+        jset<jstringID>& outComponents, jstring &outErrorMessage)
     {
 	    static const jstringID assetComponenentsField = JSTR("vertexComponents");
 
 	    const json::json_value* vertexComponentsValue = jsonObject.find(assetComponenentsField);
         if (vertexComponentsValue == nullptr)
         {
-            JUTILS_LOG(error, JSTR("Failed to find \"vertexComponents\" field in asset file {}"), assetPath);
+            ERROR_MESSAGE(outErrorMessage, JSTR("Failed to find \"{}\" field in asset file {}"), assetComponenentsField, assetPath);
             return false;
         }
         jset<jstringID> vertexComponents;
@@ -261,7 +272,7 @@ namespace JumaEngine
         }
         if (vertexComponents.isEmpty())
         {
-	        JUTILS_LOG(error, JSTR("Failed parse material asset file {}: there should be at least one vertex component"), assetPath);
+            ERROR_MESSAGE(outErrorMessage, JSTR("Failed parse material asset file {}: there should be at least one vertex component"), assetPath);
             return false;
         }
 
@@ -446,17 +457,18 @@ namespace JumaEngine
             }
         }
     }
-    bool ParseMaterialAssetFile(const jstring& assetPath, const json::json_value& config, const JumaRE::RenderAPI renderAPI, 
-        MaterialBaseCreateInfo& outCreateInfo)
+
+    bool ParseMaterialAssetFile(const jstring &assetPath, const json::json_value &config, const JumaRE::RenderAPI renderAPI, 
+        MaterialBaseCreateInfo &outCreateInfo, jstring &outErrorMessage)
     {
         const jmap<jstringID, json::json_value>& jsonObject = config->asObject();
         jmap<JumaRE::ShaderStageFlags, jstring> shaderFiles;
-        if (!ParseMaterialAssetFile_ShaderFiles(assetPath, jsonObject, renderAPI, shaderFiles))
+        if (!ParseMaterialAssetFile_ShaderFiles(assetPath, jsonObject, renderAPI, shaderFiles, outErrorMessage))
         {
 	        return false;
         }
         jset<jstringID> vertexComponents;
-        if (!ParseMaterialAssetFile_VertexComponents(assetPath, jsonObject, vertexComponents))
+        if (!ParseMaterialAssetFile_VertexComponents(assetPath, jsonObject, vertexComponents, outErrorMessage))
         {
 	        return false;
         }
@@ -464,6 +476,12 @@ namespace JumaEngine
         ParseMaterialAssetFile_Params(jsonObject, outCreateInfo.shaderInfo.uniforms, outCreateInfo.params, 
             outCreateInfo.defaultValues);
         return true;
+    }
+    bool ParseMaterialAssetFile(const jstring& assetPath, const json::json_value& config, const JumaRE::RenderAPI renderAPI, 
+        MaterialBaseCreateInfo& outCreateInfo)
+    {
+        jstring errorMessage;
+        return ParseMaterialAssetFile(assetPath, config, renderAPI, outCreateInfo, errorMessage);
     }
 
     bool ParseMaterialInstanceAssetFile(const jstring &assetPath, const json::json_value &config, const EngineObjectPtr<Material>& parentMaterial, 
