@@ -2,6 +2,7 @@
 
 #include "JumaEngine/assets/Material.h"
 
+#include "JumaEngine/assets/AssetsEngineSubsystem.h"
 #include "JumaEngine/engine/Engine.h"
 
 namespace JumaEngine
@@ -17,40 +18,74 @@ namespace JumaEngine
         return true;
     }
 
+    bool Material::setAssetForTextureParamValue(const jstringID& paramName, const jstringID& uniformName, const jstringID& assetID)
+    {
+        const TextureReference* reference = m_ReferencedTextures.find(paramName);
+        if ((reference != nullptr) && (reference->assetID == assetID))
+        {
+            return true;
+        }
+        const JumaRE::ShaderUniform* uniform = getShader()->getUniforms().find(uniformName);
+        if ((uniform == nullptr) || (uniform->type != JumaRE::ShaderUniformType::Texture))
+        {
+            return false;
+        }
+        updateParamValue<MaterialParamType::Texture>(paramName, uniformName, nullptr);
+
+        m_ReferencedTextures.add(paramName, { nullptr, assetID });
+        return getEngine()->getSubsystem<AssetsEngineSubsystem>()->getAssetAsync(
+            this, assetID, [this, paramName = paramName, uniformName = uniformName, assetID = assetID](const EngineObjectPtr<Asset>& asset)
+            {
+                const TextureReference* reference = m_ReferencedTextures.find(paramName);
+                if ((reference == nullptr) || (reference->assetID != assetID))
+                {
+                    return;
+                }
+                const EngineObjectPtr<TextureBase> texture = asset.cast<TextureBase>();
+                if (texture == nullptr)
+                {
+                    m_ReferencedTextures.remove(paramName);
+                    return;
+                }
+                updateParamValue<MaterialParamType::Texture>(paramName, uniformName, texture);
+            }
+        );
+    }
+
 	template<>
 	bool Material::updateParamValue<JumaRenderEngine::ShaderUniformType::Texture>(const jstringID& paramName, 
         const jstringID& uniformName, const EngineObjectPtr<TextureBase>& value)
 	{
-		const EngineObjectPtr<TextureBase>* prevTexture = m_ReferencedTextures.find(paramName);
-        if ((prevTexture != nullptr) && (prevTexture->get() != nullptr))
+        const TextureReference* reference = m_ReferencedTextures.find(paramName);
+        if ((reference != nullptr) && (reference->asset != nullptr))
         {
-	        (*prevTexture)->onDestroying.unbind(this, &Material::onTextureDestroying);
+            reference->asset->onDestroying.unbind(this, &Material::onTextureDestroying);
         }
-        
+
         JumaRE::TextureBase* textureBase = value != nullptr ? value->getTextureBase() : nullptr;
         if (textureBase == nullptr)
         {
-	        m_ReferencedTextures.remove(paramName);
+            m_ReferencedTextures.remove(paramName);
         }
         else
         {
             value->onDestroying.bind(this, &Material::onTextureDestroying);
-	        m_ReferencedTextures.add(paramName, value);
+            m_ReferencedTextures.add(paramName, { value, value->getAssetID() });
         }
         return m_Material->setParamValue<JumaRE::ShaderUniformType::Texture>(uniformName, textureBase);
 	}
 	void Material::onTextureDestroying(EngineContextObject* object)
 	{
-        jstringID name = jstringID_NONE;
-        for (const auto& texture : m_ReferencedTextures)
+        jstringID paramName = jstringID_NONE;
+        for (const auto& reference : m_ReferencedTextures)
         {
-	        if (texture.value.get() == object)
-	        {
-		        name = texture.key;
+            if (reference.value.asset.get() == object)
+            {
+                paramName = reference.key;
                 break;
-	        }
+            }
         }
-        setParamValue<MaterialParamType::Texture>(name, nullptr);
+        setParamValue<MaterialParamType::Texture>(paramName, nullptr);
 	}
 
     bool Material::resetParamValue(const jstringID& paramName)
@@ -73,23 +108,23 @@ namespace JumaEngine
 	}
     bool Material::resetParamValueInternal(const jstringID& paramName, const jstringID& uniformName)
     {
-        const EngineObjectPtr<TextureBase>* prevTexture = m_ReferencedTextures.find(paramName);
-        if ((prevTexture != nullptr) && (prevTexture->get() != nullptr))
+        const TextureReference* reference = m_ReferencedTextures.find(paramName);
+        if ((reference != nullptr) && (reference->asset != nullptr))
         {
-	        (*prevTexture)->onDestroying.unbind(this, &Material::onTextureDestroying);
+            reference->asset->onDestroying.unbind(this, &Material::onTextureDestroying);
         }
         m_ReferencedTextures.remove(paramName);
         return true;
     }
     
-    bool Material::getTextureParamValue(const jstringID& name, EngineObjectPtr<TextureBase>& outValue) const
+    bool Material::getTextureParamValue(const jstringID& paramName, EngineObjectPtr<TextureBase>& outValue) const
 	{
-        const EngineObjectPtr<TextureBase>* valuePtr = m_ReferencedTextures.find(name);
-        if (valuePtr == nullptr)
+        const TextureReference* reference = m_ReferencedTextures.find(paramName);
+        if (reference == nullptr)
         {
-	        return false;
+            return false;
         }
-        outValue = *valuePtr;
+        outValue = reference->asset;
         return true;
 	}
 
@@ -103,11 +138,11 @@ namespace JumaEngine
     }
     void Material::clearMaterial()
     {
-        for (const auto& texture : m_ReferencedTextures)
+        for (const auto& reference : m_ReferencedTextures)
         {
-            if (texture.value.get() != nullptr)
+            if (reference.value.asset != nullptr)
             {
-	            texture.value->onDestroying.unbind(this, &Material::onTextureDestroying);
+	            reference.value.asset->onDestroying.unbind(this, &Material::onTextureDestroying);
             }
         }
         

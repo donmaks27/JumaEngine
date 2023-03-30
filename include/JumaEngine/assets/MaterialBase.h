@@ -33,7 +33,9 @@ namespace JumaEngine
 		virtual ~MaterialBase() override = default;
 
 	protected:
-		
+
+		virtual const Material* getBaseMaterial() const override { return this; }
+
 		virtual bool resetParamValueInternal(const jstringID& paramName, const jstringID& uniformName) override;
 
 		virtual void clearMaterial() override;
@@ -104,8 +106,6 @@ namespace JumaEngine
 		bool getDefaultParamValue<MaterialParamType::Vec4>(const jstringID& paramName, math::vector4& outValue) const;
 		template<>
 		bool getDefaultParamValue<MaterialParamType::Mat4>(const jstringID& paramName, math::matrix4& outValue) const;
-		template<>
-		bool getDefaultParamValue<MaterialParamType::Texture>(const jstringID& paramName, EngineObjectPtr<TextureBase>& outValue) const;
 
 		template<MaterialParamType T>
 		bool updateDefaultParamValue(const jstringID& paramName, const jstringID& uniformName)
@@ -117,5 +117,7 @@ namespace JumaEngine
 			}
 			return this->updateParamValue<T>(paramName, uniformName, value);
 		}
+		template<>
+		bool updateDefaultParamValue<MaterialParamType::Texture>(const jstringID& paramName, const jstringID& uniformName);
 	};
 }

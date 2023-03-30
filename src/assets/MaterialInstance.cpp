@@ -140,9 +140,7 @@ namespace JumaEngine
                     const auto* value = createInfo.overridedParams.values_texture.find(materialParam);
                     if (value != nullptr)
                     {
-                        setParamValue<MaterialParamType::Texture>(
-                            materialParam, getEngine()->getSubsystem<AssetsEngineSubsystem>()->getAsset<TextureBase>(*value)
-                        );
+                        setAssetForTextureParamValue(materialParam, uniformName, *value);
                         continue;
                     }
                 }

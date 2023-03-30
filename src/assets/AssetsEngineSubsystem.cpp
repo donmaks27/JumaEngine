@@ -426,7 +426,7 @@ namespace JumaEngine
                     {
 	                    shaderFile.value = m_Subsystem->getAssetPath(shaderFile.value);
                     }
-                    m_AssetCreateFunction = [this, createInfo]() -> bool
+                    m_AssetCreateFunction = [this, createInfo = std::move(createInfo)]() -> bool
                     {
                         EngineObjectPtr<MaterialBase> material = m_Subsystem->getEngine()->createObject<MaterialBase>();
                         m_Asset = material;
@@ -482,6 +482,29 @@ namespace JumaEngine
                     };
                     return true;
                 }
+            }
+            break;
+        case AssetType::Texture:
+            {
+                TextureAssetCreateInfo createInfo;
+                if (!ParseTextureAssetFile(assetPath, config, createInfo, m_ErrorMessage))
+                {
+                    return false;
+                }
+                m_AssetCreateFunction = [this, createInfo = std::move(createInfo)]() -> bool 
+                {
+                    EngineObjectPtr<Texture> texture = m_Subsystem->getEngine()->createObject<Texture>();
+                    m_Asset = texture;
+                    if (!m_Subsystem->prepareAssetForCreation(m_Asset, m_AssetID, false) || !texture->loadAsset(createInfo))
+                    {
+                        JUTILS_LOG(error, JSTR("Failed to create texture asset {}"), m_AssetID);
+                        m_Asset = nullptr;
+                        return false;
+                    }
+                    m_Subsystem->notifyAssetCreatedOnNextTick(m_AssetID, true);
+                    return true;
+                };
+                return true;
             }
             break;
         

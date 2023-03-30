@@ -282,20 +282,16 @@ namespace JumaEngine
 		outValue = *value;
 		return true;
 	}
+
 	template<>
-	bool MaterialBase::getDefaultParamValue<MaterialParamType::Texture>(const jstringID& paramName, EngineObjectPtr<TextureBase>& outValue) const
-	{
+    bool MaterialBase::updateDefaultParamValue<JumaRenderEngine::ShaderUniformType::Texture>(const jstringID& paramName,
+        const jstringID& uniformName)
+    {
 		const jstringID* textureID = m_DefaultParamValues.values_texture.find(paramName);
 		if (textureID == nullptr)
 		{
-			return false;
+		    return m_Material->resetParamValue(uniformName);
 		}
-		EngineObjectPtr<TextureBase> texture = getEngine()->getSubsystem<AssetsEngineSubsystem>()->getAsset<TextureBase>(*textureID);
-		if (texture == nullptr)
-		{
-			return false;
-		}
-		outValue = std::move(texture);
-		return true;
-	}
+		return setAssetForTextureParamValue(paramName, uniformName, *textureID);
+    }
 }

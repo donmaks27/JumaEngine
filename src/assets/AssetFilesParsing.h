@@ -18,6 +18,8 @@ namespace JumaEngine
     bool LoadAssetFile(const jstring& assetPath, AssetType& outAssetType, json::json_value& outConfig, jstring& outErrorMessage);
     bool LoadAssetFile(const jstring& assetPath, AssetType& outAssetType, json::json_value& outConfig);
 
+    bool ParseTextureAssetFile(const jstring& assetPath, const json::json_value& config, TextureAssetCreateInfo& outCreateInfo, 
+        jstring& outErrorMessage);
     bool ParseTextureAssetFile(const jstring& assetPath, const json::json_value& config, TextureAssetCreateInfo& outCreateInfo);
 
     bool ParseRenderTargetAssetFile(const jstring& assetPath, const json::json_value& config, RenderTargetCreateInfo& outCreateInfo);

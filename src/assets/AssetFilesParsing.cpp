@@ -113,7 +113,7 @@ namespace JumaEngine
         return true;
     }
 
-    bool ParseTextureAssetFile(const jstring& assetPath, const json::json_value& config, TextureAssetCreateInfo& outCreateInfo)
+    bool ParseTextureAssetFile(const jstring& assetPath, const json::json_value& config, TextureAssetCreateInfo& outCreateInfo, jstring& outErrorMessage)
     {
         static const jstringID assetTextureField = JSTR("textureFile");
         static const jstringID assetTextureFormatField = JSTR("textureFormat");
@@ -123,26 +123,31 @@ namespace JumaEngine
         const json::json_value* formatJsonValue = jsonObject.find(assetTextureFormatField);
         if ((formatJsonValue == nullptr) || !(*formatJsonValue)->tryGetString(jsonString))
         {
-            JUTILS_LOG(warning, JSTR("Can't find field \"textureFormat\" in asset file {}"), assetPath);
+            ERROR_MESSAGE(outErrorMessage, JSTR("Can't find field \"{}\" in asset file {}"), assetTextureFormatField, assetPath);
 	        return false;
         }
         const JumaRE::TextureFormat format = ParseAssetFile_TextureFormat(jsonString);
         if (format == JumaRE::TextureFormat::NONE)
         {
-	        JUTILS_LOG(warning, JSTR("Invalid value in field \"textureFormat\" in asset file {}"), assetPath);
+	        ERROR_MESSAGE(outErrorMessage, JSTR("Invalid value in field \"{}\" in asset file {}"), assetTextureFormatField, assetPath);
             return false;
         }
 
         const json::json_value* textureJsonValue = jsonObject.find(assetTextureField);
         if ((textureJsonValue == nullptr) || !(*textureJsonValue)->tryGetString(jsonString))
         {
-            JUTILS_LOG(warning, JSTR("Can't find field \"textureFile\" in asset file {}"), assetPath);
+            ERROR_MESSAGE(outErrorMessage, JSTR("Can't find field \"{}\" in asset file {}"), assetTextureField, assetPath);
 	        return false;
         }
 
         outCreateInfo.textureDataPath = std::move(jsonString);
         outCreateInfo.textureFormat = format;
         return true;
+    }
+    bool ParseTextureAssetFile(const jstring& assetPath, const json::json_value& config, TextureAssetCreateInfo& outCreateInfo)
+    {
+        jstring errorMessage;
+        return ParseTextureAssetFile(assetPath, config, outCreateInfo, errorMessage);
     }
 
     bool ParseRenderTargetAssetFile(const jstring &assetPath, const json::json_value &config, RenderTargetCreateInfo &outCreateInfo)
