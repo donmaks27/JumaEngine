@@ -26,16 +26,19 @@ namespace JumaEngine
 
     bool AsyncEngineSubsystem::addTask(const AsyncTaskType type, jasync_task* task)
     {
-        switch (type)
+        if (m_AsyncTaskQueue.isValid())
         {
-        case AsyncTaskType::Worker: return m_AsyncTaskQueue.addTask(task);
-        case AsyncTaskType::GameThread:
+            switch (type)
             {
-                std::lock_guard lock(m_AsyncTasks_GameThreadMutex);
-                m_AsyncTasks_GameThread.add(task);
+            case AsyncTaskType::Worker: return m_AsyncTaskQueue.addTask(task);
+            case AsyncTaskType::GameThread:
+                {
+                    std::lock_guard lock(m_AsyncTasks_GameThreadMutex);
+                    m_AsyncTasks_GameThread.add(task);
+                }
+                return true;
+            default: ;
             }
-            return true;
-        default: ;
         }
         return false;
     }

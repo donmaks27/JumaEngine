@@ -242,6 +242,11 @@ namespace JumaEngine
             m_EngineWidgetCreator = nullptr;
         }
 
+        AsyncEngineSubsystem* asyncSubsystem = getSubsystem<AsyncEngineSubsystem>();
+        if (asyncSubsystem != nullptr)
+        {
+            asyncSubsystem->clearSubsystem();
+        }
         EngineSubsystem* renderSubsystem = nullptr;
         for (const auto& subsystem : m_EngineSubsystems)
         {
@@ -249,7 +254,7 @@ namespace JumaEngine
             {
 	            subsystem.value->clearSubsystem();
             }
-            else
+            else if (subsystem.key != AsyncEngineSubsystem::GetClassStatic())
             {
 	            renderSubsystem = subsystem.value.get();
             }

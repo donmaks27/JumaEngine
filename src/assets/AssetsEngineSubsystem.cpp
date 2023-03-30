@@ -61,6 +61,8 @@ namespace JumaEngine
             renderEngine->onDestroying.unbind(this, &AssetsEngineSubsystem::onRenderEngineDestroying);
         }
 
+        m_LoadAssetTasks.clear();
+
         for (auto& mesh : m_Meshes)
         {
             mesh.clearMesh();
@@ -336,13 +338,18 @@ namespace JumaEngine
         EngineObjectPtr<Asset>* loadedAsset = m_LoadedAssets.find(assetID);
         if (loadedAsset != nullptr)
         {
-            getEngine()->getSubsystem<AsyncEngineSubsystem>()->addTask(AsyncTaskType::GameThread, new jasync_task_default([weakContext, callback, asset = *loadedAsset]()
+            jasync_task* task = new jasync_task_default([weakContext, callback, asset = *loadedAsset]()
             {
                 if (weakContext != nullptr)
                 {
                     callback(asset);
                 }
-            }));
+            });
+            if (!getEngine()->getSubsystem<AsyncEngineSubsystem>()->addTask(AsyncTaskType::GameThread, task))
+            {
+                delete task;
+                return false;
+            }
             return true;
         }
         AsyncAssetCreateTask* loadTask = m_LoadAssetTasks.find(assetID);
@@ -375,11 +382,11 @@ namespace JumaEngine
             if (!m_ErrorMessage.isEmpty())
             {
                 JUTILS_LOG(error, *m_ErrorMessage);
-                m_Subsystem->onAssetCreateFailed(m_AssetID);
+                m_Subsystem->notifyAssetCreatedOnNextTick(m_AssetID, false);
             }
             else if ((m_AssetCreateFunction == nullptr) || !m_AssetCreateFunction())
             {
-                m_Subsystem->onAssetCreateFailed(m_AssetID);
+                m_Subsystem->notifyAssetCreatedOnNextTick(m_AssetID, false);
             }
         }
     }
@@ -432,6 +439,49 @@ namespace JumaEngine
                     };
                     return true;
                 }
+                else
+                {
+                    // Cache json inside lambda
+                    // Send task to game thread: request parent material
+                    // Callback game thread: continue to parse json, create material instance
+                    // Next tick game thread: notify
+                    const jstringID parentMateriaID = (*parentMaterialValue)->asString();
+                    m_AssetCreateFunction = [this, assetPath = std::move(assetPath), config = std::move(config), parentMateriaID]() mutable -> bool
+                    {
+                        // Game thread
+                        return m_Subsystem->getAssetAsync(m_Subsystem, parentMateriaID, [this, assetPath = std::move(assetPath), config = std::move(config), parentMateriaID](const EngineObjectPtr<Asset>& asset)
+                        {
+                            // Game thread again
+                            const EngineObjectPtr<Material> parentMaterial = asset.cast<Material>();
+                            if (parentMaterial == nullptr)
+                            {
+                                JUTILS_LOG(warning, JSTR("Can't get parent material {} for asset {}"), parentMateriaID, m_AssetID);
+                                m_Subsystem->notifyAssetCreatedOnNextTick(m_AssetID, false);
+                                return;
+                            }
+                            MaterialInstanceCreateInfo createInfo;
+                            if (!ParseMaterialInstanceAssetFile(assetPath, config, parentMaterial, createInfo))
+                            {
+                                JUTILS_LOG(warning, JSTR("Failed to parse material instance asset file {}"), m_AssetID);
+                                m_Subsystem->notifyAssetCreatedOnNextTick(m_AssetID, false);
+                                return;
+                            }
+                            
+                            EngineObjectPtr<MaterialInstance> material = m_Subsystem->getEngine()->createObject<MaterialInstance>();
+                            m_Asset = material;
+                            if (!m_Subsystem->prepareAssetForCreation(m_Asset, m_AssetID, false) || !material->createMaterial(createInfo))
+                            {
+                                JUTILS_LOG(warning, JSTR("Failed to create material instance asset {}"), m_AssetID);
+                                m_Asset = nullptr;
+                                m_Subsystem->notifyAssetCreatedOnNextTick(m_AssetID, false);
+                                return;
+                            }
+
+                            m_Subsystem->notifyAssetCreatedOnNextTick(m_AssetID, true);
+                        });
+                    };
+                    return true;
+                }
             }
             break;
         
@@ -439,7 +489,7 @@ namespace JumaEngine
         }
         return false;
     }
-    bool AssetsEngineSubsystem::prepareAssetForCreation(const EngineObjectPtr<Asset>& asset, const jstringID& assetID)
+    bool AssetsEngineSubsystem::prepareAssetForCreation(const EngineObjectPtr<Asset>& asset, const jstringID& assetID, const bool subscribe)
     {
         if (asset == nullptr)
         {
@@ -447,16 +497,23 @@ namespace JumaEngine
             return false;
         }
         asset->m_AssetID = assetID;
-        asset->onAssetCreated.bind(this, &AssetsEngineSubsystem::onAssetCreated);
+        if (subscribe)
+        {
+            asset->onAssetCreated.bind(this, &AssetsEngineSubsystem::onAssetCreated);
+        }
         return true;
     }
 
-    void AssetsEngineSubsystem::onAssetCreateFailed(const jstringID& assetID)
+    void AssetsEngineSubsystem::notifyAssetCreatedOnNextTick(const jstringID& assetID, bool success)
     {
-        getEngine()->getSubsystem<AsyncEngineSubsystem>()->addTask(AsyncTaskType::GameThread, new jasync_task_default([this, assetID = assetID]()
+        jasync_task* task = new jasync_task_default([this, assetID = assetID, success]()
         {
-            onAssetCreateTaskFinished(assetID, false);
-        }));
+            onAssetCreateTaskFinished(assetID, success);
+        });
+        if (!getEngine()->getSubsystem<AsyncEngineSubsystem>()->addTask(AsyncTaskType::GameThread, task))
+        {
+            delete task;
+        }
     }
     void AssetsEngineSubsystem::onAssetCreated(Asset* asset, const bool success)
     {
@@ -473,7 +530,18 @@ namespace JumaEngine
             return;
         }
 
-        m_LoadedAssets.add(assetID, success ? task->getAsset() : nullptr);
+        const EngineObjectPtr<Asset>& asset = success ? task->getAsset() : nullptr;
+#ifndef JUTILS_LOG_DISABLED
+        if (asset != nullptr)
+        {
+            JUTILS_LOG(correct, JSTR("Loaded asset {} ({})"), assetID, asset->getAssetType());
+        }
+        else
+        {
+            JUTILS_LOG(warning, JSTR("Failed to load asset {}"), assetID);
+        }
+#endif
+        m_LoadedAssets.add(assetID, asset);
         task->notify(success);
         m_LoadAssetTasks.remove(assetID);
     }

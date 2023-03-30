@@ -91,8 +91,8 @@ namespace JumaEngine
         jstring m_GameContentDirectory = JSTR("./content/");
 
 
-		bool prepareAssetForCreation(const EngineObjectPtr<Asset>& asset, const jstringID& assetID);
-        void onAssetCreateFailed(const jstringID& assetID);
+		bool prepareAssetForCreation(const EngineObjectPtr<Asset>& asset, const jstringID& assetID, bool subscribe = true);
+        void notifyAssetCreatedOnNextTick(const jstringID& assetID, bool success);
         void onAssetCreated(Asset* asset, bool success);
         void onAssetCreateTaskFinished(const jstringID& assetID, bool success);
         
