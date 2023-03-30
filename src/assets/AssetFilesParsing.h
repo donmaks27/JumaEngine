@@ -22,6 +22,8 @@ namespace JumaEngine
         jstring& outErrorMessage);
     bool ParseTextureAssetFile(const jstring& assetPath, const json::json_value& config, TextureAssetCreateInfo& outCreateInfo);
 
+    bool ParseRenderTargetAssetFile(const jstring& assetPath, const json::json_value& config, RenderTargetCreateInfo& outCreateInfo, 
+        jstring& outErrorMessage);
     bool ParseRenderTargetAssetFile(const jstring& assetPath, const json::json_value& config, RenderTargetCreateInfo& outCreateInfo);
 
     bool ParseMaterialAssetFile(const jstring& assetPath, const json::json_value& config, const JumaRE::RenderAPI renderAPI, 

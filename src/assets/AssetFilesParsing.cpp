@@ -150,7 +150,8 @@ namespace JumaEngine
         return ParseTextureAssetFile(assetPath, config, outCreateInfo, errorMessage);
     }
 
-    bool ParseRenderTargetAssetFile(const jstring &assetPath, const json::json_value &config, RenderTargetCreateInfo &outCreateInfo)
+    bool ParseRenderTargetAssetFile(const jstring& assetPath, const json::json_value& config, RenderTargetCreateInfo& outCreateInfo, 
+        jstring& outErrorMessage)
     {
         static const jstringID fieldFormat = JSTR("format");
         static const jstringID fieldSamples = JSTR("samples");
@@ -161,13 +162,13 @@ namespace JumaEngine
         const json::json_value* formatJsonValue = jsonObject.find(fieldFormat);
         if ((formatJsonValue == nullptr) || !(*formatJsonValue)->tryGetString(jsonString))
         {
-            JUTILS_LOG(warning, JSTR("Can't find field \"format\" in asset file {}"), assetPath);
+            ERROR_MESSAGE(outErrorMessage, JSTR("Can't find field \"{}\" in asset file {}"), fieldFormat, assetPath);
 	        return false;
         }
         const JumaRE::TextureFormat format = ParseAssetFile_TextureFormat(jsonString);
         if (format == JumaRE::TextureFormat::NONE)
         {
-	        JUTILS_LOG(warning, JSTR("Invalid value in field \"format\" in asset file {}"), assetPath);
+	        ERROR_MESSAGE(outErrorMessage, JSTR("Invalid value in field \"{}\" in asset file {}"), fieldFormat, assetPath);
             return false;
         }
 
@@ -175,7 +176,7 @@ namespace JumaEngine
         const json::json_value* samplesJsonValue = jsonObject.find(fieldSamples);
         if ((samplesJsonValue == nullptr) || !(*samplesJsonValue)->tryGetNumber(samplesNumber))
         {
-            JUTILS_LOG(warning, JSTR("Can't find field \"samples\" in asset file {}"), assetPath);
+            ERROR_MESSAGE(outErrorMessage, JSTR("Can't find field \"{}\" in asset file {}"), fieldSamples, assetPath);
             return false;
         }
         JumaRE::TextureSamples samples;
@@ -187,20 +188,20 @@ namespace JumaEngine
         case 8:  samples = JumaRE::TextureSamples::X8;  break;
         case 16: samples = JumaRE::TextureSamples::X16; break;
         default: 
-            JUTILS_LOG(warning, JSTR("Invalid value in field \"samples\" in asset file {}"), assetPath);
+            ERROR_MESSAGE(outErrorMessage, JSTR("Invalid value in field \"{}\" in asset file {}"), fieldSamples, assetPath);
             return false;
         }
 
         const json::json_value* sizeJsonValue = jsonObject.find(fieldSize);
         if (sizeJsonValue == nullptr)
         {
-            JUTILS_LOG(warning, JSTR("Can't find field \"size\" in asset file {}"), assetPath);
+            ERROR_MESSAGE(outErrorMessage, JSTR("Can't find field \"{}\" in asset file {}"), fieldSize, assetPath);
             return false;
         }
         math::vector2 size;
         if (!ParseAssetFile_Vec2((*sizeJsonValue)->asArray(), size))
         {
-            JUTILS_LOG(warning, JSTR("Invalid value in field \"size\" in asset file {}"), assetPath);
+            ERROR_MESSAGE(outErrorMessage, JSTR("Invalid value in field \"{}\" in asset file {}"), fieldSize, assetPath);
             return false;
         }
 
@@ -208,6 +209,11 @@ namespace JumaEngine
         outCreateInfo.samples = samples;
         outCreateInfo.size = size;
         return true;
+    }
+    bool ParseRenderTargetAssetFile(const jstring& assetPath, const json::json_value& config, RenderTargetCreateInfo& outCreateInfo)
+    {
+        jstring errorMessage;
+        return ParseRenderTargetAssetFile(assetPath, config, outCreateInfo, errorMessage);
     }
 
     bool ParseMaterialAssetFile_ShaderFiles(const jstring& assetPath, const jmap<jstringID, json::json_value>& jsonObject, 
@@ -463,8 +469,8 @@ namespace JumaEngine
         }
     }
 
-    bool ParseMaterialAssetFile(const jstring &assetPath, const json::json_value &config, const JumaRE::RenderAPI renderAPI, 
-        MaterialBaseCreateInfo &outCreateInfo, jstring &outErrorMessage)
+    bool ParseMaterialAssetFile(const jstring& assetPath, const json::json_value& config, const JumaRE::RenderAPI renderAPI, 
+        MaterialBaseCreateInfo& outCreateInfo, jstring& outErrorMessage)
     {
         const jmap<jstringID, json::json_value>& jsonObject = config->asObject();
         jmap<JumaRE::ShaderStageFlags, jstring> shaderFiles;
@@ -489,8 +495,8 @@ namespace JumaEngine
         return ParseMaterialAssetFile(assetPath, config, renderAPI, outCreateInfo, errorMessage);
     }
 
-    bool ParseMaterialInstanceAssetFile(const jstring &assetPath, const json::json_value &config, const EngineObjectPtr<Material>& parentMaterial, 
-        MaterialInstanceCreateInfo &outCreateInfo)
+    bool ParseMaterialInstanceAssetFile(const jstring& assetPath, const json::json_value& config, const EngineObjectPtr<Material>& parentMaterial, 
+        MaterialInstanceCreateInfo& outCreateInfo)
     {
         static const jstringID fieldParams = JSTR("materialParams");
 

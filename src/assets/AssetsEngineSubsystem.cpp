@@ -428,7 +428,7 @@ namespace JumaEngine
                     }
                     m_AssetCreateFunction = [this, createInfo = std::move(createInfo)]() -> bool
                     {
-                        EngineObjectPtr<MaterialBase> material = m_Subsystem->getEngine()->createObject<MaterialBase>();
+                        const EngineObjectPtr<MaterialBase> material = m_Subsystem->getEngine()->createObject<MaterialBase>();
                         m_Asset = material;
                         if (!m_Subsystem->prepareAssetForCreation(m_Asset, m_AssetID) || !material->createMaterial(createInfo))
                         {
@@ -466,8 +466,8 @@ namespace JumaEngine
                                 m_Subsystem->notifyAssetCreatedOnNextTick(m_AssetID, false);
                                 return;
                             }
-                            
-                            EngineObjectPtr<MaterialInstance> material = m_Subsystem->getEngine()->createObject<MaterialInstance>();
+
+                            const EngineObjectPtr<MaterialInstance> material = m_Subsystem->getEngine()->createObject<MaterialInstance>();
                             m_Asset = material;
                             if (!m_Subsystem->prepareAssetForCreation(m_Asset, m_AssetID, false) || !material->createMaterial(createInfo))
                             {
@@ -483,7 +483,6 @@ namespace JumaEngine
                     return true;
                 }
             }
-            break;
         case AssetType::Texture:
             {
                 TextureAssetCreateInfo createInfo;
@@ -493,7 +492,7 @@ namespace JumaEngine
                 }
                 m_AssetCreateFunction = [this, createInfo = std::move(createInfo)]() -> bool 
                 {
-                    EngineObjectPtr<Texture> texture = m_Subsystem->getEngine()->createObject<Texture>();
+                    const EngineObjectPtr<Texture> texture = m_Subsystem->getEngine()->createObject<Texture>();
                     m_Asset = texture;
                     if (!m_Subsystem->prepareAssetForCreation(m_Asset, m_AssetID, false) || !texture->loadAsset(createInfo))
                     {
@@ -506,7 +505,29 @@ namespace JumaEngine
                 };
                 return true;
             }
-            break;
+        case AssetType::RenderTarget:
+            {
+                RenderTargetCreateInfo createInfo;
+                if (!ParseRenderTargetAssetFile(assetPath, config, createInfo, m_ErrorMessage))
+                {
+                    return false;
+                }
+                m_AssetCreateFunction = [this, createInfo]() -> bool
+                {
+                    RenderEngineSubsystem* renderSubsystem = m_Subsystem->getEngine()->getSubsystem<RenderEngineSubsystem>();
+                    const EngineObjectPtr<RenderTarget> renderTarget = renderSubsystem != nullptr ? renderSubsystem->createRenderTarget(createInfo) : nullptr;
+                    m_Asset = renderTarget;
+                    if (!m_Subsystem->prepareAssetForCreation(m_Asset, m_AssetID, false))
+                    {
+                        JUTILS_LOG(error, JSTR("Failed to create render target asset {}"), m_AssetID);
+                        m_Asset = nullptr;
+                        return false;
+                    }
+                    m_Subsystem->notifyAssetCreatedOnNextTick(m_AssetID, true);
+                    return true;
+                };
+                return true;
+            }
         
         default: ;
         }
