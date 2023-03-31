@@ -22,6 +22,7 @@ namespace JumaEngine
     {
         JUMAENGINE_CLASS(RenderTarget, TextureBase)
 
+        friend AssetsEngineSubsystem;
         friend RenderEngineSubsystem;
 
     public:

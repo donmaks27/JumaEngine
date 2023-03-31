@@ -386,10 +386,9 @@ namespace JumaEngine
                 }
                 m_AssetCreateFunction = [this, createInfo]() -> bool
                 {
-                    RenderEngineSubsystem* renderSubsystem = m_Subsystem->getEngine()->getSubsystem<RenderEngineSubsystem>();
-                    const EngineObjectPtr<RenderTarget> renderTarget = renderSubsystem != nullptr ? renderSubsystem->createRenderTarget(createInfo) : nullptr;
+                    const EngineObjectPtr<RenderTarget> renderTarget = m_Subsystem->getEngine()->createObject<RenderTarget>();
                     m_Asset = renderTarget;
-                    if (!m_Subsystem->prepareAssetForCreation(m_Asset, m_AssetID, false))
+                    if (!m_Subsystem->prepareAssetForCreation(m_Asset, m_AssetID, false) || !renderTarget->createAsset(createInfo))
                     {
                         JUTILS_LOG(error, JSTR("Failed to create render target asset {}"), m_AssetID);
                         m_Asset = nullptr;

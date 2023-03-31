@@ -39,7 +39,6 @@ namespace JumaEngine
             EngineObjectPtr<WidgetContext> widgetContext = nullptr;
         };
 
-		jarray<EngineObjectWeakPtr<RenderTarget>> m_RenderTargets;
 		jmap<JumaRE::window_id, WindowProxyRenderTarget> m_WindowProxyRenderTargets;
 
 

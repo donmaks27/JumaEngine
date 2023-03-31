@@ -15,15 +15,6 @@ namespace JumaEngine
 {
     void RenderEngineSubsystem::clearSubsystem()
     {
-        for (const auto& renderTarget : m_RenderTargets)
-        {
-            if (renderTarget != nullptr)
-            {
-                renderTarget->clearAsset();
-            }
-        }
-        m_RenderTargets.clear();
-
         Super::clearSubsystem();
     }
 
@@ -132,7 +123,6 @@ namespace JumaEngine
         {
             return nullptr;
         }
-        m_RenderTargets.add(renderTarget);
         return renderTarget;
     }
     EngineObjectPtr<RenderTarget> RenderEngineSubsystem::createRenderTarget(const JumaRE::window_id windowID)
@@ -142,7 +132,6 @@ namespace JumaEngine
         {
             return nullptr;
         }
-        m_RenderTargets.add(renderTarget);
         return renderTarget;
     }
     EngineObjectPtr<RenderTarget> RenderEngineSubsystem::createRenderTarget(JumaRE::RenderTarget* renderTarget)
@@ -159,7 +148,6 @@ namespace JumaEngine
         }
 
         renderTargetPtr->m_RenderTarget = renderTarget;
-        m_RenderTargets.add(renderTargetPtr);
         return renderTargetPtr;
     }
     EngineObjectPtr<RenderTarget> RenderEngineSubsystem::getWindowRenderTarget(const JumaRE::window_id windowID) const
