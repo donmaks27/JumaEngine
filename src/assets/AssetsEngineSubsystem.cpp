@@ -199,134 +199,6 @@ namespace JumaEngine
         return {};
 	}
 
-    EngineObjectPtr<Asset> AssetsEngineSubsystem::getAsset(const jstringID& assetID)
-    {
-        const jstring assetIDStr = assetID.toString();
-        const EngineObjectPtr<Asset>* assetPtr = m_LoadedAssets.find(assetID);
-        if (assetPtr != nullptr)
-        {
-	        return *assetPtr;
-        }
-
-        jstring assetPath = getAssetPath(assetIDStr);
-        if (assetPath.isEmpty())
-        {
-            JUTILS_LOG(warning, JSTR("Invalid asset ID {}"), assetIDStr);
-	        return nullptr;
-        }
-        assetPath += JSTR(".json");
-
-        AssetType type;
-        json::json_value config = nullptr;
-        if (!LoadAssetFile(assetPath, type, config))
-        {
-	        JUTILS_LOG(warning, JSTR("Failed to load asset {}"), assetIDStr);
-	        return nullptr;
-        }
-
-        EngineObjectPtr<Asset> assetObject = nullptr;
-        switch (type)
-        {
-        case AssetType::Texture:
-	        {
-		        TextureAssetCreateInfo createInfo;
-		        if (!ParseTextureAssetFile(assetPath, config, createInfo))
-		        {
-		            JUTILS_LOG(warning, JSTR("Failed parse asset {}"), assetIDStr);
-			        return nullptr;
-		        }
-
-                EngineObjectPtr<Texture> texture = getEngine()->createObject<Texture>();
-		        if ((texture == nullptr) || !texture->loadAsset(createInfo))
-		        {
-			        JUTILS_LOG(error, JSTR("Failed to create texture asset {}"), assetIDStr);
-		            return nullptr;
-		        }
-                assetObject = std::move(texture);
-	        }
-            break;
-        case AssetType::RenderTarget:
-            {
-                RenderTargetCreateInfo createInfo;
-                if (!ParseRenderTargetAssetFile(assetPath, config, createInfo))
-                {
-                    JUTILS_LOG(warning, JSTR("Failed parse asset {}"), assetIDStr);
-			        return nullptr;
-                }
-                RenderEngineSubsystem* renderSubsystem = getEngine()->getSubsystem<RenderEngineSubsystem>();
-                EngineObjectPtr<RenderTarget> renderTarget = renderSubsystem != nullptr ? renderSubsystem->createRenderTarget(createInfo) : nullptr;
-                if (renderTarget == nullptr)
-                {
-                    JUTILS_LOG(error, JSTR("Failed to create render target asset {}"), assetIDStr);
-		            return nullptr;
-                }
-                assetObject = std::move(renderTarget);
-            }
-            break;
-        case AssetType::Material:
-	        {
-                static const jstringID parentStringID = JSTR("parentMaterial");
-                const json::json_value* parentMaterialValue = config->asObject().find(parentStringID);
-		        if (parentMaterialValue != nullptr)
-		        {
-                    MaterialInstanceCreateInfo createInfo;
-                    if (!ParseMaterialInstanceAssetFile(assetPath, config, getAsset<Material>((*parentMaterialValue)->asString()), createInfo))
-                    {
-                        return nullptr;
-                    }
-                    EngineObjectPtr<MaterialInstance> material = getEngine()->createObject<MaterialInstance>();
-                    if ((material == nullptr) || !material->createMaterial(createInfo))
-                    {
-                        return nullptr;
-                    }
-			        assetObject = std::move(material);
-		        }
-                else
-                {
-                    MaterialBaseCreateInfo createInfo;
-	                if (!ParseMaterialAssetFile(assetPath, config, getEngine()->getRenderEngine()->getRenderAPI(), createInfo))
-	                {
-		                JUTILS_LOG(error, JSTR("Failed to parse material asset file {}"), assetIDStr);
-						return nullptr;
-	                }
-                    for (auto& shaderFile : createInfo.shaderInfo.fileNames)
-                    {
-	                    shaderFile.value = getAssetPath(shaderFile.value);
-                    }
-
-                    EngineObjectPtr<MaterialBase> material = getEngine()->createObject<MaterialBase>();
-                    if ((material == nullptr) || !material->loadMaterial(createInfo))
-                    {
-	                    JUTILS_LOG(error, JSTR("Failed to load material asset {}"), assetIDStr);
-						return nullptr;
-                    }
-                    assetObject = std::move(material);
-                }
-	        }
-            break;
-        default: ;
-        }
-
-        JUTILS_LOG(correct, JSTR("Loaded asset {} ({})"), assetIDStr, type);
-        assetObject->m_AssetID = assetID;
-        m_LoadedAssets.add(assetID, assetObject);
-        return assetObject;
-    }
-    EngineObjectPtr<Material> AssetsEngineSubsystem::createMaterial(const EngineObjectPtr<Material>& parentMaterial)
-    {
-        if (parentMaterial == nullptr)
-        {
-	        return nullptr;
-        }
-        EngineObjectPtr<MaterialInstance> material = getEngine()->createObject<MaterialInstance>();
-        if ((material == nullptr) || !material->createMaterial({ parentMaterial }))
-        {
-	        JUTILS_LOG(error, JSTR("Failed to create material from {}"), parentMaterial->getAssetID().toString());
-			return nullptr;
-        }
-        return material;
-    }
-
     bool AssetsEngineSubsystem::getAssetAsync(EngineContextObject* context, const jstringID& assetID, std::function<void(const EngineObjectPtr<Asset>&)> callback)
     {
         EngineObjectWeakPtr weakContext(context);
@@ -599,5 +471,20 @@ namespace JumaEngine
             }
         }
         m_Callbacks.clear();
+    }
+
+    EngineObjectPtr<Material> AssetsEngineSubsystem::createMaterial(const EngineObjectPtr<Material>& parentMaterial)
+    {
+        if (parentMaterial == nullptr)
+        {
+	        return nullptr;
+        }
+        EngineObjectPtr<MaterialInstance> material = getEngine()->createObject<MaterialInstance>();
+        if ((material == nullptr) || !material->createMaterial({ parentMaterial }))
+        {
+	        JUTILS_LOG(error, JSTR("Failed to create material from {}"), parentMaterial->getAssetID().toString());
+			return nullptr;
+        }
+        return material;
     }
 }

@@ -135,11 +135,11 @@ namespace JumaEngine
         static jstringID textureShaderName = JSTR("e:materials/M_widgetDefault");
         static jstringID colorShaderName = JSTR("e:materials/M_widgetSolidColor");
         AssetsEngineSubsystem* assetsSubsystem = getEngine()->getSubsystem<AssetsEngineSubsystem>();
-        m_WidgetMaterial = assetsSubsystem->createMaterial(
-            assetsSubsystem->getAsset<Material>(shouldUseSolidColor() ? colorShaderName : textureShaderName)
-        );
-
-        updateMaterialColorParams();
+        assetsSubsystem->getAssetAsync(this, shouldUseSolidColor() ? colorShaderName : textureShaderName, [this](const EngineObjectPtr<Asset>& asset)
+        {
+            m_WidgetMaterial = asset.cast<Material>();
+            updateMaterialColorParams();
+        });
     }
 
     void ImageWidget::updateMaterialColorParams() const

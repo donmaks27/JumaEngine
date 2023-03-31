@@ -57,11 +57,6 @@ namespace JumaEngine
         outConfig = config;
         return true;
     }
-    bool LoadAssetFile(const jstring& assetPath, AssetType& outAssetType, json::json_value& outConfig)
-    {
-        jstring errorMessage;
-        return LoadAssetFile(assetPath, outAssetType, outConfig, errorMessage);
-    }
 
     JumaRE::TextureFormat ParseAssetFile_TextureFormat(const jstring& format)
     {
@@ -144,11 +139,6 @@ namespace JumaEngine
         outCreateInfo.textureFormat = format;
         return true;
     }
-    bool ParseTextureAssetFile(const jstring& assetPath, const json::json_value& config, TextureAssetCreateInfo& outCreateInfo)
-    {
-        jstring errorMessage;
-        return ParseTextureAssetFile(assetPath, config, outCreateInfo, errorMessage);
-    }
 
     bool ParseRenderTargetAssetFile(const jstring& assetPath, const json::json_value& config, RenderTargetCreateInfo& outCreateInfo, 
         jstring& outErrorMessage)
@@ -209,11 +199,6 @@ namespace JumaEngine
         outCreateInfo.samples = samples;
         outCreateInfo.size = size;
         return true;
-    }
-    bool ParseRenderTargetAssetFile(const jstring& assetPath, const json::json_value& config, RenderTargetCreateInfo& outCreateInfo)
-    {
-        jstring errorMessage;
-        return ParseRenderTargetAssetFile(assetPath, config, outCreateInfo, errorMessage);
     }
 
     bool ParseMaterialAssetFile_ShaderFiles(const jstring& assetPath, const jmap<jstringID, json::json_value>& jsonObject, 
@@ -487,12 +472,6 @@ namespace JumaEngine
         ParseMaterialAssetFile_Params(jsonObject, outCreateInfo.shaderInfo.uniforms, outCreateInfo.params, 
             outCreateInfo.defaultValues);
         return true;
-    }
-    bool ParseMaterialAssetFile(const jstring& assetPath, const json::json_value& config, const JumaRE::RenderAPI renderAPI, 
-        MaterialBaseCreateInfo& outCreateInfo)
-    {
-        jstring errorMessage;
-        return ParseMaterialAssetFile(assetPath, config, renderAPI, outCreateInfo, errorMessage);
     }
 
     bool ParseMaterialInstanceAssetFile(const jstring& assetPath, const json::json_value& config, const EngineObjectPtr<Material>& parentMaterial, 

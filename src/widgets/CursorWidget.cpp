@@ -13,11 +13,14 @@ namespace JumaEngine
 	    Super::onInitialized();
 
         AssetsEngineSubsystem* assetsSubsystem = getEngine()->getSubsystem<AssetsEngineSubsystem>();
-        m_Material = assetsSubsystem->createMaterial(assetsSubsystem->getAsset<Material>(JSTR("e:materials/M_widgetSolidColor")));
-        if (m_Material != nullptr)
+        assetsSubsystem->getAssetAsync(this, JSTR("e:materials/M_widgetSolidColor"), [this](const EngineObjectPtr<Asset>& asset)
         {
-	        m_Material->setParamValue<MaterialParamType::Vec4>(JSTR("color"), { 1.0f, 0.0f, 1.0f, 1.0f });
-        }
+            m_Material = asset.cast<Material>();
+            if (m_Material != nullptr)
+            {
+	            m_Material->setParamValue<MaterialParamType::Vec4>(JSTR("color"), { 1.0f, 0.0f, 1.0f, 1.0f });
+            }
+        });
     }
 
     void CursorWidget::onUpdate(const float deltaTime)

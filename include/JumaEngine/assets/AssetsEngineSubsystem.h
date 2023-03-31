@@ -24,12 +24,8 @@ namespace JumaEngine
         
         jstring getAssetPath(const jstring& assetID) const;
         
-        EngineObjectPtr<Asset> getAsset(const jstringID& assetID);
-        template<typename T, TEMPLATE_ENABLE(is_base<Asset, T>)>
-        EngineObjectPtr<T> getAsset(const jstringID& assetID) { return getAsset(assetID).castMove<T>(); }
-        EngineObjectPtr<Material> createMaterial(const EngineObjectPtr<Material>& parentMaterial);
-
         bool getAssetAsync(EngineContextObject* context, const jstringID& assetID, std::function<void(const EngineObjectPtr<Asset>&)> callback);
+        EngineObjectPtr<Material> createMaterial(const EngineObjectPtr<Material>& parentMaterial);
 
         jstringID getVertexComponentID(VertexComponent component) const;
         JumaRE::VertexBuffer* getVertexBuffer_Cube();
