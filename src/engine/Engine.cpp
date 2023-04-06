@@ -15,7 +15,7 @@
 
 namespace JumaEngine
 {
-	jdescriptor_table_pointer<> Engine::createObjectDescriptor(const EngineClass* objectClass)
+	jdescriptor_table_pointer Engine::createObjectDescriptor(const EngineClass* objectClass)
 	{
         if (objectClass == nullptr)
         {
@@ -26,7 +26,7 @@ namespace JumaEngine
         {
 	        return nullptr;
         }
-        const jdescriptor_table_pointer<> pointer = m_EngineObjectDescriptors.createDescriptor(object);
+        const jdescriptor_table_pointer pointer = m_EngineObjectDescriptors.createDescriptor(object);
         object->m_ObjectDescriptor = pointer;
 		return pointer;
 	}

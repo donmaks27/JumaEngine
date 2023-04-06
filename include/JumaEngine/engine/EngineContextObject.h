@@ -64,7 +64,7 @@ namespace JumaEngine
 
     private:
 
-        jdescriptor_table_pointer<> m_ObjectDescriptor;
+        jdescriptor_table_pointer m_ObjectDescriptor;
     };
 }
 

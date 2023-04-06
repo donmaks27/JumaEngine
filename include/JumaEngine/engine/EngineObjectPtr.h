@@ -21,7 +21,7 @@ namespace JumaEngine
 	protected:
 
 		using TableType = jdescriptor_table<EngineContextObject>;
-		using PointerType = jdescriptor_table_pointer<TableType::uid_type>;
+		using PointerType = TableType::poiter_type;
 
 		constexpr EngineObjectPtrBase() = default;
 		constexpr EngineObjectPtrBase(const EngineObjectPtrBase&) = default;
