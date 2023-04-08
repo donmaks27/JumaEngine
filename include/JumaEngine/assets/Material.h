@@ -12,7 +12,6 @@
 
 namespace JumaEngine
 {
-	class MaterialBase;
 	class MaterialInstance;
 
 	struct MaterialDefaultParamValues
@@ -28,7 +27,6 @@ namespace JumaEngine
 	{
 		JUMAENGINE_CLASS_ABSTRACT(Material, Asset)
 
-		friend MaterialBase;
 		friend MaterialInstance;
 
 	public:
@@ -68,17 +66,6 @@ namespace JumaEngine
 		}
 
 	protected:
-		
-		virtual const Material* getBaseMaterial() const { return this; }
-		
-		virtual void onParamValueChanging(const jstringID& paramName) {}
-		virtual bool resetParamValueInternal(const jstringID& paramName, const jstringID& uniformName);
-		virtual bool getTextureParamValue(const jstringID& paramName, EngineObjectPtr<TextureBase>& outValue) const;
-
-		virtual void clearAsset() final override;
-		virtual void clearMaterial();
-
-	private:
 
 		JUTILS_CREATE_MULTICAST_DELEGATE2(OnMaterialParamEvent, const jstringID&, paramName, const jstringID&, uniformName);
 		
@@ -89,13 +76,37 @@ namespace JumaEngine
 		jarray<jstringID> m_MaterialParams;
 		jmap<jstringID, jstringID> m_MaterialParamsUniform;
 
-		jmap<jstringID, EngineObjectPtr<TextureBase>> m_ReferencedTextures;
+		
+		virtual const Material* getBaseMaterial() const = 0;
 
+		bool setAssetForTextureParamValue(const jstringID& paramName, const jstringID& uniformName, const jstringID& assetID);
 
 		template<MaterialParamType T>
-        bool updateParamValue(const jstringID& paramName, const jstringID& uniformName, const typename MaterialParamInfo<T>::value_type& value) { return m_Material->setParamValue<MaterialParamInfo<T>::uniformType>(uniformName, value); }
+        bool updateParamValue(const jstringID& paramName, const jstringID& uniformName, const typename MaterialParamInfo<T>::value_type& value)
+		{
+		    return m_Material->setParamValue<MaterialParamInfo<T>::uniformType>(uniformName, value);
+		}
         template<>
         bool updateParamValue<MaterialParamType::Texture>(const jstringID& paramName, const jstringID& uniformName, const EngineObjectPtr<TextureBase>& value);
+		
+		virtual void onParamValueChanging(const jstringID& paramName) {}
+		virtual bool resetParamValueInternal(const jstringID& paramName, const jstringID& uniformName);
+		virtual bool getTextureParamValue(const jstringID& paramName, EngineObjectPtr<TextureBase>& outValue) const;
+
+		virtual void clearAsset() final override;
+		virtual void clearMaterial();
+
+	private:
+
+		struct TextureReference
+		{
+			EngineObjectPtr<TextureBase> asset = nullptr;
+			jstringID assetID = jstringID_NONE;
+		};
+		
+		jmap<jstringID, TextureReference> m_ReferencedTextures;
+
+
         void onTextureDestroying(EngineContextObject* object);
 	};
 

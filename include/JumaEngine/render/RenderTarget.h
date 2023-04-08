@@ -13,15 +13,16 @@ namespace JumaEngine
 
     struct RenderTargetCreateInfo
     {
-        JumaRE::TextureFormat format; 
-        math::uvector2 size; 
-        JumaRE::TextureSamples samples;
+        JumaRE::TextureFormat format = JumaRE::TextureFormat::NONE; 
+        math::uvector2 size = { 0, 0 }; 
+        JumaRE::TextureSamples samples = JumaRE::TextureSamples::X1;
     };
 
     class RenderTarget final : public TextureBase
     {
         JUMAENGINE_CLASS(RenderTarget, TextureBase)
 
+        friend AssetsEngineSubsystem;
         friend RenderEngineSubsystem;
 
     public:

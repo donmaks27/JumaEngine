@@ -8,6 +8,7 @@ namespace JumaEngine
 {
 	enum class AssetType : uint8
 	{
+		None,
 		Texture,
 		RenderTarget,
 		Material

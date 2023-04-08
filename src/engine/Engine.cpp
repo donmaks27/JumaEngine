@@ -7,6 +7,7 @@
 #include <JumaRE/RenderPipeline.h>
 
 #include "JumaEngine/assets/AssetsEngineSubsystem.h"
+#include "JumaEngine/engine/AsyncEngineSubsystem.h"
 #include "JumaEngine/engine/ConfigEngineSubsystem.h"
 #include "JumaEngine/game/GameInstance.h"
 #include "JumaEngine/render/RenderEngineSubsystem.h"
@@ -14,7 +15,7 @@
 
 namespace JumaEngine
 {
-	jdescriptor_table_pointer<> Engine::createObjectDescriptor(const EngineClass* objectClass)
+	jdescriptor_table_pointer Engine::createObjectDescriptor(const EngineClass* objectClass)
 	{
         if (objectClass == nullptr)
         {
@@ -25,7 +26,7 @@ namespace JumaEngine
         {
 	        return nullptr;
         }
-        const jdescriptor_table_pointer<> pointer = m_EngineObjectDescriptors.createDescriptor(object);
+        const jdescriptor_table_pointer pointer = m_EngineObjectDescriptors.createDescriptor(object);
         object->m_ObjectDescriptor = pointer;
 		return pointer;
 	}
@@ -111,7 +112,7 @@ namespace JumaEngine
             JUTILS_LOG(error, JSTR("Failed to create render engine ({})"), renderAPI);
             return false;
         }
-        if (!m_RenderEngine->init({ getWindowsTitle(), { 800, 600 } }))
+        if (!m_RenderEngine->init({ { getWindowsTitle(), { 800, 600 } } }))
         {
             JUTILS_LOG(error, JSTR("Failed to init render engine ({})"), renderAPI);
             delete m_RenderEngine;
@@ -120,6 +121,11 @@ namespace JumaEngine
         }
         JUTILS_LOG(info, JSTR("Render engine initialized ({})"), renderAPI);
         
+        if (createSubsystem<AsyncEngineSubsystem>() == nullptr)
+        {
+            JUTILS_LOG(error, JSTR("Failed to init AsyncEngineSussystem"));
+            return false;
+        }
         RenderEngineSubsystem* renderSubsystem = createSubsystem<RenderEngineSubsystem>();
         if (renderSubsystem == nullptr)
         {
@@ -203,6 +209,8 @@ namespace JumaEngine
     }
     void Engine::update(const float deltaTime)
     {
+        getSubsystem<AsyncEngineSubsystem>()->executeGameThreadTasks();
+
         UpdateEngineObject(m_EngineWidgetCreator.get(), deltaTime);
     }
     void Engine::preRender()
@@ -234,6 +242,11 @@ namespace JumaEngine
             m_EngineWidgetCreator = nullptr;
         }
 
+        AsyncEngineSubsystem* asyncSubsystem = getSubsystem<AsyncEngineSubsystem>();
+        if (asyncSubsystem != nullptr)
+        {
+            asyncSubsystem->clearSubsystem();
+        }
         EngineSubsystem* renderSubsystem = nullptr;
         for (const auto& subsystem : m_EngineSubsystems)
         {
@@ -241,7 +254,7 @@ namespace JumaEngine
             {
 	            subsystem.value->clearSubsystem();
             }
-            else
+            else if (subsystem.key != AsyncEngineSubsystem::GetClassStatic())
             {
 	            renderSubsystem = subsystem.value.get();
             }

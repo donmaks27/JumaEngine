@@ -5,6 +5,8 @@
 #include "../core.h"
 #include "Material.h"
 
+#include <JumaRE/RenderEngine.h>
+
 namespace JumaEngine
 {
 	struct MaterialParamCreateInfo
@@ -14,9 +16,7 @@ namespace JumaEngine
 	};
 	struct MaterialBaseCreateInfo
 	{
-		jmap<JumaRE::ShaderStageFlags, jstring> shaderFiles;
-		jset<jstringID> shaderVertexComponents;
-		jmap<jstringID, JumaRE::ShaderUniform> shaderUniforms;
+		JumaRE::ShaderCreateInfo shaderInfo;
 
 		jarray<MaterialParamCreateInfo> params;
 		MaterialDefaultParamValues defaultValues;
@@ -33,17 +33,68 @@ namespace JumaEngine
 		virtual ~MaterialBase() override = default;
 
 	protected:
-		
+
+		virtual const Material* getBaseMaterial() const override { return this; }
+
 		virtual bool resetParamValueInternal(const jstringID& paramName, const jstringID& uniformName) override;
 
 		virtual void clearMaterial() override;
 
 	private:
 
+		class MaterialBaseAsyncTask
+		{
+		protected:
+			MaterialBaseAsyncTask() = default;
+		public:
+			virtual ~MaterialBaseAsyncTask() = default;
+			
+			virtual void clearTask() = 0;
+		};
+		class OnShaderCreatedTask final : public JumaRE::RenderEngine::OnAssetCreatedTask<JumaRE::Shader>, public MaterialBaseAsyncTask
+		{
+		public:
+			OnShaderCreatedTask() = default;
+			OnShaderCreatedTask(MaterialBase* ptr, const MaterialBaseCreateInfo& createInfo)
+			    : m_CreateInfo(createInfo)
+		        , m_Material(ptr)
+			{}
+
+			virtual void run() override;
+			virtual void clearTask() override;
+
+		private:
+			
+			std::mutex m_Mutex;
+			MaterialBaseCreateInfo m_CreateInfo;
+			MaterialBase* m_Material = nullptr;
+		};
+		class NotifyShaderCreatedTask final : public jasync_task, public MaterialBaseAsyncTask
+		{
+		public:
+			NotifyShaderCreatedTask() = default;
+			NotifyShaderCreatedTask(MaterialBase* material, JumaRE::Shader* shader)
+			    : m_Material(material), m_Shader(shader)
+			{}
+
+			virtual void run() override;
+			virtual void clearTask() override;
+
+		private:
+
+			MaterialBase* m_Material = nullptr;
+			JumaRE::Shader* m_Shader = nullptr;
+		};
+
 		MaterialDefaultParamValues m_DefaultParamValues;
 
+		MaterialBaseAsyncTask* m_CreateAsyncTask = nullptr;
 
-		bool loadMaterial(MaterialBaseCreateInfo createInfo);
+
+		bool loadMaterial(const MaterialBaseCreateInfo& createInfo);
+		bool createMaterial(const MaterialBaseCreateInfo& createInfo);
+		bool onShaderCreated_WorkerThread(JumaRE::Shader* shader, const MaterialBaseCreateInfo& createInfo);
+		bool onShaderCreated_GameThread(JumaRE::Shader* shader);
 
 		template<MaterialParamType T>
 		bool getDefaultParamValue(const jstringID& paramName, typename MaterialParamInfo<T>::value_type& outValue) const { return false; }
@@ -55,8 +106,6 @@ namespace JumaEngine
 		bool getDefaultParamValue<MaterialParamType::Vec4>(const jstringID& paramName, math::vector4& outValue) const;
 		template<>
 		bool getDefaultParamValue<MaterialParamType::Mat4>(const jstringID& paramName, math::matrix4& outValue) const;
-		template<>
-		bool getDefaultParamValue<MaterialParamType::Texture>(const jstringID& paramName, EngineObjectPtr<TextureBase>& outValue) const;
 
 		template<MaterialParamType T>
 		bool updateDefaultParamValue(const jstringID& paramName, const jstringID& uniformName)
@@ -68,5 +117,7 @@ namespace JumaEngine
 			}
 			return this->updateParamValue<T>(paramName, uniformName, value);
 		}
+		template<>
+		bool updateDefaultParamValue<MaterialParamType::Texture>(const jstringID& paramName, const jstringID& uniformName);
 	};
 }

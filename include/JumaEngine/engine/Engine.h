@@ -71,7 +71,7 @@ namespace JumaEngine
     private:
 
         jdescriptor_table<EngineContextObject> m_EngineObjectDescriptors;
-        jarray<jdescriptor_table_pointer<>> m_DestroyingEngineObjects;
+        jarray<jdescriptor_table_pointer> m_DestroyingEngineObjects;
 
         EngineObjectPtr<GameInstance> m_GameInstance = nullptr;
         JumaRE::RenderEngine* m_RenderEngine = nullptr;
@@ -80,7 +80,7 @@ namespace JumaEngine
         EngineObjectPtr<WidgetsCreator> m_EngineWidgetCreator = nullptr;
 
 
-        jdescriptor_table_pointer<> createObjectDescriptor(const EngineClass* objectClass);
+        jdescriptor_table_pointer createObjectDescriptor(const EngineClass* objectClass);
         void onEngineObjectDescriptorDestroying(EngineContextObject* object);
         void onEngineObjectDestroying(EngineObject* object);
 

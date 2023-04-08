@@ -31,12 +31,17 @@ namespace JumaEngine
 
 	protected:
 
+		JUTILS_CREATE_DELEGATE2(OnAssetCreatedEvent, Asset*, asset, bool, success);
+
+		OnAssetCreatedEvent onAssetCreated;
+		
+
 		virtual void clearAsset() { onDestroying.call(this); }
 		virtual void onObjectDescriptorDestroying() override { clearAsset(); }
 		
 	private:
 
 		jstringID m_AssetID = jstringID_NONE;
-		AssetType m_AssetType = AssetType::Texture;
+		AssetType m_AssetType = AssetType::None;
 	};
 }

@@ -15,14 +15,16 @@
 
 namespace JumaEngine
 {
-    bool LoadAssetFile(const jstring& assetPath, AssetType& outAssetType, json::json_value& outConfig);
+    bool LoadAssetFile(const jstring& assetPath, AssetType& outAssetType, json::json_value& outConfig, jstring& outErrorMessage);
 
-    bool ParseTextureAssetFile(const jstring& assetPath, const json::json_value& config, TextureAssetCreateInfo& outCreateInfo);
+    bool ParseTextureAssetFile(const jstring& assetPath, const json::json_value& config, TextureAssetCreateInfo& outCreateInfo, 
+        jstring& outErrorMessage);
 
-    bool ParseRenderTargetAssetFile(const jstring& assetPath, const json::json_value& config, RenderTargetCreateInfo& outCreateInfo);
+    bool ParseRenderTargetAssetFile(const jstring& assetPath, const json::json_value& config, RenderTargetCreateInfo& outCreateInfo, 
+        jstring& outErrorMessage);
 
     bool ParseMaterialAssetFile(const jstring& assetPath, const json::json_value& config, const JumaRE::RenderAPI renderAPI, 
-        MaterialBaseCreateInfo& outCreateInfo);
+        MaterialBaseCreateInfo& outCreateInfo, jstring& outErrorMessage);
     bool ParseMaterialInstanceAssetFile(const jstring& assetPath, const json::json_value& config, const EngineObjectPtr<Material>& parentMaterial, 
         MaterialInstanceCreateInfo& outCreateInfo);
 }
