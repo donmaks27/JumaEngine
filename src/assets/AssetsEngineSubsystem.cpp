@@ -449,7 +449,7 @@ namespace JumaEngine
 #ifndef JUTILS_LOG_DISABLED
         if (asset != nullptr)
         {
-            JUTILS_LOG(correct, JSTR("Loaded asset {} ({})"), assetID, asset->getAssetType());
+            JUTILS_LOG(info, JSTR("Loaded asset {} ({})"), assetID, asset->getAssetType());
         }
         else
         {
