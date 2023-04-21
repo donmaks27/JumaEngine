@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <jutils/jlog.h>
+#include <jutils/log.h>
 
 #ifdef JUMAENGINE_MODE_EDITOR
     #undef JUMAENGINE_MODE_GAME

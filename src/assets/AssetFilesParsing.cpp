@@ -7,7 +7,7 @@
 namespace JumaEngine
 {
 #ifndef JUTILS_LOG_DISABLED
-    #define ERROR_MESSAGE(str, formatStr, ...) str = jstring::format(formatStr, __VA_ARGS__)
+    #define ERROR_MESSAGE(str, formatStr, ...) str = string::format(formatStr, __VA_ARGS__)
 #else
     #define ERROR_MESSAGE(str, formatStr, ...)
 #endif

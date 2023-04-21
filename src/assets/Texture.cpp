@@ -33,7 +33,7 @@ namespace JumaEngine
 
         math::ivector2 textureSize;
         int32 componentsCount = 0;
-        stbi_uc* data = stbi_load(textureFilePath.getString(), &textureSize.x, &textureSize.y, &componentsCount, 4);
+        stbi_uc* data = stbi_load(*textureFilePath, &textureSize.x, &textureSize.y, &componentsCount, 4);
         if (data == nullptr)
         {
             JUTILS_LOG(error, JSTR("Failed to load texture file {}"), textureFilePath);
