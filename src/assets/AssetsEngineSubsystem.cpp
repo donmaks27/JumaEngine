@@ -2,6 +2,8 @@
 
 #include "JumaEngine/assets/AssetsEngineSubsystem.h"
 
+#include <jutils/math/vector3.h>
+
 #include "AssetFilesParsing.h"
 #include "JumaEngine/assets/MaterialInstance.h"
 #include "JumaEngine/engine/AsyncEngineSubsystem.h"
