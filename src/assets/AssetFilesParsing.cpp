@@ -216,15 +216,15 @@ namespace JumaEngine
 	        return false;
         }
         jmap<JumaRE::ShaderStageFlags, jstring> shaderFiles;
-        for (const auto& shaderValue : *shadersObject)
+        for (const auto& [shaderStage, shaderValue] : *shadersObject)
         {
             JumaRE::ShaderStageFlags stage;
-	        if (shaderValue.key == shaderVertex)        { stage = JumaRE::ShaderStageFlags::SHADER_STAGE_VERTEX; }
-            else if (shaderValue.key == shaderFragment) { stage = JumaRE::ShaderStageFlags::SHADER_STAGE_FRAGMENT; }
+	        if (shaderStage == shaderVertex)        { stage = JumaRE::ShaderStageFlags::SHADER_STAGE_VERTEX; }
+            else if (shaderStage == shaderFragment) { stage = JumaRE::ShaderStageFlags::SHADER_STAGE_FRAGMENT; }
             else { continue; }
 
             const jmap<jstringID, json::json_value>* shaderFilesObject = nullptr;
-            if ((shaderValue.value == nullptr) || !shaderValue.value->tryGetObject(shaderFilesObject))
+            if ((shaderValue == nullptr) || !shaderValue->tryGetObject(shaderFilesObject))
             {
 	            continue;
             }
@@ -290,10 +290,10 @@ namespace JumaEngine
 	        return {};
         }
         jmap<jstringID, JumaRE::ShaderUniform> uniforms;
-        for (const auto& uniform : *uniformsObject)
+        for (const auto& [uniformID, uniformValue] : *uniformsObject)
         {
 	        const jmap<jstringID, json::json_value>* uniformObject = nullptr;
-            if ((uniform.value == nullptr) || !uniform.value->tryGetObject(uniformObject))
+            if ((uniformValue == nullptr) || !uniformValue->tryGetObject(uniformObject))
             {
 	            continue;
             }
@@ -350,7 +350,7 @@ namespace JumaEngine
 	            continue;
             }
 
-            uniforms.add(uniform.key, { uniformType, uniformStages, uniformLocation, uniformBlockOffset });
+            uniforms.add(uniformID, { uniformType, uniformStages, uniformLocation, uniformBlockOffset });
         }
         return uniforms;
     }
@@ -491,10 +491,10 @@ namespace JumaEngine
         if (overridedParamsValue != nullptr)
         {
             const jmap<jstringID, JumaRE::ShaderUniform>& uniforms = shader->getUniforms();
-            for (const auto& overridedParamValue : (*overridedParamsValue)->asObject())
+            for (const auto& [paramName, paramValue] : (*overridedParamsValue)->asObject())
             {
                 jstringID uniformName;
-                if (!parentMaterial->getUniformNameForParam(overridedParamValue.key, uniformName))
+                if (!parentMaterial->getUniformNameForParam(paramName, uniformName))
                 {
                     continue;
                 }
@@ -508,45 +508,45 @@ namespace JumaEngine
                 case JumaRE::ShaderUniformType::Float:
                     {
                         double value;
-                        if (overridedParamValue.value->tryGetNumber(value))
+                        if (paramValue->tryGetNumber(value))
                         {
-                            outCreateInfo.overridedParams.values_float.add(overridedParamValue.key, static_cast<float>(value));
+                            outCreateInfo.overridedParams.values_float.add(paramName, static_cast<float>(value));
                         }
                     }
                     break;
                 case JumaRE::ShaderUniformType::Vec2:
                     {
                         math::vector2 value;
-                        if (ParseAssetFile_Vec2(overridedParamValue.value->asArray(), value))
+                        if (ParseAssetFile_Vec2(paramValue->asArray(), value))
                         {
-                            outCreateInfo.overridedParams.values_vec2.add(overridedParamValue.key, value);
+                            outCreateInfo.overridedParams.values_vec2.add(paramName, value);
                         }
                     }
                     break;
                 case JumaRE::ShaderUniformType::Vec4:
                     {
                         math::vector4 value;
-                        if (ParseAssetFile_Vec4(overridedParamValue.value->asArray(), value))
+                        if (ParseAssetFile_Vec4(paramValue->asArray(), value))
                         {
-                            outCreateInfo.overridedParams.values_vec4.add(overridedParamValue.key, value);
+                            outCreateInfo.overridedParams.values_vec4.add(paramName, value);
                         }
                     }
                     break;
                 case JumaRE::ShaderUniformType::Mat4:
                     {
                         math::matrix4 value;
-                        if (ParseAssetFile_Mat4(overridedParamValue.value->asArray(), value))
+                        if (ParseAssetFile_Mat4(paramValue->asArray(), value))
                         {
-                            outCreateInfo.overridedParams.values_mat4.add(overridedParamValue.key, value);
+                            outCreateInfo.overridedParams.values_mat4.add(paramName, value);
                         }
                     }
                     break;
                 case JumaRE::ShaderUniformType::Texture:
                     {
                         jstring value;
-                        if (overridedParamValue.value->tryGetString(value))
+                        if (paramValue->tryGetString(value))
                         {
-                            outCreateInfo.overridedParams.values_texture.add(overridedParamValue.key, value);
+                            outCreateInfo.overridedParams.values_texture.add(paramName, value);
                         }
                     }
                     break;

@@ -92,9 +92,9 @@ namespace JumaEngine
         windowController->onWindowCreated.unbind(this, &RenderEngineSubsystem::onWindowCreated);
         windowController->onWindowDestroying.unbind(this, &RenderEngineSubsystem::onWindowDestroying);
 
-        for (const auto& proxyRenderTarget : m_WindowProxyRenderTargets)
+        for (const auto& windowID : m_WindowProxyRenderTargets.keys())
         {
-            destroyProxyWindowRenderTarget(proxyRenderTarget.key);
+            destroyProxyWindowRenderTarget(windowID);
         }
         m_WindowProxyRenderTargets.clear();
 	}

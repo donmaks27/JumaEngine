@@ -77,11 +77,11 @@ namespace JumaEngine
 	void Material::onTextureDestroying(EngineContextObject* object)
 	{
         jstringID paramName = jstringID_NONE;
-        for (const auto& reference : m_ReferencedTextures)
+        for (const auto& [textureID, reference] : m_ReferencedTextures)
         {
-            if (reference.value.asset.get() == object)
+            if (reference.asset.get() == object)
             {
-                paramName = reference.key;
+                paramName = textureID;
                 break;
             }
         }
@@ -138,11 +138,11 @@ namespace JumaEngine
     }
     void Material::clearMaterial()
     {
-        for (const auto& reference : m_ReferencedTextures)
+        for (const auto& reference : m_ReferencedTextures.values())
         {
-            if (reference.value.asset != nullptr)
+            if (reference.asset != nullptr)
             {
-	            reference.value.asset->onDestroying.unbind(this, &Material::onTextureDestroying);
+	            reference.asset->onDestroying.unbind(this, &Material::onTextureDestroying);
             }
         }
         

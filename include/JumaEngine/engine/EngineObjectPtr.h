@@ -64,7 +64,7 @@ namespace JumaEngine
 			m_ObjectPointer = ptr.m_ObjectPointer;
 			m_CachedObject = ptr.updatePtr();
 		}
-		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1>)>
+		template<typename T1> requires is_base_class<T, T1>
 		EngineObjectWeakPtr(const EngineObjectWeakPtr<T1>& ptr)
 		{
 			m_ObjectPointer = ptr.m_ObjectPointer;
@@ -86,7 +86,7 @@ namespace JumaEngine
 			return *this;
 		}
 		EngineObjectWeakPtr& operator=(const EngineObjectWeakPtr& ptr) { return this->_assignWeak(ptr); }
-		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1>)>
+		template<typename T1> requires is_base_class<T, T1>
 		EngineObjectWeakPtr& operator=(const EngineObjectWeakPtr<T1>& ptr) { return this->_assignWeak(ptr); }
 
 		T* updatePtr() const
@@ -98,7 +98,7 @@ namespace JumaEngine
 			return m_CachedObject;
 		}
 		T* get() const { return m_CachedObject; }
-		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1>)>
+		template<typename T1> requires is_base_class<T, T1>
 		EngineObjectWeakPtr<T1> castWeak() const
 		{
 			T1* object = dynamic_cast<T1*>(updatePtr());
@@ -118,9 +118,9 @@ namespace JumaEngine
 		bool operator==(nullptr_t) const { return updatePtr() == nullptr; }
 		bool operator!=(nullptr_t) const { return !this->operator==(nullptr); }
 
-		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1> || is_base<T1, T>)>
+		template<typename T1> requires is_base_class<T, T1> || is_base_class<T1, T>
 		bool operator==(const EngineObjectWeakPtr<T1>& ptr) const { return updatePtr() == ptr.updatePtr(); }
-		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1> || is_base<T1, T>)>
+		template<typename T1> requires is_base_class<T, T1> || is_base_class<T1, T>
 		bool operator!=(const EngineObjectWeakPtr<T1>& ptr) const { return !this->operator==(ptr); }
 		
 	protected:
@@ -129,7 +129,7 @@ namespace JumaEngine
 
 	private:
 
-		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1>)>
+		template<typename T1> requires is_base_class<T, T1>
 		EngineObjectWeakPtr& _assignWeak(const EngineObjectWeakPtr<T1>& ptr)
 		{
 			if (this != &ptr)
@@ -175,13 +175,13 @@ namespace JumaEngine
 			ptr.m_ObjectPointer = nullptr;
 			ptr.m_CachedObject = nullptr;
 		}
-		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1>)>
+		template<typename T1> requires is_base_class<T, T1>
 		EngineObjectPtr(const EngineObjectPtr<T1>& ptr)
 			: Super(ptr)
 		{
 			EngineObjectPtrBase::addReference();
 		}
-		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1>)>
+		template<typename T1> requires is_base_class<T, T1>
 		EngineObjectPtr(EngineObjectPtr<T1>&& ptr) noexcept
 		{
 			EngineObjectPtrBase::m_ObjectPointer = ptr.m_ObjectPointer;
@@ -191,7 +191,7 @@ namespace JumaEngine
 			ptr.m_ObjectPointer = nullptr;
 			ptr.m_CachedObject = nullptr;
 		}
-		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1>)>
+		template<typename T1> requires is_base_class<T, T1>
 		EngineObjectPtr(const EngineObjectWeakPtr<T1>& ptr)
 			: Super(ptr)
 		{
@@ -228,14 +228,14 @@ namespace JumaEngine
 		EngineObjectPtr& operator=(const EngineObjectPtr& ptr) { return (this != &ptr) ? this->_assign(ptr) : *this; }
 		EngineObjectPtr& operator=(const EngineObjectWeakPtr<T>& ptr) { return (this != &ptr) ? this->_assign(ptr) : *this; }
 		EngineObjectPtr& operator=(EngineObjectPtr&& ptr) noexcept { return this->_assign(std::move(ptr)); }
-		template<typename T1, TEMPLATE_ENABLE(is_base_and_not_same<T, T1>)>
+		template<typename T1> requires is_derived_from_class<T, T1>
 		EngineObjectPtr& operator=(const EngineObjectPtr<T1>& ptr) { return this->_assign(ptr); }
-		template<typename T1, TEMPLATE_ENABLE(is_base_and_not_same<T, T1>)>
+		template<typename T1> requires is_derived_from_class<T, T1>
 		EngineObjectPtr& operator=(EngineObjectPtr<T1>&& ptr) noexcept { return this->_assign(std::move(ptr)); }
-		template<typename T1, TEMPLATE_ENABLE(is_base_and_not_same<T, T1>)>
+		template<typename T1> requires is_derived_from_class<T, T1>
 		EngineObjectPtr& operator=(const EngineObjectWeakPtr<T1>& ptr) { return this->_assign(ptr); }
 
-		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1>)>
+		template<typename T1> requires is_base_class<T, T1>
 		EngineObjectPtr<T1> cast() const
 		{
 			T1* object = dynamic_cast<T1*>(Super::updatePtr());
@@ -249,7 +249,7 @@ namespace JumaEngine
 			pointer.addReference();
 			return pointer;
 		}
-		template<typename T1, TEMPLATE_ENABLE(is_base<T, T1>)>
+		template<typename T1> requires is_base_class<T, T1>
 		EngineObjectPtr<T1> castMove()
 		{
 			T1* object = dynamic_cast<T1*>(Super::updatePtr());

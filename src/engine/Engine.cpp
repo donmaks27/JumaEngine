@@ -248,15 +248,15 @@ namespace JumaEngine
             asyncSubsystem->clearSubsystem();
         }
         EngineSubsystem* renderSubsystem = nullptr;
-        for (const auto& subsystem : m_EngineSubsystems)
+        for (const auto& [subsystemClass, subsystem] : m_EngineSubsystems)
         {
-            if (subsystem.key != RenderEngineSubsystem::GetClassStatic())
+            if (subsystemClass != RenderEngineSubsystem::GetClassStatic())
             {
-	            subsystem.value->clearSubsystem();
+	            subsystem->clearSubsystem();
             }
-            else if (subsystem.key != AsyncEngineSubsystem::GetClassStatic())
+            else if (subsystemClass != AsyncEngineSubsystem::GetClassStatic())
             {
-	            renderSubsystem = subsystem.value.get();
+	            renderSubsystem = subsystem.get();
             }
         }
         if (renderSubsystem != nullptr)

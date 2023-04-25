@@ -28,22 +28,22 @@ namespace JumaEngine
         EngineObjectPtr<EngineContextObject> createObject(const EngineClass* objectClass) { return createObjectDescriptor(objectClass); }
         template<typename T>
         EngineObjectPtr<T> createObject(const EngineSubclass<T>& objectClass) { return this->createObjectDescriptor(objectClass.get()); }
-        template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<EngineContextObject, T>)>
+        template<typename T> requires is_base_and_not_abstract_class<EngineContextObject, T>
         EngineObjectPtr<T> createObject() { return this->createObject<T>(T::GetClassStatic()); }
         
-        template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<GameInstance, T>)>
+        template<typename T> requires is_base_and_not_abstract_class<GameInstance, T>
         bool init() { return this->init(T::GetClassStatic()); }
         void start();
 
         GameInstance* getGameInstance() const { return m_GameInstance.get(); }
-        template<typename T, TEMPLATE_ENABLE(is_base<GameInstance, T>)>
+        template<typename T> requires is_base_class<GameInstance, T>
         T* getGameInstance() const { return dynamic_cast<T*>(this->getGameInstance()); }
 
         JumaRE::RenderEngine* getRenderEngine() const { return m_RenderEngine; }
 
-        template<typename T, TEMPLATE_ENABLE(is_base_and_not_abstract<EngineSubsystem, T>)>
+        template<typename T> requires is_base_and_not_abstract_class<EngineSubsystem, T>
         T* createSubsystem() { return dynamic_cast<T*>(this->createSubsystem(T::GetClassStatic())); }
-        template<typename T, TEMPLATE_ENABLE(is_base<EngineSubsystem, T>)>
+        template<typename T> requires is_base_class<EngineSubsystem, T>
         T* getSubsystem() const { return dynamic_cast<T*>(this->getSubsystem(T::GetClassStatic())); }
         WidgetsCreator* getWidgetsCreator() const { return m_EngineWidgetCreator.get(); }
         

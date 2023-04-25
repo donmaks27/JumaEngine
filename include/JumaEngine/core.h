@@ -3,6 +3,7 @@
 #pragma once
 
 #include <jutils/log.h>
+#include <jutils/type_traits.h>
 
 #ifdef JUMAENGINE_MODE_EDITOR
     #undef JUMAENGINE_MODE_GAME

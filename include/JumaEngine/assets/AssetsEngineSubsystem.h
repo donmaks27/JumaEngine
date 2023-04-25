@@ -50,7 +50,7 @@ namespace JumaEngine
 
             void addCallback(const EngineObjectWeakPtr<EngineContextObject>& context, std::function<void(const EngineObjectPtr<Asset>&)>&& callback)
             {
-                m_Callbacks.put(context, std::move(callback));
+                m_Callbacks.putBack(context, std::move(callback));
             }
             void notify(bool success);
 

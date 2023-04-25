@@ -76,9 +76,9 @@ namespace JumaEngine
         m_VertexBuffer_Cube = nullptr;
         m_VertexBuffer_Plane2D = nullptr;
         
-        for (const auto& asset : m_LoadedAssets)
+        for (const auto& asset : m_LoadedAssets.values())
         {
-	        asset.value->clearAsset();
+	        asset->clearAsset();
         }
         m_LoadedAssets.clear();
 	}
@@ -296,9 +296,9 @@ namespace JumaEngine
                     {
                         return false;
                     }
-                    for (auto& shaderFile : createInfo.shaderInfo.fileNames)
+                    for (auto& shaderFile : createInfo.shaderInfo.fileNames.values())
                     {
-	                    shaderFile.value = m_Subsystem->getAssetPath(shaderFile.value);
+	                    shaderFile = m_Subsystem->getAssetPath(shaderFile);
                     }
                     m_AssetCreateFunction = [this, createInfo = std::move(createInfo)]() -> bool
                     {

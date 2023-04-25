@@ -37,11 +37,11 @@ namespace JumaEngine
 				}
 			
 				jmap<std::tuple<jstringID, jstringID>, jstring>& configData = m_LoadedConfigs.add(jstring(filePath.stem().string()));
-				for (const auto& fileSectionData : fileData)
+				for (const auto& [fileSectionName, fileSectionData] : fileData)
 				{
-					for (const auto& fileValue : fileSectionData.value)
+					for (const auto& [fileValueName, fileValue] : fileSectionData)
 					{
-						configData.add({ fileSectionData.key, fileValue.key }, fileValue.value);
+						configData.add({ fileSectionName, fileValueName }, fileValue);
 					}
 				}
 			}

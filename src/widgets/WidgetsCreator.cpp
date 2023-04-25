@@ -12,44 +12,44 @@ namespace JumaEngine
     {
         Super::onActivated();
 
-        for (const auto& widgetContext : m_WidgetContexts)
+        for (const auto& widgetContext : m_WidgetContexts.values())
         {
-            ActivateEngineObject(widgetContext.value);
+            ActivateEngineObject(widgetContext);
         }
     }
     void WidgetsCreator::onUpdate(const float deltaTime)
     {
         Super::onUpdate(deltaTime);
 
-        for (const auto& widgetContext : m_WidgetContexts)
+        for (const auto& widgetContext : m_WidgetContexts.values())
         {
-            UpdateEngineObject(widgetContext.value, deltaTime);
+            UpdateEngineObject(widgetContext, deltaTime);
         }
     }
     void WidgetsCreator::onPreRender()
     {
         Super::onPreRender();
 
-        for (const auto& widgetContext : m_WidgetContexts)
+        for (const auto& widgetContext : m_WidgetContexts.values())
         {
-            PreRenderEngineObject(widgetContext.value);
+            PreRenderEngineObject(widgetContext);
         }
     }
     void WidgetsCreator::onDeactivate()
     {
-        for (const auto& widgetContext : m_WidgetContexts)
+        for (const auto& widgetContext : m_WidgetContexts.values())
         {
-            DeactivateEngineObject(widgetContext.value);
+            DeactivateEngineObject(widgetContext);
         }
 
         Super::onDeactivate();
     }
     void WidgetsCreator::onClear()
     {
-        for (const auto& widgetContext : m_WidgetContexts)
+        for (const auto& widgetContext : m_WidgetContexts.values())
         {
-            widgetContext.value->onDestroying.unbind(this, &WidgetsCreator::onWidgetContextDestroying);
-            widgetContext.value->destroy();
+            widgetContext->onDestroying.unbind(this, &WidgetsCreator::onWidgetContextDestroying);
+            widgetContext->destroy();
         }
         for (const auto& widget : m_Widgets)
         {

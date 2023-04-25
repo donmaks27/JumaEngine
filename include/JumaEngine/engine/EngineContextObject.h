@@ -26,6 +26,9 @@ namespace JumaEngine
             friend Engine;
 
         public:
+
+            using ObjectType = EngineContextObject;
+
             EngineContextObject_Class() = default;
             virtual ~EngineContextObject_Class() override = default;
 
@@ -55,7 +58,7 @@ namespace JumaEngine
 
 
         Engine* getEngine() const { return EngineObjectPtrBase::s_Engine; }
-        template<typename T, TEMPLATE_ENABLE(is_base<Engine, T>)>
+        template<typename T> requires is_base_class<Engine, T>
         T* getEngine() const { return dynamic_cast<T*>(getEngine()); }
 
     protected:
@@ -74,6 +77,7 @@ public:                                                                         
     {                                                                                                           \
 		friend JumaEngine::Engine;                                                                              \
     public:                                                                                                     \
+        using ObjectType = ClassName;                                                                           \
         ClassName##_Class() = default;                                                                          \
         virtual ~ClassName##_Class() override = default;                                                        \
         virtual jutils::jstring getClassName() const override { return JSTR(#ClassName); }                      \
