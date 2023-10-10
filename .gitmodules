@@ -1,0 +1,3 @@
+[submodule "JumaRE"]
+	path = JumaRE
+	url = git@github.com:donmaks27/JumaRE.git
