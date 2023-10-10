@@ -99,14 +99,14 @@ namespace JumaEngine
     template<typename T1, typename T2> requires is_engine_object_class<T1> && is_base_class<EngineClass, T2>
     bool operator==(const EngineSubclass<T1>& value1, const T2* value2) { return value1.get() == value2; }
     template<typename T> requires is_engine_object_class<T>
-    bool operator==(const EngineSubclass<T>& value1, nullptr_t) { return value1.get() == nullptr; }
+    bool operator==(const EngineSubclass<T>& value1, std::nullptr_t) { return value1.get() == nullptr; }
     
     template<typename T1, typename T2> requires is_engine_object_class<T1> && is_engine_object_class<T2>
     bool operator!=(const EngineSubclass<T1>& value1, const EngineSubclass<T2>& value2) { return !(value1 == value2); }
     template<typename T1, typename T2> requires is_engine_object_class<T1> && is_base_class<EngineClass, T2>
     bool operator!=(const EngineSubclass<T1>& value1, const T2* value2) { return !(value1 == value2); }
     template<typename T> requires is_engine_object_class<T>
-    bool operator!=(const EngineSubclass<T>& value1, nullptr_t) { return !(value1 == nullptr); }
+    bool operator!=(const EngineSubclass<T>& value1, std::nullptr_t) { return !(value1 == nullptr); }
 
     template<typename T1, typename T2> requires is_engine_object_class<T1> && is_engine_object_class<T2>
     auto operator<=>(const EngineSubclass<T1>& value1, const EngineSubclass<T2>& value2) { return value1.get() <=> value2.get(); }

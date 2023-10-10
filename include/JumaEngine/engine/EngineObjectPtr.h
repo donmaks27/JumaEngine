@@ -58,7 +58,7 @@ namespace JumaEngine
 
 	public:
 		constexpr EngineObjectWeakPtr() = default;
-		constexpr EngineObjectWeakPtr(nullptr_t) : EngineObjectWeakPtr() {}
+		constexpr EngineObjectWeakPtr(std::nullptr_t) : EngineObjectWeakPtr() {}
 		EngineObjectWeakPtr(const EngineObjectWeakPtr& ptr)
 		{
 			m_ObjectPointer = ptr.m_ObjectPointer;
@@ -79,7 +79,7 @@ namespace JumaEngine
 			}
 		}
 
-		constexpr EngineObjectWeakPtr& operator=(nullptr_t)
+		constexpr EngineObjectWeakPtr& operator=(std::nullptr_t)
 		{
 			m_ObjectPointer = nullptr;
 			m_CachedObject = nullptr;
@@ -115,8 +115,8 @@ namespace JumaEngine
 		T* operator->() const { return get(); }
 		T& operator*() const { return *get(); }
 
-		bool operator==(nullptr_t) const { return updatePtr() == nullptr; }
-		bool operator!=(nullptr_t) const { return !this->operator==(nullptr); }
+		bool operator==(std::nullptr_t) const { return updatePtr() == nullptr; }
+		bool operator!=(std::nullptr_t) const { return !this->operator==(nullptr); }
 
 		template<typename T1> requires is_base_class<T, T1> || is_base_class<T1, T>
 		bool operator==(const EngineObjectWeakPtr<T1>& ptr) const { return updatePtr() == ptr.updatePtr(); }
@@ -159,7 +159,7 @@ namespace JumaEngine
 
 	public:
 		constexpr EngineObjectPtr() = default;
-		constexpr EngineObjectPtr(nullptr_t) : EngineObjectPtr() {}
+		constexpr EngineObjectPtr(std::nullptr_t) : EngineObjectPtr() {}
 		EngineObjectPtr(const EngineObjectPtr& ptr)
 			: Super(ptr)
 		{
@@ -215,7 +215,7 @@ namespace JumaEngine
 		}
 	public:
 
-		EngineObjectPtr& operator=(nullptr_t)
+		EngineObjectPtr& operator=(std::nullptr_t)
 		{
 			if (EngineObjectPtrBase::m_ObjectPointer != nullptr)
 			{

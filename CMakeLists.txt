@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.12)
 
 project(JumaEngine)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -85,5 +85,7 @@ list(APPEND JUMA_ENGINE_SOURCE_FILES
 )
 
 add_library(JumaEngine STATIC ${JUMA_ENGINE_SOURCE_FILES})
-target_include_directories(JumaEngine PUBLIC include)
+target_include_directories(JumaEngine PUBLIC include PRIVATE
+    third_party/nothing/include
+)
 target_link_libraries(JumaEngine PUBLIC JumaRE)
