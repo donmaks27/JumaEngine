@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_subdirectory(JumaRE)
+add_subdirectory(JumaEngineContent)
 
 list(APPEND JUMA_ENGINE_HEADER_FILES
     include/JumaEngine/core.h
