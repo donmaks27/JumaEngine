@@ -2,9 +2,11 @@
 
 #pragma once
 
+#include "core.h"
+
 #include <jutils/jstring.h>
 
 namespace JumaEngineContent
 {
-    void compileShaders(const jutils::jstring& type, bool forceRecompile = false);
+    void compileShaders(const jutils::jstring& contentType, bool forceRecompile = false);
 }

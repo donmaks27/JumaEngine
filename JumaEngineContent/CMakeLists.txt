@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.12)
 project(JumaEngineContent)
 
 list(APPEND JUMAEC_HEADER_FILES
+    include/JumaEngineContent/core.h
     include/JumaEngineContent/shaders.h
 )
 list(APPEND JUMAEC_SOURCE_FILES

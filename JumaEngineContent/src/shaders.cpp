@@ -19,12 +19,14 @@ namespace JumaEngineContent
     jarray<uint32> compileGLSL(JumaSC::Compiler* compiler, const std::filesystem::path& filepath, JumaSC::GLSL::type type);
     jstring compileSpvToHLSL(JumaSC::Compiler* compiler, const std::filesystem::path& filepath, const jarray<uint32>& spv);
 
-    void compileShaders(const jstring& type, const bool forceRecompile)
+    void compileShaders(const jstring& contentType, const bool forceRecompile)
     {
         static const jstringID cacheFieldName = "cache";
         static const jstringID compileTimeFieldName = "compileTime";
 
-        const jstring configPath = "./config/" + type + ".ini";
+        JUTILS_LOG(info, "compiling content shaders \"{}\"...", contentType);
+
+        const jstring configPath = "./config/" + contentType + ".ini";
         const auto configData = ini::parseFile(configPath);
         if (configData.isEmpty())
         {
