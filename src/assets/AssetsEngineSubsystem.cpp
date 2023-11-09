@@ -276,7 +276,7 @@ namespace JumaEngine
         assetPath += JSTR(".json");
 
         AssetType type;
-        json::json_value config = nullptr;
+        json::value config = nullptr;
         if (!LoadAssetFile(assetPath, type, config, m_ErrorMessage))
         {
             return false;
@@ -287,7 +287,7 @@ namespace JumaEngine
         case AssetType::Material:
             {
                 static const jstringID parentStringID = JSTR("parentMaterial");
-                const json::json_value* parentMaterialValue = config->asObject().find(parentStringID);
+                const json::value* parentMaterialValue = config->asObject().find(parentStringID);
                 if (parentMaterialValue == nullptr)
                 {
                     MaterialBaseCreateInfo createInfo;
